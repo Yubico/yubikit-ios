@@ -1,7 +1,5 @@
 # Yubico Mobile iOS SDK - YubiKit 2.0.0 RC1
 
----
-
 - **This is a prerelease version of YubiKit. Some of the specifications and APIs may change in the final release. It's recommended to use this documentation and library for prototyping and not for a public release.**
 - **Publishing an application which communicates with a YubiKey with lightning connector requires some additional steps before submitting it for an AppStore review. For more details read the [Publishing on AppStore](#appstore_publishing) section.**
 
@@ -19,8 +17,8 @@ The differences between the library versions are documented in this [Changelog](
 
 ## Table of contents
 
-- 1. [Prerequisites](#prerequisites)
-- 2. [Integration steps](#integration_steps)
+1. [Prerequisites](#prerequisites)
+2. [Integration steps](#integration_steps)
 	- 2.1 [Prepare the project](#integration_steps_1)
 	- 2.2 [Add the library](#integration_steps_2)
 	- 2.3 [Use the library](#integration_steps_3)
@@ -30,18 +28,18 @@ The differences between the library versions are documented in this [Changelog](
 		- 2.3.4 [Reading OTPs from the YubiKey 5Ci](#integration_steps_3_4)
 		- 2.3.5 [Using the Raw Command Service and the PC/SC like interface](#integration_steps_3_5)
 		- 2.3.6 [FIDO2 operations with the YubiKey 5Ci](#integration_steps_3_6)
-- 3. [Customising YubiKit](#customising_yubikit)
-- 4. [Using the demo application](#using_demo)
-- 5. [Publishing on AppStore](#appstore_publishing)
-- 6. [FAQ](#faq)
-- 7. [Additional resources](#additional_resources)
+3. [Customising YubiKit](#customising_yubikit)
+4. [Using the demo application](#using_demo)
+5. [Publishing on AppStore](#appstore_publishing)
+6. [FAQ](#faq)
+7. [Additional resources](#additional_resources)
 
 <a name="prerequisites"></a>
 ## 1. Prerequisites
 
 **YubiKit** requires access to NFC to interact with a NFC-enabled YubiKey. NFC reading is available as a public API since iOS 11 on iPhone 7 and newer devices. The library provides capabilities check which can be used to detect if the device supports NFC reading or not.
 
-YubiKit is provided as a static library**<sup>[1]</sup>** to maximise the compatibility with various projects written in Objective-C or Swift, using older or newer versions of Xcode. The library comes in two flavours, **debug_universal** and **release**. As the names suggest, the first one is intended for development use only, compatible with both the iOS simulator and iOS devices, while the release version must be used for release distributions, including AppStore/TestFlight, AdHoc and Enterprise.
+YubiKit is provided as a static library<sup>[1]</sup> to maximise the compatibility with various projects written in Objective-C or Swift, using older or newer versions of Xcode. The library comes in two flavours, **debug_universal** and **release**. As the names suggest, the first one is intended for development use only, compatible with both the iOS simulator and iOS devices, while the release version must be used for release distributions, including AppStore/TestFlight, AdHoc and Enterprise.
 
 **[1]** Starting from YubiKit 2.0.0 RC1, the open source version of the library is available on GitHub. The host application can build the static library as a dependency of the application target when used inside a Xcode workspace. Additionally to this setup the static library can be packed using the `build.sh` script which is provided in the root folder of the library.
 
@@ -130,28 +128,29 @@ YubiKit provides the majority of its functionality through a single instance cal
 <a name="integration_steps_3_1"></a>
 #### 2.3.1 OTP - NFC and the QR Code fallback
 
----
-
 To request a NFC scan for an OTP token call `requestOTPToken:` on the `nfcReaderSession` instance from `YubiKitManager`:
 
 ##### Objective-C		
 
-	#import <YubiKit/YubiKit.h>
+```objective-c
+#import <YubiKit/YubiKit.h>
+...
+[YubiKitManager.shared.nfcReaderSession requestOTPToken:^(id<YKFOTPTokenProtocol> token, NSError *error) {
+	NSString *tokenValue = token.value;
+	// Start using the token value
 	...
-	[YubiKitManager.shared.nfcReaderSession requestOTPToken:^(id<YKFOTPTokenProtocol> token, NSError *error) {
-		NSString *tokenValue = token.value;
-		// Start using the token value
-		...
-	}];
-	
+}];
+```	
 ##### Swift
 
-	YubiKitManager.shared.nfcReaderSession.requestOTPToken { [weak self] (token, error) in
-		if let value = token?.value {
-			// Start using the token value
-			...                
-		}	
-	}
+```swift
+YubiKitManager.shared.nfcReaderSession.requestOTPToken { [weak self] (token, error) in
+	if let value = token?.value {
+		// Start using the token value
+		...                
+	}	
+}
+```
 
 The `YKFOTPToken` contains the details of the scanned OTP token. The detailed documentation of all the properties is available in the header files provided with the library.
 
@@ -161,21 +160,24 @@ To request a QR Code scan call `scanQrCodeWithPresenter:completion:` on the `qrR
 
 ##### Objective-C
 
-	#import <YubiKit/YubiKit.h>
-	...
-	// Here self is a view controller.
-	[YubiKitManager.shared.qrReaderSession scanQrCodeWithPresenter:self completion:^(NSString *payload, NSError *error) {
-		// Start using the payload
-		// ...
-	}];
-	
+```objective-c
+#import <YubiKit/YubiKit.h>
+...
+// Here self is a view controller.
+[YubiKitManager.shared.qrReaderSession scanQrCodeWithPresenter:self completion:^(NSString *payload, NSError *error) {
+	// Start using the payload
+	// ...
+}];
+```	
 ##### Swift    
 
-	// Here self is a view controller.
-	YubiKitManager.shared.qrReaderSession.scanQrCode(withPresenter: self) { [weak self] (payload, error) in    
-		// Start using the payload
-		// ...	
-	}
+```swift
+// Here self is a view controller.
+YubiKitManager.shared.qrReaderSession.scanQrCode(withPresenter: self) { [weak self] (payload, error) in    
+	// Start using the payload
+	// ...	
+}
+```
 
 In the current version of YubiKit the library doesn't make any assumption about the format of the scanned QR code payload but this may change in future versions.
 
@@ -185,35 +187,39 @@ Before calling the APIs for NFC or QR Code scanning it is recommended to check f
 
 ##### Objective-C
 
-	#import <YubiKit/YubiKit.h>
-	...
-	// 1. NFC scanning is available
-	if (YubiKitDeviceCapabilities.supportsNFCScanning) {
-		// Provide additional setup when NFC is available
-	} else {
-		// Handle missing NFC
-	}
+```objective-c
+#import <YubiKit/YubiKit.h>
+...
+// 1. NFC scanning is available
+if (YubiKitDeviceCapabilities.supportsNFCScanning) {
+	// Provide additional setup when NFC is available
+} else {
+	// Handle missing NFC
+}
 	
-	// 2. QR Code scanning is available
-	if (YubiKitDeviceCapabilities.supportsQRCodeScanning) {
-		// Provide additional setup when QR Code scanning is available 
-	} else {
-		// Handle missing QR
-	}
+// 2. QR Code scanning is available
+if (YubiKitDeviceCapabilities.supportsQRCodeScanning) {
+	// Provide additional setup when QR Code scanning is available 
+} else {
+	// Handle missing QR
+}
+```
 		
 ##### Swift	
 
-	if YubiKitDeviceCapabilities.supportsNFCScanning {
-		// Provide additional setup when NFC is available            
-	} else {
-		// Handle missing NFC 
-	}
+```swift
+if YubiKitDeviceCapabilities.supportsNFCScanning {
+	// Provide additional setup when NFC is available            
+} else {
+	// Handle missing NFC 
+}
 
-	if YubiKitDeviceCapabilities.supportsQRCodeScanning {
-		// Provide additional setup when QR Code scanning is available             
-	} else {
-		// Handle missing QR            
-	}
+if YubiKitDeviceCapabilities.supportsQRCodeScanning {
+	// Provide additional setup when QR Code scanning is available             
+} else {
+	// Handle missing QR            
+}
+```
 
 ---
 
@@ -221,17 +227,21 @@ To allow the library to be linked with older projects, some of the APIs in YubiK
 
 ##### Objective-C
 
-	#import <YubiKit/YubiKit.h>
-	...
-	if (@available(iOS 11.0, *)) {
-		// Call the NFC APIs                
-	}
+```objective-c
+#import <YubiKit/YubiKit.h>
+...
+if (@available(iOS 11.0, *)) {
+	// Call the NFC APIs                
+}
+```
 
 ##### Swift
 
-	if #available(iOS 11.0, *) {
-		// Call the NFC APIs	
-	}
+```swift
+if #available(iOS 11.0, *) {
+	// Call the NFC APIs	
+}
+```
 
 ---
 
@@ -244,75 +254,77 @@ To use *@available* in Obj-C the project needs to be compiled with Xcode 9 or ne
 
 ##### Objective-C
 
-	#import <YubiKit/YubiKit.h>
-	...
-	- (void)requestOTPToken {
-		if (!YubiKitDeviceCapabilities.supportsNFCScanning) {
-			// The device does not support NFC reading
-			return;
-		}    
-		if (@available(iOS 11.0, *)) {
-			[YubiKitManager.shared.nfcReaderSession requestOTPToken:^(id<YKFOTPTokenProtocol> token, NSError *error) {
-				if (error != nil) {
-					// Process error
-					return;
-				}
-				// Process token
-			}];
-		}
-	}
-
-	- (void)requestQRCodeScan {
-		if (!YubiKitDeviceCapabilities.supportsQRCodeScanning) {
-			// The device does not support QR code scanning
-			return;
-		}    
-		[YubiKitManager.shared.qrReaderSession scanQrCodeWithPresenter:self completion:^(NSString *payload, NSError *error) {
+```objective-c
+#import <YubiKit/YubiKit.h>
+...
+- (void)requestOTPToken {
+	if (!YubiKitDeviceCapabilities.supportsNFCScanning) {
+		// The device does not support NFC reading
+		return;
+	}    
+	if (@available(iOS 11.0, *)) {
+		[YubiKitManager.shared.nfcReaderSession requestOTPToken:^(id<YKFOTPTokenProtocol> token, NSError *error) {
 			if (error != nil) {
 				// Process error
 				return;
 			}
-			// Process payload
+			// Process token
 		}];
 	}
+}
+
+- (void)requestQRCodeScan {
+	if (!YubiKitDeviceCapabilities.supportsQRCodeScanning) {
+		// The device does not support QR code scanning
+		return;
+	}    
+	[YubiKitManager.shared.qrReaderSession scanQrCodeWithPresenter:self completion:^(NSString *payload, NSError *error) {
+		if (error != nil) {
+			// Process error
+			return;
+		}
+		// Process payload
+	}];
+}
+```
 
 ##### Swift
 
-	func requestOTPToken() {
-        guard YubiKitDeviceCapabilities.supportsNFCScanning else {
-            // The device does not support NFC reading
-            return
-        }
-        
-        if #available(iOS 11.0, *) {
-            YubiKitManager.shared.nfcReaderSession.requestOTPToken { [weak self] (token, error) in
-                guard error == nil else {
-                    // Process error
-                    return
-                }
-                // Process token
-            }
-        }
+```swift
+func requestOTPToken() {
+    guard YubiKitDeviceCapabilities.supportsNFCScanning else {
+        // The device does not support NFC reading
+        return
     }
     
-    func requestQRCodeScan() {
-        guard YubiKitDeviceCapabilities.supportsQRCodeScanning else {
-            // The device does not support QR code scanning
-            return
-        }
-        YubiKitManager.shared.qrReaderSession.scanQrCode(withPresenter: self) { [weak self] (payload, error) in
+    if #available(iOS 11.0, *) {
+        YubiKitManager.shared.nfcReaderSession.requestOTPToken { [weak self] (token, error) in
             guard error == nil else {
                 // Process error
                 return
             }
-            // Process payload
+            // Process token
         }
     }
+}
+    
+func requestQRCodeScan() {
+    guard YubiKitDeviceCapabilities.supportsQRCodeScanning else {
+        // The device does not support QR code scanning
+        return
+    }
+    YubiKitManager.shared.qrReaderSession.scanQrCode(withPresenter: self) { [weak self] (payload, error) in
+        guard error == nil else {
+            // Process error
+            return
+        }
+        // Process payload
+    }
+}
+```
 
 <a name="integration_steps_3_2"></a>
 #### 2.3.2 U2F operations with the YubiKey 5Ci
-
----
 
 The *Universal Second Factor* or U2F protocol is a simple yet powerful way of providing strong authentication for users. The goal of this documentation is not to provide a full explanation of U2F but to explain how to use U2F with YubiKit and the YubiKey 5Ci. For a more detailed explanation of U2F you are encouraged to access the resources from Yubico [developer website](https://developers.yubico.com). For a general overview of U2F consult this [introduction article](https://developers.yubico.com/U2F/) from Yubico developers website.
 
@@ -352,63 +364,68 @@ To send an U2F registration request to the key call `executeRegisterRequest:comp
 
 ##### Objective-C
 
-	// The challenge and appId are received from the authentication server.
-	YKFKeyU2FRegisterRequest *registerRequest = [[YKFKeyU2FRegisterRequest alloc] initWithChallenge:challenge appId:appId];
-        
-    [YubiKitManager.shared.u2fService executeRegisterRequest:registerRequest completion:^(YKFKeyU2FRegisterResponse *response, NSError *error) {
-		if (error) {				
-			// Handle the error here.	
-			return;
-		}
-		// Response should not be nil at this point. Send back the response to the authentication server.
-	}];
+```objective-c
+// The challenge and appId are received from the authentication server.
+YKFKeyU2FRegisterRequest *registerRequest = [[YKFKeyU2FRegisterRequest alloc] initWithChallenge:challenge appId:appId];
+    
+[YubiKitManager.shared.u2fService executeRegisterRequest:registerRequest completion:^(YKFKeyU2FRegisterResponse *response, NSError *error) {
+	if (error) {				
+		// Handle the error here.	
+		return;
+	}
+	// Response should not be nil at this point. Send back the response to the authentication server.
+}];
+```
 
 ##### Swift
 	
-	// The challenge and appId are received from the authentication server.
-	let registerRequest = YKFKeyU2FRegisterRequest(challenge: challenge, appId: appId)
+```swift
+// The challenge and appId are received from the authentication server.
+let registerRequest = YKFKeyU2FRegisterRequest(challenge: challenge, appId: appId)
 	
-	YubiKitManager.shared.keySession.u2fService!.execute(registerRequest) { [weak self] (response, error) in
-		guard error == nil else {
-			// Handle the error here.
-			return
-		}
-		// Response should not be nil at this point. Send back the response to the authentication server.
+YubiKitManager.shared.keySession.u2fService!.execute(registerRequest) { [weak self] (response, error) in
+	guard error == nil else {
+		// Handle the error here.
+		return
 	}
+	// Response should not be nil at this point. Send back the response to the authentication server.
+}
+```
 
 To send an U2F sign request to the key call `executeSignRequest:completion:` on the U2F service. This method takes as a parameter the request object of type `YKFKeyU2FSignRequest` which packs a list of all required parameters by the key to perform the signing. `YKFKeyU2FSignRequest` contains all the required code level documentation and external links to understand its properties. The `completion` parameter is a block/closure which will be called asynchronously when the operation with the key has ended. The operation with the key is executed on a background execution queue and the `completion` block will be called from that queue. Consider this when planning to update things which require to be executed on the main thread, like the UI updates.
 
 ##### Objective-C
 
-	// The challenge, keyHandle and appId are received from the authentication server.
-	YKFKeyU2FSignRequest *signRequest = [[YKFKeyU2FSignRequest alloc] initWithChallenge:challenge keyHandle:keyHandle appId:appId];
-        
-	[YubiKitManager.shared.u2fService executeSignRequest:signRequest completion:^(YKFKeyU2FSignResponse *response, NSError *error) {        
-		if (error) {
-			// Handle the error here.
-			return;
-		} 
-		// Response should not be nil at this point. Send back the response to the authentication server.        
-	}];
-
+```objective-c
+// The challenge, keyHandle and appId are received from the authentication server.
+YKFKeyU2FSignRequest *signRequest = [[YKFKeyU2FSignRequest alloc] initWithChallenge:challenge keyHandle:keyHandle appId:appId];
+    
+[YubiKitManager.shared.u2fService executeSignRequest:signRequest completion:^(YKFKeyU2FSignResponse *response, NSError *error) {        
+	if (error) {
+		// Handle the error here.
+		return;
+	} 
+	// Response should not be nil at this point. Send back the response to the authentication server.        
+}];
+```
 
 ##### Swift
 
-	// The challenge, keyHandle and appId are received from the authentication server.
-	let signRequest = YKFKeyU2FSignRequest(challenge: challenge, keyHandle: keyHandle, appId: appId)
+```swift
+// The challenge, keyHandle and appId are received from the authentication server.
+let signRequest = YKFKeyU2FSignRequest(challenge: challenge, keyHandle: keyHandle, appId: appId)
 	
-	YubiKitManager.shared.keySession.u2fService!.execute(signRequest) { [weak self] (response, error) in
-		guard error == nil else {
-			// Handle the error here.
-			return
-		}
-		// Response should not be nil at this point. Send back the response to the authentication server.
+YubiKitManager.shared.keySession.u2fService!.execute(signRequest) { [weak self] (response, error) in
+	guard error == nil else {
+		// Handle the error here.
+		return
 	}
+	// Response should not be nil at this point. Send back the response to the authentication server.
+}
+```
 	
 <a name="integration_steps_3_3"></a>	
 #### 2.3.3 OATH operations with the YubiKey 5Ci
-
----	
 
 The [YKOATH protocol](https://developers.yubico.com/OATH/YKOATH_Protocol.html) is used to manage and use OATH credentials with a YubiKey. The YKOATH protocol is part of the CCID interface of the key. The CCID interface is enabled by default on the YubiKey 5Ci. 
 
@@ -424,174 +441,178 @@ Here are a few snippets on how to use the OATH functionality of the YubiKey thro
 
 ##### Objective-C
 
-	// This is an URL conforming to Key URI Format specs.
-    NSString *oathUrlString = @"otpauth://totp/Yubico:example@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=Yubico&algorithm=SHA1&digits=6&period=30";
-    NSURL *url = [NSURL URLWithString:oathUrlString];
-    NSAssert(url != nil, @"Invalid OATH URL");
+```objective-c
+// This is an URL conforming to Key URI Format specs.
+NSString *oathUrlString = @"otpauth://totp/Yubico:example@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=Yubico&algorithm=SHA1&digits=6&period=30";
+NSURL *url = [NSURL URLWithString:oathUrlString];
+NSAssert(url != nil, @"Invalid OATH URL");
     
-    // Create the credential from the URL using the convenience initializer.
-    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:url];
-    NSAssert(credential != nil, @"Could not create OATH credential.");
+// Create the credential from the URL using the convenience initializer.
+YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:url];
+NSAssert(credential != nil, @"Could not create OATH credential.");
     
-    id<YKFKeyOATHServiceProtocol> oathService = YubiKitManager.shared.keySession.oathService;
-    if (!oathService) {
+id<YKFKeyOATHServiceProtocol> oathService = YubiKitManager.shared.keySession.oathService;
+if (!oathService) {
+    return;
+}
+    
+/*
+ * Example 1: Adding a credential to the key
+ */
+ 
+YKFKeyOATHPutRequest *putRequest = [[YKFKeyOATHPutRequest alloc] initWithCredential:credential];
+if (!putRequest) {
+    return;
+}
+    
+[oathService executePutRequest:putRequest completion:^(NSError * _Nullable error) {
+    if (error) {
+        NSLog(@"Put request ended in error %@", error.localizedDescription);
         return;
     }
+    // Request was successful. The credential was added to the key.
+}];
     
-    /*
-     * Example 1: Adding a credential to the key
-     */
-     
-    YKFKeyOATHPutRequest *putRequest = [[YKFKeyOATHPutRequest alloc] initWithCredential:credential];
-    if (!putRequest) {
-        return;
-    }
-    
-    [oathService executePutRequest:putRequest completion:^(NSError * _Nullable error) {
-        if (error) {
-            NSLog(@"Put request ended in error %@", error.localizedDescription);
-            return;
-        }
-        // Request was successful. The credential was added to the key.
-    }];
-    
-    /*
-     * Example 2: Removing a credential from the key
-     */
-     
-    YKFKeyOATHDeleteRequest *deleteRequest = [[YKFKeyOATHDeleteRequest alloc] initWithCredential:credential];
-    if (!deleteRequest) {
-        return;
-    }
+/*
+ * Example 2: Removing a credential from the key
+ */
+ 
+YKFKeyOATHDeleteRequest *deleteRequest = [[YKFKeyOATHDeleteRequest alloc] initWithCredential:credential];
+if (!deleteRequest) {
+    return;
+}
 
-    [oathService executeDeleteRequest:deleteRequest completion:^(NSError * _Nullable error) {
-        if (error) {
-            NSLog(@"Delete request ended in error %@", error.localizedDescription);
-            return;
-        }
-        // Request was successful. The credential was removed from the key.
-    }];
-    
-    /*
-     * Example 3: Calculating a credential with the key
-     */
-    
-    YKFKeyOATHCalculateRequest *calculateRequest = [[YKFKeyOATHCalculateRequest alloc] initWithCredential:credential];
-    if (!calculateRequest) {
+[oathService executeDeleteRequest:deleteRequest completion:^(NSError * _Nullable error) {
+    if (error) {
+        NSLog(@"Delete request ended in error %@", error.localizedDescription);
         return;
     }
+    // Request was successful. The credential was removed from the key.
+}];
     
-    [oathService executeCalculateRequest:calculateRequest completion:^(YKFKeyOATHCalculateResponse * _Nullable response, NSError * _Nullable error) {
-        if (error) {
-            NSLog(@"Calculate request ended in error %@", error.localizedDescription);
-            return;
-        }
-        NSAssert(response, @"If the error is nil the response cannot be empty.");
-        
-        NSString *otp = response.otp;
-        NSLog(@"OTP value for the credential %@ is %@", credential.label, otp);
-    }];
+/*
+ * Example 3: Calculating a credential with the key
+ */
     
-    /*
-     * Example 4: Listing credentials from the key
-     */
-     
-    [oathService executeListRequestWithCompletion:^(YKFKeyOATHListResponse * _Nullable response, NSError * _Nullable error) {
-        if (error) {
-            NSLog(@"List request ended in error %@", error.localizedDescription);
-            return;
-        }
-        NSAssert(response, @"If the error is nil the response cannot be empty.");
+YKFKeyOATHCalculateRequest *calculateRequest = [[YKFKeyOATHCalculateRequest alloc] initWithCredential:credential];
+if (!calculateRequest) {
+    return;
+}
+    
+[oathService executeCalculateRequest:calculateRequest completion:^(YKFKeyOATHCalculateResponse * _Nullable response, NSError * _Nullable error) {
+    if (error) {
+        NSLog(@"Calculate request ended in error %@", error.localizedDescription);
+        return;
+    }
+    NSAssert(response, @"If the error is nil the response cannot be empty.");
+    
+    NSString *otp = response.otp;
+    NSLog(@"OTP value for the credential %@ is %@", credential.label, otp);
+}];
+    
+/*
+ * Example 4: Listing credentials from the key
+ */
+ 
+[oathService executeListRequestWithCompletion:^(YKFKeyOATHListResponse * _Nullable response, NSError * _Nullable error) {
+    if (error) {
+        NSLog(@"List request ended in error %@", error.localizedDescription);
+        return;
+    }
+    NSAssert(response, @"If the error is nil the response cannot be empty.");
 
-        NSArray *credentials = response.credentials;
-        NSLog(@"The key has %ld stored credentials.", (unsigned long)credentials.count);
-    }];
+    NSArray *credentials = response.credentials;
+    NSLog(@"The key has %ld stored credentials.", (unsigned long)credentials.count);
+}];
+```
 
 ##### Swift
 
-        // This is an URL conforming to Key URI Format specs.
-        let oathUrlString = "otpauth://totp/Yubico:example@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=Yubico&algorithm=SHA1&digits=6&period=30"
-        guard let url = URL(string: oathUrlString) else {
-            fatalError()
-        }
-        
-        // Create the credential from the URL using the convenience initializer.
-        guard let credential = YKFOATHCredential(url: url) else {
-            fatalError()
-        }
-        
-        guard let oathService = YubiKitManager.shared.keySession.oathService else {
-            return
-        }
-        
-        /*
-         * Example 1: Adding a credential to the key
-         */ 
-                 
-        guard let putRequest = YKFKeyOATHPutRequest(credential: credential) else {
-            return
-        }
-        oathService.execute(putRequest) { (error) in
-            guard error == nil else {
-                print("Put request ended in error \(error!.localizedDescription)")
-                return
-            }
-            // Request was successful. The credential was added to the key.
-        }
-        
-        /*
-         * Example 2: Removing a credential from the key
-         */        
+```swift
+// This is an URL conforming to Key URI Format specs.
+let oathUrlString = "otpauth://totp/Yubico:example@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=Yubico&algorithm=SHA1&digits=6&period=30"
+guard let url = URL(string: oathUrlString) else {
+    fatalError()
+}
+    
+// Create the credential from the URL using the convenience initializer.
+guard let credential = YKFOATHCredential(url: url) else {
+    fatalError()
+}
+    
+guard let oathService = YubiKitManager.shared.keySession.oathService else {
+    return
+}
+    
+/*
+ * Example 1: Adding a credential to the key
+ */ 
          
-        guard let deleteRequest = YKFKeyOATHDeleteRequest(credential: credential) else {
-            return
-        }
-        oathService.execute(deleteRequest) { (error) in
-            guard error == nil else {
-                print("Delete request ended in error \(error!.localizedDescription)")
-                return
-            }
-            // Request was successful. The credential was removed from the key.
-        }
-        
-        /* 
-         * Example 3: Calculating a credential with the key
-         */        
-         
-        guard let calculateRequest = YKFKeyOATHCalculateRequest(credential: credential) else {
-            return
-        }
-        oathService.execute(calculateRequest) { (response, error) in
-            guard error == nil else {
-                print("Calculate request ended in error \(error!.localizedDescription)")
-                return
-            }
-            // If the error is nil the response cannot be empty.
-            guard response != nil else {
-                fatalError()
-            }
-            
-            let otp = response!.otp
-            print("OTP value for the credential \(credential.label) is \(otp)")
-        }
+guard let putRequest = YKFKeyOATHPutRequest(credential: credential) else {
+    return
+}
+oathService.execute(putRequest) { (error) in
+    guard error == nil else {
+        print("Put request ended in error \(error!.localizedDescription)")
+        return
+    }
+    // Request was successful. The credential was added to the key.
+}
+    
+/*
+ * Example 2: Removing a credential from the key
+ */        
+ 
+guard let deleteRequest = YKFKeyOATHDeleteRequest(credential: credential) else {
+    return
+}
+oathService.execute(deleteRequest) { (error) in
+    guard error == nil else {
+        print("Delete request ended in error \(error!.localizedDescription)")
+        return
+    }
+    // Request was successful. The credential was removed from the key.
+}
+    
+/* 
+ * Example 3: Calculating a credential with the key
+ */        
+ 
+guard let calculateRequest = YKFKeyOATHCalculateRequest(credential: credential) else {
+    return
+}
+oathService.execute(calculateRequest) { (response, error) in
+    guard error == nil else {
+        print("Calculate request ended in error \(error!.localizedDescription)")
+        return
+    }
+    // If the error is nil the response cannot be empty.
+    guard response != nil else {
+        fatalError()
+    }
+    
+    let otp = response!.otp
+    print("OTP value for the credential \(credential.label) is \(otp)")
+}
 
-        /*
-         * Example 4: Listing credentials from the key
-         */ 
-         
-        oathService.executeListRequest { (response, error) in
-            guard error == nil else {
-                print("List request ended in error \(error!.localizedDescription)")
-                return
-            }
-            // If the error is nil the response cannot be empty.
-            guard response != nil else {
-                fatalError()
-            }
-            
-            let credentials = response!.credentials
-            print("The key has \(credentials.count) stored credentials.")
-        }
+/*
+ * Example 4: Listing credentials from the key
+ */ 
+ 
+oathService.executeListRequest { (response, error) in
+    guard error == nil else {
+        print("List request ended in error \(error!.localizedDescription)")
+        return
+    }
+    // If the error is nil the response cannot be empty.
+    guard response != nil else {
+        fatalError()
+    }
+    
+    let credentials = response!.credentials
+    print("The key has \(credentials.count) stored credentials.")
+}
+```
 	
 In addition to these requests, the OATH Service provides an interface for setting/validating a password on the OATH application, calculate all credentials and resetting the OATH application to its default state.
 
@@ -605,12 +626,8 @@ Authenticators often use QR codes to pass the URL for setting up the credentials
 <a name="integration_steps_3_4"></a>	
 #### 2.3.4 Reading OTPs from the YubiKey 5Ci
 
----
-
 **Important Note:**
 **The generation of OTPs over iAP2 HID is currently an experimental feature. This feature may change in the final version of the firmware.**
-
----
 
 Unlike the other functionalities from the YubiKey 5Ci, the OTP generation does not require an explicit call to YubiKit to fetch the OTP. The OTP generation works in a similar way with the generation of OTPs with an USB key. The YubiKey 5Ci acts as an external keyboard when sending the OTP to the OS. 
 
@@ -650,113 +667,116 @@ For such scenarios YubiKit allows to send raw commands to the key over two chann
 The `YKFKeyRawCommandService` provides a simple API for sending synchronous and asynchronous requests to the key. In the following example the application executes a request for selecting the PIV application from the card:
 
 ##### Objective-C
-	
-	 #import <YubiKit/YubiKit.h>
-	 
-	 ...
 
-    id<YKFKeyRawCommandServiceProtocol> rawCommandService =  YubiKitManager.shared.keySession.rawCommandService;
-    if (!rawCommandService) {
-        // The key is not connected or the key session is not started if the rawCommandService is nil.
+```objective-c
+ #import <YubiKit/YubiKit.h>
+  
+ ...
+
+id<YKFKeyRawCommandServiceProtocol> rawCommandService =  YubiKitManager.shared.keySession.rawCommandService;
+if (!rawCommandService) {
+    // The key is not connected or the key session is not started if the rawCommandService is nil.
+    return;
+}
+    
+UInt8 command[] = {0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08};
+NSData *commandData = [NSData dataWithBytes:command length:10];
+    
+// Method #1: 
+// Build the APDU with data.
+    
+YKFAPDU *apdu = [[YKFAPDU alloc] initWithData:commandData];
+    
+// Method #2: 
+// Build the APDU by specifying the components.
+    
+UInt8 apduDataBytes[] = {0xA0, 0x00, 0x00, 0x03, 0x08};
+NSData *apduData = [NSData dataWithBytes:apduDataBytes length:5];
+apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0xA4 p1:0x04 p2:0x00 data:apduData type:YKFAPDUTypeShort];
+    
+if (!apdu) {
+    // The supplied data to build the APDU was invalid.
+    return;
+}
+    
+// Example #1:
+// Asynchronous command execution. The [executeCommand:] can be called from any thread.
+    
+[rawCommandService executeCommand:apdu completion:^(NSData *response, NSError * error) {
+    if (error) {
+        // Handle the error.
         return;
     }
+    // Use the response from the key.
+    NSAssert(response, @"The response cannot be nil at this point.");
+}];
     
-    UInt8 command[] = {0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08};
-    NSData *commandData = [NSData dataWithBytes:command length:10];
+// Example #2:
+// Synchronous command execution. The [executeCommand:] must be called from a background thread.
     
-    // Method #1: 
-    // Build the APDU with data.
-    
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithData:commandData];
-    
-    // Method #2: 
-    // Build the APDU by specifying the components.
-    
-    UInt8 apduDataBytes[] = {0xA0, 0x00, 0x00, 0x03, 0x08};
-    NSData *apduData = [NSData dataWithBytes:apduDataBytes length:5];
-    apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0xA4 p1:0x04 p2:0x00 data:apduData type:YKFAPDUTypeShort];
-    
-    if (!apdu) {
-        // The supplied data to build the APDU was invalid.
+[rawCommandService executeSyncCommand:apdu completion:^(NSData *response, NSError * error) {
+    if (error) {
+        // Handle the error.
         return;
     }
-    
-    // Example #1:
-    // Asynchronous command execution. The [executeCommand:] can be called from any thread.
-    
-    [rawCommandService executeCommand:apdu completion:^(NSData *response, NSError * error) {
-        if (error) {
-            // Handle the error.
-            return;
-        }
-        // Use the response from the key.
-        NSAssert(response, @"The response cannot be nil at this point.");
-    }];
-    
-	// Example #2:
-	// Synchronous command execution. The [executeCommand:] must be called from a background thread.
-    
-    [rawCommandService executeSyncCommand:apdu completion:^(NSData *response, NSError * error) {
-        if (error) {
-            // Handle the error.
-            return;
-        }
-        // Use the response from the key.
-        NSAssert(response, @"The response cannot be nil at this point.");
-    }];
-    
+    // Use the response from the key.
+    NSAssert(response, @"The response cannot be nil at this point.");
+}];
+```    
 	
 ##### Swift
 
-	guard let rawCommandService = YubiKitManager.shared.keySession.rawCommandService else {
-		// The key is not connected or the key session is not started if the rawCommandService is nil.
-		return
-	}
-        
-    // Method #1: 
-    // Build the APDU with data.
+```swift
+guard let rawCommandService = YubiKitManager.shared.keySession.rawCommandService else {
+	// The key is not connected or the key session is not started if the rawCommandService is nil.
+	return
+}
     
-    let command: [UInt8] = [0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08]
-    let commandData = Data(bytes: command)
+// Method #1: 
+// Build the APDU with data.
     
-    guard let firstApdu = YKFAPDU(data: commandData) else {
-		 // The supplied data to build the APDU was invalid.
+let command: [UInt8] = [0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08]
+let commandData = Data(bytes: command)
+    
+guard let firstApdu = YKFAPDU(data: commandData) else {
+	 // The supplied data to build the APDU was invalid.
+    return
+}
+    
+// Method #2: 
+// Build the APDU by specifying the components.
+    
+let apduDataBytes: [UInt8] = [0xA0, 0x00, 0x00, 0x03, 0x08]
+let apduData = Data(bytes: apduDataBytes)
+guard let secondApdu = YKFAPDU(cla: 0x00, ins: 0xA4, p1: 0x04, p2: 0x00, data: apduData, type: .short) else {
+    // The supplied data to build the APDU was invalid.
+    return
+}
+    
+// Example #1:
+// Asynchronous command execution. The executeCommand() can be called from any thread.
+    
+rawCommandService.executeCommand(firstApdu) { (response, error) in
+    guard error == nil else {
+        // Handle the error.
         return
     }
+    assert(response != nil, "The response cannot be nil at this point.")
+    // Use the response from the key.
+}
     
-    // Method #2: 
-    // Build the APDU by specifying the components.
+// Example #2:
+// Synchronous command execution. The executeCommand() must be called from a background thread.
     
-    let apduDataBytes: [UInt8] = [0xA0, 0x00, 0x00, 0x03, 0x08]
-    let apduData = Data(bytes: apduDataBytes)
-    guard let secondApdu = YKFAPDU(cla: 0x00, ins: 0xA4, p1: 0x04, p2: 0x00, data: apduData, type: .short) else {
-        // The supplied data to build the APDU was invalid.
+rawCommandService.executeSyncCommand(secondApdu) { (response, error) in
+    guard error == nil else {
+        // Handle the error.
         return
     }
-    
-    // Example #1:
-    // Asynchronous command execution. The executeCommand() can be called from any thread.
-    
-    rawCommandService.executeCommand(firstApdu) { (response, error) in
-        guard error == nil else {
-            // Handle the error.
-            return
-        }
-        assert(response != nil, "The response cannot be nil at this point.")
-        // Use the response from the key.
-    }
-    
-	// Example #2:
-	// Synchronous command execution. The executeCommand() must be called from a background thread.
-        
-    rawCommandService.executeSyncCommand(secondApdu) { (response, error) in
-        guard error == nil else {
-            // Handle the error.
-            return
-        }
-        assert(response != nil, "The response cannot be nil at this point.")
-        // Use the response from the key.
-    }    
+    assert(response != nil, "The response cannot be nil at this point.")
+    // Use the response from the key.
+}    
+```    
     
 The YubiKit Demo application has a more detailed demo on how to use the Raw Command service in `RawCommandServiceDemoViewController`.
     
@@ -773,235 +793,239 @@ Below there is an example on how to use the PC/SC interface to send a raw APDU c
 
 ##### Objective-C
     
-	 #import <YubiKit/YubiKit.h>
-	 
-	 ...
-        
-    /*
-     1. Establish the context.
-     */
+```objective-c    
+ #import <YubiKit/YubiKit.h>
+ 
+ ...
     
-    SInt32 context = 0;
-    SInt64 result = 0;
+/*
+ 1. Establish the context.
+ */
     
-    result = YKFSCardEstablishContext(YKF_SCARD_SCOPE_USER, nil, nil, &context);
+SInt32 context = 0;
+SInt64 result = 0;
     
-    if (result != YKF_SCARD_S_SUCCESS) {
-        NSLog(@"Could not establish context.");
-        return;
-    }
+result = YKFSCardEstablishContext(YKF_SCARD_SCOPE_USER, nil, nil, &context);
     
-    /*
-     2. Get the readers and check for key presence. There is only one in this case.
-     */
+if (result != YKF_SCARD_S_SUCCESS) {
+    NSLog(@"Could not establish context.");
+    return;
+}
     
-    // Ask for the readers length.
-    UInt32 readersLength = 0;
+/*
+ 2. Get the readers and check for key presence. There is only one in this case.
+ */
     
-    result = YKFSCardListReaders(context, nil, nil, &readersLength);
-    if (result != YKF_SCARD_S_SUCCESS || readersLength == 0) {
-        if (result == YKF_SCARD_E_NO_READERS_AVAILABLE) {
-            NSLog(@"Could not ask for readers length. The key is not connected.");
-        } else {
-            NSLog(@"Could not ask for readers length (%d).", (int)result);
-        }
-        
-        YKFSCardReleaseContext(context);
-        return;
-    }
+// Ask for the readers length.
+UInt32 readersLength = 0;
     
-    // Allocated the right buffer size and get the readers.
-    char readers[readersLength];
-    result = YKFSCardListReaders(context, nil, readers, &readersLength);
-    
-    if (result != YKF_SCARD_S_SUCCESS) {
-        if (result == YKF_SCARD_E_NO_READERS_AVAILABLE) {
-            NSLog(@"Could not list readers. The key is not connected.");
-        } else {
-            NSLog(@"Could not list readers (%d).", (int)result);
-        }
-        
-        YKFSCardReleaseContext(context);
-        return;
-    }
-    NSLog(@"Reader \(String(cString: readers)) connected.");
-    
-    // Get the status
-    YKF_SCARD_READERSTATE readerState;
-    readerState.currentState = YKF_SCARD_STATE_UNAWARE;
-    
-    result = YKFSCardGetStatusChange(context, 0, &readerState, 1);
-    if (result != YKF_SCARD_S_SUCCESS) {
-        NSLog(@"Could not get status change (%d).", (int)result);
-        
-        YKFSCardReleaseContext(context);
-        return;
-    }
-    
-    if ((readerState.eventState & YKF_SCARD_STATE_PRESENT) != 0) {
-        NSLog(@"The key is not connected.");
-    }
-    
-    /*
-     3. Connect to the key.
-     */
-    
-    SInt32 card = 0;
-    UInt32 activeProtocol = YKF_SCARD_PROTOCOL_T1;
-    
-    result = YKFSCardConnect(context, readers, YKF_SCARD_SHARE_EXCLUSIVE, YKF_SCARD_PROTOCOL_T1, &card, &activeProtocol);
-    
-    if (result != YKF_SCARD_S_SUCCESS) {
-        NSLog(@"Could not connect to the key (%d).", (int)result);
-        
-        YKFSCardReleaseContext(context);
-        return;
-    }
-    
-    /*
-     4. Create a reusable buffer.
-     */
-    UInt32 transmitRecvBufferMaxSize = 258;
-    UInt8 transmitRecvBuffer[transmitRecvBufferMaxSize];
-    UInt32 transmitRecvBufferLength = transmitRecvBufferMaxSize;
-    
-    /*
-     5. Send a command.
-     */
-    
-    UInt8 command[] = {0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08};
-    
-    result = YKFSCardTransmit(card, nil, command, 10, nil, transmitRecvBuffer, &transmitRecvBufferLength);
-    
-    if (result != YKF_SCARD_S_SUCCESS) {
-        NSLog(@"Could not execute command (%d).", (int)result);
-        
-        YKFSCardReleaseContext(context);
-        return;
+result = YKFSCardListReaders(context, nil, nil, &readersLength);
+if (result != YKF_SCARD_S_SUCCESS || readersLength == 0) {
+    if (result == YKF_SCARD_E_NO_READERS_AVAILABLE) {
+        NSLog(@"Could not ask for readers length. The key is not connected.");
     } else {
-        // Handle response here.
+        NSLog(@"Could not ask for readers length (%d).", (int)result);
     }
     
-    /*
-     6. Release the context.
-     */
-    YKFSCardReleaseContext(context);    
+    YKFSCardReleaseContext(context);
+    return;
+}
+    
+// Allocated the right buffer size and get the readers.
+char readers[readersLength];
+result = YKFSCardListReaders(context, nil, readers, &readersLength);
+    
+if (result != YKF_SCARD_S_SUCCESS) {
+    if (result == YKF_SCARD_E_NO_READERS_AVAILABLE) {
+        NSLog(@"Could not list readers. The key is not connected.");
+    } else {
+        NSLog(@"Could not list readers (%d).", (int)result);
+    }
+    
+    YKFSCardReleaseContext(context);
+    return;
+}
+NSLog(@"Reader \(String(cString: readers)) connected.");
+    
+// Get the status
+YKF_SCARD_READERSTATE readerState;
+readerState.currentState = YKF_SCARD_STATE_UNAWARE;
+    
+result = YKFSCardGetStatusChange(context, 0, &readerState, 1);
+if (result != YKF_SCARD_S_SUCCESS) {
+    NSLog(@"Could not get status change (%d).", (int)result);
+    
+    YKFSCardReleaseContext(context);
+    return;
+}
+    
+if ((readerState.eventState & YKF_SCARD_STATE_PRESENT) != 0) {
+    NSLog(@"The key is not connected.");
+}
+    
+/*
+ 3. Connect to the key.
+ */
+    
+SInt32 card = 0;
+UInt32 activeProtocol = YKF_SCARD_PROTOCOL_T1;
+    
+result = YKFSCardConnect(context, readers, YKF_SCARD_SHARE_EXCLUSIVE, YKF_SCARD_PROTOCOL_T1, &card, &activeProtocol);
+    
+if (result != YKF_SCARD_S_SUCCESS) {
+    NSLog(@"Could not connect to the key (%d).", (int)result);
+    
+    YKFSCardReleaseContext(context);
+    return;
+}
+    
+/*
+ 4. Create a reusable buffer.
+ */
+UInt32 transmitRecvBufferMaxSize = 258;
+UInt8 transmitRecvBuffer[transmitRecvBufferMaxSize];
+UInt32 transmitRecvBufferLength = transmitRecvBufferMaxSize;
+    
+/*
+ 5. Send a command.
+ */
+    
+UInt8 command[] = {0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08};
+    
+result = YKFSCardTransmit(card, nil, command, 10, nil, transmitRecvBuffer, &transmitRecvBufferLength);
+    
+if (result != YKF_SCARD_S_SUCCESS) {
+    NSLog(@"Could not execute command (%d).", (int)result);
+    
+    YKFSCardReleaseContext(context);
+    return;
+} else {
+    // Handle response here.
+}
+    
+/*
+ 6. Release the context.
+ */
+YKFSCardReleaseContext(context);    
+```
     
 ##### Swift        
-    
-	/*
-	 1. Establish the context.
-	 */
-    
-    var context: Int32 = 0
-    var result: Int64 = 0
-    
-    result = YKFSCardEstablishContext(YKF_SCARD_SCOPE_USER, nil, nil, &context)
-    
-    if result != YKF_SCARD_S_SUCCESS {
-		print("Could not establish context.")
-		return
-    }
-    
-    /*
-     2. Get the readers and check for key presence. There is only one in this case.
-     */
-    
-    // Ask for the readers length.
-    var readersLength: UInt32 = 0
 
-    result = YKFSCardListReaders(context, nil, nil, &readersLength)
-    if result != YKF_SCARD_S_SUCCESS || readersLength == 0 {        
-        if result == YKF_SCARD_E_NO_READERS_AVAILABLE {
-            print("Could not ask for readers length. The key is not connected.")
-        } else {
-            print("Could not ask for readers length (\(result)).")
-        }
-        
-        YKFSCardReleaseContext(context)
-        return
-    }
+```swift    
+/*
+ 1. Establish the context.
+ */
     
-    // Allocated the right buffer size and get the readers.
-    let readers = UnsafeMutablePointer<Int8>.allocate(capacity: Int(readersLength))
-    result = YKFSCardListReaders(context, nil, readers, &readersLength)
+var context: Int32 = 0
+var result: Int64 = 0
     
-    if result != YKF_SCARD_S_SUCCESS {        
-        if result == YKF_SCARD_E_NO_READERS_AVAILABLE {
-            print("Could not list readers. The key is not connected.")
-        } else {
-            print("Could not list readers (\(result)).")
-        }
-        
-        YKFSCardReleaseContext(context)
-        return
-    }
-    print("Reader \(String(cString: readers)) connected.")
+result = YKFSCardEstablishContext(YKF_SCARD_SCOPE_USER, nil, nil, &context)
     
-    readers.deallocate()
+if result != YKF_SCARD_S_SUCCESS {
+	print("Could not establish context.")
+	return
+}
     
-    // Get the status
-    var readerState = YKF_SCARD_READERSTATE()
-    readerState.currentState = YKF_SCARD_STATE_UNAWARE
+/*
+ 2. Get the readers and check for key presence. There is only one in this case.
+ */
     
-    result = YKFSCardGetStatusChange(context, 0, &readerState, 1)
-    if result != YKF_SCARD_S_SUCCESS {
-        print("Could not get status change (\(result)).")
-        
-        YKFSCardReleaseContext(context)
-        return
-    }
-    
-    if readerState.eventState & YKF_SCARD_STATE_PRESENT != 0 {
-        print("The key is not connected.")
-    }
-    
-    /*
-     3. Connect to the key.
-     */
-    
-    var card: Int32 = 0
-    var activeProtocol: UInt32 = YKF_SCARD_PROTOCOL_T1
-    
-    result = YKFSCardConnect(context, readers, YKF_SCARD_SHARE_EXCLUSIVE, YKF_SCARD_PROTOCOL_T1, &card, &activeProtocol)
-    
-    if result != YKF_SCARD_S_SUCCESS {
-        print("Could not connect to the key (\(result)).")
-        
-        YKFSCardReleaseContext(context)
-        return
-    }
-    
-    /*
-     4. Create a reusable buffer.
-     */
-    let transmitRecvBufferMaxSize: UInt32 = 258;
-    let transmitRecvBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(transmitRecvBufferMaxSize))
-    var transmitRecvBufferLength: UInt32 = transmitRecvBufferMaxSize
-    
-    /*
-     5. Send a command.
-     */
-    
-    let command: [UInt8] = [0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08]
-    
-    result = YKFSCardTransmit(card, nil, command, UInt32(selectPIVCommand.count), nil, transmitRecvBuffer, &transmitRecvBufferLength)
-    
-    if result != YKF_SCARD_S_SUCCESS {
-        print("Could not execute command (\(result)).")
-        
-        YKFSCardReleaseContext(context)
-        return
+// Ask for the readers length.
+var readersLength: UInt32 = 0
+
+result = YKFSCardListReaders(context, nil, nil, &readersLength)
+if result != YKF_SCARD_S_SUCCESS || readersLength == 0 {        
+    if result == YKF_SCARD_E_NO_READERS_AVAILABLE {
+        print("Could not ask for readers length. The key is not connected.")
     } else {
-        // Handle the response here.
+        print("Could not ask for readers length (\(result)).")
     }
     
-	/*
-	 6. Clear buffers and release the context.
-	 */
+    YKFSCardReleaseContext(context)
+    return
+}
     
-	transmitRecvBuffer.deallocate()
-	YKFSCardReleaseContext(context)
+// Allocated the right buffer size and get the readers.
+let readers = UnsafeMutablePointer<Int8>.allocate(capacity: Int(readersLength))
+result = YKFSCardListReaders(context, nil, readers, &readersLength)
+    
+if result != YKF_SCARD_S_SUCCESS {        
+    if result == YKF_SCARD_E_NO_READERS_AVAILABLE {
+        print("Could not list readers. The key is not connected.")
+    } else {
+        print("Could not list readers (\(result)).")
+    }
+    
+    YKFSCardReleaseContext(context)
+    return
+}
+print("Reader \(String(cString: readers)) connected.")
+    
+readers.deallocate()
+    
+// Get the status
+var readerState = YKF_SCARD_READERSTATE()
+readerState.currentState = YKF_SCARD_STATE_UNAWARE
+    
+result = YKFSCardGetStatusChange(context, 0, &readerState, 1)
+if result != YKF_SCARD_S_SUCCESS {
+    print("Could not get status change (\(result)).")
+    
+    YKFSCardReleaseContext(context)
+    return
+}
+    
+if readerState.eventState & YKF_SCARD_STATE_PRESENT != 0 {
+    print("The key is not connected.")
+}
+    
+/*
+ 3. Connect to the key.
+ */
+    
+var card: Int32 = 0
+var activeProtocol: UInt32 = YKF_SCARD_PROTOCOL_T1
+    
+result = YKFSCardConnect(context, readers, YKF_SCARD_SHARE_EXCLUSIVE, YKF_SCARD_PROTOCOL_T1, &card, &activeProtocol)
+    
+if result != YKF_SCARD_S_SUCCESS {
+    print("Could not connect to the key (\(result)).")
+    
+    YKFSCardReleaseContext(context)
+    return
+}
+    
+/*
+ 4. Create a reusable buffer.
+ */
+let transmitRecvBufferMaxSize: UInt32 = 258;
+let transmitRecvBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(transmitRecvBufferMaxSize))
+var transmitRecvBufferLength: UInt32 = transmitRecvBufferMaxSize
+    
+/*
+ 5. Send a command.
+ */
+    
+let command: [UInt8] = [0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08]
+    
+result = YKFSCardTransmit(card, nil, command, UInt32(selectPIVCommand.count), nil, transmitRecvBuffer, &transmitRecvBufferLength)
+    
+if result != YKF_SCARD_S_SUCCESS {
+    print("Could not execute command (\(result)).")
+    
+    YKFSCardReleaseContext(context)
+    return
+} else {
+    // Handle the response here.
+}
+    
+/*
+ 6. Clear buffers and release the context.
+ */
+    
+transmitRecvBuffer.deallocate()
+YKFSCardReleaseContext(context)
+```
 
 <a name="integration_steps_3_6"></a>
 #### 2.3.6 FIDO2 operations with the YubiKey 5Ci 
@@ -1036,231 +1060,242 @@ To get a description of the authenticator, the `YKFKeyFIDO2Service` provides the
 
 ##### Objective-C
 
-	#import <YubiKit/YubiKit.h>
-	...
+```objective-c
+#import <YubiKit/YubiKit.h>
+...
 
-	YKFKeyFIDO2Service *fido2Service = YubiKitManager.shared.keySession.fido2Service;
-	if (!fido2Service) {
+YKFKeyFIDO2Service *fido2Service = YubiKitManager.shared.keySession.fido2Service;
+if (!fido2Service) {
+	return;
+}
+
+[fido2Service executeGetInfoRequestWithCompletion:^(YKFKeyFIDO2GetInfoResponse *response, NSError *error) {
+	if (error) {
+		// Handle the error here.
 		return;
-	}
-
-	[fido2Service executeGetInfoRequestWithCompletion:^(YKFKeyFIDO2GetInfoResponse *response, NSError *error) {
-		if (error) {
-			// Handle the error here.
-			return;
-		}        
-		// Handle the response here.
-    }];
+	}        
+	// Handle the response here.
+}];
+```
 
 ##### Swift
 
-	let keySession = YubiKitManager.shared.keySession
+```swift
+let keySession = YubiKitManager.shared.keySession
     
-	guard let fido2Service = keySession.fido2Service else {
+guard let fido2Service = keySession.fido2Service else {
+	return
+}
+
+fido2Service.executeGetInfoRequest { (response, error) in
+	guard error == nil else {
+		// Handle the error here.
 		return
 	}
-
-	fido2Service.executeGetInfoRequest { (response, error) in
-		guard error == nil else {
-			// Handle the error here.
-			return
-		}
-		// Handle the response here.   	     
-	}
+	// Handle the response here.   	     
+}
+```
 
 A new FIDO2 credential can be created by calling `[executeMakeCredentialRequest:completion:]` on the FIDO2 service. The following code will create a new credential with a non-resident ECC key:
  
 ##### Objective-C
 
-	#import <YubiKit/YubiKit.h>
-	...
+```objective-c
+#import <YubiKit/YubiKit.h>
+...
 
-	// Not a resident key and no PIN required.
-	NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2MakeCredentialRequestOptionRK: @(NO),
-                                            YKFKeyFIDO2MakeCredentialRequestOptionUV: @(NO)};
-	NSInteger alg = YKFFIDO2PublicKeyAlgorithmES256;
+// Not a resident key and no PIN required.
+NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2MakeCredentialRequestOptionRK: @(NO),
+                                        YKFKeyFIDO2MakeCredentialRequestOptionUV: @(NO)};
+NSInteger alg = YKFFIDO2PublicKeyAlgorithmES256;
 	
-	YKFKeyFIDO2MakeCredentialRequest *makeCredentialRequest = [[YKFKeyFIDO2MakeCredentialRequest alloc] init];
+YKFKeyFIDO2MakeCredentialRequest *makeCredentialRequest = [[YKFKeyFIDO2MakeCredentialRequest alloc] init];
     
-	// Some example data as a hash.
-	UInt8 *buffer = malloc(32);
-	if (!buffer) {
-		return;
-	}
-	memset(buffer, 0, 32);
-	NSData *data = [NSData dataWithBytes:buffer length:32];
-	free(buffer);
+// Some example data as a hash.
+UInt8 *buffer = malloc(32);
+if (!buffer) {
+	return;
+}
+memset(buffer, 0, 32);
+NSData *data = [NSData dataWithBytes:buffer length:32];
+free(buffer);
     
-	// Set the request clientDataHash.
-	makeCredentialRequest.clientDataHash = data;
+// Set the request clientDataHash.
+makeCredentialRequest.clientDataHash = data;
     
-	// Set the request rp.
-	YKFFIDO2PublicKeyCredentialRpEntity *rp = [[YKFFIDO2PublicKeyCredentialRpEntity alloc] init];
-	rp.rpId = @"yubico.com";
-	rp.rpName = @"Yubico";
-	makeCredentialRequest.rp = rp;
+// Set the request rp.
+YKFFIDO2PublicKeyCredentialRpEntity *rp = [[YKFFIDO2PublicKeyCredentialRpEntity alloc] init];
+rp.rpId = @"yubico.com";
+rp.rpName = @"Yubico";
+makeCredentialRequest.rp = rp;
     
-	// Set the request user.
-	YKFFIDO2PublicKeyCredentialUserEntity *user = [[YKFFIDO2PublicKeyCredentialUserEntity alloc] init];
-	user.userId = data;
-	user.userName = @"john.smith@yubico.com";
-	user.userDisplayName = @"John Smith";
-	makeCredentialRequest.user = user;
+// Set the request user.
+YKFFIDO2PublicKeyCredentialUserEntity *user = [[YKFFIDO2PublicKeyCredentialUserEntity alloc] init];
+user.userId = data;
+user.userName = @"john.smith@yubico.com";
+user.userDisplayName = @"John Smith";
+makeCredentialRequest.user = user;
     
-	// Set the request pubKeyCredParams.
-	YKFFIDO2PublicKeyCredentialParam *param = [[YKFFIDO2PublicKeyCredentialParam alloc] init];
-	param.alg = alg;
-	makeCredentialRequest.pubKeyCredParams = @[param];
+// Set the request pubKeyCredParams.
+YKFFIDO2PublicKeyCredentialParam *param = [[YKFFIDO2PublicKeyCredentialParam alloc] init];
+param.alg = alg;
+makeCredentialRequest.pubKeyCredParams = @[param];
     
-	// Set the request options.
-	makeCredentialRequest.options = makeCredentialOptions;
+// Set the request options.
+makeCredentialRequest.options = makeCredentialOptions;
     
-	YKFKeyFIDO2Service *fido2Service = YubiKitManager.shared.keySession.fido2Service;
-	if (!fido2Service) {
-		return;
-	}
+YKFKeyFIDO2Service *fido2Service = YubiKitManager.shared.keySession.fido2Service;
+if (!fido2Service) {
+	return;
+}
 
-	[fido2Service executeMakeCredentialRequest:makeCredentialRequest completion:^(YKFKeyFIDO2MakeCredentialResponse *response, NSError *error) {
-		if (error) {
-			// Handle the error here.        
-			return;
-		}
-		// Handle the response here.
-	}];
+[fido2Service executeMakeCredentialRequest:makeCredentialRequest completion:^(YKFKeyFIDO2MakeCredentialResponse *response, NSError *error) {
+	if (error) {
+		// Handle the error here.        
+		return;
+	}
+	// Handle the response here.
+}];
+```
 
 ##### Swift
 
-	// Not a resident key and no PIN required.
-	let makeCredentialOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: false, 
-									  YKFKeyFIDO2MakeCredentialRequestOptionUV: false]	
-	let alg = YKFFIDO2PublicKeyAlgorithmES256
+```swift
+// Not a resident key and no PIN required.
+let makeCredentialOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: false, 
+								  YKFKeyFIDO2MakeCredentialRequestOptionUV: false]	
+let alg = YKFFIDO2PublicKeyAlgorithmES256
 	
-	guard let fido2Service = YubiKitManager.shared.keySession.fido2Service else {           
+guard let fido2Service = YubiKitManager.shared.keySession.fido2Service else {           
+	return
+}
+            
+let makeCredentialRequest = YKFKeyFIDO2MakeCredentialRequest()
+    
+// Some example data as a hash.	    
+let data = Data(repeating: 0, count: 32)
+makeCredentialRequest.clientDataHash = data
+    
+// Set the request rp.
+let rp = YKFFIDO2PublicKeyCredentialRpEntity()
+rp.rpId = "yubico.com"
+rp.rpName = "Yubico"
+makeCredentialRequest.rp = rp
+  
+// Set the request user.  
+let user = YKFFIDO2PublicKeyCredentialUserEntity()
+user.userId = data
+user.userName = "john.smith@yubico.com"
+user.userDisplayName = "John Smith"
+makeCredentialRequest.user = user
+	
+// Set the request pubKeyCredParams.
+let param = YKFFIDO2PublicKeyCredentialParam()
+param.alg = alg
+makeCredentialRequest.pubKeyCredParams = [param]
+  
+// Set the request options.
+makeCredentialRequest.options = makeCredentialOptions
+     
+fido2Service.execute(makeCredentialRequest) { (response, error) in
+	guard error == nil else {
+		// Handle the error here. 
 		return
 	}
-	            
-	let makeCredentialRequest = YKFKeyFIDO2MakeCredentialRequest()
-	    
-	// Some example data as a hash.	    
-	let data = Data(repeating: 0, count: 32)
-	makeCredentialRequest.clientDataHash = data
-	    
-	// Set the request rp.
-	let rp = YKFFIDO2PublicKeyCredentialRpEntity()
-	rp.rpId = "yubico.com"
-	rp.rpName = "Yubico"
-	makeCredentialRequest.rp = rp
-	  
-	// Set the request user.  
-	let user = YKFFIDO2PublicKeyCredentialUserEntity()
-	user.userId = data
-	user.userName = "john.smith@yubico.com"
-	user.userDisplayName = "John Smith"
-	makeCredentialRequest.user = user
-	
-	// Set the request pubKeyCredParams.
-	let param = YKFFIDO2PublicKeyCredentialParam()
-	param.alg = alg
-	makeCredentialRequest.pubKeyCredParams = [param]
-	  
-	// Set the request options.
-	makeCredentialRequest.options = makeCredentialOptions
-	     
-	fido2Service.execute(makeCredentialRequest) { (response, error) in
-		guard error == nil else {
-			// Handle the error here. 
-			return
-		}
-     	// Handle the response here.
-	}
+ 	// Handle the response here.
+}
+```
 	
 In FIDO2, during the authentication phase, the Relying Party will ask from the user to approve and provide an assertion from the authenticator (in this case the YubiKey5Ci), after the authenticator was registered as a 2FA method. YubiKit provides the `[executeGetAssertionRequest:completion:]` method on the `YKFKeyFIDO2Service`, which allows to retrieve an assertion from the key:
 
 ##### Objective-C
 
-	#import <YubiKit/YubiKit.h>
-	...
+```objective-c
+#import <YubiKit/YubiKit.h>
+...
 	
-	YKFKeyFIDO2GetAssertionRequest *getAssertionRequest = [[YKFKeyFIDO2GetAssertionRequest alloc] init];
-	    
-	NSDictionary *assertionOptions = @{YKFKeyFIDO2GetAssertionRequestOptionUP: @(YES),
-                                      YKFKeyFIDO2GetAssertionRequestOptionUV: @(NO)};
+YKFKeyFIDO2GetAssertionRequest *getAssertionRequest = [[YKFKeyFIDO2GetAssertionRequest alloc] init];
+    
+NSDictionary *assertionOptions = @{YKFKeyFIDO2GetAssertionRequestOptionUP: @(YES),
+                                  YKFKeyFIDO2GetAssertionRequestOptionUV: @(NO)};
 
-	// Some example data as a hash.	        
-	UInt8 *buffer = malloc(32);
-	if (!buffer) {
-		return;
-	}
-	memset(buffer, 0, 32);
-	NSData *data = [NSData dataWithBytes:buffer length:32];
-	free(buffer);
+// Some example data as a hash.	        
+UInt8 *buffer = malloc(32);
+if (!buffer) {
+	return;
+}
+memset(buffer, 0, 32);
+NSData *data = [NSData dataWithBytes:buffer length:32];
+free(buffer);
 
-	getAssertionRequest.rpId = @"yubico.com";
-	getAssertionRequest.clientDataHash = data;
-	getAssertionRequest.options = assertionOptions;
+getAssertionRequest.rpId = @"yubico.com";
+getAssertionRequest.clientDataHash = data;
+getAssertionRequest.options = assertionOptions;
 	
-	// Set the credential to get the assertion for.
-	YKFFIDO2PublicKeyCredentialDescriptor *credentialDescriptor = [[YKFFIDO2PublicKeyCredentialDescriptor alloc] init];
+// Set the credential to get the assertion for.
+YKFFIDO2PublicKeyCredentialDescriptor *credentialDescriptor = [[YKFFIDO2PublicKeyCredentialDescriptor alloc] init];
 	
-	// This credential ID was generated by the key when the credential was added/registered.
-	// The RP should store this and provide this back to the client during authentication.
-	credentialDescriptor.credentialId = <credential ID>;
-	    
-	YKFFIDO2PublicKeyCredentialType *credType = [[YKFFIDO2PublicKeyCredentialType alloc] init];
-	credType.name = @"public-key";
-	credentialDescriptor.credentialType = credType;
-	    
-	getAssertionRequest.allowList = @[credentialDescriptor];
+// This credential ID was generated by the key when the credential was added/registered.
+// The RP should store this and provide this back to the client during authentication.
+credentialDescriptor.credentialId = <credential ID>;
+    
+YKFFIDO2PublicKeyCredentialType *credType = [[YKFFIDO2PublicKeyCredentialType alloc] init];
+credType.name = @"public-key";
+credentialDescriptor.credentialType = credType;
+    
+getAssertionRequest.allowList = @[credentialDescriptor];
 	
-	// Execute the Get Assertion request.
+// Execute the Get Assertion request.
 	
-	YKFKeyFIDO2Service *fido2Service = YubiKitManager.shared.keySession.fido2Service;
-	if (!fido2Service) {
+YKFKeyFIDO2Service *fido2Service = YubiKitManager.shared.keySession.fido2Service;
+if (!fido2Service) {
+	return;
+}
+[fido2Service executeGetAssertionRequest:getAssertionRequest completion:^(YKFKeyFIDO2GetAssertionResponse * response, NSError *error) {
+	if (error) {
+		// Handle the error here.		
 		return;
-	}
-	[fido2Service executeGetAssertionRequest:getAssertionRequest completion:^(YKFKeyFIDO2GetAssertionResponse * response, NSError *error) {
-		if (error) {
-			// Handle the error here.		
-			return;
-		}	
-     	// Handle the response here.	  
-	}];
+	}	
+ 	// Handle the response here.	  
+}];
+```
 
 ##### Swift
 
-	let assertionOptions = [YKFKeyFIDO2GetAssertionRequestOptionUP: true,
-                           YKFKeyFIDO2GetAssertionRequestOptionUV: false]
+```swift
+let assertionOptions = [YKFKeyFIDO2GetAssertionRequestOptionUP: true,
+                       YKFKeyFIDO2GetAssertionRequestOptionUV: false]
 
-	let getAssertionRequest = YKFKeyFIDO2GetAssertionRequest()
-	    
-	getAssertionRequest.rpId = "yubico.com"
-	getAssertionRequest.clientDataHash = data
-	getAssertionRequest.options = assertionOptions
-	    
-	let credentialDescriptor = YKFFIDO2PublicKeyCredentialDescriptor()
+let getAssertionRequest = YKFKeyFIDO2GetAssertionRequest()
+    
+getAssertionRequest.rpId = "yubico.com"
+getAssertionRequest.clientDataHash = data
+getAssertionRequest.options = assertionOptions
+    
+let credentialDescriptor = YKFFIDO2PublicKeyCredentialDescriptor()
 	
-	// This credential ID was generated by the key when the credential was added/registered.
-	// The RP should store this and provide this back to the client during authentication.
-	credentialDescriptor.credentialId = <credential ID>
+// This credential ID was generated by the key when the credential was added/registered.
+// The RP should store this and provide this back to the client during authentication.
+credentialDescriptor.credentialId = <credential ID>
 	
-	let credType = YKFFIDO2PublicKeyCredentialType()
-	credType.name = "public-key"
-	credentialDescriptor.credentialType = credType
-	getAssertionRequest.allowList = [credentialDescriptor]
+let credType = YKFFIDO2PublicKeyCredentialType()
+credType.name = "public-key"
+credentialDescriptor.credentialType = credType
+getAssertionRequest.allowList = [credentialDescriptor]
 
-	// Execute the Get Assertion request.
+// Execute the Get Assertion request.
 	
-	guard let fido2Service = YubiKitManager.shared.keySession.fido2Service else {
-		return
+guard let fido2Service = YubiKitManager.shared.keySession.fido2Service else {
+	return
+}
+fido2Service.execute(getAssertionRequest) { (response, error) in
+	guard error == nil else {
+		// Handle the error here.
+   		return
 	}
-	fido2Service.execute(getAssertionRequest) { (response, error) in
-		guard error == nil else {
-			// Handle the error here.
-	   		return
-		}
-     	// Handle the response here.		    
-	}
-
+ 	// Handle the response here.		    
+}
+```
 
 The FIDO2 standard defines the ability to set a PIN on the authenticator. In this way an additional level of security can be enabled for certain operations with the key. By default the YubiKey has no PIN set on the FIDO2 application. The PIN can be any alphanumeric combination (between 4 and 255 UTF8 encoded characters). Once the PIN is set on the FIDO2 application, it can be only changed but not removed. The only way to remove the PIN is by resetting the FIDO2 application. Keep in mind that the Reset operation is destructive and all the keys will be removed as well.
 
@@ -1272,49 +1307,53 @@ To verify the PIN, the FIDO2 Service provides the `[executeVerifyPinRequest:comp
 
 ##### Objective-C
 
-    YKFKeyFIDO2Service *fido2Service = YubiKitManager.shared.keySession.fido2Service;
-    if (!fido2Service) {
-        // The session with the key is closed.
+```objective-c
+YKFKeyFIDO2Service *fido2Service = YubiKitManager.shared.keySession.fido2Service;
+if (!fido2Service) {
+    // The session with the key is closed.
+    return;
+}
+    
+NSString *pin = @"some value";
+YKFKeyFIDO2VerifyPinRequest *verifyPinRequest = [[YKFKeyFIDO2VerifyPinRequest alloc] initWithPin:pin];
+if (!verifyPinRequest) {
+    // PIN is empty.
+    return;
+}
+    
+[fido2Service executeVerifyPinRequest:verifyPinRequest completion:^(NSError *error) {
+    if (error) {
+        // The key failed to process the request or the PIN was invalid.
+        // Check the error code and the description to see the reason.
         return;
     }
-    
-    NSString *pin = @"some value";
-    YKFKeyFIDO2VerifyPinRequest *verifyPinRequest = [[YKFKeyFIDO2VerifyPinRequest alloc] initWithPin:pin];
-    if (!verifyPinRequest) {
-        // PIN is empty.
-        return;
-    }
-    
-    [fido2Service executeVerifyPinRequest:verifyPinRequest completion:^(NSError *error) {
-        if (error) {
-            // The key failed to process the request or the PIN was invalid.
-            // Check the error code and the description to see the reason.
-            return;
-        }
-        // The PIN verification was successful. Proceed with the other requests.
-    }];
+    // The PIN verification was successful. Proceed with the other requests.
+}];
+```
 
 ##### Swift
 
-	let keySession = YubiKitManager.shared.keySession
-	guard let fido2Service = keySession.fido2Service else {
-		// The session with the key is closed.
-    	return
-	}
+```swift
+let keySession = YubiKitManager.shared.keySession
+guard let fido2Service = keySession.fido2Service else {
+	// The session with the key is closed.
+	return
+}
     
-	let pin = "some value"
-	guard let verifyPinRequest = YKFKeyFIDO2VerifyPinRequest(pin: pin) else {
-   		// PIN is empty.
-    	return
+let pin = "some value"
+guard let verifyPinRequest = YKFKeyFIDO2VerifyPinRequest(pin: pin) else {
+	// PIN is empty.
+	return
+}
+fido2Service.execute(verifyPinRequest) { (error) in
+	guard error == nil else {
+		// The key failed to process the request or the PIN was invalid.
+		// Check the error code and the description to see the reason.
+		return
 	}
-	fido2Service.execute(verifyPinRequest) { (error) in
-		guard error == nil else {
-			// The key failed to process the request or the PIN was invalid.
-			// Check the error code and the description to see the reason.
-			return
-		}
-		// The PIN verification was successful. Proceed with the other requests.
-	}
+	// The PIN verification was successful. Proceed with the other requests.
+}
+```
 
 YubiKit provides also the ability set and change the PIN. The requests are very similar to the PIN verification and a complete example is implemented in the YubiKit Demo application, `FIDO2DemoViewController`.
 
@@ -1329,7 +1368,6 @@ YubiKit provides also the ability set and change the PIN. The requests are very 
 3. After changing the PIN, a new PIN verification is required. 
 
 ---
-
 
 The YubiKit Demo application provides detailed demos on how to use the FIDO2 functionality of the library: 
 
@@ -1348,15 +1386,19 @@ One example of a localised string is the message shown in the NFC scanning UI wh
 
 ##### Objective-C
 
-	#import <YubiKit/YubiKit.h>
-	...
-	NSString *localizedAlertMessage = NSLocalizedString(@"NFC_SCAN_MESSAGE", @"Scan your YubiKey.");
-	YubiKitExternalLocalization.nfcScanAlertMessage = localizedNfcScanAlertMessage;
+```objective-c
+#import <YubiKit/YubiKit.h>
+...
+NSString *localizedAlertMessage = NSLocalizedString(@"NFC_SCAN_MESSAGE", @"Scan your YubiKey.");
+YubiKitExternalLocalization.nfcScanAlertMessage = localizedNfcScanAlertMessage;
+```
 	
 ##### Swift
 
-	let localizedAlertMessage = NSLocalizedString("NFC_SCAN_MESSAGE", comment: "Scan your YubiKey.")
-	YubiKitExternalLocalization.nfcScanAlertMessage = localizedAlertMessage
+```swift
+let localizedAlertMessage = NSLocalizedString("NFC_SCAN_MESSAGE", comment: "Scan your YubiKey.")
+YubiKitExternalLocalization.nfcScanAlertMessage = localizedAlertMessage
+```
 
 For all the available properties and their use look at the code documentation for `YubiKitExternalLocalization`.
 
@@ -1375,24 +1417,28 @@ Here is an example of how to set a custom URI parser:
 
 ##### Objective-C
 	
-	#import <YubiKit/YubiKit.h>
-	...	
-	@interface CustomURIParser: NSObject<YKFOTPURIParserProtocol>
-	@end
+```objective-c	
+#import <YubiKit/YubiKit.h>
+...	
+@interface CustomURIParser: NSObject<YKFOTPURIParserProtocol>
+@end
 	
-	@implementation CustomURIParser
-		// Custom parser implementation
-	@end	
-	...
-	YubiKitConfiguration.customOTPURIParser = [[CustomURIParser alloc] init];
+@implementation CustomURIParser
+	// Custom parser implementation
+@end	
+...
+YubiKitConfiguration.customOTPURIParser = [[CustomURIParser alloc] init];
+```
 
 ##### Swift
 
-	class CustomURIParser: YKFOTPURIParserProtocol {    
-		// Custom parser implementation
-	}
-	...
-	YubiKitConfiguration.customOTPURIParser = CustomURIParser()
+```swift
+class CustomURIParser: YKFOTPURIParserProtocol {    
+	// Custom parser implementation
+}
+...
+YubiKitConfiguration.customOTPURIParser = CustomURIParser()
+```
 
 <a name="using_demo"></a>
 ## 4. Using the demo application

@@ -1,7 +1,5 @@
 # Quick Start Guide
 
---
-
 This guide provides a few steps to follow before starting with YubiKit and the YubiKey for Lightning:
 
 1. YubiKit requires a physical key to test its features. Before running the demo app you need a NFC-Enabled YubiKey (Neo or YK 5 NFC) to test the NFC functionality and a YubiKey for Lightning to use the lightning demos from the application.

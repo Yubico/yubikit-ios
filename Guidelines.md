@@ -4,7 +4,7 @@ This document was written to provide a few recommendations about integrating Yub
 
 This document is focused on iOS but some of these techniques may have analogies in other technologies as well.
 
-## 1. Using OTPs for 2FA.
+## 1. Using OTPs for 2FA
 
 The OTP received from the YubiKey can be used as a second verification method inside a [Two Factor Authentication (2FA)](https://en.wikipedia.org/wiki/Multi-factor_authentication) flow. In such a flow the OTP can replace traditional 2FA methods like SMS, security questions, hardware tokens etc. and provides a faster yet more secure way or verifying the user identity.
 
@@ -23,7 +23,7 @@ The authentication in this scenario is very similar with the NFC scanning. The o
 
 To simplify the design, the desktop/web app can ask the user to authenticate with the YubiKey (OTP, U2F, etc.) and then use again the YubiKey to generate a OTP which is encoded in the QR Code. In this case a unified design for the enrolment APIs from the server can be used, where the OTP source is considered secure, as long as a YubiKey was used in the process.
 
-## 2. Using Yubico OTP as 1FA.
+## 2. Using Yubico OTP as 1FA
 
 In some scenarios, using the [Yubico OTP](https://developers.yubico.com/OTP/) over other OTP types can reduce friction by creating more efficient authentication flows. The Yubico OTP is [more powerful](https://www.yubico.com/products/services-software/personalization-tools/yubikey-otp/) compared to other OTPs because it contains additional information about the device, like the Public ID. The Public ID can be used to perform a lookup for an account removing the initial step of entering the credentials. This scenario is limited to systems where the users already have an account and they can access the account by other means (like a web portal).
 
@@ -127,252 +127,256 @@ Apple provides some documents on how to use the Secure Enclave and the keychain 
 
 Next, the document contains some snippets on how to generate and sign some data using the Secure Enclave in Swift 4, to provide an example on how to use the Secure Enclave APIs.
 
-### SecureEnclaveService.swift
+### SecureEnclaveService
 
-	import Foundation
-	import Security
+```swift
+import Foundation
+import Security
 
-	class SecureEnclaveService: NSObject {
+class SecureEnclaveService: NSObject {
     
-		private var secureEnclaveKeyType: CFString {
-	        get {
-	            if #available(iOS 10, *) {
-	                return kSecAttrKeyTypeECSECPrimeRandom
-	            } else {
-	                return kSecAttrKeyTypeEC
-	            }
-	        }
-	    }
-	    
-	    // MARK: Key lifecycle
-	    
-	    func createSecureEnclaveKeyPair(withIdentifier identifier: AsymmetricKeyIdentifier) throws {
-	        
-	        // .userPresence will force the user to enter TouchID or Passcode before using the key for crytographic operations like signing.
-	        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly, [.privateKeyUsage, .userPresence], nil)!
-	        
-	        // Private key parameters
-	        let privateKeyParams: [String: Any] = [kSecAttrLabel as String: identifier.privateKeyTag,
-	                                               kSecAttrIsPermanent as String: true, // The private key is stored in the SE permanently
-	                                               kSecAttrApplicationTag as String: identifier.applicationTag,
-	                                               kSecAttrAccessControl as String: access]
-	        
-	        // Public key parameters
-	        let publicKeyParams: [String: Any] = [kSecAttrLabel as String: identifier.publicKeyTag,
-	                                              kSecAttrIsPermanent as String: true, // The public key is also stored permanently in the SE
-	                                              kSecAttrApplicationTag as String: identifier.applicationTag]
-	        // Parameters
-	        let parameters: [String: Any] = [kSecAttrKeyType as String: secureEnclaveKeyType,
-	                                         kSecAttrKeySizeInBits as String: 256,
-	                                         kSecAttrTokenID as String: kSecAttrTokenIDSecureEnclave,
-	                                         kSecPublicKeyAttrs as String: publicKeyParams,
-	                                         kSecPrivateKeyAttrs as String: privateKeyParams]
-	        
-	        var error: Unmanaged<CFError>?
-	        let privateKey = SecKeyCreateRandomKey(parameters as CFDictionary, &error)
-	        
-	        guard error == nil else {
-	            let returnedError = (error!.takeRetainedValue() as Error) as NSError
-	            throw SecureEnclaveError(withCode: returnedError.code)
-	        }
-	        assert(privateKey != nil)
-	    }
-	    
-	    func deleteSecureEnclaveKeyPair(withIdentifier identifier: AsymmetricKeyIdentifier) throws {
-	        let publicKeyQuery = queryForPublicKey(withIdentifier: identifier)
-	        let privateKeyQuery = queryForPrivateKey(withIdentifier: identifier)
-	        
-	        var status = SecItemDelete(publicKeyQuery as CFDictionary)
-	        guard status == errSecSuccess else {
-	            throw SecureEnclaveError(withCode: Int(status))
-	        }
-	        
-	        status = SecItemDelete(privateKeyQuery as CFDictionary)
-	        guard status == errSecSuccess else {
-	            throw SecureEnclaveError(withCode: Int(status))
-	        }
-	    }
-	    
-	    // MARK - Public key
-	    
-	    func getPublicKey(forIdentifier identifier: AsymmetricKeyIdentifier) throws -> SecKey {
-	        let publicKeyQuery = queryForPublicKey(withIdentifier: identifier)
-	        
-	        var result: CFTypeRef?
-	        let status = SecItemCopyMatching(publicKeyQuery as CFDictionary, &result)
-	        
-	        guard status == errSecSuccess else {
-	            throw SecureEnclaveError(withCode: Int(status))
-	        }
-	        
-	        assert(result != nil)
-	        return result! as! SecKey
-	    }
+	private var secureEnclaveKeyType: CFString {
+        get {
+            if #available(iOS 10, *) {
+                return kSecAttrKeyTypeECSECPrimeRandom
+            } else {
+                return kSecAttrKeyTypeEC
+            }
+        }
+    }
+    
+    // MARK: - Key lifecycle
+    
+    func createSecureEnclaveKeyPair(withIdentifier identifier: AsymmetricKeyIdentifier) throws {
+        
+        // .userPresence will force the user to enter TouchID or Passcode before using the key for crytographic operations like signing.
+        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly, [.privateKeyUsage, .userPresence], nil)!
+        
+        // Private key parameters
+        let privateKeyParams: [String: Any] = [kSecAttrLabel as String: identifier.privateKeyTag,
+                                               kSecAttrIsPermanent as String: true, // The private key is stored in the SE permanently
+                                               kSecAttrApplicationTag as String: identifier.applicationTag,
+                                               kSecAttrAccessControl as String: access]
+        
+        // Public key parameters
+        let publicKeyParams: [String: Any] = [kSecAttrLabel as String: identifier.publicKeyTag,
+                                              kSecAttrIsPermanent as String: true, // The public key is also stored permanently in the SE
+                                              kSecAttrApplicationTag as String: identifier.applicationTag]
+        // Parameters
+        let parameters: [String: Any] = [kSecAttrKeyType as String: secureEnclaveKeyType,
+                                         kSecAttrKeySizeInBits as String: 256,
+                                         kSecAttrTokenID as String: kSecAttrTokenIDSecureEnclave,
+                                         kSecPublicKeyAttrs as String: publicKeyParams,
+                                         kSecPrivateKeyAttrs as String: privateKeyParams]
+        
+        var error: Unmanaged<CFError>?
+        let privateKey = SecKeyCreateRandomKey(parameters as CFDictionary, &error)
+        
+        guard error == nil else {
+            let returnedError = (error!.takeRetainedValue() as Error) as NSError
+            throw SecureEnclaveError(withCode: returnedError.code)
+        }
+        assert(privateKey != nil)
+    }
+    
+    func deleteSecureEnclaveKeyPair(withIdentifier identifier: AsymmetricKeyIdentifier) throws {
+        let publicKeyQuery = queryForPublicKey(withIdentifier: identifier)
+        let privateKeyQuery = queryForPrivateKey(withIdentifier: identifier)
+        
+        var status = SecItemDelete(publicKeyQuery as CFDictionary)
+        guard status == errSecSuccess else {
+            throw SecureEnclaveError(withCode: Int(status))
+        }
+        
+        status = SecItemDelete(privateKeyQuery as CFDictionary)
+        guard status == errSecSuccess else {
+            throw SecureEnclaveError(withCode: Int(status))
+        }
+    }
+    
+    // MARK: - Public key
+    
+    func getPublicKey(forIdentifier identifier: AsymmetricKeyIdentifier) throws -> SecKey {
+        let publicKeyQuery = queryForPublicKey(withIdentifier: identifier)
+        
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(publicKeyQuery as CFDictionary, &result)
+        
+        guard status == errSecSuccess else {
+            throw SecureEnclaveError(withCode: Int(status))
+        }
+        
+        assert(result != nil)
+        return result! as! SecKey
+    }
 	
-	    func getPublicKeyExternalRepresentation(forIdentifier identifier: AsymmetricKeyIdentifier) throws -> Data {
-	        let publicKeyQuery = queryForPublicKey(withIdentifier: identifier)
-	        
-	        var result: CFTypeRef?
-	        let status = SecItemCopyMatching(publicKeyQuery as CFDictionary, &result)
-	        
-	        guard status == errSecSuccess else {
-	            throw SecureEnclaveError(withCode: Int(status))
-	        }
-	        
-	        assert(result != nil)
-	        let key = result! as! SecKey
-	        
-	        var error: Unmanaged<CFError>?
-	        guard let keyData = SecKeyCopyExternalRepresentation(key, &error) as Data? else {
-	            let returnedError = (error!.takeRetainedValue() as Error) as NSError
-	            let secureEnclaveError = SecureEnclaveError(withCode: returnedError.code, description: returnedError.localizedDescription)
-	            throw secureEnclaveError
-	        }
-	        
-	        return keyData
-	    }
-	    
-	    func isPublicKeyAvailable(forIdentifier identifier: AsymmetricKeyIdentifier) -> Bool {
-	        let publicKeyQuery = queryForPublicKey(withIdentifier: identifier)
-	        
-	        var result: CFTypeRef?
-	        let status = SecItemCopyMatching(publicKeyQuery as CFDictionary, &result)
-	        
-	        return status == errSecSuccess
-	    }
-	    
-	    // MARK - Private key
-	    
-	    func getPrivateKey(forIdentifier identifier: AsymmetricKeyIdentifier) throws -> SecKey {
-	        let privateKeyQuery = queryForPrivateKey(withIdentifier: identifier)
-	        
-	        var result: CFTypeRef?
-	        let status = SecItemCopyMatching(privateKeyQuery as CFDictionary, &result)
-	        
-	        guard status == errSecSuccess else {
-	            throw SecureEnclaveError(withCode: Int(status))
-	        }
-	        
-	        assert(result != nil)
-	        return result! as! SecKey
-	    }
-	    
-	    // MARK - Signature
-	    
-	    func sign(data: Data, withKeyIdentifier identifier: AsymmetricKeyIdentifier) throws -> Data {
-	        let privateKey = try getPrivateKey(forIdentifier: identifier)
-	        
-	        var error: Unmanaged<CFError>?
-	        let signature = SecKeyCreateSignature(privateKey, .ecdsaSignatureMessageX962SHA256, data as CFData, &error) as Data?
+    func getPublicKeyExternalRepresentation(forIdentifier identifier: AsymmetricKeyIdentifier) throws -> Data {
+        let publicKeyQuery = queryForPublicKey(withIdentifier: identifier)
+        
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(publicKeyQuery as CFDictionary, &result)
+        
+        guard status == errSecSuccess else {
+            throw SecureEnclaveError(withCode: Int(status))
+        }
+        
+        assert(result != nil)
+        let key = result! as! SecKey
+        
+        var error: Unmanaged<CFError>?
+        guard let keyData = SecKeyCopyExternalRepresentation(key, &error) as Data? else {
+            let returnedError = (error!.takeRetainedValue() as Error) as NSError
+            let secureEnclaveError = SecureEnclaveError(withCode: returnedError.code, description: returnedError.localizedDescription)
+            throw secureEnclaveError
+        }
+        
+        return keyData
+    }
+    
+    func isPublicKeyAvailable(forIdentifier identifier: AsymmetricKeyIdentifier) -> Bool {
+        let publicKeyQuery = queryForPublicKey(withIdentifier: identifier)
+        
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(publicKeyQuery as CFDictionary, &result)
+        
+        return status == errSecSuccess
+    }
+    
+    // MARK: - Private key
+    
+    func getPrivateKey(forIdentifier identifier: AsymmetricKeyIdentifier) throws -> SecKey {
+        let privateKeyQuery = queryForPrivateKey(withIdentifier: identifier)
+        
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(privateKeyQuery as CFDictionary, &result)
+        
+        guard status == errSecSuccess else {
+            throw SecureEnclaveError(withCode: Int(status))
+        }
+        
+        assert(result != nil)
+        return result! as! SecKey
+    }
+    
+    // MARK: - Signature
+    
+    func sign(data: Data, withKeyIdentifier identifier: AsymmetricKeyIdentifier) throws -> Data {
+        let privateKey = try getPrivateKey(forIdentifier: identifier)
+        
+        var error: Unmanaged<CFError>?
+        let signature = SecKeyCreateSignature(privateKey, .ecdsaSignatureMessageX962SHA256, data as CFData, &error) as Data?
 	
-	        guard error == nil else {
-	            let returnedError = (error!.takeRetainedValue() as Error) as NSError
-	            throw SecureEnclaveError(withCode: returnedError.code, description: returnedError.localizedDescription)
-	        }
-	        
-	        guard signature != nil else {
-	            throw SecureEnclaveError(withCode:Int(errSecItemNotFound))
-	        }
-	        
-	        assert(signature != nil)
-	        return signature!
-	    }
-	    
-	    func verifySignature(data: Data, signatureData: Data, withKeyIdentifier identifier: AsymmetricKeyIdentifier) throws -> Bool {
-	        let publicKey = try getPublicKey(forIdentifier: identifier)
-	        
-	        var error: Unmanaged<CFError>?
-	        let status = SecKeyVerifySignature(publicKey, .ecdsaSignatureMessageX962SHA256, data as CFData, signatureData as CFData, &error)
+        guard error == nil else {
+            let returnedError = (error!.takeRetainedValue() as Error) as NSError
+            throw SecureEnclaveError(withCode: returnedError.code, description: returnedError.localizedDescription)
+        }
+        
+        guard signature != nil else {
+            throw SecureEnclaveError(withCode:Int(errSecItemNotFound))
+        }
+        
+        assert(signature != nil)
+        return signature!
+    }
+    
+    func verifySignature(data: Data, signatureData: Data, withKeyIdentifier identifier: AsymmetricKeyIdentifier) throws -> Bool {
+        let publicKey = try getPublicKey(forIdentifier: identifier)
+        
+        var error: Unmanaged<CFError>?
+        let status = SecKeyVerifySignature(publicKey, .ecdsaSignatureMessageX962SHA256, data as CFData, signatureData as CFData, &error)
 	
-	        guard error == nil else {
-	            let returnedError = (error!.takeRetainedValue() as Error) as NSError
-	            throw SecureEnclaveError(withCode: returnedError.code, description: returnedError.localizedDescription)
-	        }
-	                
-	        return status
-	    }
-	        
-	    // MARK: Query
-	    
-	    private func queryForPublicKey(withIdentifier identifier: AsymmetricKeyIdentifier) -> [String: Any] {
-	        let publicKeyQuery: [String: Any] = [kSecClass as String: kSecClassKey,
-	                                             kSecAttrKeyType as String: secureEnclaveKeyType,
-	                                             kSecAttrApplicationTag as String: identifier.applicationTag,
-	                                             kSecAttrLabel as String: identifier.publicKeyTag,
-	                                             kSecAttrKeyClass as String: kSecAttrKeyClassPublic,
-	                                             kSecReturnRef as String: true]
-	        return publicKeyQuery
-	    }
-	    
-	    private func queryForPrivateKey(withIdentifier identifier: AsymmetricKeyIdentifier) -> [String: Any] {
-	        // Note: If the dictionary has the (kSecReturnData as String: true) flag enabled when debugging
-	        // the private key data should be empty because it should not be accessible ouside the SE.
-	        let publicKeyQuery: [String: Any] = [kSecClass as String: kSecClassKey,
-	                                             kSecAttrKeyType as String: secureEnclaveKeyType,
-	                                             kSecAttrApplicationTag as String: identifier.applicationTag,
-	                                             kSecAttrLabel as String: identifier.privateKeyTag,
-	                                             kSecAttrKeyClass as String: kSecAttrKeyClassPrivate,
-	                                             kSecReturnRef as String: true]
-	        return publicKeyQuery
-	    }
-	}
+        guard error == nil else {
+            let returnedError = (error!.takeRetainedValue() as Error) as NSError
+            throw SecureEnclaveError(withCode: returnedError.code, description: returnedError.localizedDescription)
+        }
+                
+        return status
+    }
+        
+    // MARK: - Query
+    
+    private func queryForPublicKey(withIdentifier identifier: AsymmetricKeyIdentifier) -> [String: Any] {
+        let publicKeyQuery: [String: Any] = [kSecClass as String: kSecClassKey,
+                                             kSecAttrKeyType as String: secureEnclaveKeyType,
+                                             kSecAttrApplicationTag as String: identifier.applicationTag,
+                                             kSecAttrLabel as String: identifier.publicKeyTag,
+                                             kSecAttrKeyClass as String: kSecAttrKeyClassPublic,
+                                             kSecReturnRef as String: true]
+        return publicKeyQuery
+    }
+    
+    private func queryForPrivateKey(withIdentifier identifier: AsymmetricKeyIdentifier) -> [String: Any] {
+        // Note: If the dictionary has the (kSecReturnData as String: true) flag enabled when debugging
+        // the private key data should be empty because it should not be accessible ouside the SE.
+        let publicKeyQuery: [String: Any] = [kSecClass as String: kSecClassKey,
+                                             kSecAttrKeyType as String: secureEnclaveKeyType,
+                                             kSecAttrApplicationTag as String: identifier.applicationTag,
+                                             kSecAttrLabel as String: identifier.privateKeyTag,
+                                             kSecAttrKeyClass as String: kSecAttrKeyClassPrivate,
+                                             kSecReturnRef as String: true]
+        return publicKeyQuery
+    }
+}
+```
 
-### AsymmetricKeyIdentifier.swift
+### AsymmetricKeyIdentifier
 
-	import Foundation
+```swift
+import Foundation
 	
-	public class AsymmetricKeyIdentifier: NSObject {
-	    
-	    static let privateSuffix = "Private"
-	    static let publicSuffix = "Public"
-	    static let appSuffix = "App"
-	    
-	    private(set) var privateKeyTag: String
-	    private(set) var publicKeyTag: String
-	    private(set) var applicationTag: String
-	    
-	    init(privateKeyTag prKeyTag: String, publicKeyTag pbKeyTag:String, applicationTag appTag:String) {
-	        assert(prKeyTag.count > 0)
-	        assert(pbKeyTag.count > 0)
-	        assert(appTag.count > 0)
-	        
-	        privateKeyTag = prKeyTag
-	        publicKeyTag = pbKeyTag
-	        applicationTag = appTag
-	        
-	        super.init()
-	    }
-	    
-	    convenience init(withLabel label: String) {
-	        assert(label.count > 0)
-	        
-	        let privateKeyTag = label + AsymmetricKeyIdentifier.privateSuffix
-	        let publicKeyTag = label + AsymmetricKeyIdentifier.publicSuffix
-	        let applicationTag = label + AsymmetricKeyIdentifier.appSuffix
-	        
-	        self.init(privateKeyTag: privateKeyTag, publicKeyTag: publicKeyTag, applicationTag: applicationTag)
-	    }
-	}
+public class AsymmetricKeyIdentifier: NSObject {
+    
+    static let privateSuffix = "Private"
+    static let publicSuffix = "Public"
+    static let appSuffix = "App"
+    
+    private(set) var privateKeyTag: String
+    private(set) var publicKeyTag: String
+    private(set) var applicationTag: String
+    
+    init(privateKeyTag prKeyTag: String, publicKeyTag pbKeyTag:String, applicationTag appTag:String) {
+        assert(prKeyTag.count > 0)
+        assert(pbKeyTag.count > 0)
+        assert(appTag.count > 0)
+        
+        privateKeyTag = prKeyTag
+        publicKeyTag = pbKeyTag
+        applicationTag = appTag
+        
+        super.init()
+    }
+    
+    convenience init(withLabel label: String) {
+        assert(label.count > 0)
+        
+        let privateKeyTag = label + AsymmetricKeyIdentifier.privateSuffix
+        let publicKeyTag = label + AsymmetricKeyIdentifier.publicSuffix
+        let applicationTag = label + AsymmetricKeyIdentifier.appSuffix
+        
+        self.init(privateKeyTag: privateKeyTag, publicKeyTag: publicKeyTag, applicationTag: applicationTag)
+    }
+}
+```
 
-### SecureEnclaveError.swift	
+### SecureEnclaveError
+
+```swift	
+import Foundation
 	
-	import Foundation
-	
-	public class SecureEnclaveError: NSError {
-	    
-	    public static let SecureEnclaveErrorDomain = "SecureEnclaveError"
-	    
-	    public init(withCode code: Int, description: String) {
-	        super.init(domain:SecureEnclaveError.SecureEnclaveErrorDomain , code: code, userInfo: [NSLocalizedDescriptionKey : description])
-	    }
-	    
-	    convenience init(withCode code: Int) {
-	        self.init(withCode: code, description: "")
-	    }
-	    
-	    public required init?(coder aDecoder: NSCoder) {
-	        super.init(coder: aDecoder)
-	    }
-	}
-
-
+public class SecureEnclaveError: NSError {
+    
+    public static let SecureEnclaveErrorDomain = "SecureEnclaveError"
+    
+    public init(withCode code: Int, description: String) {
+        super.init(domain:SecureEnclaveError.SecureEnclaveErrorDomain , code: code, userInfo: [NSLocalizedDescriptionKey : description])
+    }
+    
+    convenience init(withCode code: Int) {
+        self.init(withCode: code, description: "")
+    }
+    
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+}
+```

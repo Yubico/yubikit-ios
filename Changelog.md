@@ -1,4 +1,4 @@
-#YubiKit Changelog
+# YubiKit Changelog
 
 #### 2.0.0 RC1 [2.0.0 B8 -> 2.0.0 RC1]
 
@@ -24,6 +24,8 @@
 	
 - Several internal library improvements related to: debug assertions, unit testability and performance.
 
+---
+
 #### 2.0.0 B8 [2.0.0 B7 -> 2.0.0 B8]
 
 - The YubiKit Demo application was updated to Xcode 10.2 and Swift 5. This version (or newer) of Xcode is required to compile and run the application.
@@ -44,6 +46,8 @@
 
 - The YubiKit Demo application includes two reusable helper classes, `KeySessionObserver` and `FIDO2ServiceObserver` in `Examples/Observers`, which show an example on how to translate from a KVO observation pattern to a delegate pattern, when a delegate pattern is preferred for the target application.
 
+---
+
 #### 2.0.0 B7 [2.0.0 B6 -> 2.0.0 B7]
 
 - This version adds compatibility with the hardware Rev2 of the YubiKey 5Ci. This includes support for CTAP2/FIDO2 requests against the key with some limitations (PIN authentication not supported yet by the library). Note that this new functionality is not supported by the hardware Rev1 devices. To determine the hardware revision, run the demo application (wireless debugging enabled) and insert the key. The application will show in the console logs the information about the accessory, including the hardware revision.
@@ -53,6 +57,8 @@
 - Minor bug fixes and improved session handling when multiple applications try to access the key concurrently.
 
 - For more details on how to use these new interfaces check the documentation from *Readme.md*.
+
+---
 
 #### 2.0.0 B6 [2.0.0 B5 -> 2.0.0 B6]
 
@@ -66,6 +72,7 @@
 
 - Minor updates to the YubiKit Demo application and bug fixes.
 
+---
 
 #### 2.0.0 B5 [2.0.0 B4 -> 2.0.0 B5]
 
@@ -75,6 +82,8 @@ The `YKFKeySession` provides the ability to check if the key is connected to the
 - The YubiKit Demo application has been updated to provide a demo for the raw interface when using the sync API from `YKFKeyRawCommandService`.
 
 - The YubiKit Demo application was improved for iPad. Now the application allows to test the OTP reading using the YubiKey for Lightning when the device does not support NFC reading. The application has an improved UI for the Lightning action sheet which can be easier reused.
+
+---
 
 #### 2.0.0 B4 [2.0.0 B3 -> 2.0.0 B4]
 
@@ -86,6 +95,8 @@ The `YKFKeySession` provides the ability to check if the key is connected to the
 
 - For more details on how to use these new interfaces check the documentation from *Readme.md*.
 
+---
+
 #### 2.0.0 B3 [2.0.0 B2 -> 2.0.0 B3]
 
 - The `YKFKeySession` is exposing a new service for OATH credentials, `oathService`. The OATH service allows to interact with the OATH application from the key by using the [YOATH protocol](https://developers.yubico.com/OATH/YKOATH_Protocol.html). For a complete description of the new functionality check the *Readme.md* file and the header documentation for `YKFKeyOATHService`.
@@ -93,6 +104,8 @@ The `YKFKeySession` provides the ability to check if the key is connected to the
 - The YubiKit Demo application contains now a demo on how to read an OTP from the YubiKey 5Ci. 
 
 - A QuickStart guide has beed added to the documentation.
+
+---
 
 #### 2.0.0 B2 [2.0.0 B1 -> 2.0.0 B2]
 
@@ -102,17 +115,23 @@ The `YKFKeySession` provides the ability to check if the key is connected to the
 
 - The `YKFKeyConnectionError` has been renamed to `YKFKeySessionError` to have a consistent naming with `YKFKeySession`. The library provides a few more detailed errors for the session operations. Check the error codes from `YKFKeySessionError` for more details.
 
+---
+
 #### 2.0.0 B1 [1.1.1 -> 2.0.0 B1]
 
 - This release is a major update which adds initial support for YubiKeys with lightning connector. 
 
 - This version provides functionality for performing only U2F operations. Read the integration documentation to see how to add support for the YubiKeys with lightning connector.
 
+---
+
 #### 1.1.1 [1.1.0 -> 1.1.1]
 
 - This is a minor update which adds support for a new default URI format when reading the OTP over NFC. This update is required to allow the applications to support future YubiKey firmware revisions. 
 
 - The new supported format of the URL is: [https://my.yubico.com/yk/#[otp_value]]()
+
+---
 
 #### 1.1.0 [1.0.0 -> 1.1.0]
 
@@ -124,7 +143,7 @@ This version has a few improvements on the NFC APIs and to the demo application:
 - The demo application has a few UI updates and fixes a few layout issues on small screen devices (iPhone 5/5c/5s/SE)
 - The demo application can now run on iOS 10.
 
---
+---
 
 #### 1.0.0 [1.0.0 RC2 -> 1.0.0]
 
@@ -134,13 +153,13 @@ This version does a few changes to the library interface. The provided interface
 - The capabilities change allows a direct check without retrieving them from the shared instance of the YubiKitManager as in RC2: `YubiKitDeviceCapabilities.supportsNFCScanning`  and `YubiKitDeviceCapabilities.supportsQRCodeScanning`. For a complete example read the documentation (README.md file) for RC3 and consult the code of the demo application.
 - The `YubiKitManager` type provides from now several types of _sessions_, each one of them being responsible to only one type of communication. This change allows for future extensibility and consistency of the APIs without transforming `YubiKitManager` into a mixed responsibility type, responsible for various types of requests. RC3 provides two sessions: `nfcReaderSession` and `qrReaderSession`. The previous calls on the managers are now part of these sessions so `YubiKitManager.shared.<method_call>` becomes `YubiKitManager.shared.[nfcReaderSession/qrReaderSession].<method_call>`. For a complete example read the documentation (README.md file) for RC3 and consult the code of the demo application.
  
---
+---
 
 #### 1.0.0 RC2 [1.0.0 RC1 -> 1.0.0 RC2]
 
 - Exposing the cancel user action from the NFC OS action sheet which is returned as an error by CoreNFC APIs: `NFCReaderError.readerSessionInvalidationErrorUserCanceled`
 
---
+---
 
 #### 1.0.0 RC1
 
