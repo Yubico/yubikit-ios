@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="SXW-Qv-T1L">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--QRDemo-->
+        <scene sceneID="91H-7a-aQ7">
+            <objects>
+                <viewControllerPlaceholder storyboardName="QRDemo" id="EHp-O0-uj9" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="QR" image="QR Icon" id="alJ-hZ-E3M">
+                        <offsetWrapper key="titlePositionAdjustment" horizontal="0.0" vertical="-3"/>
+                    </tabBarItem>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3xV-AT-EWy" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-729" y="-355"/>
+        </scene>
+        <!--About-->
+        <scene sceneID="7px-2R-cME">
+            <objects>
+                <viewControllerPlaceholder storyboardName="About" id="lHa-pH-RQo" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="About" image="Info Icon" id="UoC-eA-UXt">
+                        <offsetWrapper key="titlePositionAdjustment" horizontal="0.0" vertical="-3"/>
+                    </tabBarItem>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9jO-5c-wQ0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-742" y="-201"/>
+        </scene>
+        <!--FIDO2Demo-->
+        <scene sceneID="aew-Il-1Lq">
+            <objects>
+                <viewControllerPlaceholder storyboardName="FIDO2Demo" id="WP7-rG-wj1" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="FIDO2" image="FIDO2 Icon" id="yh8-ap-bvI">
+                        <offsetWrapper key="titlePositionAdjustment" horizontal="0.0" vertical="-3"/>
+                    </tabBarItem>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="t1b-qy-aON" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-724" y="-481"/>
+        </scene>
+        <!--OTPDemo-->
+        <scene sceneID="feE-zj-PHh">
+            <objects>
+                <viewControllerPlaceholder storyboardName="OTPDemo" id="ouA-Tg-eaR" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="OTP" image="OTP Icon" id="vXS-Fo-8cO">
+                        <offsetWrapper key="titlePositionAdjustment" horizontal="0.0" vertical="-3"/>
+                    </tabBarItem>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ycm-N4-RcS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-720" y="-412"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="Y3E-dJ-1ch">
+            <objects>
+                <tabBarController id="SXW-Qv-T1L" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="OvO-6S-RQj" customClass="DemoCustomTabBar" customModule="YubiKitDemo" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="selectedImageTintColor" red="0.60546809430000004" green="0.79312717909999997" blue="0.23623889679999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="customHeight">
+                                <real key="value" value="58"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </tabBar>
+                    <connections>
+                        <segue destination="WP7-rG-wj1" kind="relationship" relationship="viewControllers" id="YNE-nf-T0R"/>
+                        <segue destination="ouA-Tg-eaR" kind="relationship" relationship="viewControllers" id="K2e-HG-Tvf"/>
+                        <segue destination="EHp-O0-uj9" kind="relationship" relationship="viewControllers" id="KJf-pb-7DB"/>
+                        <segue destination="BsR-K3-py8" kind="relationship" relationship="viewControllers" id="frk-BU-tF4"/>
+                        <segue destination="lHa-pH-RQo" kind="relationship" relationship="viewControllers" id="RvT-Zl-F3b"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gJO-xa-Ysf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1412" y="-354"/>
+        </scene>
+        <!--OtherDemosStoryboard-->
+        <scene sceneID="mjJ-Nq-uLL">
+            <objects>
+                <viewControllerPlaceholder storyboardName="OtherDemosStoryboard" id="BsR-K3-py8" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Other" image="Other Icon" id="zwz-ca-FPF">
+                        <offsetWrapper key="titlePositionAdjustment" horizontal="0.0" vertical="-3"/>
+                    </tabBarItem>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6cK-fc-LZ7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-655" y="-276"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="FIDO2 Icon" width="60" height="60"/>
+        <image name="Info Icon" width="60" height="60"/>
+        <image name="OTP Icon" width="41" height="60"/>
+        <image name="Other Icon" width="60" height="60"/>
+        <image name="QR Icon" width="60" height="60"/>
+    </resources>
+</document>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="hGh-9R-rtv">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--QR-->
+        <scene sceneID="YQe-sc-pkA">
+            <objects>
+                <navigationController id="hGh-9R-rtv" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="QR" image="QR Icon" id="CZK-jA-8BA">
+                        <offsetWrapper key="titlePositionAdjustment" horizontal="0.0" vertical="-3"/>
+                    </tabBarItem>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="Ggs-fl-cZJ">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.60500001910000001" green="0.79299998279999995" blue="0.23600000139999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </textAttributes>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="UjA-sg-jbf" kind="relationship" relationship="rootViewController" id="Bdy-QU-hca"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7I2-zZ-42a" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-378" y="124"/>
+        </scene>
+        <!--QR Demo-->
+        <scene sceneID="cqu-j8-GCy">
+            <objects>
+                <viewController id="UjA-sg-jbf" customClass="QRScanViewController" customModule="YubiKitDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="acH-Wq-jd4">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zaF-Z0-bDK">
+                                <rect key="frame" x="127.5" y="404" width="120" height="120"/>
+                                <color key="backgroundColor" red="0.60500001910000001" green="0.79299998279999995" blue="0.23600000139999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="A3V-CY-GCJ"/>
+                                    <constraint firstAttribute="height" constant="120" id="A5Z-RM-BEu"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                <state key="normal" title="Scan"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="60"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="scanQRCodeButtonPressed:" destination="UjA-sg-jbf" eventType="touchUpInside" id="tTE-Tl-1PW"/>
+                                </connections>
+                            </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8dr-n1-BM2" customClass="QRCodeScanContainerView" customModule="YubiKitDemo" customModuleProvider="target">
+                                <rect key="frame" x="30" y="30" width="315" height="350"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="400" id="0yy-Cn-rYB"/>
+                                    <constraint firstAttribute="height" relation="lessThanOrEqual" constant="350" id="1k3-ro-bfU"/>
+                                    <constraint firstAttribute="height" priority="750" constant="350" id="Ilw-8g-yUa"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="20"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" red="0.94867008919999996" green="0.94938892129999997" blue="0.94878143069999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="8dr-n1-BM2" firstAttribute="leading" secondItem="DRU-Fc-VCe" secondAttribute="leading" priority="750" constant="30" id="2bX-is-X1r"/>
+                            <constraint firstItem="zaF-Z0-bDK" firstAttribute="centerX" secondItem="acH-Wq-jd4" secondAttribute="centerX" id="APo-P3-zcK"/>
+                            <constraint firstItem="8dr-n1-BM2" firstAttribute="centerX" secondItem="acH-Wq-jd4" secondAttribute="centerX" id="Lpm-ge-qBw"/>
+                            <constraint firstItem="8dr-n1-BM2" firstAttribute="top" secondItem="DRU-Fc-VCe" secondAttribute="top" constant="30" id="TZN-yX-IYU"/>
+                            <constraint firstItem="DRU-Fc-VCe" firstAttribute="bottom" secondItem="zaF-Z0-bDK" secondAttribute="bottom" constant="30" id="UNi-ut-uaE"/>
+                            <constraint firstItem="zaF-Z0-bDK" firstAttribute="top" relation="greaterThanOrEqual" secondItem="8dr-n1-BM2" secondAttribute="bottom" constant="20" id="UZd-jO-nag"/>
+                            <constraint firstItem="DRU-Fc-VCe" firstAttribute="trailing" secondItem="8dr-n1-BM2" secondAttribute="trailing" priority="750" constant="30" id="w8v-29-j78"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="DRU-Fc-VCe"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="QR Demo" id="zBG-wb-Vd1"/>
+                    <connections>
+                        <outlet property="scanContainerView" destination="8dr-n1-BM2" id="4wV-qb-hK8"/>
+                        <outlet property="scanQRCodeButton" destination="zaF-Z0-bDK" id="xfX-Xw-oN4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="To2-c3-2f6" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="440.80000000000001" y="123.68815592203899"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="QR Icon" width="60" height="60"/>
+    </resources>
+</document>

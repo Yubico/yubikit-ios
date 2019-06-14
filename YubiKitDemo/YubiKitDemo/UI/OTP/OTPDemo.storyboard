@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="qCO-Gl-Tjp">
+    <device id="ipad9_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--OTP-->
+        <scene sceneID="BEh-j0-Dun">
+            <objects>
+                <navigationController id="qCO-Gl-Tjp" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="OTP" image="OTP Icon" id="7VL-fp-alw">
+                        <offsetWrapper key="titlePositionAdjustment" horizontal="0.0" vertical="-3"/>
+                    </tabBarItem>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="wOR-YL-qMA">
+                        <rect key="frame" x="0.0" y="20" width="768" height="50"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" red="0.60500001910000001" green="0.79299998279999995" blue="0.23600000139999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </textAttributes>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="Z0z-ve-bG4" kind="relationship" relationship="rootViewController" id="dfP-eW-100"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lif-IY-WPv" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-850" y="129"/>
+        </scene>
+        <!--OTP Demo-->
+        <scene sceneID="rbO-b8-Xc8">
+            <objects>
+                <viewController id="Z0z-ve-bG4" customClass="OTPScanViewController" customModule="YubiKitDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Iij-uM-Oko">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="904"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Sry-Dp-egu" customClass="OTPScanContainerView" customModule="YubiKitDemo" customModuleProvider="target">
+                                <rect key="frame" x="184" y="30" width="400" height="350"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="lessThanOrEqual" constant="350" id="Hmv-ga-Oii"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="400" id="blq-Dm-xDP"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="20"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y0G-S2-X7H">
+                                <rect key="frame" x="324" y="754" width="120" height="120"/>
+                                <color key="backgroundColor" red="0.60500001910000001" green="0.79299998279999995" blue="0.23600000139999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="120" id="HhL-rE-fgR"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="SZV-Vv-icc"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                <state key="normal" title="Read"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="60"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="readOTPButtonPressed:" destination="Z0z-ve-bG4" eventType="touchUpInside" id="8KW-FN-H4j"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="0.94867008919999996" green="0.94938892129999997" blue="0.94878143069999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="y0G-S2-X7H" firstAttribute="centerX" secondItem="Iij-uM-Oko" secondAttribute="centerX" id="7ll-b7-l5H"/>
+                            <constraint firstItem="Sry-Dp-egu" firstAttribute="top" secondItem="I3U-JO-rxk" secondAttribute="top" constant="30" id="K0A-0G-4p1"/>
+                            <constraint firstItem="I3U-JO-rxk" firstAttribute="trailing" secondItem="Sry-Dp-egu" secondAttribute="trailing" priority="750" constant="30" id="LCT-sD-iG8"/>
+                            <constraint firstItem="Sry-Dp-egu" firstAttribute="leading" secondItem="I3U-JO-rxk" secondAttribute="leading" priority="750" constant="30" id="QXe-jL-1jL"/>
+                            <constraint firstItem="Sry-Dp-egu" firstAttribute="centerX" secondItem="Iij-uM-Oko" secondAttribute="centerX" id="XYM-IK-6YU"/>
+                            <constraint firstItem="y0G-S2-X7H" firstAttribute="top" secondItem="Sry-Dp-egu" secondAttribute="bottom" priority="750" constant="20" id="mcC-l3-5aQ"/>
+                            <constraint firstItem="I3U-JO-rxk" firstAttribute="bottom" secondItem="y0G-S2-X7H" secondAttribute="bottom" constant="30" id="sQH-Yr-4Vp"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="I3U-JO-rxk"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="OTP Demo" id="OMP-iz-cxd">
+                        <barButtonItem key="backBarButtonItem" title=" " id="jPr-rJ-qte"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="otpScanContainerView" destination="Sry-Dp-egu" id="YGq-dn-IEK"/>
+                        <outlet property="readOTPButton" destination="y0G-S2-X7H" id="J9d-Va-dCR"/>
+                        <segue destination="hy3-cg-7c1" kind="show" identifier="PresentTokenDetailsSegueID" id="VoF-J9-Xv4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bgr-OQ-2KE" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-26.399999999999999" y="127.28635682158921"/>
+        </scene>
+        <!--Token details-->
+        <scene sceneID="1SG-Pf-HIA">
+            <objects>
+                <viewController id="hy3-cg-7c1" customClass="OTPDetailsViewController" customModule="YubiKitDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="l4H-ud-Wqq">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="904"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Uq0-DH-ieq">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="904"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="hy3-cg-7c1" id="vac-aK-e2l"/>
+                                    <outlet property="delegate" destination="hy3-cg-7c1" id="tad-wH-Erv"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Uq0-DH-ieq" firstAttribute="trailing" secondItem="Skz-V1-0pc" secondAttribute="trailing" id="6mH-Rv-mD6"/>
+                            <constraint firstItem="Uq0-DH-ieq" firstAttribute="leading" secondItem="Skz-V1-0pc" secondAttribute="leading" id="KpL-fU-ccc"/>
+                            <constraint firstItem="Uq0-DH-ieq" firstAttribute="top" secondItem="l4H-ud-Wqq" secondAttribute="top" id="aiK-Jp-Qkq"/>
+                            <constraint firstItem="Uq0-DH-ieq" firstAttribute="bottom" secondItem="Skz-V1-0pc" secondAttribute="bottom" id="b1Q-ZO-wNI"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Skz-V1-0pc"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Token details" id="9Eg-09-hWG"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="22v-Qu-0gA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="754" y="127"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="OTP Icon" width="41" height="60"/>
+    </resources>
+</document>

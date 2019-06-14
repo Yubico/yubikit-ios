@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="QRCodeScanResultsView" customModule="YubiKitDemo" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZXZ-O1-FEO">
+                    <rect key="frame" x="30" y="30" width="240" height="120"/>
+                    <color key="backgroundColor" red="0.94867008919999996" green="0.94938892129999997" blue="0.94878143069999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="240" id="3rM-mC-QHw"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <real key="value" value="10"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xh6-3L-PSg">
+                    <rect key="frame" x="30" y="230" width="240" height="40"/>
+                    <color key="backgroundColor" red="0.60546809430000004" green="0.79312717909999997" blue="0.23623889679999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="5Jt-pj-VFw"/>
+                    </constraints>
+                    <state key="normal" title="Rescan">
+                        <color key="titleColor" red="0.99963909390000005" green="1" blue="0.99975615740000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <real key="value" value="20"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="rescanButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="1W7-WG-ijB"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="&lt;Token Value&gt;" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SKU-7F-rVz">
+                    <rect key="frame" x="40" y="40" width="220" height="100"/>
+                    <color key="backgroundColor" red="0.94867008919999996" green="0.94938892129999997" blue="0.94878143069999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="220" id="d9i-fm-uem"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2ze-0c-38I">
+                    <rect key="frame" x="30" y="180" width="240" height="40"/>
+                    <color key="backgroundColor" red="0.60546809430000004" green="0.79312717909999997" blue="0.23623889679999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="2LX-mL-Xl2"/>
+                    </constraints>
+                    <state key="normal" title="Copy to Clipboard">
+                        <color key="titleColor" red="0.99963909390000005" green="1" blue="0.99975615740000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <real key="value" value="20"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="copyToClipboardButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="qmL-Du-lPP"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="SKU-7F-rVz" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="9cP-fx-rEv"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="Xh6-3L-PSg" secondAttribute="bottom" constant="30" id="FCX-PM-ABX"/>
+                <constraint firstItem="Xh6-3L-PSg" firstAttribute="top" secondItem="2ze-0c-38I" secondAttribute="bottom" constant="10" id="Mlm-uq-Upl"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="2ze-0c-38I" secondAttribute="trailing" constant="30" id="NWM-CY-wOL"/>
+                <constraint firstItem="2ze-0c-38I" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="30" id="OOj-b3-EgL"/>
+                <constraint firstItem="ZXZ-O1-FEO" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="cPj-oJ-VNU"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Xh6-3L-PSg" secondAttribute="trailing" constant="30" id="dB2-dx-QRq"/>
+                <constraint firstItem="ZXZ-O1-FEO" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="30" id="e3q-sx-3fb"/>
+                <constraint firstItem="2ze-0c-38I" firstAttribute="top" secondItem="ZXZ-O1-FEO" secondAttribute="bottom" constant="30" id="eOT-ie-aY3"/>
+                <constraint firstItem="2ze-0c-38I" firstAttribute="top" secondItem="SKU-7F-rVz" secondAttribute="bottom" constant="40" id="ibl-CD-uiA"/>
+                <constraint firstItem="SKU-7F-rVz" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="40" id="qor-Pv-rgc"/>
+                <constraint firstItem="Xh6-3L-PSg" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="30" id="uBp-5l-iDX"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <userDefinedRuntimeAttributes>
+                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                    <real key="value" value="20"/>
+                </userDefinedRuntimeAttribute>
+            </userDefinedRuntimeAttributes>
+            <connections>
+                <outlet property="tokenLabel" destination="SKU-7F-rVz" id="jze-td-lHy"/>
+            </connections>
+        </view>
+    </objects>
+</document>
