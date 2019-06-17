@@ -12,6 +12,9 @@ RELEASE_BUILD=build/$RELEASE_OUTPUT
 DEBUG_UNIVERSAL_OUTPUT=debug_universal
 DEBUG_UNIVERSAL_BUILD=build/$DEBUG_UNIVERSAL_OUTPUT
 
+RELEASE_UNIVERSAL_OUTPUT=release_universal
+RELEASE_UNIVERSAL_BUILD=build/$RELEASE_UNIVERSAL_OUTPUT
+
 LIBRARY_RELEASES=releases
 
 # Remove old build
@@ -46,15 +49,31 @@ xcodebuild archive \
     -project $FRAMEWORK.xcodeproj \
     -scheme $FRAMEWORK \
     -sdk iphoneos \
+    ONLY_ACTIVE_ARCH=NO \
     -destination "generic/platform=iOS" \
     SYMROOT=$RELEASE_BUILD
 
+xcodebuild build \
+    ARCHS="i386 x86_64" \
+    -project $FRAMEWORK.xcodeproj \
+    -target $FRAMEWORK \
+    -sdk iphonesimulator \
+    ONLY_ACTIVE_ARCH=NO \
+    -configuration Release \
+    SYMROOT=$RELEASE_BUILD
+
 cp -RL $DEBUG_BUILD/Debug-iphoneos $DEBUG_UNIVERSAL_BUILD
+cp -RL $RELEASE_BUILD/Release-iphoneos $RELEASE_UNIVERSAL_BUILD
 
 lipo -create \
     $DEBUG_BUILD/Debug-iphoneos/$LIBNAME \
     $DEBUG_BUILD/Debug-iphonesimulator/$LIBNAME \
     -output $DEBUG_UNIVERSAL_BUILD/$LIBNAME
+
+lipo -create \
+    $RELEASE_BUILD/Release-iphoneos/$LIBNAME \
+    $RELEASE_BUILD/Release-iphonesimulator/$LIBNAME \
+    -output $RELEASE_UNIVERSAL_BUILD/$LIBNAME
 
 # Cleanup
 
