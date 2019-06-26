@@ -63,6 +63,7 @@
 		956884CD20AAFB3F00E0F72C /* FakeYubiKitDeviceCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 956884CC20AAFB3F00E0F72C /* FakeYubiKitDeviceCapabilities.m */; };
 		956884D020AAFE9300E0F72C /* FakeYKFOTPTextParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 956884CF20AAFE9300E0F72C /* FakeYKFOTPTextParser.m */; };
 		956884D320AB012200E0F72C /* FakeYKFOTPURIParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 956884D220AB012200E0F72C /* FakeYKFOTPURIParser.m */; };
+		956991F422C224BC00C5EB02 /* YKFWebAuthnClientData.m in Sources */ = {isa = PBXBuildFile; fileRef = 956991F322C224BC00C5EB02 /* YKFWebAuthnClientData.m */; };
 		956DB66B206391C5006B1738 /* YKFQRCodeScanError.m in Sources */ = {isa = PBXBuildFile; fileRef = 956DB66A206391C5006B1738 /* YKFQRCodeScanError.m */; };
 		956DB66F20639C2B006B1738 /* YKFQRCodeScanOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 956DB66E20639C2B006B1738 /* YKFQRCodeScanOverlayView.m */; };
 		956DB67220639C7D006B1738 /* YKFQRCodeScanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 956DB67120639C7D006B1738 /* YKFQRCodeScanViewController.m */; };
@@ -126,7 +127,6 @@
 		958D0B6A215D129E00942CB9 /* YKFKeyOATHPutRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 955BCBFF215A436100C2EA2B /* YKFKeyOATHPutRequest.h */; };
 		958D0B6B215D129E00942CB9 /* YKFKeyOATHService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 958139572159286F008558F3 /* YKFKeyOATHService.h */; };
 		958D0B6C215D129E00942CB9 /* YKFOATHCredential.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 955BCC08215A463E00C2EA2B /* YKFOATHCredential.h */; };
-		95A04D1B2253683C008E3036 /* YKFKeyFIDO2Error.h in Sources */ = {isa = PBXBuildFile; fileRef = 95B0CAAB21EF53E1009C6A34 /* YKFKeyFIDO2Error.h */; };
 		95A04D1E2253920B008E3036 /* YKFFIDO2GetNextAssertionAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 95A04D1D2253920B008E3036 /* YKFFIDO2GetNextAssertionAPDU.m */; };
 		95A456692177639C00AD5A94 /* YKFOATHCalculateAllAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 95A456682177639C00AD5A94 /* YKFOATHCalculateAllAPDU.m */; };
 		95A4566C2177663800AD5A94 /* YKFKeyOATHCalculateAllResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 95A4566B2177663800AD5A94 /* YKFKeyOATHCalculateAllResponse.m */; };
@@ -135,6 +135,7 @@
 		95B0CAAA21EF397F009C6A34 /* YKFKeyFIDO2Request.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 956DBB9521EE32E5004D6EE3 /* YKFKeyFIDO2Request.h */; };
 		95B0CAAD21EF53E1009C6A34 /* YKFKeyFIDO2Error.m in Sources */ = {isa = PBXBuildFile; fileRef = 95B0CAAC21EF53E1009C6A34 /* YKFKeyFIDO2Error.m */; };
 		95B0CAB021F098C6009C6A34 /* YKFKeyFIDO2GetInfoResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 95B0CAAF21F098C6009C6A34 /* YKFKeyFIDO2GetInfoResponse.m */; };
+		95B4C66922C35B12000BD6E0 /* YKFWebAuthnClientData.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 956991F222C224BC00C5EB02 /* YKFWebAuthnClientData.h */; };
 		95B58B8B229C03AE00199F8E /* YKFKeySession+Debugging.m in Sources */ = {isa = PBXBuildFile; fileRef = 95B58B8A229C03AE00199F8E /* YKFKeySession+Debugging.m */; };
 		95B5F0942241257700DE7C96 /* YKFKeyFIDO2SetPinRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95CCAE5D2241220600B567D2 /* YKFKeyFIDO2SetPinRequest.h */; };
 		95B5F0952241257700DE7C96 /* YKFKeyFIDO2ChangePinRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95CCAE60224122FD00B567D2 /* YKFKeyFIDO2ChangePinRequest.h */; };
@@ -226,6 +227,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				95B4C66922C35B12000BD6E0 /* YKFWebAuthnClientData.h in CopyFiles */,
 				955188312265FC89001A4191 /* YKFKeyAPDUError.h in CopyFiles */,
 				9551882D2265EAEA001A4191 /* YKFKeyOATHError.h in CopyFiles */,
 				955188292265E70B001A4191 /* YKFKeyU2FError.h in CopyFiles */,
@@ -294,6 +296,7 @@
 		950C700A22980CFE00E48458 /* FakeUIDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FakeUIDevice.h; sourceTree = "<group>"; };
 		950C700B22980CFE00E48458 /* FakeUIDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FakeUIDevice.m; sourceTree = "<group>"; };
 		950FB9302179D8F6003F712E /* YKFKeyOATHCalculateRequest+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyOATHCalculateRequest+Private.h"; sourceTree = "<group>"; };
+		95137608214FE1E7006C843F /* moly.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = moly.sh; sourceTree = "<group>"; };
 		9513760921512824006C843F /* EAAccessoryManager+Testing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EAAccessoryManager+Testing.h"; sourceTree = "<group>"; };
 		951446A121874013002BB3C5 /* YKFKeyRawCommandService+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyRawCommandService+Private.h"; sourceTree = "<group>"; };
 		951446A221874CC2002BB3C5 /* YKFKeyCommandConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyCommandConfiguration.h; sourceTree = "<group>"; };
@@ -377,6 +380,8 @@
 		956884CF20AAFE9300E0F72C /* FakeYKFOTPTextParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FakeYKFOTPTextParser.m; sourceTree = "<group>"; };
 		956884D120AB012200E0F72C /* FakeYKFOTPURIParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FakeYKFOTPURIParser.h; sourceTree = "<group>"; };
 		956884D220AB012200E0F72C /* FakeYKFOTPURIParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FakeYKFOTPURIParser.m; sourceTree = "<group>"; };
+		956991F222C224BC00C5EB02 /* YKFWebAuthnClientData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFWebAuthnClientData.h; sourceTree = "<group>"; };
+		956991F322C224BC00C5EB02 /* YKFWebAuthnClientData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFWebAuthnClientData.m; sourceTree = "<group>"; };
 		956DB669206391C5006B1738 /* YKFQRCodeScanError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFQRCodeScanError.h; sourceTree = "<group>"; };
 		956DB66A206391C5006B1738 /* YKFQRCodeScanError.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFQRCodeScanError.m; sourceTree = "<group>"; };
 		956DB66D20639C2B006B1738 /* YKFQRCodeScanOverlayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFQRCodeScanOverlayView.h; sourceTree = "<group>"; };
@@ -809,6 +814,15 @@
 			path = Tests;
 			sourceTree = "<group>";
 		};
+		956991F122C2248F00C5EB02 /* WebAuthN */ = {
+			isa = PBXGroup;
+			children = (
+				956991F222C224BC00C5EB02 /* YKFWebAuthnClientData.h */,
+				956991F322C224BC00C5EB02 /* YKFWebAuthnClientData.m */,
+			);
+			path = WebAuthN;
+			sourceTree = "<group>";
+		};
 		956DB6682063919D006B1738 /* QRReaderSession */ = {
 			isa = PBXGroup;
 			children = (
@@ -926,6 +940,8 @@
 		9581395121591D94008558F3 /* OATH */ = {
 			isa = PBXGroup;
 			children = (
+				9581395221591DE1008558F3 /* YKFSelectOATHApplicationAPDU.h */,
+				9581395321591DE1008558F3 /* YKFSelectOATHApplicationAPDU.m */,
 				95A456672177639C00AD5A94 /* YKFOATHCalculateAllAPDU.h */,
 				95A456682177639C00AD5A94 /* YKFOATHCalculateAllAPDU.m */,
 				95EEEF6A2167AB6A00BE7D7B /* YKFOATHCalculateAPDU.h */,
@@ -944,8 +960,6 @@
 				95D61A0C2170E0C3001E7AC8 /* YKFOATHSetCodeAPDU.m */,
 				95F75BAC2175D6D600C13DC5 /* YKFOATHValidateAPDU.h */,
 				95F75BAD2175D6D600C13DC5 /* YKFOATHValidateAPDU.m */,
-				9581395221591DE1008558F3 /* YKFSelectOATHApplicationAPDU.h */,
-				9581395321591DE1008558F3 /* YKFSelectOATHApplicationAPDU.m */,
 			);
 			path = OATH;
 			sourceTree = "<group>";
@@ -989,6 +1003,7 @@
 			isa = PBXGroup;
 			children = (
 				956DB683206402AA006B1738 /* build.sh */,
+				95137608214FE1E7006C843F /* moly.sh */,
 				95C29613206247210091318B /* YubiKit */,
 				95885B2620A3187700828D02 /* YubiKitTests */,
 				95C29612206247210091318B /* Products */,
@@ -1110,6 +1125,7 @@
 			children = (
 				95D9D3DA21D510CB00473888 /* CBOR */,
 				952CB9E9220D82C4004A7624 /* Crypto */,
+				956991F122C2248F00C5EB02 /* WebAuthN */,
 				956DBB8221EDEA1D004D6EE3 /* YKFKeyFIDO2Service.h */,
 				956DBB8321EDEA1D004D6EE3 /* YKFKeyFIDO2Service.m */,
 				956DBB8521EDF841004D6EE3 /* YKFKeyFIDO2Service+Private.h */,
@@ -1330,7 +1346,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				95A04D1E2253920B008E3036 /* YKFFIDO2GetNextAssertionAPDU.m in Sources */,
-				95A04D1B2253683C008E3036 /* YKFKeyFIDO2Error.h in Sources */,
 				95F75BAB2175D63D00C13DC5 /* YKFKeyOATHValidateRequest.m in Sources */,
 				952564C8216F699500BC6F64 /* YKFOATHResetAPDU.m in Sources */,
 				95DD40872099A86A00363FEE /* YKFU2FSignAPDU.m in Sources */,
@@ -1354,6 +1369,7 @@
 				9581395421591DE1008558F3 /* YKFSelectOATHApplicationAPDU.m in Sources */,
 				95BA204521F7483100EED927 /* YKFKeyFIDO2GetAssertionResponse.m in Sources */,
 				95081DEE2214255B006CD08C /* YKFKeyRequest.m in Sources */,
+				956991F422C224BC00C5EB02 /* YKFWebAuthnClientData.m in Sources */,
 				956DBB8921EDFE50004D6EE3 /* YKFSelectFIDO2ApplicationAPDU.m in Sources */,
 				95C296262062497C0091318B /* YKFOTPTokenValidator.m in Sources */,
 				95885B1A20A2F96100828D02 /* YKFKeyU2FRequest.m in Sources */,
