@@ -15,17 +15,17 @@
 #import "YKFKeyU2FRequest.h"
 #import "YKFKeyU2FRequest+Private.h"
 
+static const int YKFKeyU2FRequestMaxRetries = 30; // times
+static const NSTimeInterval YKFKeyU2FRequestRetryTimeInterval = 0.5; // seconds
+
 @implementation YKFKeyU2FRequest
 
-static const int ykfU2FRequestMaxRetries = 30; // times
-static const NSTimeInterval ykfU2FRequestRetryTimeInterval = 0.5; // seconds
-
 - (BOOL)shouldRetry {
-    return self.retries <= ykfU2FRequestMaxRetries;
+    return self.retries <= YKFKeyU2FRequestMaxRetries;
 }
 
 - (NSTimeInterval)retryTimeInterval {
-    return ykfU2FRequestRetryTimeInterval;
+    return YKFKeyU2FRequestRetryTimeInterval;
 }
 
 @end

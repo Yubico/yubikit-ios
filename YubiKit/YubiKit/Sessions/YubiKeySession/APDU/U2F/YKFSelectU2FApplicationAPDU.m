@@ -15,13 +15,13 @@
 #import "YKFSelectU2FApplicationAPDU.h"
 #import "YKFAPDUCommandInstruction.h"
 
+static const NSUInteger YKFU2fAIDSize = 8;
+static const UInt8 YKFU2fAID[YKFU2fAIDSize] = {0xA0, 0x00, 0x00, 0x06, 0x47, 0x2F, 0x00, 0x01};
+
 @implementation YKFSelectU2FApplicationAPDU
 
-static const NSUInteger applicationIdSize = 8;
-static const UInt8 u2fApplicationId[applicationIdSize] = {0xA0, 0x00, 0x00, 0x06, 0x47, 0x2F, 0x00, 0x01};
-
 - (instancetype)init {
-    NSData *data = [NSData dataWithBytes:u2fApplicationId length:applicationIdSize];
+    NSData *data = [NSData dataWithBytes:YKFU2fAID length:YKFU2fAIDSize];
     return [super initWithCla:0x00 ins:YKFAPDUCommandInstructionSelectApplication p1:0x04 p2:0x00 data:data type:YKFAPDUTypeShort];
 }
 

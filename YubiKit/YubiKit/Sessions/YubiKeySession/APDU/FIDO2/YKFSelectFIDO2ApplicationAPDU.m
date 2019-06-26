@@ -15,13 +15,13 @@
 #import "YKFSelectFIDO2ApplicationAPDU.h"
 #import "YKFAPDUCommandInstruction.h"
 
+static const NSUInteger YKFFido2AIDSize = 8;
+static const UInt8 YKFFido2AID[YKFFido2AIDSize] = {0xA0, 0x00, 0x00, 0x06, 0x47, 0x2F, 0x00, 0x01};
+
 @implementation YKFSelectFIDO2ApplicationAPDU
 
-static const NSUInteger applicationIdSize = 8;
-static const UInt8 fido2ApplicationId[applicationIdSize] = {0xA0, 0x00, 0x00, 0x06, 0x47, 0x2F, 0x00, 0x01};
-
 - (instancetype)init {
-    NSData *data = [NSData dataWithBytes:fido2ApplicationId length:applicationIdSize];
+    NSData *data = [NSData dataWithBytes:YKFFido2AID length:YKFFido2AIDSize];
     return [super initWithCla:0x00 ins:YKFAPDUCommandInstructionSelectApplication p1:0x04 p2:0x00 data:data type:YKFAPDUTypeShort];
 }
 
