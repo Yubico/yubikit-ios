@@ -203,7 +203,12 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
          */
         let makeCredentialRequest = YKFKeyFIDO2MakeCredentialRequest()
         
-        let clientData = WebAuthnClientData(type: .create, challenge: response.challenge, origin: WebAuthnService.origin)
+        guard let challengeData = Data(base64Encoded: response.challenge) else {
+            return
+        }
+        guard let clientData = YKFWebAuthnClientData(type: .create, challenge:challengeData, origin: WebAuthnService.origin) else {
+            return
+        }
         let clientDataJSON = clientData.jsonData!
         let requestId = response.requestId
         let registerBeginResponse = response
@@ -336,8 +341,13 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
          Build the Get Assertion request from the server response.
          */
         let getAssertionRequest = YKFKeyFIDO2GetAssertionRequest()
-        
-        let clientData = WebAuthnClientData(type: .get, challenge: response.challenge, origin: WebAuthnService.origin)
+
+        guard let challengeData = Data(base64Encoded: response.challenge) else {
+            return
+        }
+        guard let clientData = YKFWebAuthnClientData(type: .get, challenge:challengeData, origin: WebAuthnService.origin) else {
+            return
+        }
         let clientDataJSON = clientData.jsonData!
         let requestId = response.requestId
         let authenticateBeginResponse = response

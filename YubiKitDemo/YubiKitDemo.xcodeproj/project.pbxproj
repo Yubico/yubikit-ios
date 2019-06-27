@@ -28,7 +28,6 @@
 		953407FF224CED8C00BB9A0D /* WebAuthnAuthenticateBeginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 953407FE224CED8C00BB9A0D /* WebAuthnAuthenticateBeginResponse.swift */; };
 		95340801224CF3BA00BB9A0D /* WebAuthnAuthenticateFinishRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95340800224CF3BA00BB9A0D /* WebAuthnAuthenticateFinishRequest.swift */; };
 		95340803224CFA9100BB9A0D /* WebAuthnAuthenticateFinishResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95340802224CFA9100BB9A0D /* WebAuthnAuthenticateFinishResponse.swift */; };
-		95340805224E0E3B00BB9A0D /* WebAuthnDataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95340804224E0E3B00BB9A0D /* WebAuthnDataExtensions.swift */; };
 		95340807224E0F2A00BB9A0D /* WebAuthnRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95340806224E0F2A00BB9A0D /* WebAuthnRequest.swift */; };
 		95340809224E3D9E00BB9A0D /* WebAuthnResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95340808224E3D9E00BB9A0D /* WebAuthnResponse.swift */; };
 		953AB4FE21A4107900A1823A /* RawCommandServiceDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 953AB4FD21A4107900A1823A /* RawCommandServiceDemoViewController.swift */; };
@@ -41,7 +40,6 @@
 		9576AF3D224AAE4C00CA7C1B /* WebAuthnCreateUserResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9576AF3C224AAE4C00CA7C1B /* WebAuthnCreateUserResponse.swift */; };
 		9576AF3F224AAF1E00CA7C1B /* WebAuthnService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9576AF3E224AAF1E00CA7C1B /* WebAuthnService.swift */; };
 		9576AF43224B802100CA7C1B /* WebAuthnLoginUserResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9576AF42224B802100CA7C1B /* WebAuthnLoginUserResponse.swift */; };
-		9576AF45224B8DA700CA7C1B /* WebAuthnClientData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9576AF44224B8DA700CA7C1B /* WebAuthnClientData.swift */; };
 		957DE0EC2031B52D00B53569 /* OTPScanContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957DE0EB2031B52D00B53569 /* OTPScanContainerView.swift */; };
 		95885AF2209B1EB300828D02 /* FIDO2Demo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 95885AF1209B1EB300828D02 /* FIDO2Demo.storyboard */; };
 		95885AF5209B230C00828D02 /* LightningActionSheetView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95885AF4209B230C00828D02 /* LightningActionSheetView.xib */; };
@@ -93,7 +91,6 @@
 		953407FE224CED8C00BB9A0D /* WebAuthnAuthenticateBeginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnAuthenticateBeginResponse.swift; sourceTree = "<group>"; };
 		95340800224CF3BA00BB9A0D /* WebAuthnAuthenticateFinishRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnAuthenticateFinishRequest.swift; sourceTree = "<group>"; };
 		95340802224CFA9100BB9A0D /* WebAuthnAuthenticateFinishResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnAuthenticateFinishResponse.swift; sourceTree = "<group>"; };
-		95340804224E0E3B00BB9A0D /* WebAuthnDataExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnDataExtensions.swift; sourceTree = "<group>"; };
 		95340806224E0F2A00BB9A0D /* WebAuthnRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnRequest.swift; sourceTree = "<group>"; };
 		95340808224E3D9E00BB9A0D /* WebAuthnResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnResponse.swift; sourceTree = "<group>"; };
 		953AB4FD21A4107900A1823A /* RawCommandServiceDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawCommandServiceDemoViewController.swift; sourceTree = "<group>"; };
@@ -106,7 +103,6 @@
 		9576AF3C224AAE4C00CA7C1B /* WebAuthnCreateUserResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnCreateUserResponse.swift; sourceTree = "<group>"; };
 		9576AF3E224AAF1E00CA7C1B /* WebAuthnService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnService.swift; sourceTree = "<group>"; };
 		9576AF42224B802100CA7C1B /* WebAuthnLoginUserResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnLoginUserResponse.swift; sourceTree = "<group>"; };
-		9576AF44224B8DA700CA7C1B /* WebAuthnClientData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnClientData.swift; sourceTree = "<group>"; };
 		9576AF46224B903300CA7C1B /* WebAuthnRegisterBeginRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnRegisterBeginRequest.swift; sourceTree = "<group>"; };
 		9576AF48224B9E3200CA7C1B /* WebAuthnRegisterBeginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnRegisterBeginResponse.swift; sourceTree = "<group>"; };
 		957DE0EB2031B52D00B53569 /* OTPScanContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPScanContainerView.swift; sourceTree = "<group>"; };
@@ -236,7 +232,6 @@
 			children = (
 				9576AF4A224BA53C00CA7C1B /* Requests */,
 				9576AF3E224AAF1E00CA7C1B /* WebAuthnService.swift */,
-				9576AF44224B8DA700CA7C1B /* WebAuthnClientData.swift */,
 				955DEB392099FB4C00259E71 /* WebServiceError.swift */,
 			);
 			path = WebAuthN;
@@ -258,7 +253,6 @@
 				953407FE224CED8C00BB9A0D /* WebAuthnAuthenticateBeginResponse.swift */,
 				95340800224CF3BA00BB9A0D /* WebAuthnAuthenticateFinishRequest.swift */,
 				95340802224CFA9100BB9A0D /* WebAuthnAuthenticateFinishResponse.swift */,
-				95340804224E0E3B00BB9A0D /* WebAuthnDataExtensions.swift */,
 			);
 			path = Requests;
 			sourceTree = "<group>";
@@ -493,7 +487,6 @@
 				955355612203153000D633F3 /* FIDO2DemoViewController.swift in Sources */,
 				952C3C06203D751C0000A115 /* QRCodeScanResultsView.swift in Sources */,
 				9576AF3D224AAE4C00CA7C1B /* WebAuthnCreateUserResponse.swift in Sources */,
-				9576AF45224B8DA700CA7C1B /* WebAuthnClientData.swift in Sources */,
 				95885AFB209B42F700828D02 /* NamedColors.swift in Sources */,
 				95A04D1822523336008E3036 /* KeySessionObserver.swift in Sources */,
 				957DE0EC2031B52D00B53569 /* OTPScanContainerView.swift in Sources */,
@@ -511,7 +504,6 @@
 				95F767DC203347EF00208B88 /* QRScanViewController.swift in Sources */,
 				951459B020BED84B00E6757A /* ApplicationUIAppearance.swift in Sources */,
 				9576AF3F224AAF1E00CA7C1B /* WebAuthnService.swift in Sources */,
-				95340805224E0E3B00BB9A0D /* WebAuthnDataExtensions.swift in Sources */,
 				953AB50321A4519400A1823A /* RawDemoSecCertificate.swift in Sources */,
 				953407F6224BA61E00BB9A0D /* WebAuthnRegisterBeginRequest.swift in Sources */,
 				95C70DDF224A2FE70024E220 /* U2FDemoViewController.swift in Sources */,

@@ -15,14 +15,14 @@
 #import "YKFSelectOATHApplicationAPDU.h"
 #import "YKFAPDUCommandInstruction.h"
 
+// SELECT APDU format: https://developers.yubico.com/OATH/YKOATH_Protocol.html
+static const NSUInteger YKFOathAIDSize = 7;
+static const UInt8 YKFOathAID[YKFOathAIDSize] = {0xA0, 0x00, 0x00, 0x05, 0x27, 0x21, 0x01};
+
 @implementation YKFSelectOATHApplicationAPDU
 
-// SELECT APDU format: https://developers.yubico.com/OATH/YKOATH_Protocol.html
-static const NSUInteger applicationIdSize = 7;
-static const UInt8 oathApplicationId[applicationIdSize] = {0xA0, 0x00, 0x00, 0x05, 0x27, 0x21, 0x01};
-
 - (instancetype)init {
-    NSData *data = [NSData dataWithBytes:oathApplicationId length:applicationIdSize];
+    NSData *data = [NSData dataWithBytes:YKFOathAID length:YKFOathAIDSize];
     return [super initWithCla:0x00 ins:YKFAPDUCommandInstructionSelectApplication p1:0x04 p2:0x00 data:data type:YKFAPDUTypeShort];
 }
 

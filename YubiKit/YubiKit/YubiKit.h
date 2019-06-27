@@ -50,3 +50,4 @@
 #import "YKFPCSC.h"
 
 #import "YKFNSDataAdditions.h"
+#import "YKFWebAuthnClientData.h"

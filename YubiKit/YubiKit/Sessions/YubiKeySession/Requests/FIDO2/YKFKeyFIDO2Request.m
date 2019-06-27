@@ -16,17 +16,17 @@
 #import "YKFKeyFIDO2Request+Private.h"
 #import "YKFAPDU.h"
 
+static const int YKFKeyFIDO2RequestMaxRetries = 30; // times
+static const NSTimeInterval YKFKeyFIDO2RequestRetryTimeInterval = 0.5; // seconds
+
 @implementation YKFKeyFIDO2Request
 
-static const int ykfFIDO2RequestMaxRetries = 30; // times
-static const NSTimeInterval ykfFIDO2RequestRetryTimeInterval = 0.5; // seconds
-
 - (BOOL)shouldRetry {
-    return self.retries <= ykfFIDO2RequestMaxRetries;
+    return self.retries <= YKFKeyFIDO2RequestMaxRetries;
 }
 
 - (NSTimeInterval)retryTimeInterval {
-    return ykfFIDO2RequestRetryTimeInterval;
+    return YKFKeyFIDO2RequestRetryTimeInterval;
 }
 
 @end
