@@ -14,9 +14,11 @@
 	- the iOS version is iOS 10 or newer.
 	- the iOS version is not in a blacklist of versions where the external accessories don't work due to iOS bugs.
 
+- Moved the WebAuthN clientData into the library. The new class provided by the library is called `YKFWebAuthnClientData`. This change avoids duplicate implementations of the Client Data in every application which could lead to different results when using the FIDO2 APIs. When using Swift 5, this change avoids a random memory corruption of the old implementation from the YubiKit Demo application, when creating and passing the data to the library. **Make sure to use the new implementation** if the demo application code was reused.
+
 - Several improvements and bug fixes to the logging of the library in debug builds. The library check in debug builds if the application is configured properly when starting the key session by looking at the application external accessory protocols.
 
-- The firmware version, available in `YKFKeyDescription.firmwareRevision` returns now the format `[major].[minor].[build]` instead of a number.
+- The firmware version, available in `YKFKeyDescription.firmwareRevision` returns now the format `[major].[minor].[patch]` instead of a number.
 
 - Improvements and bug fixes to the YubiKit Demo application:
 	- The `WebAuthnClientData` is using an updated Swift 5 version of `Data.withUnsafeBytes` with the memory bound explicitly specified to avoid some possible data corruption when hashing.
