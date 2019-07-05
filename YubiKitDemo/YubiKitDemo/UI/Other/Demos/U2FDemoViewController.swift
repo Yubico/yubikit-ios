@@ -40,7 +40,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
                 return
             }
             
-            self.log(message: "The Register request was successful: \(keyHandle)")
+            self.log(message: "The Register request was successful with key handle: \(keyHandle)")
             
             self.executeSignRequestWith(keyHandle: keyHandle, challenge: challenge, appId: appId, completion: { [weak self] (success) in
                 guard let self = self else {
@@ -92,7 +92,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
         }
         
         self.log(message: "Executing the Register request...")
-        self.log(message: "Touch the key when it's blinking slowly.")
+        self.log(message: "(!)Touch the key when it's blinking slowly.")
         
         u2fService.execute(registerRequest) { (response, error) in
             guard error == nil else {
@@ -121,7 +121,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
         }
         
         self.log(message: "Executing the Sign request...")
-        self.log(message: "Touch the key when it's blinking slowly.")
+        self.log(message: "(!)Touch the key when it's blinking slowly.")
         
         u2fService.execute(signRequest) { [weak self] (response, error) in
             guard let self = self else {
@@ -145,7 +145,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
                 return
             }
             print(message)
-            self.logTextView.insertText("\(message)\n")
+            self.logTextView.insertText("\(message)\n\n")
             
             let bottom = self.logTextView.contentSize.height - self.logTextView.bounds.size.height
             if bottom > 0 {
