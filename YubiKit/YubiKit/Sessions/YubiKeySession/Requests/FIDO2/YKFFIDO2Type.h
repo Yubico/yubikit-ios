@@ -112,14 +112,13 @@ static const NSInteger YKFFIDO2PublicKeyAlgorithmES256 = -7;
 
 /*!
  @abstract
-    RSASSA (RSA Signature Scheme with Appendix), PKCS1 v1.5 with SHA-256.
+    EdDSA (Edwards-curve Digital Signature Algorithm), using the Ed25519 curve.
  
  @discussion
-    The authenticator will generate a RSA-2048 key pair for the credential and use the private key to sign a SHA256 (32 bytes
-    of data) when requesting signatures from the authenticator. The YubiKey does not support RSA non-resident keys. When
-    creating such a credential the options must include the resident key flag enabled.
+    The authenticator will generate an Ed25519 key pair for the credential and use the private key to sign a SHA256 (32 bytes
+    of data) when requesting signatures from the authenticator.
  */
-static const NSInteger YKFFIDO2PublicKeyAlgorithmRS256 = -257;
+static const NSInteger YKFFIDO2PublicKeyAlgorithmEdDSA = -8;
 
 /*!
  @class YKFFIDO2PublicKeyCredentialParam
@@ -129,7 +128,7 @@ static const NSInteger YKFFIDO2PublicKeyAlgorithmRS256 = -257;
  */
 @interface YKFFIDO2PublicKeyCredentialParam: NSObject
 
-/// The type of algorithm to use for the credential (YKFFIDO2PublicKeyAlgorithmES256 or YKFFIDO2PublicKeyAlgorithmRS256).
+/// The type of algorithm to use for the credential (YKFFIDO2PublicKeyAlgorithmES256 or YKFFIDO2PublicKeyAlgorithmEdDSA).
 @property (nonatomic) NSInteger alg;
 
 @end

@@ -48,6 +48,7 @@
 		95885AFB209B42F700828D02 /* NamedColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95885AFA209B42F700828D02 /* NamedColors.swift */; };
 		95A04D1822523336008E3036 /* KeySessionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A04D1722523336008E3036 /* KeySessionObserver.swift */; };
 		95A04D1A2252334D008E3036 /* FIDO2ServiceObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A04D192252334D008E3036 /* FIDO2ServiceObserver.swift */; };
+		95AFD4AA22CB566500CDF8D3 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95AFD4A922CB566500CDF8D3 /* DataExtensions.swift */; };
 		95C70DDF224A2FE70024E220 /* U2FDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C70DDE224A2FE70024E220 /* U2FDemoViewController.swift */; };
 		95DA54D121944C1000B60C18 /* OtherDemosStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 95DA54D021944C1000B60C18 /* OtherDemosStoryboard.storyboard */; };
 		95DA54D3219455DB00B60C18 /* OtherDemosTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95DA54D2219455DB00B60C18 /* OtherDemosTableViewController.swift */; };
@@ -113,6 +114,7 @@
 		95885AFA209B42F700828D02 /* NamedColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamedColors.swift; sourceTree = "<group>"; };
 		95A04D1722523336008E3036 /* KeySessionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySessionObserver.swift; sourceTree = "<group>"; };
 		95A04D192252334D008E3036 /* FIDO2ServiceObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIDO2ServiceObserver.swift; sourceTree = "<group>"; };
+		95AFD4A922CB566500CDF8D3 /* DataExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
 		95C70DDE224A2FE70024E220 /* U2FDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = U2FDemoViewController.swift; sourceTree = "<group>"; };
 		95CEBA002031D4D000AF0D91 /* YubiKitDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YubiKitDemo.entitlements; sourceTree = "<group>"; };
 		95DA54D021944C1000B60C18 /* OtherDemosStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OtherDemosStoryboard.storyboard; sourceTree = "<group>"; };
@@ -214,6 +216,7 @@
 		955DEB372099FA7400259E71 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				95AFD4AB22CB584000CDF8D3 /* Extensions */,
 				9576AF39224AA4C500CA7C1B /* WebAuthN */,
 			);
 			path = Model;
@@ -291,6 +294,14 @@
 				95F767E0203455FC00208B88 /* OTPDetailsViewController.swift */,
 			);
 			path = OTP;
+			sourceTree = "<group>";
+		};
+		95AFD4AB22CB584000CDF8D3 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				95AFD4A922CB566500CDF8D3 /* DataExtensions.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		95CEB9FF2031CF5F00AF0D91 /* Views */ = {
@@ -522,6 +533,7 @@
 				95340807224E0F2A00BB9A0D /* WebAuthnRequest.swift in Sources */,
 				95F767D0203337E900208B88 /* OTPScanResultsView.swift in Sources */,
 				95F767CC20331E4D00208B88 /* OTPWaitingScanView.swift in Sources */,
+				95AFD4AA22CB566500CDF8D3 /* DataExtensions.swift in Sources */,
 				95340803224CFA9100BB9A0D /* WebAuthnAuthenticateFinishResponse.swift in Sources */,
 				953407FF224CED8C00BB9A0D /* WebAuthnAuthenticateBeginResponse.swift in Sources */,
 				953407F7224BA64100BB9A0D /* WebAuthnRegisterBeginResponse.swift in Sources */,

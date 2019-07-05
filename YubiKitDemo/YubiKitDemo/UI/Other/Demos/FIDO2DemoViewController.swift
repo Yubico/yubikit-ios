@@ -34,8 +34,8 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         actionSheet.addAction(UIAlertAction(title: "ECC Demo: ES256, non-RK, UP", style: .default) { [weak self]  (action) in
             self?.runECCDemo()
         })
-        actionSheet.addAction(UIAlertAction(title: "RSA Demo: RS256, RK, no UP", style: .default) { [weak self] (action) in
-            self?.runRSADemo()
+        actionSheet.addAction(UIAlertAction(title: "EdDSA Demo: Ed25519, RK, no UP", style: .default) { [weak self] (action) in
+            self?.runEdDSADemo()
         })
         actionSheet.addAction(UIAlertAction(title: "Reset FIDO2 Application", style: .destructive) { [weak self] (action) in
             self?.runApplicationReset()
@@ -323,14 +323,14 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
                 return
             }
             
-            self.log(message: "Get Info request was successful.")
+            self.log(message: "Get Info request was successful.\n")
             self.logFIDO2GetInfo(response: response!)
             
             self.setDemoButtons(enabled: true)
         }
     }
     
-    // MARK: - ES256, RS256 Demos
+    // MARK: - ES256, EdDSA Demos
     
     private func runECCDemo() {
         logTextView.text = nil
@@ -340,32 +340,28 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         log(message: "(!) Touch the key when the LEDs are blinking slowly.")
         
         // Not a resident key (stored on the authenticator) and no PIN required.
-        let makeOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: false,
-                           YKFKeyFIDO2MakeCredentialRequestOptionUV: false]
+        let makeOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: false]
         
         // User presence required (touch) but not user verification (PIN).
-        let assertionOptions = [YKFKeyFIDO2GetAssertionRequestOptionUP: true,
-                                YKFKeyFIDO2GetAssertionRequestOptionUV: false]
+        let assertionOptions = [YKFKeyFIDO2GetAssertionRequestOptionUP: true]
         
         makeFIDO2CredentialWith(algorithm:YKFFIDO2PublicKeyAlgorithmES256, makeOptions: makeOptions, assertionOptions: assertionOptions)
     }
     
-    private func runRSADemo() {
+    private func runEdDSADemo() {
         logTextView.text = nil
         setDemoButtons(enabled: false)
         
-        log(message: "Executing RSA Demo. The key generation may take a while for RSA ...")
+        log(message: "Executing EdDSA (Ed25519) Demo...")
         log(message: "(!) Touch the key when the LEDs are blinking slowly.")
         
         // Resident key (stored on the authenticator) and no PIN required.
-        let makeOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: true,
-                           YKFKeyFIDO2MakeCredentialRequestOptionUV: false]
+        let makeOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: true]
         
         // User presence and verification disabled (silent authentication).
-        let assertionOptions = [YKFKeyFIDO2GetAssertionRequestOptionUP: false,
-                                YKFKeyFIDO2GetAssertionRequestOptionUV: false]
+        let assertionOptions = [YKFKeyFIDO2GetAssertionRequestOptionUP: false]
         
-        makeFIDO2CredentialWith(algorithm:YKFFIDO2PublicKeyAlgorithmRS256, makeOptions: makeOptions, assertionOptions: assertionOptions)
+        makeFIDO2CredentialWith(algorithm:YKFFIDO2PublicKeyAlgorithmEdDSA, makeOptions: makeOptions, assertionOptions: assertionOptions)
     }
     
     private func makeFIDO2CredentialWith(algorithm: NSInteger, makeOptions: [String: Bool], assertionOptions: [String: Bool]) {
@@ -419,7 +415,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
                 return
             }
             
-            self.log(message: "Make Credential was successful.")
+            self.log(message: "Make Credential was successful.\n")
             self.logFIDO2MakeCredential(response: response!)
             
             /*
@@ -463,7 +459,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
                 return
             }
             
-            self.log(message: "Get Assertion was successful.")
+            self.log(message: "Get Assertion was successful.\n")
             self.logFIDO2GetAssertion(response: response!)
             
             self.setDemoButtons(enabled: true)
@@ -524,7 +520,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         log(header: "Get Info response")
         
         log(tag: "Versions", value: response.versions.description)
-        log(tag: "AAGUID", value: response.aaguid.description)
+        log(tag: "AAGUID", value: response.aaguid.hexDescription())
 
         if response.extensions != nil {
             log(tag: "Extensions", value: response.extensions!.description)
@@ -543,17 +539,17 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     private func logFIDO2MakeCredential(response: YKFKeyFIDO2MakeCredentialResponse) {
         log(header: "Make credential response")
         
-        log(tag: "Authenticator data", value: response.authData.description)
+        log(tag: "Authenticator data", value: response.authData.hexDescription())
         log(tag: "Attestation statement format identifier", value: response.fmt)
-        log(tag: "Attestation statement", value: response.attStmt.description)
+        log(tag: "Attestation statement", value: response.attStmt.hexDescription())
         
         if let authenticatorData = response.authenticatorData {
-            log(tag: "authenticatorData.rpIdHash", value: authenticatorData.rpIdHash.description)
+            log(tag: "authenticatorData.rpIdHash", value: authenticatorData.rpIdHash.hexDescription())
             log(tag: "authenticatorData.flags", value: "\(authenticatorData.flags)")
             log(tag: "authenticatorData.signCount", value: "\(authenticatorData.signCount)")
-            log(tag: "authenticatorData.aaguid", value: authenticatorData.aaguid?.description ?? "?")
-            log(tag: "authenticatorData.credentialId", value: authenticatorData.credentialId?.description ?? "?")
-            log(tag: "authenticatorData.coseEncodedCredentialPublicKey", value: authenticatorData.coseEncodedCredentialPublicKey?.description ?? "?")
+            log(tag: "authenticatorData.aaguid", value: authenticatorData.aaguid?.hexDescription() ?? "?")
+            log(tag: "authenticatorData.credentialId", value: authenticatorData.credentialId?.hexDescription() ?? "?")
+            log(tag: "authenticatorData.coseEncodedCredentialPublicKey", value: authenticatorData.coseEncodedCredentialPublicKey?.hexDescription() ?? "?")
         }
     }
     
@@ -561,7 +557,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         log(header: "Get Assertion response")
 
         if let credential = response.credential {
-            log(tag: "credential.credentialId", value: credential.credentialId.description)
+            log(tag: "credential.credentialId", value: credential.credentialId.hexDescription())
             log(tag: "credential.credentialType", value: credential.credentialType.name)
             
             if let transports = credential.credentialTransports {
@@ -569,11 +565,11 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             }
         }
 
-        log(tag: "Auth Data", value: response.authData.description)
-        log(tag: "Signature", value: response.signature.description)
+        log(tag: "Auth Data", value: response.authData.hexDescription())
+        log(tag: "Signature", value: response.signature.hexDescription())
         
         if let user = response.user {
-            log(tag: "User.id", value: user.userId.description)
+            log(tag: "User.id", value: user.userId.hexDescription())
             log(tag: "User.name", value: user.userName ?? "?")
             log(tag: "User.displayName", value: user.userDisplayName ?? "?")
             log(tag: "User.icon", value: user.userIcon ?? "?")
@@ -612,6 +608,6 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     }
     
     private func log(tag: String, value: String) {
-        log(message: "\n\(tag):\n\(value)")
+        log(message: "\n* \(tag):\n\(value)")
     }
 }
