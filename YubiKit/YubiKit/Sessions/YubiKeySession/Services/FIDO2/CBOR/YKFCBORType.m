@@ -114,7 +114,13 @@
     NSParameterAssert([other isKindOfClass:self.class]);
     YKFCBORTextString *otherTextString = (YKFCBORTextString *)other;
     
-    return [self.value compare:otherTextString.value];
+    if (self.value.length < otherTextString.value.length) {
+        return NSOrderedAscending;
+    } else if (self.value.length > otherTextString.value.length) {
+        return NSOrderedDescending;
+    } else {
+        return [self.value compare:otherTextString.value];
+    }
 }
 
 - (BOOL)isEqual:(id)object {
