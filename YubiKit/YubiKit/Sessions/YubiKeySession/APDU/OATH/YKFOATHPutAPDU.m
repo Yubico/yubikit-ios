@@ -22,8 +22,12 @@
 typedef NS_ENUM(NSUInteger, YKFOATHPutCredentialAPDUTag) {
     YKFOATHPutCredentialAPDUTagName = 0x71,
     YKFOATHPutCredentialAPDUTagKey = 0x73,
-    YKFOATHPutCredentialAPDUTagProperty = 0x73,
+    YKFOATHPutCredentialAPDUTagProperty = 0x78,
     YKFOATHPutCredentialAPDUTagCounter = 0x7A // Only HOTP
+};
+
+typedef NS_ENUM(NSUInteger, YKFOATHPutCredentialAPDUProperty) {
+    YKFOATHPutCredentialAPDUPropertyTouch = 0x02
 };
 
 @implementation YKFOATHPutAPDU
@@ -47,9 +51,11 @@ typedef NS_ENUM(NSUInteger, YKFOATHPutCredentialAPDUTag) {
     
     [rawRequest ykf_appendEntryWithTag:YKFOATHPutCredentialAPDUTagKey headerBytes:@[@(keyAlgorithm), @(keyDigits)] data:secret];
     
-    /*
-     Touch Property - This property is not available in the current firmware.
-     */
+    // Touch
+    if (request.credential.requiresTouch) {
+        [rawRequest ykf_appendByte:YKFOATHPutCredentialAPDUTagProperty];
+        [rawRequest ykf_appendByte:YKFOATHPutCredentialAPDUPropertyTouch];
+    }
     
     // Counter if HOTP
     if (request.credential.type == YKFOATHCredentialTypeHOTP) {

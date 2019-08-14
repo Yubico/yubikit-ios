@@ -24,6 +24,8 @@ static const UInt8 YKFKeyOATHCalculateAllResponseFullResponseTag = 0x75;
 static const UInt8 YKFKeyOATHCalculateAllResponseTruncatedResponseTag = 0x76;
 static const UInt8 YKFKeyOATHCalculateAllResponseTouchTag = 0x7C;
 
+static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // seconds
+
 @interface YKFOATHCredentialCalculateResult()
 
 @property (nonatomic, assign, readwrite) YKFOATHCredentialType type;
@@ -32,10 +34,19 @@ static const UInt8 YKFKeyOATHCalculateAllResponseTouchTag = 0x7C;
 @property (nonatomic, assign, readwrite) NSUInteger period;
 @property (nonatomic, readwrite, nonnull) NSDateInterval *validity;
 @property (nonatomic, readwrite) NSString *otp;
+@property (nonatomic, readwrite) BOOL requiresTouch;
 
 @end
 
 @implementation YKFOATHCredentialCalculateResult
+
+- (NSUInteger)period {
+    if (_period) {
+        return _period;
+    }
+    return self.type == YKFOATHCredentialTypeTOTP ? YKFOATHCredentialCalculateResultDefaultPeriod : 0;
+}
+
 @end
 
 
@@ -113,13 +124,14 @@ static const UInt8 YKFKeyOATHCalculateAllResponseTouchTag = 0x7C;
             NSString *label = nil;
             
             [credentialKey ykf_OATHKeyExtractPeriod:&period issuer:&issuer account:&account label:&label];
-            credentialResult.period = period;
+            
+            credentialResult.period = period ? period : YKFOATHCredentialCalculateResultDefaultPeriod;
             credentialResult.issuer = issuer;
             credentialResult.account = account;
             
-            // Parse the OTP value when TOTP.
+            // Parse the OTP value when TOTP and touch is not required.
             
-            if (credentialResult.type == YKFOATHCredentialTypeTOTP) {
+            if (credentialResult.type == YKFOATHCredentialTypeTOTP && responseTag != YKFKeyOATHCalculateAllResponseTouchTag) {
                 ++readIndex;
                 YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
                 
@@ -133,17 +145,20 @@ static const UInt8 YKFKeyOATHCalculateAllResponseTouchTag = 0x7C;
                 
                 readIndex += otpBytesLength; // Jump to the next extry.
             } else {
-                ++readIndex; // No result: jump to the next extry.
+                // No result for TOTP with touch or HOTP
+                if (credentialResult.type == YKFOATHCredentialTypeTOTP) {
+                    credentialResult.requiresTouch = YES;
+                }
+                ++readIndex;
             }
             
             // Calculate validity
             
-            if (credentialResult.type == YKFOATHCredentialTypeTOTP) {
+            if (credentialResult.type == YKFOATHCredentialTypeTOTP && responseTag != YKFKeyOATHCalculateAllResponseTouchTag) {
                 NSUInteger timestampTimeInterval = [timestamp timeIntervalSince1970]; // truncate to seconds
                 
-                NSDate *startDate = [NSDate dateWithTimeIntervalSince1970:timestampTimeInterval - timestampTimeInterval % period];
-                NSDate *endDate = [startDate dateByAddingTimeInterval:period];
-                credentialResult.validity = [[NSDateInterval alloc] initWithStartDate:startDate endDate:endDate];
+                NSDate *startDate = [NSDate dateWithTimeIntervalSince1970:timestampTimeInterval - timestampTimeInterval % credentialResult.period];
+                credentialResult.validity = [[NSDateInterval alloc] initWithStartDate:startDate duration:credentialResult.period];
             } else {
                 credentialResult.validity = [[NSDateInterval alloc] initWithStartDate:timestamp endDate:[NSDate distantFuture]];
             }                        

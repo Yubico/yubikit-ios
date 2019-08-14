@@ -60,6 +60,12 @@
  */
 @property (nonatomic, readonly, nullable) NSString *otp;
 
+/*!
+ The credential requires the user to touch the key to generate it. The property returns YES for
+ HOTP credentials and for TOTP credentials created with Touch Required option.
+ */
+@property (nonatomic, readonly) BOOL requiresTouch;
+
 @end
 
 /*!

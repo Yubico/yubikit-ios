@@ -15,6 +15,7 @@
 #import <Foundation/Foundation.h>
 #import "YKFNSDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
+#import "MF_Base32Additions.h"
 
 #pragma mark - SHA
 
@@ -236,6 +237,16 @@
 
 - (BOOL)ykf_containsRange:(NSRange) range {
     return range.location + range.length <= self.length;
+}
+
+@end
+
+#pragma mark - Base32
+
+@implementation NSData(NSData_Base32Additions)
+
++ (NSData *)ykf_dataWithBase32String:(NSString *)base32String {
+    return [self dataWithBase32String:base32String];
 }
 
 @end

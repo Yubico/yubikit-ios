@@ -19,7 +19,6 @@
 #import "YKFOATHCredentialValidator.h"
 #import "YKFKeyOATHError.h"
 
-
 static NSString* const YKFOATHCredentialValidatorTestsVeryLargeSecret = @"HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ";
 
 @interface YKFOATHCredentialValidatorTests: YKFTestCase
@@ -54,41 +53,6 @@ static NSString* const YKFOATHCredentialValidatorTestsVeryLargeSecret = @"HXDMVJ
 
     YKFKeySessionError *error = [YKFOATHCredentialValidator validateCredential:credential includeSecret:NO];
     XCTAssertNil(error);
-}
-
-#pragma mark - Large Secret Tests
-
-- (void)test_WhenValidatorReceivesInvalidCredentialSHA1Secret_ErrorIsReturnedBack {
-    NSString *urlFormat = @"otpauth://hotp/ACME:john@example.com?secret=%@&issuer=ACME&algorithm=SHA1&digits=6&counter=123";
-    NSString *url = [NSString stringWithFormat:urlFormat, YKFOATHCredentialValidatorTestsVeryLargeSecret];
-    
-    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
-    XCTAssertNotNil(credential);
-    
-    YKFKeySessionError *error = [YKFOATHCredentialValidator validateCredential:credential includeSecret:YES];
-    XCTAssertEqual(error.code, YKFKeyOATHErrorCodeSecretTooLong);
-}
-
-- (void)test_WhenValidatorReceivesInvalidCredentialSHA256Secret_ErrorIsReturnedBack {
-    NSString *urlFormat = @"otpauth://hotp/ACME:john@example.com?secret=%@&issuer=ACME&algorithm=SHA256&digits=6&counter=123";
-    NSString *url = [NSString stringWithFormat:urlFormat, YKFOATHCredentialValidatorTestsVeryLargeSecret];
-    
-    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
-    XCTAssertNotNil(credential);
-    
-    YKFKeySessionError *error = [YKFOATHCredentialValidator validateCredential:credential includeSecret:YES];
-    XCTAssertEqual(error.code, YKFKeyOATHErrorCodeSecretTooLong);
-}
-
-- (void)test_WhenValidatorReceivesInvalidCredentialSHA512Secret_ErrorIsReturnedBack {
-    NSString *urlFormat = @"otpauth://hotp/ACME:john@example.com?secret=%@%@&issuer=ACME&algorithm=SHA512&digits=6&counter=123";
-    NSString *url = [NSString stringWithFormat:urlFormat, YKFOATHCredentialValidatorTestsVeryLargeSecret, YKFOATHCredentialValidatorTestsVeryLargeSecret];
-    
-    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
-    XCTAssertNotNil(credential);
-    
-    YKFKeySessionError *error = [YKFOATHCredentialValidator validateCredential:credential includeSecret:YES];
-    XCTAssertEqual(error.code, YKFKeyOATHErrorCodeSecretTooLong);
 }
 
 #pragma mark - Large Key Tests

@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#import <CommonCrypto/CommonCrypto.h>
+
 #import "YKFOATHCredential.h"
 #import "YKFOATHCredential+Private.h"
 #import "YKFAssert.h"
+#import "YKFLogger.h"
+#import "YKFNSDataAdditions.h"
+
 #import "MF_Base32Additions.h"
 
 static NSUInteger const YKFOATHCredentialDefaultDigits = 6;
 static NSUInteger const YKFOATHCredentialDefaultPeriod = 30; // seconds
+static NSUInteger const YKFOATHCredentialMinSecretLength = 14; // bytes
 
 static NSString* const YKFOATHCredentialScheme = @"otpauth";
 
@@ -54,7 +60,7 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
     if (_type) {
         return _type;
     }
-    return YKFOATHCredentialTypeHOTP;
+    return YKFOATHCredentialTypeTOTP;
 }
 
 - (YKFOATHCredentialAlgorithm)algorithm {
@@ -80,13 +86,76 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
 
 - (NSString *)key {
     if (!_key) {
+        NSString *keyLabel = self.label;
+        
+        if (![self.label containsString: @":"]) {
+            keyLabel = [NSString stringWithFormat:@"%@:%@", self.issuer, self.account];
+        }
+        
         if (self.type == YKFOATHCredentialTypeTOTP) {
-            return [NSString stringWithFormat:@"%ld/%@", (unsigned long)self.period, self.label];
+            if (self.period != YKFOATHCredentialDefaultPeriod) {
+                return [NSString stringWithFormat:@"%ld/%@", (unsigned long)self.period, keyLabel];
+            }
+            else {
+                return keyLabel;
+            }
         } else {
-            return self.label;
+            return keyLabel;
         }
     }
     return _key;
+}
+
+- (NSString *)label {
+    if (_label) {
+        return _label;
+    }
+    
+    YKFAssertReturnValue(self.issuer, @"Missing OATH credential issuer. Cannot build the credential label.", nil);
+    YKFAssertReturnValue(self.account, @"Missing OATH credential account. Cannot build the credential label.", nil);
+    
+    return [NSString stringWithFormat:@"%@:%@", self.issuer, self.account];
+}
+
+- (void)setSecret:(NSData *)secret {
+    YKFAssertReturn(secret.length, @"Cannot set empty OATH secret.");
+    
+    if (secret.length < YKFOATHCredentialMinSecretLength) {
+        NSMutableData *paddedSecret = [[NSMutableData alloc] initWithData:secret];
+        [paddedSecret increaseLengthBy: YKFOATHCredentialMinSecretLength - secret.length];
+        _secret = [paddedSecret copy];
+        return;
+    }
+    
+    switch (self.algorithm) {
+        case YKFOATHCredentialAlgorithmSHA1:
+            if (secret.length > CC_SHA1_BLOCK_BYTES) {
+                _secret = [secret ykf_SHA1];
+            } else {
+                _secret = secret;
+            }
+            break;
+            
+        case YKFOATHCredentialAlgorithmSHA256:
+            if (secret.length > CC_SHA256_BLOCK_BYTES) {
+                _secret = [secret ykf_SHA256];
+            } else {
+                _secret = secret;
+            }
+            break;
+            
+        case YKFOATHCredentialAlgorithmSHA512:
+            if (secret.length > CC_SHA512_BLOCK_BYTES) {
+                _secret = [secret ykf_SHA512];
+            } else {
+                _secret = secret;
+            }
+            break;
+            
+        default:
+            YKFAssertReturn(NO, @"Unknown hash algorithm for credential.");
+            break;
+    }
 }
 
 #pragma mark - URL Parsing
@@ -103,10 +172,10 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
     
     if (![self parseTypeFromUrlComponents:urlComponents])       { return NO; }
     if (![self parseLabelFromUrlComponents:urlComponents])      { return NO; }
-    if (![self parseSecretFromUrlComponents:urlComponents])     { return NO; }
     if (![self parseIssuerFromUrlComponents:urlComponents])     { return NO; }
     if (![self parseAlgorithmFromUrlComponents:urlComponents])  { return NO; }
     if (![self parseDigitsFromUrlComponents:urlComponents])     { return NO; }
+    if (![self parseSecretFromUrlComponents:urlComponents])     { return NO; }
 
     // Parse specific parameters
     if (self.type == YKFOATHCredentialTypeHOTP) {
@@ -174,8 +243,9 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
     if (!base32EncodedSecret) {
         return NO;
     }
+    
     self.secret = [NSData dataWithBase32String:base32EncodedSecret];
-    return YES;
+    return self.secret.length > 0;
 }
 
 - (BOOL)parseLabelFromUrlComponents:(NSURLComponents *)urlComponents {
@@ -228,8 +298,11 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
     
     NSString *period = [self queryParameterValueForName:YKFOATHCredentialURLParameterPeriod inUrlComponents:urlComponents];
     if (period) {
-        self.period = MAX(30, [period intValue]);
-    }
+        int periodValue = [period intValue];
+        self.period = periodValue > 0 ? periodValue : YKFOATHCredentialDefaultPeriod;
+    } else {
+        self.period = YKFOATHCredentialDefaultPeriod;
+    }    
     return YES;
 }
 

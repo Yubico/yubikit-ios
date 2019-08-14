@@ -27,8 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  @method ykf_initWithWebsafeBase64EncodedString:dataLength:
  
- @abstract
-    Returns a new data object created with a websafe Base64 string.
+ @return
+    A new data object created with a websafeBase64/base64url encoded string.
  
  @param websafeBase64EncodedData
     The websafe Base64 encoded string.
@@ -40,8 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  @method ykf_websafeBase64EncodedString
  
- @abstract
-    Returns the websafe Base64 encoded string of the data.
+ @return
+    The websafeBase64/base64url encoded string of the data.
  */
 - (nullable NSString *)ykf_websafeBase64EncodedString;
 
@@ -58,26 +58,44 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  @method ykf_SHA1
  
- @abstract
-    Returns the SHA1 hash of the data.
+ @return
+    The SHA1 hash of the data.
  */
 - (NSData *)ykf_SHA1;
 
 /*!
  @method ykf_SHA256
  
- @abstract
-    Returns the SHA256 hash of the data.
+ @return
+    The SHA256 hash of the data.
  */
 - (NSData *)ykf_SHA256;
 
 /*!
  @method ykf_SHA512
  
- @abstract
-    Returns the SHA512 hash of the data.
+ @return
+    The SHA512 hash of the data.
  */
 - (NSData *)ykf_SHA512;
+
+@end
+
+/**
+ * ---------------------------------------------------------------------------------------------------------------------
+ * @name NSData(NSData_Base32Additions)
+ * ---------------------------------------------------------------------------------------------------------------------
+ */
+
+@interface NSData(NSData_Base32Additions)
+
+/*!
+ @method ykf_dataWithBase32String:
+ 
+ @return
+    A data object from a Base32 encoded string or nil if the string could not be parsed.
+ */
++ (nullable NSData *)ykf_dataWithBase32String:(NSString *)base32String;
 
 @end
 

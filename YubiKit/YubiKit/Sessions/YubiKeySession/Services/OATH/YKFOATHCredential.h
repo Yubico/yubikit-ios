@@ -14,6 +14,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * ---------------------------------------------------------------------------------------------------------------------
  * @name OATH Credential Types
@@ -67,19 +69,19 @@ typedef NS_ENUM(NSUInteger, YKFOATHCredentialAlgorithm) {
  The Label of the credential as defined in the Key URI Format specifications:
  https://github.com/google/google-authenticator/wiki/Key-Uri-Format
  */
-@property (nonatomic, nonnull) NSString *label;
+@property (nonatomic, nullable) NSString *label;
 
 /*!
  The Secret of the credential as defined in the Key URI Format specifications:
  https://github.com/google/google-authenticator/wiki/Key-Uri-Format
  */
-@property (nonatomic, nonnull) NSData *secret;
+@property (nonatomic) NSData *secret;
 
 /*!
  The Issuer of the credential as defined in the Key URI Format specifications:
  https://github.com/google/google-authenticator/wiki/Key-Uri-Format
  */
-@property (nonatomic, nonnull) NSString *issuer;
+@property (nonatomic) NSString *issuer;
 
 /*!
  How long is the one-time passcode to display to the user. The value for this property can
@@ -103,7 +105,12 @@ typedef NS_ENUM(NSUInteger, YKFOATHCredentialAlgorithm) {
  The account name extracted from the label. If the label does not contain the issuer, the
  name is the same as the label.
  */
-@property (nonatomic, nonnull) NSString *account;
+@property (nonatomic) NSString *account;
+
+/*!
+ The credential requires the user to touch the key to generate it.
+ */
+@property (nonatomic) BOOL requiresTouch;
 
 /*!
  @method initWithURL:
@@ -119,6 +126,8 @@ typedef NS_ENUM(NSUInteger, YKFOATHCredentialAlgorithm) {
  @param url
     The URL containing the credential properties.
  */
-- (nullable instancetype)initWithURL:(nonnull NSURL *)url;
+- (nullable instancetype)initWithURL:(NSURL *)url;
 
 @end
+
+NS_ASSUME_NONNULL_END
