@@ -176,6 +176,28 @@
     }
 }
 
+- (void)testMapKeysSorting {
+    YKFCBORInteger *int1 = YKFCBORInteger(1);
+    YKFCBORInteger *int2 = YKFCBORInteger(2);
+    YKFCBORInteger *int3 = YKFCBORInteger(3);
+    YKFCBORInteger *int4 = YKFCBORInteger(4);
+    
+    YKFCBORTextString *stringA = YKFCBORTextString(@"b");
+    YKFCBORTextString *stringB = YKFCBORTextString(@"aa");
+    YKFCBORTextString *stringC = YKFCBORTextString(@"bb");
+    YKFCBORTextString *stringD = YKFCBORTextString(@"aaa");
+    
+    NSDictionary *testMap = @{stringD: int1, stringC: int2, stringB: int3, stringA: int4}; // reversed order keys
+    YKFCBORMap *cborMap = YKFCBORMap(testMap);
+    
+    NSData *encodedData = [YKFCBOREncoder encodeMap:cborMap];
+    
+    UInt8 bytes[] = {0xa4, 0x61, 0x62, 0x04, 0x62, 0x61, 0x61, 0x03, 0x62, 0x62, 0x62, 0x02, 0x63, 0x61, 0x61, 0x61, 0x01};
+    NSData *expectedData = [NSData dataWithBytes:bytes length:17];
+    
+    XCTAssert([encodedData isEqualToData:expectedData], @"The encoded data does not match the content and the required CTAP2 order.");
+}
+
 #pragma mark - Bool Tests
 
 - (void)testBoolEncoding {
