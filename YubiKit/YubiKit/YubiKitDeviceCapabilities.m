@@ -68,19 +68,21 @@
     return NO;
 }
 
-+ (BOOL)supportsLightningKey {
++ (BOOL)supportsMFIAccessoryKey {
 #ifdef DEBUG
     // When this is set by UTs.
     if (self.fakeDeviceCapabilities) {
-        return [[self.fakeDeviceCapabilities class] supportsLightningKey];
+        return [[self.fakeDeviceCapabilities class] supportsMFIAccessoryKey];
     }
 #endif
 
-    if (self.currentUIDevice.ykf_deviceModel == YKFDeviceModelSimulator) {
+    // Simulator and USB-C type devices
+    if (self.currentUIDevice.ykf_deviceModel == YKFDeviceModelSimulator ||
+        self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro3) {
         return NO;
     }
     if (@available(iOS 10, *)) {
-        return [self systemSupportsLightningKey];
+        return [self systemSupportsMFIAccessoryKey];
     }
     return NO;
 }
@@ -119,8 +121,8 @@
     return ykfDeviceCapabilitiesDeviceIsNFCEnabled;
 }
 
-+ (BOOL)systemSupportsLightningKey {
-    static BOOL ykfDeviceCapabilitiesSystemSupportsLightningKey = YES;
++ (BOOL)systemSupportsMFIAccessoryKey {
+    static BOOL ykfDeviceCapabilitiesSystemSupportsMFIAccessoryKey = YES;
     static dispatch_once_t onceToken;
     
     dispatch_once(&onceToken, ^{
@@ -129,9 +131,9 @@
         
         NSString *systemVersion = self.currentUIDevice.systemVersion;
         if ([excludedVersions containsObject:systemVersion]) {
-            ykfDeviceCapabilitiesSystemSupportsLightningKey = NO;
+            ykfDeviceCapabilitiesSystemSupportsMFIAccessoryKey = NO;
         } else {
-            ykfDeviceCapabilitiesSystemSupportsLightningKey = YES;
+            ykfDeviceCapabilitiesSystemSupportsMFIAccessoryKey = YES;
         }
     });
     
@@ -142,7 +144,7 @@
     }
 #endif
     
-    return ykfDeviceCapabilitiesSystemSupportsLightningKey;
+    return ykfDeviceCapabilitiesSystemSupportsMFIAccessoryKey;
 }
 
 #pragma mark - Testing additions

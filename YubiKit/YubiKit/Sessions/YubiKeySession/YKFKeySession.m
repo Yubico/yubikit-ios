@@ -132,7 +132,7 @@ static NSTimeInterval const YubiKeySessionStreamOpenDelay = 0.2; // seconds
 #pragma mark - Session start/stop
 
 - (void)startSession {
-    YKFAssertReturn(YubiKitDeviceCapabilities.supportsLightningKey, @"Cannot start the key session on an unsupported device.");
+    YKFAssertReturn(YubiKitDeviceCapabilities.supportsMFIAccessoryKey, @"Cannot start the key session on an unsupported device.");
     YKFLogInfo(@"Key Session start requested.");
     
 #ifdef DEBUG
@@ -153,7 +153,7 @@ static NSTimeInterval const YubiKeySessionStreamOpenDelay = 0.2; // seconds
 - (BOOL)startSessionSync {
     YKFAssertOffMainThread();
     
-    YKFAssertReturnValue(YubiKitDeviceCapabilities.supportsLightningKey, @"Cannot start the key session on an unsupported device.", NO);
+    YKFAssertReturnValue(YubiKitDeviceCapabilities.supportsMFIAccessoryKey, @"Cannot start the key session on an unsupported device.", NO);
     YKFAssertReturnValue(self.isKeyConnected, @"Cannot start the session if the key is not connected.", NO);
     
     if (self.sessionState == YKFKeySessionStateOpen) {

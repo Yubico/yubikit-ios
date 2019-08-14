@@ -14,15 +14,15 @@
 
 import UIKit
 
-enum LightningInteractionViewControllerState {
+enum MFIKeyInteractionViewControllerState {
     case insertKey
     case touchKey
     case processing
 }
 
-class LightningInteractionViewController: RootViewController, LightningActionSheetViewDelegate {
+class MFIKeyInteractionViewController: RootViewController, MFIKeyActionSheetViewDelegate {
 
-    private var lightningActionSheetView: LightningActionSheetView?
+    private var mfiKeyActionSheetView: MFIKeyActionSheetView?
     
     // MARK: - Lifecycle
     
@@ -46,13 +46,13 @@ class LightningInteractionViewController: RootViewController, LightningActionShe
     // MARK: - Application Events
     
     @objc func applicationWillResignActive() {
-        dismissLightningActionSheet()
+        dismissMFIKeyActionSheet()
     }
     
     // MARK: - State
     
-    private func set(state: LightningInteractionViewControllerState, message: String) {
-        guard let actionSheet = lightningActionSheetView else {
+    private func set(state: MFIKeyInteractionViewControllerState, message: String) {
+        guard let actionSheet = mfiKeyActionSheetView else {
             return
         }
         switch state {
@@ -75,21 +75,21 @@ class LightningInteractionViewController: RootViewController, LightningActionShe
     
     private func updateActionSheetOrientation() {
         let interfaceOrientation = UIApplication.shared.statusBarOrientation
-        self.lightningActionSheetView?.updateInterfaceOrientation(orientation: interfaceOrientation)
+        self.mfiKeyActionSheetView?.updateInterfaceOrientation(orientation: interfaceOrientation)
     }
     
     // MARK: - Actionsheet Presenting
     
-    func presentLightningActionSheet(state: LightningInteractionViewControllerState, message: String, completion: @escaping ()->Void = {}) {
-        guard lightningActionSheetView == nil else {
+    func presentMFIKeyActionSheet(state: MFIKeyInteractionViewControllerState, message: String, completion: @escaping ()->Void = {}) {
+        guard mfiKeyActionSheetView == nil else {
             set(state: state, message: message)
             completion()
             return
         }
         
-        lightningActionSheetView = LightningActionSheetView.loadViewFromNib()
+        mfiKeyActionSheetView = MFIKeyActionSheetView.loadViewFromNib()
         
-        if let actionSheet = lightningActionSheetView, let parentView = UIApplication.shared.keyWindow {
+        if let actionSheet = mfiKeyActionSheetView, let parentView = UIApplication.shared.keyWindow {
             actionSheet.delegate = self
             actionSheet.frame = parentView.bounds
             parentView.addSubview(actionSheet)
@@ -103,8 +103,8 @@ class LightningInteractionViewController: RootViewController, LightningActionShe
         updateActionSheetOrientation()
     }
     
-    func dismissLightningActionSheet(delayed: Bool = true, completion: @escaping ()->Void = {}) {
-        guard let actionSheet = lightningActionSheetView else {
+    func dismissMFIKeyActionSheet(delayed: Bool = true, completion: @escaping ()->Void = {}) {
+        guard let actionSheet = mfiKeyActionSheetView else {
             completion()
             return
         }
@@ -112,24 +112,24 @@ class LightningInteractionViewController: RootViewController, LightningActionShe
             guard let self = self else {
                 return
             }
-            if let lightingActionSheet = self.lightningActionSheetView {
+            if let lightingActionSheet = self.mfiKeyActionSheetView {
                 lightingActionSheet.removeFromSuperview()
-                self.lightningActionSheetView = nil
+                self.mfiKeyActionSheetView = nil
             }
             completion()
         }
     }
     
-    func dismissLightningActionSheetAndShow(message: String) {
-        dismissLightningActionSheet { [weak self] in
+    func dismissMFIKeyActionSheetAndShow(message: String) {
+        dismissMFIKeyActionSheet { [weak self] in
             self?.present(message: message)
         }
     }
     
-    // MARK: - LightningActionSheetViewDelegate
+    // MARK: - MFIKeyActionSheetViewDelegate
     
-    func lightningActionSheetDidDismiss(_ actionSheet: LightningActionSheetView) {
-        dismissLightningActionSheet(delayed: false, completion: {})
+    func mfiKeyActionSheetDidDismiss(_ actionSheet: MFIKeyActionSheetView) {
+        dismissMFIKeyActionSheet(delayed: false, completion: {})
     }
     
     // MARK: - State Observation
@@ -152,7 +152,7 @@ class LightningInteractionViewController: RootViewController, LightningActionShe
             let keyPath = #keyPath(YKFKeySession.sessionState)
             
             if isObservingSessionStateUpdates {
-                keySession.addObserver(self, forKeyPath: keyPath, options: [], context: &LightningInteractionViewController.observationContext)
+                keySession.addObserver(self, forKeyPath: keyPath, options: [], context: &MFIKeyInteractionViewController.observationContext)
             } else {
                 keySession.removeObserver(self, forKeyPath: keyPath)
             }
@@ -175,7 +175,7 @@ class LightningInteractionViewController: RootViewController, LightningActionShe
             let keyPath = #keyPath(YKFKeySession.fido2Service.keyState)
             
             if isObservingFIDO2ServiceStateUpdates {
-                keySession.addObserver(self, forKeyPath: keyPath, options: [], context: &LightningInteractionViewController.observationContext)
+                keySession.addObserver(self, forKeyPath: keyPath, options: [], context: &MFIKeyInteractionViewController.observationContext)
             } else {
                 keySession.removeObserver(self, forKeyPath: keyPath)
             }
@@ -183,7 +183,7 @@ class LightningInteractionViewController: RootViewController, LightningActionShe
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard context == &LightningInteractionViewController.observationContext else {
+        guard context == &MFIKeyInteractionViewController.observationContext else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
             return
         }

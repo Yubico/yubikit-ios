@@ -296,7 +296,6 @@
 		950C700A22980CFE00E48458 /* FakeUIDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FakeUIDevice.h; sourceTree = "<group>"; };
 		950C700B22980CFE00E48458 /* FakeUIDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FakeUIDevice.m; sourceTree = "<group>"; };
 		950FB9302179D8F6003F712E /* YKFKeyOATHCalculateRequest+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyOATHCalculateRequest+Private.h"; sourceTree = "<group>"; };
-		95137608214FE1E7006C843F /* moly.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = moly.sh; sourceTree = "<group>"; };
 		9513760921512824006C843F /* EAAccessoryManager+Testing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EAAccessoryManager+Testing.h"; sourceTree = "<group>"; };
 		951446A121874013002BB3C5 /* YKFKeyRawCommandService+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyRawCommandService+Private.h"; sourceTree = "<group>"; };
 		951446A221874CC2002BB3C5 /* YKFKeyCommandConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyCommandConfiguration.h; sourceTree = "<group>"; };
@@ -1003,7 +1002,6 @@
 			isa = PBXGroup;
 			children = (
 				956DB683206402AA006B1738 /* build.sh */,
-				95137608214FE1E7006C843F /* moly.sh */,
 				95C29613206247210091318B /* YubiKit */,
 				95885B2620A3187700828D02 /* YubiKitTests */,
 				95C29612206247210091318B /* Products */,

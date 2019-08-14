@@ -16,13 +16,13 @@ import UIKit
 import CoreNFC
 import SafariServices
 
-class OTPScanViewController: LightningInteractionViewController, OTPScanResultsViewDelegate, OTPUIResponderDelegate {
+class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsViewDelegate, OTPUIResponderDelegate {
     
     private let presentTokenDetailsSegueID = "PresentTokenDetailsSegueID"
     
     private var lastScannedToken: YKFOTPTokenProtocol?
     
-    private var waitingForLightningOTP = false
+    private var waitingForReadingOTP = false
     private let otpUIResponder = OTPUIResponder()
     
     // MARK: - Outlets
@@ -35,7 +35,7 @@ class OTPScanViewController: LightningInteractionViewController, OTPScanResultsV
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // This will allow the otpUIResponder to notify this view controller when the OTP from the YubiKey Lightning was read.
+        // This will allow the otpUIResponder to notify this view controller when the OTP from the YubiKey was read.
         view.addSubview(otpUIResponder)
         otpUIResponder.delegate = self
         
@@ -45,22 +45,22 @@ class OTPScanViewController: LightningInteractionViewController, OTPScanResultsV
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if YubiKitDeviceCapabilities.supportsLightningKey {
+        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             // Make sure the session is started (in case it was closed by another demo).
             YubiKitManager.shared.keySession.startSession()
         
-            // Enable state observation (see LightningInteractionViewController)
+            // Enable state observation (see MFIKeyInteractionViewController)
             observeSessionStateUpdates = true
         } else {
-            present(message: "This version of iOS does not support operations with the YubiKey for Lightning.")
+            present(message: "This device or iOS version does not support operations with MFi accessory YubiKeys.")
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if YubiKitDeviceCapabilities.supportsLightningKey {
-            // Disable state observation (see LightningInteractionViewController)
+        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
+            // Disable state observation (see MFIKeyInteractionViewController)
             observeSessionStateUpdates = false
         }
     }
@@ -155,11 +155,11 @@ class OTPScanViewController: LightningInteractionViewController, OTPScanResultsV
             }))
         }
         
-        actionSheet.addAction(UIAlertAction(title: "Plug my key - Over Lightning", style: .default, handler: { [weak self] (action) in
+        actionSheet.addAction(UIAlertAction(title: "Plug my key - From MFi key", style: .default, handler: { [weak self] (action) in
             guard let strongSelf = self else {
                 return
             }
-            strongSelf.readOTPOverLightning()
+            strongSelf.readOTPFromMFIAccessoryKey()
         }))
         
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { [weak self] (action) in
@@ -198,45 +198,45 @@ class OTPScanViewController: LightningInteractionViewController, OTPScanResultsV
         The generation of OTPs over iAP2 HID is currently an experimental feature. This feature may
         change in the final version of the firmware.
     */
-    private func readOTPOverLightning() {        
+    private func readOTPFromMFIAccessoryKey() {        
         // Make the otpUIResponder the first responder to intercept the OTP.
         otpUIResponder.isEnabled = true
-        waitingForLightningOTP = true
+        waitingForReadingOTP = true
         
         if YubiKitManager.shared.keySession.sessionState == .open {
-            presentLightningActionSheet(state: .touchKey, message: "Touch the key to read the OTP.")
+            presentMFIKeyActionSheet(state: .touchKey, message: "Touch the key to read the OTP.")
         } else {
-            presentLightningActionSheet(state: .insertKey, message: "Insert the key to read the OTP.")
+            presentMFIKeyActionSheet(state: .insertKey, message: "Insert the key to read the OTP.")
         }
     }
     
     // MARK: - State Observation
     
     override func keySessionStateDidChange() {
-        guard waitingForLightningOTP else {
+        guard waitingForReadingOTP else {
             return // If the view controller is not actively waiting for an OTP discard the updates.
         }
         let state = YubiKitManager.shared.keySession.sessionState
         
         if state == .open {
-            presentLightningActionSheet(state: .touchKey, message: "Touch the key to read the OTP.")
+            presentMFIKeyActionSheet(state: .touchKey, message: "Touch the key to read the OTP.")
         }
         if state == .closed {
-            waitingForLightningOTP = false
+            waitingForReadingOTP = false
             otpUIResponder.isEnabled = false
-            dismissLightningActionSheet()
+            dismissMFIKeyActionSheet()
         }
     }
 
     // MARK: - OTPUIResponderDelegate
     
     func otpUIResponderDidStartReadingOTP(_ responder: OTPUIResponder) {
-        presentLightningActionSheet(state: .processing, message: "Reading the OTP from the key...")
+        presentMFIKeyActionSheet(state: .processing, message: "Reading the OTP from the key...")
     }
     
     func otpUIResponder(_ responder: OTPUIResponder, didReadOTP otp: String) {
-        waitingForLightningOTP = false
-        dismissLightningActionSheet {
+        waitingForReadingOTP = false
+        dismissMFIKeyActionSheet {
             let token = YKFOTPToken()
             token.type = .unknown
             token.metadataType = .unknown
@@ -267,9 +267,9 @@ class OTPScanViewController: LightningInteractionViewController, OTPScanResultsV
         }
     }
     
-    override func dismissLightningActionSheet(delayed: Bool = true, completion: @escaping ()->Void = {}) {
-        super.dismissLightningActionSheet(delayed: delayed, completion: completion)
-        waitingForLightningOTP = false
+    override func dismissMFIKeyActionSheet(delayed: Bool = true, completion: @escaping ()->Void = {}) {
+        super.dismissMFIKeyActionSheet(delayed: delayed, completion: completion)
+        waitingForReadingOTP = false
         otpUIResponder.isEnabled = false
     }
 }

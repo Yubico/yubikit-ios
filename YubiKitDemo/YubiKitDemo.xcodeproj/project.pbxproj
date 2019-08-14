@@ -12,7 +12,7 @@
 		950A340F203EBA1B005C9754 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 950A340E203EBA1B005C9754 /* AboutViewController.swift */; };
 		951208FC2243C44B0037475A /* FIDO2PinInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951208FB2243C44B0037475A /* FIDO2PinInputController.swift */; };
 		951459B020BED84B00E6757A /* ApplicationUIAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951459AF20BED84B00E6757A /* ApplicationUIAppearance.swift */; };
-		9526E3CC21AFEE480003DAB8 /* LightningInteractionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9526E3CB21AFEE480003DAB8 /* LightningInteractionViewController.swift */; };
+		9526E3CC21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9526E3CB21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift */; };
 		9528AC9420B5685E00513302 /* UIViewAdditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9528AC9320B5685E00513302 /* UIViewAdditions.swift */; };
 		952AF236203ACD1E004C2FDB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952AF235203ACD1E004C2FDB /* RootViewController.swift */; };
 		952C3BFE203C73FB0000A115 /* QRCodeScanWaitingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952C3BFD203C73FB0000A115 /* QRCodeScanWaitingView.swift */; };
@@ -42,8 +42,8 @@
 		9576AF43224B802100CA7C1B /* WebAuthnLoginUserResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9576AF42224B802100CA7C1B /* WebAuthnLoginUserResponse.swift */; };
 		957DE0EC2031B52D00B53569 /* OTPScanContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957DE0EB2031B52D00B53569 /* OTPScanContainerView.swift */; };
 		95885AF2209B1EB300828D02 /* FIDO2Demo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 95885AF1209B1EB300828D02 /* FIDO2Demo.storyboard */; };
-		95885AF5209B230C00828D02 /* LightningActionSheetView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95885AF4209B230C00828D02 /* LightningActionSheetView.xib */; };
-		95885AF7209B265000828D02 /* LightningActionSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95885AF6209B265000828D02 /* LightningActionSheetView.swift */; };
+		95885AF5209B230C00828D02 /* MFIKeyActionSheetView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95885AF4209B230C00828D02 /* MFIKeyActionSheetView.xib */; };
+		95885AF7209B265000828D02 /* MFIKeyActionSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95885AF6209B265000828D02 /* MFIKeyActionSheetView.swift */; };
 		95885AF9209B266D00828D02 /* FIDO2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95885AF8209B266D00828D02 /* FIDO2ViewController.swift */; };
 		95885AFB209B42F700828D02 /* NamedColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95885AFA209B42F700828D02 /* NamedColors.swift */; };
 		95A04D1822523336008E3036 /* KeySessionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A04D1722523336008E3036 /* KeySessionObserver.swift */; };
@@ -78,7 +78,8 @@
 		950A340E203EBA1B005C9754 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		951208FB2243C44B0037475A /* FIDO2PinInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIDO2PinInputController.swift; sourceTree = "<group>"; };
 		951459AF20BED84B00E6757A /* ApplicationUIAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationUIAppearance.swift; sourceTree = "<group>"; };
-		9526E3CB21AFEE480003DAB8 /* LightningInteractionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningInteractionViewController.swift; sourceTree = "<group>"; };
+		952365EB22F850AD00B8F8AB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		9526E3CB21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MFIKeyInteractionViewController.swift; sourceTree = "<group>"; };
 		9528AC9320B5685E00513302 /* UIViewAdditions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewAdditions.swift; sourceTree = "<group>"; };
 		952AF235203ACD1E004C2FDB /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		952C3BFD203C73FB0000A115 /* QRCodeScanWaitingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanWaitingView.swift; sourceTree = "<group>"; };
@@ -108,8 +109,8 @@
 		9576AF48224B9E3200CA7C1B /* WebAuthnRegisterBeginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnRegisterBeginResponse.swift; sourceTree = "<group>"; };
 		957DE0EB2031B52D00B53569 /* OTPScanContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPScanContainerView.swift; sourceTree = "<group>"; };
 		95885AF1209B1EB300828D02 /* FIDO2Demo.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = FIDO2Demo.storyboard; sourceTree = "<group>"; };
-		95885AF4209B230C00828D02 /* LightningActionSheetView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LightningActionSheetView.xib; sourceTree = "<group>"; };
-		95885AF6209B265000828D02 /* LightningActionSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningActionSheetView.swift; sourceTree = "<group>"; };
+		95885AF4209B230C00828D02 /* MFIKeyActionSheetView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MFIKeyActionSheetView.xib; sourceTree = "<group>"; };
+		95885AF6209B265000828D02 /* MFIKeyActionSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MFIKeyActionSheetView.swift; sourceTree = "<group>"; };
 		95885AF8209B266D00828D02 /* FIDO2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIDO2ViewController.swift; sourceTree = "<group>"; };
 		95885AFA209B42F700828D02 /* NamedColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamedColors.swift; sourceTree = "<group>"; };
 		95A04D1722523336008E3036 /* KeySessionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySessionObserver.swift; sourceTree = "<group>"; };
@@ -154,20 +155,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		9526E3CA21AFEE030003DAB8 /* Lightning */ = {
+		9526E3CA21AFEE030003DAB8 /* MFIKeyActionSheet */ = {
 			isa = PBXGroup;
 			children = (
-				95885AF4209B230C00828D02 /* LightningActionSheetView.xib */,
-				95885AF6209B265000828D02 /* LightningActionSheetView.swift */,
-				9526E3CB21AFEE480003DAB8 /* LightningInteractionViewController.swift */,
+				95885AF4209B230C00828D02 /* MFIKeyActionSheetView.xib */,
+				95885AF6209B265000828D02 /* MFIKeyActionSheetView.swift */,
+				9526E3CB21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift */,
 			);
-			path = Lightning;
+			path = MFIKeyActionSheet;
 			sourceTree = "<group>";
 		};
 		9528AC9220B5670B00513302 /* SharedUI */ = {
 			isa = PBXGroup;
 			children = (
-				9526E3CA21AFEE030003DAB8 /* Lightning */,
+				9526E3CA21AFEE030003DAB8 /* MFIKeyActionSheet */,
 				951208FB2243C44B0037475A /* FIDO2PinInputController.swift */,
 				9528AC9320B5685E00513302 /* UIViewAdditions.swift */,
 				951459AF20BED84B00E6757A /* ApplicationUIAppearance.swift */,
@@ -374,6 +375,7 @@
 		95FAFABC202C483E00121DD5 = {
 			isa = PBXGroup;
 			children = (
+				952365EB22F850AD00B8F8AB /* README.md */,
 				95FAFAC7202C483E00121DD5 /* YubiKitDemo */,
 				95FAFAC6202C483E00121DD5 /* Products */,
 				956747CE202C48EC00C7B397 /* Frameworks */,
@@ -474,7 +476,7 @@
 				952C3C00203C74150000A115 /* QRCodeScanWaitingView.xib in Resources */,
 				95F767D42033439F00208B88 /* OTPDemo.storyboard in Resources */,
 				95FAFAD3202C483E00121DD5 /* LaunchScreen.storyboard in Resources */,
-				95885AF5209B230C00828D02 /* LightningActionSheetView.xib in Resources */,
+				95885AF5209B230C00828D02 /* MFIKeyActionSheetView.xib in Resources */,
 				95FAFAD0202C483E00121DD5 /* Assets.xcassets in Resources */,
 				95F767CE20331E6900208B88 /* OTPWaitingScanView.xib in Resources */,
 				95F767D22033381700208B88 /* OTPScanResultsView.xib in Resources */,
@@ -521,9 +523,9 @@
 				952AF236203ACD1E004C2FDB /* RootViewController.swift in Sources */,
 				95FAFAC9202C483E00121DD5 /* AppDelegate.swift in Sources */,
 				95340801224CF3BA00BB9A0D /* WebAuthnAuthenticateFinishRequest.swift in Sources */,
-				95885AF7209B265000828D02 /* LightningActionSheetView.swift in Sources */,
+				95885AF7209B265000828D02 /* MFIKeyActionSheetView.swift in Sources */,
 				953407FB224BAEFA00BB9A0D /* WebAuthnRegisterFinishResponse.swift in Sources */,
-				9526E3CC21AFEE480003DAB8 /* LightningInteractionViewController.swift in Sources */,
+				9526E3CC21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift in Sources */,
 				955DEB3B2099FB4C00259E71 /* WebServiceError.swift in Sources */,
 				950A340B203DC54E005C9754 /* QRCodeScanNotAvailableView.swift in Sources */,
 				95482973218B596600A3D8FA /* OTPUIResponder.swift in Sources */,

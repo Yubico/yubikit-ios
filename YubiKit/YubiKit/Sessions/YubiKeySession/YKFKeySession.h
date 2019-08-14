@@ -61,7 +61,7 @@ typedef NS_ENUM(NSUInteger, YKFKeySessionState) {
  @property sessionState
  
  @abstract
-    This property allows to check and observe the state of the connection with the YubiKey Lightning.
+    This property allows to check and observe the state of the connection with the YubiKey.
  
  NOTE:
     This is a KVO compliant property. Observe it to get updates when the key is connected.
@@ -91,7 +91,7 @@ typedef NS_ENUM(NSUInteger, YKFKeySessionState) {
  @property u2fService
  
  @abstract
-    The shared object to interact with the U2F application from the YubiKey Lightning.
+    The shared object to interact with the U2F application from the YubiKey.
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
@@ -101,7 +101,7 @@ typedef NS_ENUM(NSUInteger, YKFKeySessionState) {
  @property fido2Service
  
  @abstract
-    The shared object to interact with the FIDO2 application from the YubiKey Lightning.
+    The shared object to interact with the FIDO2 application from the YubiKey.
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
@@ -111,7 +111,7 @@ typedef NS_ENUM(NSUInteger, YKFKeySessionState) {
  @property oathService
  
  @abstract
-    The shared object to interact with the OATH application from the YubiKey Lightning.
+    The shared object to interact with the OATH application from the YubiKey.
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
@@ -121,7 +121,7 @@ typedef NS_ENUM(NSUInteger, YKFKeySessionState) {
  @property rawCommandService
  
  @abstract
-    The shared object which provides an interface to send raw commands the YubiKey Lightning.
+    The shared object which provides an interface to send raw commands to the YubiKey.
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
@@ -131,9 +131,9 @@ typedef NS_ENUM(NSUInteger, YKFKeySessionState) {
  @method startSession
  
  @abstract
-    To allow the session to connect and interract with the YubiKey Lightning, the session needs to be started. Calling this
+    To allow the session to connect and interract with the YubiKey, the session needs to be started. Calling this
     method will enable the session to receive events when the key is connected or disconnected and tries to connect to
-    the key if it is already plugged into the lightning port.
+    the key if it is already plugged in.
  
  @discussion
     The session is not started automatically to allow a more granular approch on when the app should listen and interract
@@ -215,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
  @class YKFKeySession
  
  @abstract
-    Provides a list of services for interacting with the YubiKey Lightning.
+    Provides a list of services for interacting with the YubiKey.
  */
 @interface YKFKeySession : NSObject<YKFKeySessionProtocol>
 

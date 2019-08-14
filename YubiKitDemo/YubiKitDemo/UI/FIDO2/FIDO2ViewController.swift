@@ -14,7 +14,7 @@
 
 import UIKit
 
-class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelegate {
+class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate {
     
     private enum FIDO2ViewControllerNextAction {
         case none
@@ -38,25 +38,25 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if YubiKitDeviceCapabilities.supportsLightningKey {
+        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             // Make sure the session is started (in case it was closed by another demo).
             YubiKitManager.shared.keySession.startSession()
         
             updateKeyInfo()
         
-            // Enable state observation (see LightningInteractionViewController)
+            // Enable state observation (see MFIKeyInteractionViewController)
             observeSessionStateUpdates = true
             observeFIDO2ServiceStateUpdates = true
         } else {
-            present(message: "This version of iOS does not support operations with the YubiKey for Lightning.")
+            present(message: "This device or iOS version does not support operations with MFi accessory YubiKeys.")
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        if YubiKitDeviceCapabilities.supportsLightningKey {
-            // Disable state observation (see LightningInteractionViewController)
+        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
+            // Disable state observation (see MFIKeyInteractionViewController)
             observeSessionStateUpdates = false
             observeFIDO2ServiceStateUpdates = false
         
@@ -86,8 +86,8 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
         view.endEditing(true)
     }
     
-    override func lightningActionSheetDidDismiss(_ actionSheet: LightningActionSheetView) {
-        super.lightningActionSheetDidDismiss(actionSheet)
+    override func mfiKeyActionSheetDidDismiss(_ actionSheet: MFIKeyActionSheetView) {
+        super.mfiKeyActionSheetDidDismiss(actionSheet)
         nextAction = .none
         
         webauthnService.cancelAllRequests()
@@ -125,7 +125,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
         else if state == .closing {
             // The key session will close soon.
             webauthnService.cancelAllRequests()
-            dismissLightningActionSheet()
+            dismissMFIKeyActionSheet()
             updateKeyInfo()
         }
     }
@@ -135,7 +135,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
             return
         }
         if fido2Service.keyState == .touchKey {
-            presentLightningActionSheetOnMain(state: .touchKey, message: "Touch the key to complete the operation.")
+            presentMFIKeyActionSheetOnMain(state: .touchKey, message: "Touch the key to complete the operation.")
         }
     }
 
@@ -150,7 +150,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
         
         guard YubiKitManager.shared.keySession.sessionState == .open else {
             nextAction = .register
-            presentLightningActionSheetOnMain(state: .insertKey, message: "Insert the key to register a new account.")
+            presentMFIKeyActionSheetOnMain(state: .insertKey, message: "Insert the key to register a new account.")
             return
         }
         
@@ -158,7 +158,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
         let password = passwordTextField.text!
         let createRequest = WebAuthnUserRequest(username: username, password: password, type: .create)
         
-        presentLightningActionSheetOnMain(state: .processing, message: "Creating account...")
+        presentMFIKeyActionSheetOnMain(state: .processing, message: "Creating account...")
         
         webauthnService.createUserWith(request: createRequest) { [weak self] (response, error) in
             guard let self = self else {
@@ -175,7 +175,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
             let uuid = response.uuid
             let registerBeginRequest = WebAuthnRegisterBeginRequest(uuid: uuid)
             
-            self.presentLightningActionSheetOnMain(state: .processing, message: "Requesting to add a new authenticator...")
+            self.presentMFIKeyActionSheetOnMain(state: .processing, message: "Requesting to add a new authenticator...")
             
             self.webauthnService.registerBeginWith(request: registerBeginRequest) { [weak self] (response, error) in
                 guard let self = self else {
@@ -256,7 +256,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
     }
 
     private func finalizeRegistration(response: YKFKeyFIDO2MakeCredentialResponse, uuid: String, requestId: String, clientDataJSON: Data) {
-        presentLightningActionSheetOnMain(state: .processing, message: "Adding authenticator to the account...")
+        presentMFIKeyActionSheetOnMain(state: .processing, message: "Adding authenticator to the account...")
 
         let attestationObject = response.webauthnAttestationObject
         
@@ -289,7 +289,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
         
         guard YubiKitManager.shared.keySession.sessionState == .open else {
             nextAction = .authenticate
-            presentLightningActionSheetOnMain(state: .insertKey, message: "Insert the key to authenticate.")
+            presentMFIKeyActionSheetOnMain(state: .insertKey, message: "Insert the key to authenticate.")
             return
         }
         
@@ -297,7 +297,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
         let password = passwordTextField.text!
         let loginRequest = WebAuthnUserRequest(username: username, password: password, type: .login)
         
-        presentLightningActionSheetOnMain(state: .processing, message: "Authenticating...")
+        presentMFIKeyActionSheetOnMain(state: .processing, message: "Authenticating...")
         
         webauthnService.loginUserWith(request: loginRequest) { [weak self] (response, error) in
             guard let self = self else {
@@ -314,7 +314,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
             let uuid = response.uuid
             let authenticateBeginRequest = WebAuthnAuthenticateBeginRequest(uuid: uuid)
             
-            self.presentLightningActionSheetOnMain(state: .processing, message: "Requesting for authenticator challenge...")
+            self.presentMFIKeyActionSheetOnMain(state: .processing, message: "Requesting for authenticator challenge...")
             
             self.webauthnService.authenticateBeginWith(request: authenticateBeginRequest) { [weak self] (response, error) in
                 guard let self = self else {
@@ -391,7 +391,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
     }
 
     private func finalizeAuthentication(response: YKFKeyFIDO2GetAssertionResponse, uuid: String, requestId: String, clientDataJSON: Data) {
-        presentLightningActionSheetOnMain(state: .processing, message: "Authenticating...")
+        presentMFIKeyActionSheetOnMain(state: .processing, message: "Authenticating...")
 
         let authenticateFinishRequest = WebAuthnAuthenticateFinishRequest(uuid: uuid,
                                                                           requestId: requestId,
@@ -426,7 +426,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
                     return
                 }
                 guard verify else {
-                    self.dismissLightningActionSheet()
+                    self.dismissMFIKeyActionSheet()
                     return
                 }
                 guard let pin = pin else {
@@ -442,7 +442,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
                     return
                 }
                 
-                self.presentLightningActionSheetOnMain(state: .processing, message: "Verifying PIN...")
+                self.presentMFIKeyActionSheetOnMain(state: .processing, message: "Verifying PIN...")
                 
                 fido2Service.execute(verifyPinRequest) { (error) in
                     completion(error)
@@ -460,7 +460,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
         }
         
         // PIN verification is required for the Make Credential request.
-        self.dismissLightningActionSheetOnMain()
+        self.dismissMFIKeyActionSheetOnMain()
         self.handlePinVerificationRequired { [weak self] (error) in
             guard let self = self else {
                 return
@@ -482,7 +482,7 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
         }
         
         // PIN verification is required for the Get Assertion request.
-        self.dismissLightningActionSheetOnMain()
+        self.dismissMFIKeyActionSheetOnMain()
         self.handlePinVerificationRequired { [weak self] (error) in
             guard let self = self else {
                 return
@@ -524,27 +524,27 @@ class FIDO2ViewController: LightningInteractionViewController, UITextFieldDelega
         }
     }
     
-    private func presentLightningActionSheetOnMain(state: LightningInteractionViewControllerState, message: String) {
+    private func presentMFIKeyActionSheetOnMain(state: MFIKeyInteractionViewControllerState, message: String) {
         dispatchMain { [weak self] in
-            self?.presentLightningActionSheet(state: state, message: message)
+            self?.presentMFIKeyActionSheet(state: state, message: message)
         }
     }
 
-    private func dismissLightningActionSheetOnMain() {
+    private func dismissMFIKeyActionSheetOnMain() {
         dispatchMain { [weak self] in
-            self?.dismissLightningActionSheet(delayed: false)
+            self?.dismissMFIKeyActionSheet(delayed: false)
         }
     }
     
     private func dismissActionSheetAndPresent(error: Error) {
         dispatchMain { [weak self] in
-            self?.dismissLightningActionSheetAndShow(message: error.localizedDescription)
+            self?.dismissMFIKeyActionSheetAndShow(message: error.localizedDescription)
         }
     }
     
     private func dismissActionSheetAndPresent(message: String) {
         dispatchMain { [weak self] in
-            self?.dismissLightningActionSheetAndShow(message: message)
+            self?.dismissMFIKeyActionSheetAndShow(message: message)
         }
     }
 }

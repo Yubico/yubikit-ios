@@ -24,7 +24,7 @@
     return YES;    
 }
 
-+ (BOOL)supportsLightningKey {
++ (BOOL)supportsMFIAccessoryKey {
     return YES;
 }
 

@@ -15,7 +15,7 @@
 @interface YKFAPDU()
 
 /*!
- The APDU raw data which cotain the YubiKey Lightning iAP2 Protocol framing.
+ The APDU raw data which cotains the YubiKey iAP2 Protocol framing.
  */
 @property (nonatomic, readonly) NSData *apduData;
 

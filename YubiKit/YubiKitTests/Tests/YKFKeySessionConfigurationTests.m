@@ -72,7 +72,7 @@
 
 #pragma mark -  Misc Tests
 
-- (void)test_WhenAccessoryIsYubiKeyLightning_AccessoryIsAllowed {
+- (void)test_WhenAccessoryIsYubiKey_AccessoryIsAllowed {
     self.accessory.manufacturer = @"Yubico";
     self.accessory.protocolStrings = @[@"com.yubico.ylp"];
     

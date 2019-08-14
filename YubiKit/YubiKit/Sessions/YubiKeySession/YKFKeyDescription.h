@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
  @property name
  
  @abstract
-    The name of the key (e.g. YubiKey Lightning, etc.).
+    The name of the key (e.g. YubiKey 5Ci, etc.).
  */
 @property(nonatomic, readonly) NSString *name;
 

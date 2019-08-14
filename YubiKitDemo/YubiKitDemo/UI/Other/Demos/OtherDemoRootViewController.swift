@@ -21,18 +21,18 @@ class OtherDemoRootViewController: RootViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if YubiKitDeviceCapabilities.supportsLightningKey {
+        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             YubiKitManager.shared.keySession.startSession()
             observeSessionStateUpdates = true
         } else {
-            present(message: "This version of iOS does not support operations with the YubiKey for Lightning.")
+            present(message: "This device or iOS version does not support operations with MFi accessory YubiKeys.")
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if YubiKitDeviceCapabilities.supportsLightningKey {
+        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             observeSessionStateUpdates = false
             YubiKitManager.shared.keySession.cancelCommands()
         }

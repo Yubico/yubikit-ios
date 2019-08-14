@@ -56,9 +56,9 @@
     XCTAssert(!YubiKitDeviceCapabilities.supportsNFCScanning, @"The device capabilities do not block old devices for NFC");
 }
 
-#pragma mark - Lightning
+#pragma mark - MFI Accessory
 
-- (void)test_WhenRunningUnsupportedOSVersions_LightningKeyIsNotSupported {
+- (void)test_WhenRunningUnsupportedOSVersions_MFIAccessoryKeyIsNotSupported {
     FakeUIDevice *fakeDevice = [[FakeUIDevice alloc] init];
     
     YubiKitDeviceCapabilities.fakeUIDevice = fakeDevice;
@@ -67,11 +67,11 @@
     NSArray *unsupportedVersions = @[@"11.2", @"11.2.1", @"11.2.2", @"11.2.5"];
     for (NSString *version in unsupportedVersions) {
         fakeDevice.systemVersion = version;
-        XCTAssert(!YubiKitDeviceCapabilities.supportsLightningKey, @"The device capabilities do not block unsupported OS version: %@.", version);
+        XCTAssert(!YubiKitDeviceCapabilities.supportsMFIAccessoryKey, @"The device capabilities do not block unsupported OS version: %@.", version);
     }
 }
 
-- (void)test_WhenRunningSupportedOSVersions_LightningKeyIsSupported {
+- (void)test_WhenRunningSupportedOSVersions_MFIAccessoryKeyIsSupported {
     FakeUIDevice *fakeDevice = [[FakeUIDevice alloc] init];
     
     YubiKitDeviceCapabilities.fakeUIDevice = fakeDevice;
@@ -80,17 +80,26 @@
     NSArray *unsupportedVersions = @[@"10.0", @"11.0", @"11.1", @"11.3", @"12.0", @"12.2", @"12.3"];
     for (NSString *version in unsupportedVersions) {
         fakeDevice.systemVersion = version;
-        XCTAssert(YubiKitDeviceCapabilities.supportsLightningKey, @"The device capabilities do not allow supported OS version: %@.", version);
+        XCTAssert(YubiKitDeviceCapabilities.supportsMFIAccessoryKey, @"The device capabilities do not allow supported OS version: %@.", version);
     }
 }
 
-- (void)test_WhenRunningInSimulator_LightningKeyIsNotSupported {
+- (void)test_WhenRunningInSimulator_MFIAccessoryKeyIsNotSupported {
     FakeUIDevice *fakeDevice = [[FakeUIDevice alloc] init];
     
     YubiKitDeviceCapabilities.fakeUIDevice = fakeDevice;
     fakeDevice.ykf_deviceModel = YKFDeviceModelSimulator;
     
-    XCTAssert(!YubiKitDeviceCapabilities.supportsLightningKey, @"The device capabilities do not block the simulator for Lightning");
+    XCTAssert(!YubiKitDeviceCapabilities.supportsMFIAccessoryKey, @"The device capabilities do not block the simulator.");
+}
+
+- (void)test_WhenRunningOnUSBCDevices_MFIAccessoryKeyIsNotSupported {
+    FakeUIDevice *fakeDevice = [[FakeUIDevice alloc] init];
+    
+    YubiKitDeviceCapabilities.fakeUIDevice = fakeDevice;
+    fakeDevice.ykf_deviceModel = YKFDeviceModelIPadPro3;
+    
+    XCTAssert(!YubiKitDeviceCapabilities.supportsMFIAccessoryKey, @"The device capabilities do not block USB-C devices.");
 }
 
 @end

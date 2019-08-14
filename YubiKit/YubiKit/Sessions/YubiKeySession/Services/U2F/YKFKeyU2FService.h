@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
  @class YKFKeyU2FService
  
  @abstract
-    Provides the interface for sending U2F requests to the YubiKey Lightning.
+    Provides the interface for sending U2F requests to the YubiKey.
  @discussion
     The U2F service is mantained by the key session which controls its lifecycle. The application must not create one.
     It has to use only the single shared instance from YKFKeySession and sync its usage with the session state.

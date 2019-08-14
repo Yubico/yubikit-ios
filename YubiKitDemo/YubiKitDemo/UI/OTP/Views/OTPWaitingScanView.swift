@@ -26,11 +26,11 @@ class OTPWaitingScanView: UIView {
         if YubiKitDeviceCapabilities.supportsNFCScanning {
             messageLabel.text = """
                                 Press the Read button below and select how to read the OTP, \
-                                over NFC by scanning the key or over Lightning by inserting the key.
+                                over NFC by scanning the key or from the MFi accessory key, by inserting the key.
                                 """
         } else {
             messageLabel.text = """
-                                Press the Read button below read the OTP, over Lightning by inserting the key.
+                                Press the Read button below read the OTP from the MFi accessory key, by inserting the key.
                                 """
         }
     }

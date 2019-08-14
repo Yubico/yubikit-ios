@@ -15,10 +15,10 @@
 import UIKit
 
 //
-// MARK: - LightningActionSheetView Configuration
+// MARK: - MFIKeyActionSheetViewConfiguration Configuration
 //
 
-class LightningActionSheetViewConfiguration {
+class MFIKeyActionSheetViewConfiguration {
     
     let presentAnimationDuration = 0.3
     let dismissAnimationDuration = 0.2
@@ -48,19 +48,19 @@ class LightningActionSheetViewConfiguration {
 }
 
 //
-// MARK: - LightningActionSheetView
+// MARK: - MFIKeyActionSheetView
 //
 
-protocol LightningActionSheetViewDelegate: NSObjectProtocol {
-    func lightningActionSheetDidDismiss(_ actionSheet: LightningActionSheetView)
+protocol MFIKeyActionSheetViewDelegate: NSObjectProtocol {
+    func mfiKeyActionSheetDidDismiss(_ actionSheet: MFIKeyActionSheetView)
 }
 
-class LightningActionSheetView: UIView {
+class MFIKeyActionSheetView: UIView {
     
-    weak var delegate: LightningActionSheetViewDelegate?
+    weak var delegate: MFIKeyActionSheetViewDelegate?
 
-    private let configuration = LightningActionSheetViewConfiguration()    
-    private static let viewNibName = String(describing: LightningActionSheetView.self)
+    private let configuration = MFIKeyActionSheetViewConfiguration()    
+    private static let viewNibName = String(describing: MFIKeyActionSheetView.self)
     
     private var isPresenting = false
     private var isDismissing = false
@@ -84,11 +84,11 @@ class LightningActionSheetView: UIView {
     
     // MARK: - Lifecycle
     
-    class func loadViewFromNib() -> LightningActionSheetView? {
+    class func loadViewFromNib() -> MFIKeyActionSheetView? {
         guard let nibs = Bundle.main.loadNibNamed(viewNibName, owner: nil, options: nil) else {
             return nil
         }
-        guard let view = nibs.first as? LightningActionSheetView else {
+        guard let view = nibs.first as? MFIKeyActionSheetView else {
             return nil
         }
         return view
@@ -120,7 +120,7 @@ class LightningActionSheetView: UIView {
     // MARK: - Animation States
     
     private func resetState() {
-        borderView.backgroundColor = NamedColor.lightningActionSheetIdleColor
+        borderView.backgroundColor = NamedColor.mfiKeyActionSheetIdleColor
         messageLabel.text = nil
         
         layer.removeAllAnimations()
@@ -130,7 +130,7 @@ class LightningActionSheetView: UIView {
     func animateProcessing(message: String) {
         resetState()
         
-        borderView.backgroundColor = NamedColor.lightningActionSheetProcessingColor
+        borderView.backgroundColor = NamedColor.mfiKeyActionSheetProcessingColor
         messageLabel.text = message
         
         animateKeyConnected()
@@ -140,7 +140,7 @@ class LightningActionSheetView: UIView {
     func animateInsertKey(message: String) {
         resetState()
         
-        borderView.backgroundColor = NamedColor.lightningActionSheetIdleColor
+        borderView.backgroundColor = NamedColor.mfiKeyActionSheetIdleColor
         messageLabel.text = message
         
         animateConnectKey()
@@ -149,7 +149,7 @@ class LightningActionSheetView: UIView {
     func animateKeyInserted(message: String) {
         resetState()
         
-        borderView.backgroundColor = NamedColor.lightningActionSheetIdleColor
+        borderView.backgroundColor = NamedColor.mfiKeyActionSheetIdleColor
         messageLabel.text = message
         
         animateConnectKey()
@@ -158,7 +158,7 @@ class LightningActionSheetView: UIView {
     func animateTouchKey(message: String) {
         resetState()
         
-        borderView.backgroundColor = NamedColor.lightningActionSheetTouchColor
+        borderView.backgroundColor = NamedColor.mfiKeyActionSheetTouchColor
         messageLabel.text = message
         
         animateKeyConnected()
@@ -305,7 +305,7 @@ class LightningActionSheetView: UIView {
         guard let delegate = delegate else {
             return
         }
-        delegate.lightningActionSheetDidDismiss(self)
+        delegate.mfiKeyActionSheetDidDismiss(self)
     }
 }
 
@@ -313,7 +313,7 @@ class LightningActionSheetView: UIView {
 // MARK: - Extensions
 //
 
-extension UIDevice /* Lightning Action Sheet */ {
+extension UIDevice /* MFI Key Action Sheet */ {
     
     func ykd_hasHomeButton() -> Bool {
         if #available(iOS 11.0, *) {
@@ -326,14 +326,14 @@ extension UIDevice /* Lightning Action Sheet */ {
     }
 }
 
-extension NamedColor /* Lightning Action Sheet */ {
+extension NamedColor /* MFI Key Action Sheet */ {
     
     /// The border color of the action sheet action view when no operation is done.
-    static var lightningActionSheetIdleColor = UIColor.white
+    static var mfiKeyActionSheetIdleColor = UIColor.white
     
     /// The border color of the action sheet action view when a touch is required for a operation to continue.
-    static var lightningActionSheetTouchColor = UIColorFrom(hex: 0xBAE950)
+    static var mfiKeyActionSheetTouchColor = UIColorFrom(hex: 0xBAE950)
     
     /// The border color of the action sheet action view when the action sheet is set on a processing state.
-    static var lightningActionSheetProcessingColor = UIColorFrom(hex: 0x76D6FF)
+    static var mfiKeyActionSheetProcessingColor = UIColorFrom(hex: 0x76D6FF)
 }

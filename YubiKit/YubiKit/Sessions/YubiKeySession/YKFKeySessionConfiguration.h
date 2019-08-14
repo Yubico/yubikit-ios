@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol YKFKeySessionConfigurationProtocol <NSObject>
 
-/// Returns YES if the accessory is the YubiKey Lightning.
+/// Returns YES if the accessory is a YubiKey.
 - (BOOL)allowsAccessory:(nonnull id<YKFEAAccessoryProtocol>)accessory;
 
 /// Returns the known session protocol found in the protocols array received from an accessory.

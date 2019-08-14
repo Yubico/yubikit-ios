@@ -29,7 +29,7 @@
     
     accessory.manufacturer = @"Yubico";
     accessory.name = @"YubiKey";
-    accessory.modelNumber = @"Lightning";
+    accessory.modelNumber = @"5Ci";
     accessory.serialNumber = @"AFF3BBEE";
     accessory.firmwareRevision = @"1.0.0";
     accessory.hardwareRevision = @"r1";
@@ -49,7 +49,7 @@
     
     accessory.manufacturer = @"Yubico";
     accessory.name = @"YubiKey";
-    accessory.modelNumber = @"Lightning";
+    accessory.modelNumber = @"5Ci";
     accessory.serialNumber = @"AFF3BBEE";
     accessory.firmwareRevision = @"100";
     accessory.hardwareRevision = @"r1";

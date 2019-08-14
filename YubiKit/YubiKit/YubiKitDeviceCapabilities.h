@@ -46,12 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, nonatomic, assign, readonly) BOOL supportsNFCScanning;
 
 /*!
- @property supportsLightningKey
+ @property supportsMFIAccessoryKey
  
  @abstract
-    Returns YES if the device and the OS version can interact with the YubiKey for Lightning.
+ Returns YES if the device and the OS version can interact with the MFI accessory YubiKeys.
  */
-@property (class, nonatomic, assign, readonly) BOOL supportsLightningKey;
+@property (class, nonatomic, assign, readonly) BOOL supportsMFIAccessoryKey;
 
 @end
 
