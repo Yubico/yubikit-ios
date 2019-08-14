@@ -96,7 +96,7 @@ A modern and more secure approach is to use cryptographic keys which are harder 
 
 **It is always recommended to use this approach, when possible, over any OTP solution.**
 
-Starting from version 2.0.0, YubiKit can interact with Yubico's **YubiKey Lightning**, a security key design by Yubico for iOS devices. This security key allows an iOS application which is using YubiKit to access all the functionality provided by a regular YubiKey over USB. This opens the possibility to use stronger authentication protocols in native iOS application, like FIDO U2F and FIDO2. 
+Starting from version 2.0.0, YubiKit can interact with Yubico's **YubiKey 5Ci**, a security key design by Yubico for iOS devices. This security key allows an iOS application which is using YubiKit to access all the functionality provided by a regular YubiKey over USB. This opens the possibility to use stronger authentication protocols in native iOS application, like FIDO U2F and FIDO2. 
 
 Both of these standards have extensive documentation and guidelines on the [FIDO Alliance](https://fidoalliance.org) portal.
 
@@ -104,7 +104,7 @@ Yubico also provides documentation, tools and libraries for both [FIDO U2F](http
 
 ## 5. Other protocols
 
-The YubiKey Lightning provides also the possibility to use PIV and OpenPGP. For more details about these protocols visit:
+The YubiKey 5Ci provides also the possibility to use PIV and OpenPGP. For more details about these protocols visit:
 
 1. OpenPGP [documentation](https://developers.yubico.com/PGP/) on Yubico Developers.
 2. PIV [documentation](https://developers.yubico.com/PIV/Introduction/YubiKey_and_PIV.html) on Yubico Developers.

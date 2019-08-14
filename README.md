@@ -1,7 +1,7 @@
 # Yubico Mobile iOS SDK - YubiKit 2.0.0 RC1
 
 - **This is a prerelease version of YubiKit. Some of the specifications and APIs may change in the final release. It's recommended to use this documentation and library for prototyping and not for a public release.**
-- **Publishing an application which communicates with a YubiKey with lightning connector requires some additional steps before submitting it for an AppStore review. For more details read the [Publishing on AppStore](#appstore_publishing) section.**
+- **Publishing an application which communicates with an external accessory, such as the YubiKey 5Ci, requires some additional steps before submitting it for an AppStore review. For more details read the [Publishing on AppStore](#appstore_publishing) section.**
 
 ---
 
@@ -9,7 +9,7 @@
 
 The library supports NFC-enabled YubiKeys and provides the APIs to request an OTP (Yubico OTP or HOTP) from the NFC YubiKeys using a NFC-enabled iOS device. The library provides also a built-in QR Code reader which can be used as an alternative enrolment mechanism for iOS devices which don't support NFC reading. 
 
-Starting from version 2.0.0, YubiKit adds support for YubiKeys with lightning connector, such as the YubiKey 5Ci, a security key design by Yubico for iOS devices.
+Starting from version 2.0.0, YubiKit adds support for the YubiKey 5Ci, a security key design by Yubico for iOS devices.
 
 The library is provided with a demo application which shows a complete example of how to integrate and use all the features of the library in an iOS project.
 
@@ -49,7 +49,7 @@ YubiKit is provided as a static library<sup>[1]</sup> to maximise the compatibil
 <a name="integration_steps_1"></a>
 ### 2.1 Prepare the project 
 
-Depending on the requirements of the application, the project may use all or just some features of YubiKit. If the application is using the NFC reader, follow the steps to configure the project from **Configure the project to use the built-in NFC and QR Code readers**. If the application requires to communicate with a YubiKey with lightning connector, jump to **Enable the application to communicate with a YubiKey with lightning connector**.
+Depending on the requirements of the application, the project may use all or just some features of YubiKit. If the application is using the NFC reader, follow the steps to configure the project from **Configure the project to use the built-in NFC and QR Code readers**. If the application requires to communicate with a MFi accessory YubiKey, jump to **Enable the application to communicate with a MFi accessory YubiKey**.
 
 ---
 
@@ -82,14 +82,14 @@ The iOS SDK doesn't display a permission dialog before giving access to NFC, eve
 
 ---
 
-#### Enable the application to communicate with a YubiKey with lightning connector
+#### Enable the application to communicate with a MFi accessory YubiKey
 
-To interact with a YubiKey with lightning connector, the application needs to inform the OS that it's able to talk to an external accessory which communicates over a list of specified protocols. The YubiKey 5Ci communicates over a protocol called **com.yubico.ylp**. To enable this capability follow these steps:
+To interact with a MFi accessory YubiKey, the application needs to inform the OS that it's able to talk to an external accessory which communicates over a list of specified protocols. The YubiKey 5Ci communicates over a protocol called **com.yubico.ylp**. To enable this capability follow these steps:
 
 * Open your *info.plist* file and a new entry for **Supported external accessory protocols**. The corresponding plist key for this property is **UISupportedExternalAccessoryProtocols**. The value of this key is an array of protocols the application can use to talk to an external accessory. 
-* Add to the list a new item with the value **com.yubico.ylp**. YLP stands for *Yubico Lightning Protocol*.
+* Add to the list a new item with the value **com.yubico.ylp**.
 
-Now the OS will allow the application to establish a communication channel with the YubiKey when the key is plugged in the lightning port. The Demo application of the library also includes this capability.
+Now the OS will allow the application to establish a communication channel with the YubiKey when the key is plugged into the device. The Demo application of the library also includes this capability.
 
 ---
 
@@ -350,7 +350,7 @@ To enable the `YKFKeySession` to receive events and connect to the YubiKey 5Ci, 
 
 1. In the YubiKit Demo application the session is started at launch and remains active throughout the lifetime of the application to demo the U2F functionality. Usually the session should be started when an authentication UI is displayed and stopped when it goes away. In this way YubiKit does not retain unnecessary resources.
 
-2. Before starting the key session, the application should verify if the iOS version is supported by the library by looking at the `supportsLightningKey` property on `YubiKitDeviceCapabilities`
+2. Before starting the key session, the application should verify if the iOS version is supported by the library by looking at the `supportsMFIAccessoryKey` property on `YubiKitDeviceCapabilities`
 
 ---
 
@@ -630,7 +630,7 @@ Unlike the other functionalities from the YubiKey 5Ci, the OTP generation does n
 
 The OTP generation mechanism follows these steps when outputting the OTP into a preexisting text field which is the first responder, like a focused text field inside a web page:
 
-1. The user plugs the key into the lightning port.
+1. The user plugs the key into the the device.
 2. The user is touching the key.
 3. The key will start emulating an external keyboard which will cause the virtual keyboard (if present) to be temporary dismissed.
 4. The OTP is sent to the OS.
@@ -1453,7 +1453,7 @@ Before publishing on AppStore there are a few additional steps required when usi
 
 When using only the NFC functionality to read OTPs, there are no additional requirements from Apple prior to publish the application on AppStore. 
 
-When communicating with a YubiKey with lightning connector, the application will communicate with an external accessory. Apple requires from the manufacturer of the accessory (in this case Yubico) to provide a list of applications which can talk to the accessory over the iAP2 custom protocol (for the YubiKey the iAP2 protocol is called **com.yubico.ylp**). This process is called **Application Whitelisting**. The process involves adding the application *Bundle ID* to a list of allowed applications which can communicate with the YubiKey. This whitelisting has to be completed before submitting the application for an AppStore review because the AppStore reviewers will verify it. For more details about this process contact Yubico.
+When communicating with a MFi accessory YubiKey, the application will communicate with an external accessory. Apple requires from the manufacturer of the accessory (in this case Yubico) to provide a list of applications which can talk to the accessory over the iAP2 custom protocol (for the YubiKey the iAP2 protocol is called **com.yubico.ylp**). This process is called **Application Whitelisting**. The process involves adding the application *Bundle ID* to a list of allowed applications which can communicate with the YubiKey. This whitelisting has to be completed before submitting the application for an AppStore review because the AppStore reviewers will verify it. For more details about this process contact Yubico.
 
 If the application was not submitted for an AppStore review (the application is still in development), there is no need to whitelist it before starting the development. If the [integration steps](#integration_steps) are correctly followed, the application can communicate with the YubiKey.
 
@@ -1472,7 +1472,7 @@ Yubikit doesn't communicate with any services, like web services or other type o
 
 #### Q3. Can I use YubiKit with other devices which are not from Yubico?
 
-YubiKit is a library which should be used only to interact with a device manufactured by Yubico. While some parts of it may work with other devices, the library was developed and tested to work with YubiKeys. When attaching a lightning device, YubiKit will always check if the manufacturer of the device is Yubico before connecting to it.
+YubiKit is a library which should be used only to interact with a device manufactured by Yubico. While some parts of it may work with other devices, the library was developed and tested to work with YubiKeys. When attaching a MFI accessory, YubiKit will always check if the manufacturer of the device is Yubico before connecting to it.
 
 #### Q4. Is YubiKit compiled with support for Bitcode and Position Independent code?
 
@@ -1486,13 +1486,17 @@ No, YubiKit is not logging in release mode. The logs from YubiKit will show only
 
 YubiKit should work on any modern version of iOS (10, 11 and 12) with a few exceptions\*. It's recommended to always ask the users to upgrade to the latest version of iOS to protect them from known, old iOS issues. Supporting the last 2 version of iOS (n and n-1) is usually a good practice to keep the old versions of iOS out. According to [Apple statistics](https://developer.apple.com/support/app-store/), ~90-95% of all iOS devices run the latest 2 versions of iOS because upgrading the OS is free and Apple usually provides a device with upgrades for 5 years.
 
-\* Some versions of iOS had bugs affecting all accessories communicating over lightning. iOS 11.2 was one of them where the applications could not communicate with lightning accessories due to some bugs in the XPC communication. The bug was fixed by Apple in iOS 11.2.6. For these reasons it's recommended to take in consideration rare but possible iOS bugs when designing the application. 
+\* Some versions of iOS had bugs affecting all external accessories. iOS 11.2 was one of them where the applications could not communicate with accessories due to some bugs in the XPC communication. The bug was fixed by Apple in iOS 11.2.6. For these reasons it's recommended to take in consideration rare but possible iOS bugs when designing the application. 
 
-#### Q7. How can I debug the application while using a YubiKey with lightning connector?
+#### Q7. How can I debug the application while using a MFi accessory YubiKey?
 
 Starting from Xcode 9, the IDE provides the ability to debug the application wirelessly. In this way the physical connector is not used for connecting the device to the computer, for debugging the application. This [WWDC session](https://developer.apple.com/videos/play/wwdc2017/404/) explains the wireless debugging functionality in Xcode.
 
-#### Q8. What is the PIV attestation certificate of the YubiKey?
+#### Q8. Are the USB-C type iOS devices supported by the YubiKey 5Ci?
+
+The USB-C type iOS devices, such as the iPad Pro 3rd generation, have limited support when using the YubiKey 5Ci or another type of YubiKey with USB-C connector. The OS is not officially supporting external accessories on these devices. However these devices support external USB keyboards, so the OTP functionality of the key will work and the key can be used to generate Yubico OTPs and HOTPs. 
+
+#### Q9. What is the PIV attestation certificate of the YubiKey?
 
 The PIV attestation certificate is published [here](https://developers.yubico.com/PIV/Introduction/piv-attestation-ca.pem), on Yubico Developers website.
 
