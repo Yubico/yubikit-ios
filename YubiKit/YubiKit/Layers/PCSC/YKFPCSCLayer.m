@@ -24,11 +24,11 @@
 #import "YKFKeySession+Private.h"
 #import "YKFNSDataAdditions+Private.h"
 
-static NSString* const YKFPCSCLayerReaderName = @"YubiKey Lightning";
+static NSString* const YKFPCSCLayerReaderName = @"YubiKey";
 
-// NEO V3 ATR
-static const UInt8 YKFPCSCNeoAtrSize = 22;
-static const UInt8 YKFPCSCNeoAtr[] = {0x3b, 0xfc, 0x13, 0x00, 0x00, 0x81, 0x31, 0xfe, 0x15, 0x59, 0x75, 0x62, 0x69, 0x6b, 0x65, 0x79, 0x4e, 0x45, 0x4f, 0x72, 0x33, 0xe1};
+// YK5 ATR
+static const UInt8 YKFPCSCAtrSize = 23;
+static const UInt8 YKFPCSCAtr[] = {0x3b, 0xfd, 0x13, 0x00, 0x00, 0x81, 0x31, 0xfe, 0x15, 0x80, 0x73, 0xc0, 0x21, 0xc0, 0x57, 0x59, 0x75, 0x62, 0x69, 0x4b, 0x65, 0x79, 0x40};
 
 // Some constants to avoid too many unnecessary contexts in one app. Ideally the host app should
 // use a singleton to access the key, even when using PC/SC instead of replicating the same execution
@@ -52,6 +52,14 @@ static const NSUInteger YKFPCSCLayerCardLimitPerContext = 10;
 
 
 @implementation YKFPCSCLayer
+
+@synthesize cardState;
+@synthesize cardSerial;
+@synthesize cardAtr;
+@synthesize statusChange;
+@synthesize deviceFriendlyName;
+@synthesize deviceModelName;
+@synthesize deviceVendorName;
 
 #pragma mark - Lifecycle
 
@@ -81,6 +89,57 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
         self.errorMap = [[YKFPCSCErrorMap alloc] init];
     }
     return self;
+}
+
+#pragma mark - Property Overrides
+
+- (SInt32)cardState {
+    if (self.keySession.isKeyConnected) {
+        if (self.keySession.sessionState == YKFKeySessionStateOpen) {
+            return YKF_SCARD_SPECIFICMODE;
+        }
+        return YKF_SCARD_SWALLOWED;
+    }
+    return YKF_SCARD_ABSENT;
+}
+
+- (NSString *)cardSerial {
+    if (self.keySession.isKeyConnected) {
+        return self.keySession.keyDescription.serialNumber;
+    }
+    return nil;
+}
+
+- (NSData *)cardAtr {
+    return [NSData dataWithBytes:YKFPCSCAtr length:YKFPCSCAtrSize];
+}
+
+- (SInt64)statusChange {
+    if (self.keySession.isKeyConnected) {
+        return YKF_SCARD_STATE_PRESENT | YKF_SCARD_STATE_CHANGED;
+    }
+    return YKF_SCARD_STATE_EMPTY | YKF_SCARD_STATE_CHANGED;
+}
+
+- (NSString *)deviceFriendlyName {
+    if (self.keySession.isKeyConnected) {
+        return self.keySession.keyDescription.name;
+    }
+    return nil;
+}
+
+- (NSString *)deviceModelName {
+    if (self.keySession.isKeyConnected) {
+        return self.keySession.keyDescription.name;
+    }
+    return nil;
+}
+
+- (NSString *)deviceVendorName {
+    if (self.keySession.isKeyConnected) {
+        return self.keySession.keyDescription.manufacturer;
+    }
+    return nil;
 }
 
 #pragma mark - PC/SC
@@ -140,34 +199,6 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
         return YKF_SCARD_S_SUCCESS;
     }
     return YKF_SCARD_E_NO_READERS_AVAILABLE;
-}
-
-- (SInt32)getCardState {
-    if (self.keySession.isKeyConnected) {
-        if (self.keySession.sessionState == YKFKeySessionStateOpen) {
-            return YKF_SCARD_SPECIFICMODE;
-        }
-        return YKF_SCARD_SWALLOWED;
-    }
-    return YKF_SCARD_ABSENT;
-}
-
-- (SInt64)getStatusChange {    
-    if (self.keySession.isKeyConnected) {
-        return YKF_SCARD_STATE_PRESENT | YKF_SCARD_STATE_CHANGED;
-    }
-    return YKF_SCARD_STATE_EMPTY | YKF_SCARD_STATE_CHANGED;
-}
-
-- (NSString *)getCardSerial {
-    if (self.keySession.isKeyConnected) {
-        return self.keySession.keyDescription.serialNumber;
-    }
-    return nil;
-}
-
-- (NSData *)getCardAtr {
-    return [NSData dataWithBytes:YKFPCSCNeoAtr length:YKFPCSCNeoAtrSize];
 }
 
 #pragma mark - Context and Card tracking helpers

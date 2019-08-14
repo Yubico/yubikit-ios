@@ -16,6 +16,30 @@
 
 @implementation FakeYKFPCSCLayer
 
+@synthesize cardState;
+@synthesize cardSerial;
+@synthesize cardAtr;
+@synthesize statusChange;
+@synthesize deviceFriendlyName;
+@synthesize deviceModelName;
+@synthesize deviceVendorName;
+
+- (NSString *)cardSerial {
+    return self.getCardSerialResponse;
+}
+
+- (NSData *)cardAtr {
+    return [NSData data];
+}
+
+- (SInt32)cardState {
+    return self.getCardStateResponse;
+}
+
+- (SInt64)statusChange {
+    return self.getStatusChangeResponse;
+}
+
 - (BOOL)addCard:(SInt32)card toContext:(SInt32)context {
     return self.addCardToContextResponse;
 }
@@ -42,22 +66,6 @@
 
 - (SInt64)disconnectCard {
     return self.disconnectCardResponse;
-}
-
-- (NSString *)getCardSerial {
-    return self.getCardSerialResponse;
-}
-
-- (NSData *)getCardAtr {
-    return [NSData data];
-}
-
-- (SInt32)getCardState {
-    return self.getCardStateResponse;
-}
-
-- (SInt64)getStatusChange {
-    return self.getStatusChangeResponse;
 }
 
 - (SInt64)listReaders:(NSString **)yubikeyReaderName {

@@ -127,7 +127,7 @@
 #pragma mark - Listing Readers
 
 - (void)test_WhenListingReaders_CanAskForReadersLengthSize {
-    NSString *readerName = @"YubiKey Lightning";
+    NSString *readerName = @"YubiKey";
     
     self.pcscLayer.listReadersResponse = YKF_SCARD_S_SUCCESS;
     self.pcscLayer.listReadersResponseParam = readerName;
@@ -145,7 +145,7 @@
 }
 
 - (void)test_WhenListingReaders_TheKeyReaderNameIsReturned {
-    NSString *expectedReaderName = @"YubiKey Lightning";
+    NSString *expectedReaderName = @"YubiKey";
     
     self.pcscLayer.listReadersResponse = YKF_SCARD_S_SUCCESS;
     self.pcscLayer.listReadersResponseParam = expectedReaderName;
@@ -170,7 +170,7 @@
 }
 
 - (void)test_WhenListingReadersWithSmallBuffer_SmallBufferErrorIsReturned {
-    NSString *expectedReaderName = @"YubiKey Lightning";
+    NSString *expectedReaderName = @"YubiKey";
     
     self.pcscLayer.listReadersResponse = YKF_SCARD_S_SUCCESS;
     self.pcscLayer.listReadersResponseParam = expectedReaderName;
@@ -236,7 +236,7 @@
     self.pcscLayer.connectCardResponse = YKF_SCARD_S_SUCCESS;
     
     [self executeOnBackgroundQueueAndWait:^{
-        const char *reader = "YubiKey Lightning";
+        const char *reader = "YubiKey";
         SInt64 result = YKF_SCARD_S_SUCCESS;
         SInt32 context = 0;
         UInt32 activeProtocol = YKF_SCARD_PROTOCOL_T1;
@@ -255,7 +255,7 @@
     self.pcscLayer.connectCardResponse = YKF_SCARD_F_WAITED_TOO_LONG;
     
     [self executeOnBackgroundQueueAndWait:^{
-        const char *reader = "YubiKey Lightning";
+        const char *reader = "YubiKey";
         SInt64 result = YKF_SCARD_S_SUCCESS;
         SInt32 context = 0;
         UInt32 activeProtocol = YKF_SCARD_PROTOCOL_T1;
@@ -306,7 +306,7 @@
     self.pcscLayer.contextForCardResponse = 100;
     self.pcscLayer.getCardStateResponse = YKF_SCARD_STATE_PRESENT;
     self.pcscLayer.listReadersResponse = YKF_SCARD_S_SUCCESS;
-    self.pcscLayer.listReadersResponseParam = @"YubiKey Lightning";
+    self.pcscLayer.listReadersResponseParam = @"YubiKey";
     
     [self executeOnBackgroundQueueAndWait:^{
         SInt64 result = YKF_SCARD_S_SUCCESS;
@@ -326,7 +326,7 @@
     self.pcscLayer.contextForCardResponse = 100;
     self.pcscLayer.getCardStateResponse = YKF_SCARD_STATE_PRESENT;
     self.pcscLayer.listReadersResponse = YKF_SCARD_S_SUCCESS;
-    self.pcscLayer.listReadersResponseParam = @"YubiKey Lightning";
+    self.pcscLayer.listReadersResponseParam = @"YubiKey";
     
     [self executeOnBackgroundQueueAndWait:^{
         SInt64 result = YKF_SCARD_S_SUCCESS;

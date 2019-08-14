@@ -18,13 +18,6 @@
 #import "YKFAssert.h"
 
 /*
- Constants used by YKFSCardGetAttrib.
- */
-static const char *YKFPCSCLayerDeviceFriendlyName = "YubiKey Lightning";
-static const char *YKFPCSCLayerDeviceVendorName = "Yubico";
-static const char *YKFPCSCLayerDeviceModelName = "Lightning";
-
-/*
  Assigns a random context value and creates the PC/SC communication layer.
  */
 SInt64 YKFSCardEstablishContext(UInt32 scope, const void *reserved1, const void *reserved2, SInt32 *context) {
@@ -168,7 +161,7 @@ SInt64 YKFSCardStatus(SInt32 card, char *readerNames, UInt32 *readerLen, UInt32 
     // State
     
     if (state) {
-        *state = [YKFPCSCLayer.shared getCardState];
+        *state = YKFPCSCLayer.shared.cardState;
     }
     
     // Protocol
@@ -179,7 +172,7 @@ SInt64 YKFSCardStatus(SInt32 card, char *readerNames, UInt32 *readerLen, UInt32 
     
     // ATR
     
-    NSData *keyAtr = [YKFPCSCLayer.shared getCardAtr];
+    NSData *keyAtr = YKFPCSCLayer.shared.cardAtr;
     if (keyAtr.length) {
         UInt8 *keyAtrBytes = (UInt8 *)keyAtr.bytes;
         
@@ -213,10 +206,10 @@ SInt64 YKFSCardGetStatusChange(SInt32 context, UInt32 timeout, YKF_SCARD_READERS
     }
     
     // 1. Get the key connection status.
-    UInt8 status = [YKFPCSCLayer.shared getStatusChange];
+    UInt8 status = YKFPCSCLayer.shared.statusChange;
     
     // 2. Get the ATR
-    NSData *keyAtr = [YKFPCSCLayer.shared getCardAtr];
+    NSData *keyAtr = YKFPCSCLayer.shared.cardAtr;
     NSCAssert(keyAtr.length <= YKF_MAX_ATR_SIZE, @"ATR value too long.");
     
     UInt8 *atrValue = (UInt8 *)keyAtr.bytes;
@@ -333,11 +326,11 @@ SInt64 YKFSCardGetAttrib(SInt32 card, UInt32 attrId, UInt8 *attr, UInt32 *attrLe
     const char *attributeValue = nil;
     switch (attrId) {
         case YKF_SCARD_ATTR_DEVICE_FRIENDLY_NAME:
-            attributeValue = YKFPCSCLayerDeviceFriendlyName;
+            attributeValue = YKFPCSCLayer.shared.deviceFriendlyName.UTF8String;
             break;
 
         case YKF_SCARD_ATTR_VENDOR_IFD_SERIAL_NO: {
-                NSString *serial = [YKFPCSCLayer.shared getCardSerial];
+                NSString *serial = YKFPCSCLayer.shared.cardSerial;
                 if (!serial.length) {
                     return YKF_SCARD_S_SUCCESS;
                 }
@@ -346,11 +339,11 @@ SInt64 YKFSCardGetAttrib(SInt32 card, UInt32 attrId, UInt8 *attr, UInt32 *attrLe
             break;
 
         case YKF_SCARD_ATTR_VENDOR_IFD_TYPE:
-            attributeValue = YKFPCSCLayerDeviceModelName;
+            attributeValue = YKFPCSCLayer.shared.deviceModelName.UTF8String;
             break;
 
         case YKF_SCARD_ATTR_VENDOR_NAME:
-            attributeValue = YKFPCSCLayerDeviceVendorName;
+            attributeValue = YKFPCSCLayer.shared.deviceVendorName.UTF8String;
             break;
             
         default:

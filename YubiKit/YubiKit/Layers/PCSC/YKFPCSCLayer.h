@@ -23,53 +23,43 @@
 
 @protocol YKFPCSCLayerProtocol<NSObject>
 
+@property (nonatomic, readonly) SInt32 cardState;
+@property (nonatomic, readonly, nullable) NSString *cardSerial;
+@property (nonatomic, readonly, nonnull) NSData *cardAtr;
+
+@property (nonatomic, readonly) SInt64 statusChange;
+
+@property (nonatomic, readonly, nullable) NSString *deviceFriendlyName;
+@property (nonatomic, readonly, nullable) NSString *deviceModelName;
+@property (nonatomic, readonly, nullable) NSString *deviceVendorName;
+
 /*!
- Used by YKFSCardConnect.
+ Connects to the card. In the YubiKit context this opens the session with the key.
  */
 - (SInt64)connectCard;
 
 /*!
- Used by YKFSCardReconnect.
+  Reconnects to the card. In the YubiKit context this reopens the session with the key.
  */
 - (SInt64)reconnectCard;
 
 /*!
- Used by YKFSCardDisconnect.
+ Disconnects the card. In the YubiKit context this closes the session with the key.
  */
 - (SInt64)disconnectCard;
 
 /*!
- Used by YKFSCardTransmit.
+ Sends some data the card. In the YubiKit context this sends the data to the key.
  */
 - (SInt64)transmit:(nonnull NSData *)commandData response:(NSData *_Nonnull*_Nullable)response;
 
 /*!
- Used by YKFSCardListReaders.
+ Returns the list of available readers. In the YubiKit context this returns the key name as a reader.
  */
 - (SInt64)listReaders:(NSString *_Nonnull*_Nullable)yubikeyReaderName;
 
 /*!
- Used by YKFSCardStatus.
- */
-- (SInt32)getCardState;
-
-/*!
- Used by YKFSCardGetStatusChange.
- */
-- (SInt64)getStatusChange;
-
-/*!
- Used by YKFSCardStatus.
- */
-- (nullable NSString *)getCardSerial;
-
-/*!
- Used by YKFSCardStatus.
- */
-- (nonnull NSData *)getCardAtr;
-
-/*!
- Used by YKFPCSCStringifyError.
+ Used by YKFPCSCStringifyError to create a human readable error from a defined code.
  */
 - (nullable NSString *)stringifyError:(SInt64)errorCode;
 
@@ -88,7 +78,7 @@
 /*!
  @abstract
     Removes an existing context from the layer. This happens when a context is released from the PC/SC interface.
- @returns
+ @return
     YES if the context was removed.
  */
 - (BOOL)removeContext:(SInt32)context;
@@ -96,7 +86,7 @@
 /*!
  @abstract
     Adds a card which is associated with a context.
- @returns
+ @return
     YES if success.
  */
 - (BOOL)addCard:(SInt32)card toContext:(SInt32)context;
@@ -104,25 +94,25 @@
 /*!
  @abstract
     Removes a card from its associated context.
- @returns
+ @return
     YES if success.
  */
 - (BOOL)removeCard:(SInt32)card;
 
 /*!
- @returns
+ @return
     YES if the context is known by the layer, i.e. it was added using [addContext:].
  */
 - (BOOL)contextIsValid:(SInt32)context;
 
 /*!
- @returns
+ @return
     YES if the card is known by the layer, i.e. it was added using [addCard:toContext:].
  */
 - (BOOL)cardIsValid:(SInt32)card;
 
 /*!
- @returns
+ @return
     The context associated with the card if any. If no context is found returns 0.
  */
 - (SInt32)contextForCard:(SInt32)card;
