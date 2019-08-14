@@ -185,6 +185,12 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
             }
             break;
                 
+            case YKFKeyAPDUErrorCodeInsNotSupported: {
+                [strongSelf updateKeyState:YYKFKeyU2FServiceKeyStateIdle];
+                completion(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorMissingApplicationCode]);
+            }
+            break;
+                
             // Errors - The status code is the error. The key doesn't send any other information.
             default: {
                 [strongSelf updateKeyState:YYKFKeyU2FServiceKeyStateIdle];

@@ -146,7 +146,6 @@
     NSArray *listOfErrorStatusCodes = @[
         @[@(0x00), @(0x69), @(0x84), @(YKFKeyAPDUErrorCodeDataInvalid)],
         @[@(0x00), @(0x67), @(0x00), @(YKFKeyAPDUErrorCodeWrongLength)],
-        @[@(0x00), @(0x6D), @(0x00), @(YKFKeyAPDUErrorCodeInsNotSupported)],
         @[@(0x00), @(0x6E), @(0x00), @(YKFKeyAPDUErrorCodeCLANotSupported)],
         @[@(0x00), @(0x6F), @(0x00), @(YKFKeyAPDUErrorCodeUnknown)]
     ];
@@ -173,6 +172,41 @@
         XCTAssert(result == XCTWaiterResultCompleted, @"");
         
         XCTAssertTrue(errorReceived, @"Status error not received back.");
+    }
+}
+
+- (void)test_WhenExecutingU2FRequestWithU2FDisabled_DisabledApplicationErrorIsReceivedBack {
+    NSArray *listOfErrorStatusCodes = @[
+        @[@(0x00), @(0x6D), @(0x00), @(YKFKeySessionErrorMissingApplicationCode)], // Ins Not Supported
+        @[@(0x00), @(0x6A), @(0x82), @(YKFKeySessionErrorMissingApplicationCode)]  // Missing file
+    ];
+    
+    for (NSArray *statusCode in listOfErrorStatusCodes) {
+        NSData *applicationSelectionResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+        if ([statusCode[1] intValue] == 0x6A) { // Missing file 
+            applicationSelectionResponse = [self dataWithBytes:@[statusCode[0], statusCode[1], statusCode[2]]];
+        }
+        
+        NSData *errorResponse = [self dataWithBytes:@[statusCode[0], statusCode[1], statusCode[2]]];
+        int expectedErrorCode = [statusCode[3] intValue];
+        
+        self.keyConnectionController.commandExecutionResponseDataSequence = @[applicationSelectionResponse, errorResponse];
+        
+        __block BOOL errorReceived = NO;
+        YKFKeyU2FSignRequest *signRequest = [[YKFKeyU2FSignRequest alloc] initWithChallenge:self.challenge keyHandle:self.keyHandle appId:self.appId];
+        XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"U2F"];
+        
+        YKFKeyU2FServiceSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
+            errorReceived = error.code == expectedErrorCode;
+            [expectation fulfill];
+        };
+        
+        [self.u2fService executeSignRequest:signRequest completion:completionBlock];
+        
+        XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];
+        XCTAssert(result == XCTWaiterResultCompleted, @"");
+        
+        XCTAssertTrue(errorReceived, @"Disabled application error not received back.");
     }
 }
 

@@ -623,9 +623,15 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
             }
             break;
                 
-            default: {
-                completion(nil, [YKFKeyFIDO2Error errorWithCode:statusCode]);
+            case YKFKeyAPDUErrorCodeInsNotSupported: {
                 [strongSelf updateKeyState:YKFKeyFIDO2ServiceKeyStateIdle];
+                completion(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorMissingApplicationCode]);
+            }
+            break;
+                
+            default: {
+                [strongSelf updateKeyState:YKFKeyFIDO2ServiceKeyStateIdle];
+                completion(nil, [YKFKeyFIDO2Error errorWithCode:statusCode]);
             }
         }
     }];
