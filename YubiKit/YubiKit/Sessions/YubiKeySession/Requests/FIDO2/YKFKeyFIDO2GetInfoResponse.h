@@ -63,6 +63,14 @@ extern NSString* const YKFKeyFIDO2GetInfoResponseOptionResidentKey;
  */
 extern NSString* const YKFKeyFIDO2GetInfoResponseOptionUserPresence;
 
+/*!
+ @abstract
+    Key to fetch uv value from YKFKeyFIDO2GetInfoResponse.options
+ @discussion
+    Indicates that the device is capable of verifying the user within itself.
+ */
+extern NSString* const YKFKeyFIDO2GetInfoResponseOptionUserVerification;
+
 /**
  * ---------------------------------------------------------------------------------------------------------------------
  * @name YKFKeyFIDO2GetInfoResponse

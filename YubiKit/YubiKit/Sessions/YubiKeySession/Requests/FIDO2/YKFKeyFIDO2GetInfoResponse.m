@@ -21,6 +21,7 @@ NSString* const YKFKeyFIDO2GetInfoResponseOptionClientPin = @"clientPin";
 NSString* const YKFKeyFIDO2GetInfoResponseOptionPlatformDevice = @"plat";
 NSString* const YKFKeyFIDO2GetInfoResponseOptionResidentKey = @"rk";
 NSString* const YKFKeyFIDO2GetInfoResponseOptionUserPresence = @"up";
+NSString* const YKFKeyFIDO2GetInfoResponseOptionUserVerification = @"uv";
 
 typedef NS_ENUM(NSUInteger, YKFKeyFIDO2GetInfoResponseKey) {
     YKFKeyFIDO2GetInfoResponseKeyVersions       = 0x01,
