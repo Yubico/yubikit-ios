@@ -1,5 +1,27 @@
 # YubiKit Changelog
 
+#### 2.0.0 [2.0.0 RC1 -> 2.0.0]
+
+- The internal CBOR encoder used by the FIDO2 API is now sorting the map keys according to canonical CBOR rules when the keys are text strings. This fixes a bug with the order of the keys in the `webauthnAttestationObject` returned by the `YKFKeyFIDO2MakeCredentialResponse`.
+
+- Improved the error handling when the applications are disabled on the YubiKey. In case of FIDO (FIDO2 and U2F) the application is shared (the CTAP specifications use the same AID). In this specific scenario, when only one of them is enabled, YubiKit was returning `YKFKeyAPDUErrorCodeInsNotSupported`. Now the library will return `YKFKeySessionErrorMissingApplicationCode` when trying to use the disabled application, similar with the scenario when both applications are disabled.
+
+- Added a new constant, `YKFKeyFIDO2GetInfoResponseOptionUserVerification`, which can be used to test if the authenticator supports UV (User Verification). Removed from the YubiKit Demo application the explicit set of the UV options flag when creating FIDO2 credentials or getting assertions because the YubiKey 5Ci is not capable of verifying the user within itself. This update is available from firmware version 5.2.x and reflects the latest [CTAP2 specifications](https://fidoalliance.org/specs/fido-v2.0-ps-20190130/fido-client-to-authenticator-protocol-v2.0-ps-20190130.html#authenticatorGetInfo).
+
+- Renamed the `supportsLightningKey` property from `YubiKitDeviceCapabilities` to `supportsMFIAccessoryKey`. The property will also return `NO/false` when the iOS device has an USB-C connector, such as the iPad Pro 3rd generation. These devices do not officially support MFi external accessories.
+
+- Renamed several classes, properties and UI labels in the YubiKit Demo application to not use the term *Lightning*. This change was made to avoid possible trademark issues with this term. 
+
+- Some minor improvements to the PC/SC API to dynamically read some properties, like the name and the model of the key, from the `YKFKeySession` instead of returning hardcoded values.
+
+- Several OATH improvements, including support for touch credentials and improved compatibility with other libraries/applications which implement the YOATH protocol, such as Yubico Authenticator for Android and desktop.
+
+- Improved the ability to manually build OATH credentials using the `YKFOATHCredential` model provided by the library.
+
+- The `build.sh` script will generate a `release-universal` flavour of the library, together with the previous flavours (`release` and `debug-universal`).
+
+---
+
 #### 2.0.0 RC1 [2.0.0 B8 -> 2.0.0 RC1]
 
 - The `YKFKeyFIDO2MakeCredentialResponse` has two new properties: `ctapAttestationObject` and `webauthnAttestationObject`: 

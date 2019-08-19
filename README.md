@@ -1,7 +1,6 @@
-# Yubico Mobile iOS SDK - YubiKit 2.0.0 RC1
+# Yubico Mobile iOS SDK - YubiKit 2.0.0
 
-- **This is a prerelease version of YubiKit. Some of the specifications and APIs may change in the final release. It's recommended to use this documentation and library for prototyping and not for a public release.**
-- **Publishing an application which communicates with an external accessory, such as the YubiKey 5Ci, requires some additional steps before submitting it for an AppStore review. For more details read the [Publishing on AppStore](#appstore_publishing) section.**
+**Publishing an application which communicates with an external accessory, such as the YubiKey 5Ci, requires some additional steps before submitting it for an AppStore review. For more details read the [Publishing on AppStore](#appstore_publishing) section.**
 
 ---
 
@@ -1440,7 +1439,7 @@ YubiKitConfiguration.customOTPURIParser = CustomURIParser()
 <a name="using_demo"></a>
 ## 4. Using the demo application
 
-The library comes with a demo application named **YubiKitDemo**. The application is implemented in Swift 5 (Xcode 10.2) and it shows a complete example on how to use the library. 
+The library is provided with a demo application, **YubiKitDemo**. The application is implemented in Swift and it shows several examples of how to use YubiKit. 
 
 The YubiKit Demo application shows how the library is linked with a project so it can be used for a side-by-side comparison when adding the library to another project.
 
@@ -1449,15 +1448,15 @@ YubiKit headers are documented and the documentation is available ether by readi
 <a name="appstore_publishing"></a>
 ## 5. Publishing on AppStore 
 
-Before publishing on AppStore there are a few additional steps required when using YubiKit. 
+Before publishing on AppStore, a few additional steps may be required when using YubiKit, depending on what features from the library the application is using:
 
-When using only the NFC functionality to read OTPs, there are no additional requirements from Apple prior to publish the application on AppStore. 
+- When using only the NFC functionality to read OTPs, there are no additional requirements from Apple prior to publish the application on AppStore. 
 
-When communicating with a MFi accessory YubiKey, the application will communicate with an external accessory. Apple requires from the manufacturer of the accessory (in this case Yubico) to provide a list of applications which can talk to the accessory over the iAP2 custom protocol (for the YubiKey the iAP2 protocol is called **com.yubico.ylp**). This process is called **Application Whitelisting**. The process involves adding the application *Bundle ID* to a list of allowed applications which can communicate with the YubiKey. This whitelisting has to be completed before submitting the application for an AppStore review because the AppStore reviewers will verify it. For more details about this process contact Yubico.
+- When communicating with a MFi accessory YubiKey, the application will communicate with an external accessory. Apple requires from the manufacturer of the accessory (in this case Yubico) to provide a list of applications which can talk to the accessory over the iAP2 custom protocol (for the YubiKey the iAP2 protocol is called **com.yubico.ylp**). This process is called **Application Whitelisting**. The process involves adding the application *Bundle ID* to a list of allowed applications which can communicate with the YubiKey. This whitelisting has to be completed before submitting the application for an AppStore review because the AppStore reviewers will verify it. For more details about this process contact Yubico.
 
-If the application was not submitted for an AppStore review (the application is still in development), there is no need to whitelist it before starting the development. If the [integration steps](#integration_steps) are correctly followed, the application can communicate with the YubiKey.
+- If the application was not submitted for an AppStore review (the application is still in development), there is no need to whitelist it before starting the development. If the [integration steps](#integration_steps) are correctly followed, the application can communicate with the YubiKey.
 
-In case of applications signed with an Enterprise Distribution certificate (applications distributed within an organisation), the application whitelisting is not required but is strongly recommended. In the [Apple Developer Enterprise Program License Agreement](https://developer.apple.com/services-account/download?path=/Documentation/License_Agreements__Apple_Developer_Enterprise_Program/Apple_Developer_Enterprise_Program_License_Agreement_20181019.pdf), section 6.2 (Internal Use Applications used by Permitted Users and Customers), Apple reserves the right to review the application, so having the application whitelisted is important.
+- In case of applications signed with an Enterprise Distribution certificate (applications distributed within an organisation), the application whitelisting is not required. The whitelisting is required only for the applications published on the AppStore.
 
 <a name="faq"></a>
 ## 6. FAQ
