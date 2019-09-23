@@ -1,4 +1,4 @@
-# Yubico Mobile iOS SDK - YubiKit 2.0.0
+# Yubico Mobile iOS SDK - YubiKit 2.0.1
 
 **Publishing an application which communicates with an external accessory, such as the YubiKey 5Ci, requires some additional steps before submitting it for an AppStore review. For more details read the [Publishing on AppStore](#appstore_publishing) section.**
 

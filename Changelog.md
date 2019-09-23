@@ -1,5 +1,15 @@
 # YubiKit Changelog
 
+#### 2.0.1 [2.0.0 -> 2.0.1]
+
+- Fixed an edge case for CCID when the WTX responses are concatenated with the payload. This issue mostly affects the calculation of OATH credentials with touch.
+
+- Added the possibility to attach a custom application logger to process the library logs. For more details check the `Examples/CustomLogger` in the YubiKit Demo application. 
+
+- Several other improvements to OATH, including the possibility to create OATH credentials without issuer and the ability to read and add credentials with 7 digits.
+
+---
+
 #### 2.0.0 [2.0.0 RC1 -> 2.0.0]
 
 - The internal CBOR encoder used by the FIDO2 API is now sorting the map keys according to canonical CBOR rules when the keys are text strings. This fixes a bug with the order of the keys in the `webauthnAttestationObject` returned by the `YKFKeyFIDO2MakeCredentialResponse`.
