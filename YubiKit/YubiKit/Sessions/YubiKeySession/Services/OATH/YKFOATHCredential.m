@@ -88,7 +88,7 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
     if (!_key) {
         NSString *keyLabel = self.label;
         
-        if (![self.label containsString: @":"]) {
+        if (![self.label containsString: @":"] && self.issuer) {
             keyLabel = [NSString stringWithFormat:@"%@:%@", self.issuer, self.account];
         }
         
@@ -110,11 +110,13 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
     if (_label) {
         return _label;
     }
-    
-    YKFAssertReturnValue(self.issuer, @"Missing OATH credential issuer. Cannot build the credential label.", nil);
     YKFAssertReturnValue(self.account, @"Missing OATH credential account. Cannot build the credential label.", nil);
     
-    return [NSString stringWithFormat:@"%@:%@", self.issuer, self.account];
+    if (self.issuer) {
+        return [NSString stringWithFormat:@"%@:%@", self.issuer, self.account];
+    } else {
+        return self.account;
+    }
 }
 
 - (void)setSecret:(NSData *)secret {
@@ -193,7 +195,7 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
     NSString *digits = [self queryParameterValueForName:YKFOATHCredentialURLParameterDigits inUrlComponents:urlComponents];
     if (digits) {
         int value = [digits intValue];
-        if (value && (value == 6 || value == 8)) {
+        if (value && (value == 6 || value == 7 || value == 8)) {
             self.digits = value;
         } else {
             return NO; // Invalid digits number

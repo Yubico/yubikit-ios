@@ -20,7 +20,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^YKFKeyConnectionControllerCommandResponseBlock)(NSData* _Nullable, NSError* _Nullable);
+typedef void (^YKFKeyConnectionControllerCommandResponseBlock)(NSData* _Nullable, NSError* _Nullable, NSTimeInterval);
 typedef void (^YKFKeyConnectionControllerCompletionBlock)(void);
 
 @protocol YKFKeyConnectionControllerProtocol

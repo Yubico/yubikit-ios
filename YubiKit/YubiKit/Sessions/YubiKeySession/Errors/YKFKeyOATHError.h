@@ -48,7 +48,15 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHErrorCode) {
     
     /*! The key did not return correct data when calculating all credentials.
      */
-    YKFKeyOATHErrorCodeBadCalculateAllResponse = 0x000107
+    YKFKeyOATHErrorCodeBadCalculateAllResponse = 0x000107,
+    
+    /*! The key did time out, waiting for the user to touch the key when calculating a credential which requires touch.
+     */
+    YKFKeyOATHErrorCodeTouchTimeout = 0x000108,
+    
+    /*! Wrong password used for authentication.
+     */
+    YKFKeyOATHErrorCodeWrongPassword = 0x000109
 };
 
 

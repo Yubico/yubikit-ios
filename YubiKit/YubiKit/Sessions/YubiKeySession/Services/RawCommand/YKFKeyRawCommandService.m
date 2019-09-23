@@ -55,7 +55,9 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
     
     [self.delegate keyService:self willExecuteRequest:nil];
     
-    [self.connectionController execute:apdu.apduData configuration:self.commandExecutionConfiguration completion:^(NSData *response, NSError * error) {
+    [self.connectionController execute:apdu.apduData
+                         configuration:self.commandExecutionConfiguration
+                            completion:^(NSData *response, NSError * error, NSTimeInterval executionTime) {
         if (error) {
             completion(nil, error);
             return;
@@ -76,7 +78,9 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
     ykf_weak_self();
-    [self.connectionController execute:apdu.apduData configuration:self.commandExecutionConfiguration completion:^(NSData *response, NSError * error) {
+    [self.connectionController execute:apdu.apduData
+                         configuration:self.commandExecutionConfiguration
+                            completion:^(NSData *response, NSError * error, NSTimeInterval executionTime) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);

@@ -23,6 +23,8 @@ static NSString* const YKFKeyOATHErrorBadApplicationSelectionResponseDescription
 static NSString* const YKFKeyOATHErrorAuthenticationRequiredDescription = @"Authentication required.";
 static NSString* const YKFKeyOATHErrorMalformedValidationResponseDescription = @"The key returned a malformed response when validating.";
 static NSString* const YKFKeyOATHErrorBadCalculateAllResponseDescription = @"The key returned a malformed response when calculating all credentials.";
+static NSString* const YKFKeyOATHErrorCodeTouchTimeoutDescription = @"The key did time out, waiting for touch.";
+static NSString* const YKFKeyOATHErrorCodeWrongPasswordDescription = @"Wrong password.";
 
 @implementation YKFKeyOATHError
 
@@ -50,7 +52,9 @@ static NSDictionary *errorMap = nil;
       @(YKFKeyOATHErrorCodeBadApplicationSelectionResponse): YKFKeyOATHErrorBadApplicationSelectionResponseDescription,
       @(YKFKeyOATHErrorCodeAuthenticationRequired): YKFKeyOATHErrorAuthenticationRequiredDescription,
       @(YKFKeyOATHErrorCodeBadValidationResponse): YKFKeyOATHErrorMalformedValidationResponseDescription,
-      @(YKFKeyOATHErrorCodeBadCalculateAllResponse): YKFKeyOATHErrorBadCalculateAllResponseDescription
+      @(YKFKeyOATHErrorCodeBadCalculateAllResponse): YKFKeyOATHErrorBadCalculateAllResponseDescription,
+      @(YKFKeyOATHErrorCodeTouchTimeout): YKFKeyOATHErrorCodeTouchTimeoutDescription,
+      @(YKFKeyOATHErrorCodeWrongPassword): YKFKeyOATHErrorCodeWrongPasswordDescription
       };
 }
 

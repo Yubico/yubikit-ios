@@ -113,7 +113,7 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
             YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
             
             UInt8 digits = responseBytes[readIndex];
-            YKFAssertAbortInit(digits == 6 || digits == 8);
+            YKFAssertAbortInit(digits == 6 || digits == 7 || digits == 8);
             
             // Parse the period, account and issuer from the key.
             
@@ -125,9 +125,11 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
             
             [credentialKey ykf_OATHKeyExtractPeriod:&period issuer:&issuer account:&account label:&label];
             
-            credentialResult.period = period ? period : YKFOATHCredentialCalculateResultDefaultPeriod;
             credentialResult.issuer = issuer;
             credentialResult.account = account;
+            if (credentialResult.type == YKFOATHCredentialTypeTOTP) {
+                credentialResult.period = period ? period : YKFOATHCredentialCalculateResultDefaultPeriod;
+            }
             
             // Parse the OTP value when TOTP and touch is not required.
             

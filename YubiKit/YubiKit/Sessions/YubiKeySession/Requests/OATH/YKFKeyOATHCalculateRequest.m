@@ -26,7 +26,11 @@
 
 @implementation YKFKeyOATHCalculateRequest
 
-- (nullable instancetype)initWithCredential:(nonnull YKFOATHCredential*)credential {
+- (instancetype)initWithCredential:(nonnull YKFOATHCredential*)credential {
+    return [self initWithCredential:credential timestamp:[NSDate date]];
+}
+
+- (instancetype)initWithCredential:(nonnull YKFOATHCredential*)credential timestamp: (NSDate*) timestamp {
     YKFAssertAbortInit(credential);
     
     if (credential.type == YKFOATHCredentialTypeTOTP) {
@@ -36,7 +40,7 @@
     self = [super init];
     if (self) {
         self.credential = credential;
-        self.timestamp = [NSDate date];
+        self.timestamp = timestamp;
         self.apdu = [[YKFOATHCalculateAPDU alloc] initWithRequest:self timestamp:self.timestamp];
     }
     return self;

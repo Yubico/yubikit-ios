@@ -42,7 +42,7 @@
     NSError *responseError = [self nextResponseErrorInSequence];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        completion(responseData, responseError);
+        completion(responseData, responseError, 0);
     });
     
     ++self.commandExecutionSequenceIndex;
@@ -56,7 +56,7 @@
     NSError *responseError = [self nextResponseErrorInSequence];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        completion(responseData, responseError);
+        completion(responseData, responseError, 0);
     });
 
     ++self.commandExecutionSequenceIndex;

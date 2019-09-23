@@ -87,6 +87,8 @@
     // Format with 0 paddigs up to [digits] number
     if (digits == 6) {
         otp = [NSString stringWithFormat:@"%06d", (unsigned int)otpResponseValue];
+    } else if (digits == 7){
+        otp = [NSString stringWithFormat:@"%07d", (unsigned int)otpResponseValue];
     } else if (digits == 8){
         otp = [NSString stringWithFormat:@"%08d", (unsigned int)otpResponseValue];
     } else {

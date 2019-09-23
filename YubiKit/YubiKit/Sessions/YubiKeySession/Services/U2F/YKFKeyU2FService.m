@@ -105,7 +105,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
     ykf_weak_self();
     [self.connectionController execute:selectU2FApplicationAPDU.apduData
                          configuration:[YKFKeyCommandConfiguration fastCommandCofiguration]
-                            completion:^(NSData *result, NSError *error) {
+                            completion:^(NSData *result, NSError *error, NSTimeInterval executionTime) {
         ykf_safe_strong_self();
         NSError *returnedError = nil;
         
@@ -157,7 +157,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
     YKFParameterAssertReturn(completion);
     
     ykf_weak_self();
-    YKFKeyConnectionControllerCommandResponseBlock block = ^(NSData *result, NSError *error) {
+    YKFKeyConnectionControllerCommandResponseBlock block = ^(NSData *result, NSError *error, NSTimeInterval executionTime) {
         ykf_safe_strong_self();
         if (error) {
             [strongSelf updateKeyState:YYKFKeyU2FServiceKeyStateIdle];

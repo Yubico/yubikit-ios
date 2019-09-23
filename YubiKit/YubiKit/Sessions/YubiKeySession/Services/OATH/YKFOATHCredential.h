@@ -81,11 +81,11 @@ typedef NS_ENUM(NSUInteger, YKFOATHCredentialAlgorithm) {
  The Issuer of the credential as defined in the Key URI Format specifications:
  https://github.com/google/google-authenticator/wiki/Key-Uri-Format
  */
-@property (nonatomic) NSString *issuer;
+@property (nonatomic, nullable) NSString *issuer;
 
 /*!
  How long is the one-time passcode to display to the user. The value for this property can
- only be 6 or 8. The default value is 6.
+ only be 6, 7 or 8. The default value is 6.
  */
 @property (nonatomic, assign) NSUInteger digits;
 

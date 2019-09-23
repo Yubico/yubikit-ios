@@ -45,7 +45,7 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHCalculateResponseType) {
         YKFAssertAbortInit([responseData ykf_containsRange:NSMakeRange(1, 2)]);
         UInt8 responseLength = bytes[1];
         UInt8 digits = bytes[2];
-        YKFAssertAbortInit(digits == 6 || digits == 8);
+        YKFAssertAbortInit(digits == 6 || digits == 7 || digits == 8);
         
         UInt8 otpBytesLength = responseLength - 1;
         YKFAssertAbortInit(otpBytesLength == 4);

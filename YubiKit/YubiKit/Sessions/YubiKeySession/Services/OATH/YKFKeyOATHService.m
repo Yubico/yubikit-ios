@@ -49,6 +49,8 @@
 #import "YKFKeyOATHCalculateRequest+Private.h"
 #import "YKFAPDU+Private.h"
 
+static const NSTimeInterval YKFKeyOATHServiceTimeoutThreshold = 10; // seconds
+
 typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
 
 @interface YKFKeyOATHService()
@@ -257,7 +259,11 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         
         [strongSelf executeOATHRequestWithoutApplicationSelection:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
             if (error) {
-                completion(error);
+                if (error.code == YKFKeyAPDUErrorCodeWrongData) {
+                    completion([YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeWrongPassword]);
+                } else {
+                    completion(error);
+                }
                 return;
             }
             
@@ -307,7 +313,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     __block NSMutableData *responseDataBuffer = [[NSMutableData alloc] init];
     
     ykf_weak_self();
-    weakBlock = block = ^(NSData *result, NSError *error) {
+    weakBlock = block = ^(NSData *result, NSError *error, NSTimeInterval executionTime) {
         ykf_safe_strong_self();
         
         __strong YKFKeyConnectionControllerCommandResponseBlock strongBlock = weakBlock;
@@ -344,9 +350,12 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
                 break;
             
             case YKFKeyAPDUErrorCodeAuthenticationRequired:
-                // Clear the cache to allow the application selection again.
-                strongSelf.cachedSelectApplicationResponse = nil;
-                completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeAuthenticationRequired]);
+                if (executionTime < YKFKeyOATHServiceTimeoutThreshold) {
+                    strongSelf.cachedSelectApplicationResponse = nil; // Clear the cache to allow the application selection again.
+                    completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeAuthenticationRequired]);
+                } else {
+                    completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeTouchTimeout]);
+                }
                 break;
                 
             // Errors - The status code is the error. The key doesn't send any other information.
@@ -373,7 +382,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     ykf_weak_self();
     [self.connectionController execute:selectOATHApplicationAPDU.apduData
                          configuration:[YKFKeyCommandConfiguration fastCommandCofiguration]
-                            completion:^(NSData *result, NSError *error) {
+                            completion:^(NSData *result, NSError *error, NSTimeInterval executionTime) {
         ykf_safe_strong_self();
         
         if (error) {

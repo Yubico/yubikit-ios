@@ -98,7 +98,7 @@
     
     NSData *commandData = [@"command" dataUsingEncoding:NSUTF8StringEncoding];
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Command execution completion."];
-    [connectionController execute:commandData completion:^(NSData *result, NSError *error) {
+    [connectionController execute:commandData completion:^(NSData *result, NSError *error, NSTimeInterval executionTime) {
         [expectation fulfill];
     }];
     XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:1];
@@ -126,7 +126,7 @@
     __block NSData *response = nil;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Command execution completion."];
-    [connectionController execute:commandData completion:^(NSData *result, NSError *error) {
+    [connectionController execute:commandData completion:^(NSData *result, NSError *error, NSTimeInterval executionTime) {
         response = result;
         [expectation fulfill];
     }];
@@ -198,7 +198,7 @@
     NSData *commandData = [@"command" dataUsingEncoding:NSUTF8StringEncoding];
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Command execution completion."];
     
-    [connectionController execute:commandData completion:^(NSData *result, NSError *error) {
+    [connectionController execute:commandData completion:^(NSData *result, NSError *error, NSTimeInterval executionTime) {
         [expectation fulfill];
     }];
     

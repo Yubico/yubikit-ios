@@ -239,6 +239,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
     ykf_weak_self();
     [self dispatchBlockOnCommunicationQueue:^(NSOperation *operation) {
         ykf_safe_strong_self();
+        NSDate *commandStartDate = [NSDate date];
         
         // 1. Send the command to the key.
         BOOL success = [strongSelf writeData:command configuration:configuration parentOperation:operation];
@@ -250,7 +251,9 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
             } else {
                 error = [YKFKeySessionError errorWithCode:YKFKeySessionErrorWriteTimeoutCode];
             }
-            completion(nil, error);
+            
+            NSTimeInterval executionTime = [[NSDate date] timeIntervalSinceDate: commandStartDate];
+            completion(nil, error, executionTime);
             return;
         }
 
@@ -278,7 +281,9 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
                 } else {
                     error = [YKFKeySessionError errorWithCode:YKFKeySessionErrorReadTimeoutCode];
                 }
-                completion(nil, error);
+                
+                NSTimeInterval executionTime = [[NSDate date] timeIntervalSinceDate: commandStartDate];
+                completion(nil, error, executionTime);
                 return;
             }
             
@@ -293,7 +298,10 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
             }
         }
         
-        completion(commandResult, nil);
+        NSTimeInterval executionTime = [[NSDate date] timeIntervalSinceDate: commandStartDate];
+        completion(commandResult, nil, executionTime);
+        
+        YKFLogVerbose(@"Command execution time: %lf seconds", executionTime);
     }];
 }
 

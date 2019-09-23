@@ -42,7 +42,22 @@
     The credential for the request. The credential must be already added to the key when calling
     this request.
  */
-- (nullable instancetype)initWithCredential:(nonnull YKFOATHCredential*)credential NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCredential:(nonnull YKFOATHCredential*)credential;
+
+/*!
+ @method initWithCredential:
+ 
+ @abstract
+    The designated initializer for this type of request. The credential parameter is required.
+ 
+ @param credential
+    The credential for the request. The credential must be already added to the key when calling
+    this request.
+
+ @param timestamp
+    The challenge used for the TOTP calculation. This can be used to provide a custom point in time for the TOTP generation.
+ */
+- (nullable instancetype)initWithCredential:(nonnull YKFOATHCredential*)credential timestamp:(nonnull NSDate*)timestamp NS_DESIGNATED_INITIALIZER;
 
 /*
  Not available: use [initWithCredential:].

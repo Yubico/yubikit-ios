@@ -134,6 +134,13 @@
     XCTAssert([credential.issuer isEqualToString:@"ACME"], @"Credential is missing the issuer.");
 }
 
+- (void)test_WhenCredentialIsCreatedWithURLWithoutIssuer_CredentialCanBeCreated {
+    NSString *url = @"otpauth://totp/john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&digits=6&period=30";
+    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    
+    XCTAssertNil(credential.issuer, @"Issuer is not nil when key URI does not contain an issuer.");
+}
+
 #pragma mark - Label
 
 - (void)test_WhenCredentialIsManuallyCreatedWithLabel_AssignedLabelIsReturnedWhenReadingTheProperty {
@@ -152,6 +159,62 @@
     credential.account = @"account";
     
     XCTAssert([credential.label isEqualToString:label], @"Credential label is not built if missing.");
+}
+
+- (void)test_WhenCredentialIsManuallyCreatedWithoutLabelAndIssuer_LabelIsBuildFromTheAccount {
+    YKFOATHCredential *credential = [[YKFOATHCredential alloc] init];
+    credential.account = @"account";
+    
+    XCTAssert([credential.label isEqualToString:credential.account], @"Credential label is not built if missing.");
+}
+
+#pragma mark - Key
+
+- (void)test_WhenCredentialIsCreatedWithHOTPURL_KeyIsTheLabel {
+    NSString *url = @"otpauth://hotp/ACME:john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&digits=6&counter=0";
+    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    XCTAssert([credential.key isEqualToString:credential.label], @"Credential key for HOTP is not the label.");
+}
+
+- (void)test_WhenCredentialIsCreatedWithTOTPURLWithDefaultPeriod_KeyIsTheLabel {
+    NSString *url = @"otpauth://totp/ACME:john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&digits=6";
+    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    XCTAssert([credential.key isEqualToString:credential.label], @"Credential key for HOTP is not the label.");
+}
+
+- (void)test_WhenCredentialIsCreatedWithTOTPURLWithCustomPeriodAndIssuer_KeyContainsThePeriod {
+    NSString *url = @"otpauth://totp/ACME:john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&digits=6&period=15";
+    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    
+    NSString *expectedKey = [NSString stringWithFormat:@"%d/%@", 15, credential.label];
+    XCTAssert([credential.key isEqualToString:expectedKey], @"Credential key for TOTP with custom period does not contain the period.");
+}
+
+- (void)test_WhenCredentialIsCreatedWithTOTPURLWithCustomPeriod_KeyContainsThePeriod {
+    NSString *url = @"otpauth://totp/john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&digits=6&period=15";
+    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    
+    NSString *expectedKey = [NSString stringWithFormat:@"%d/%@", 15, credential.label];
+    XCTAssert([credential.key isEqualToString:expectedKey], @"Credential key for TOTP with custom period does not contain the period.");
+}
+
+#pragma mark - Digits
+
+- (void)test_WhenCredentialIsCreatedWithURLWith7DigitsLength_CredentialParametersAreCorrectlyParsed {
+    NSString *url = @"otpauth://totp/ACME:john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&issuer=ACME&algorithm=SHA1&digits=7&period=40";
+    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    XCTAssert(credential.digits == 7, @"");
+}
+- (void)test_WhenCredentialIsCreatedWithURLWith8DigitsLength_CredentialParametersAreCorrectlyParsed {
+    NSString *url = @"otpauth://totp/ACME:john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&issuer=ACME&algorithm=SHA1&digits=8&period=40";
+    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    XCTAssert(credential.digits == 8, @"");
+}
+
+- (void)test_WhenCredentialIsCreatedWithURLWithInvalidDigitsLength_CredentialIsNil {
+    NSString *url = @"otpauth://totp/ACME:john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&issuer=ACME&algorithm=SHA1&digits=10&period=40";
+    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    XCTAssertNil(credential, @"Credential with invalid digits secret is not nil.");
 }
 
 #pragma mark - Misc
@@ -192,14 +255,9 @@
     XCTAssertNil(credential, @"Credential without secret is not nil.");
 }
 
-- (void)test_WhenCredentialIsCreatedWithURLWithInvalidDigitsLength_CredentialIsNil {
-    NSString *url = @"otpauth://totp/ACME:john@example.com?issuer=ACME&algorithm=SHA1&digits=10&period=30";
-    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
-    XCTAssertNil(credential, @"Credential with invalid digits secret is not nil.");
-}
 
 - (void)test_WhenCredentialIsCreatedWithURLWithoutLabel_CredentialIsNil {
-    NSString *url = @"otpauth://totp?issuer=ACME&algorithm=SHA1&digits=10&period=30";
+    NSString *url = @"otpauth://totp?issuer=ACME&algorithm=SHA1&digits=6&period=30";
     YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
     XCTAssertNil(credential, @"Credential with missing label is not nil.");
 }

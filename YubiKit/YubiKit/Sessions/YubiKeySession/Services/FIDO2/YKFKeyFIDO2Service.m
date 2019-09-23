@@ -535,7 +535,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     ykf_weak_self();
     [self.connectionController execute:selectFIDO2ApplicationAPDU.apduData
                          configuration:[YKFKeyCommandConfiguration fastCommandCofiguration]
-                            completion:^(NSData *result, NSError *error) {
+                            completion:^(NSData *result, NSError *error, NSTimeInterval executionTime) {
         ykf_safe_strong_self();
         NSError *returnedError = nil;
         
@@ -590,7 +590,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     YKFParameterAssertReturn(completion);
     
     ykf_weak_self();
-    [self.connectionController execute:request.apdu.apduData configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:^(NSData *result, NSError *error) {
+    [self.connectionController execute:request.apdu.apduData completion:^(NSData *result, NSError *error, NSTimeInterval executionTime) {
         ykf_safe_strong_self();
         
         if (error) {
