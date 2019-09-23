@@ -28,9 +28,21 @@
     YKFParameterAssertReturnValue(response, [NSData data]);
     YKFAssertReturnValue(response.length >= 3, @"Key response data is too short.", [NSData data]);
     
-    // Remove the first byte (the YLP key protocol header) and the last 2 bytes (the SW)
-    NSRange range = {1, response.length - 3};
-    return [response subdataWithRange:range];
+    UInt8 *bytes = (UInt8 *)response.bytes;
+    YKFParameterAssertReturnValue(bytes[0] == 0x00 || bytes[0] == 0x01, [NSData data]);
+    
+    if (bytes[0] == 0x00) {
+        // Remove the first byte (the YLP key protocol header) and the last 2 bytes (the SW)
+        NSRange range = {1, response.length - 3};
+        return [response subdataWithRange:range];
+    }
+    else if (bytes[0] == 0x01) {        
+        // Remove the first byte (the YLP key protocol header), the WTX and the last 2 bytes (the SW)
+        NSRange range = {4, response.length - 6};
+        return [response subdataWithRange:range];
+    }
+    
+    return [NSData data];
 }
 
 - (NSData *)dataAndStatusFromKeyResponse:(NSData *)response {
