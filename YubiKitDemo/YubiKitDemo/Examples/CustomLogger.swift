@@ -14,17 +14,8 @@
 
 import UIKit
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-
-    var window: UIWindow?
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Setup custom UI appearance
-        ApplicationUIAppearance.setupNavigationBarAppearance()
-        
-        YubiKitLogger.customLogger = CustomLogger()
-        return true
+class CustomLogger: NSObject, YubiKitLoggerProtocol {
+    func log(_ message: String) {
+        // Process the message in an application specific way (e.g. write the log to a file)
     }
 }
-

@@ -16,6 +16,8 @@
 		951446A521876060002BB3C5 /* YKFKeyRawCommandService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95D5E2D7218712BF00AA1C11 /* YKFKeyRawCommandService.h */; };
 		951446AA2188592C002BB3C5 /* YKFPCSCLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 951446A92188592C002BB3C5 /* YKFPCSCLayer.m */; };
 		951446AD21885962002BB3C5 /* YKFPCSC.m in Sources */ = {isa = PBXBuildFile; fileRef = 951446AC21885962002BB3C5 /* YKFPCSC.m */; };
+		95233E552330DEE000C51F92 /* YubiKitLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 95233E532330DEDF00C51F92 /* YubiKitLogger.m */; };
+		95233E562330DEF200C51F92 /* YubiKitLogger.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95233E542330DEDF00C51F92 /* YubiKitLogger.h */; };
 		952564C8216F699500BC6F64 /* YKFOATHResetAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 952564C7216F699500BC6F64 /* YKFOATHResetAPDU.m */; };
 		9529CBBA214903FA0041D2F8 /* YKFKeySessionConfigurationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9529CBB9214903FA0041D2F8 /* YKFKeySessionConfigurationTests.m */; };
 		9529CBBD214905770041D2F8 /* FakeEAAccessory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9529CBBC214905770041D2F8 /* FakeEAAccessory.m */; };
@@ -227,6 +229,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				95233E562330DEF200C51F92 /* YubiKitLogger.h in CopyFiles */,
 				95B4C66922C35B12000BD6E0 /* YKFWebAuthnClientData.h in CopyFiles */,
 				955188312265FC89001A4191 /* YKFKeyAPDUError.h in CopyFiles */,
 				9551882D2265EAEA001A4191 /* YKFKeyOATHError.h in CopyFiles */,
@@ -306,6 +309,8 @@
 		951446AC21885962002BB3C5 /* YKFPCSC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPCSC.m; sourceTree = "<group>"; };
 		951446AE21886966002BB3C5 /* YKFPCSCErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPCSCErrors.h; sourceTree = "<group>"; };
 		951446AF218876D9002BB3C5 /* YKFPCSCTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPCSCTypes.h; sourceTree = "<group>"; };
+		95233E532330DEDF00C51F92 /* YubiKitLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YubiKitLogger.m; sourceTree = "<group>"; };
+		95233E542330DEDF00C51F92 /* YubiKitLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YubiKitLogger.h; sourceTree = "<group>"; };
 		952564C6216F699500BC6F64 /* YKFOATHResetAPDU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHResetAPDU.h; sourceTree = "<group>"; };
 		952564C7216F699500BC6F64 /* YKFOATHResetAPDU.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHResetAPDU.m; sourceTree = "<group>"; };
 		9529CBB9214903FA0041D2F8 /* YKFKeySessionConfigurationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeySessionConfigurationTests.m; sourceTree = "<group>"; };
@@ -1029,6 +1034,8 @@
 				956884CA20AAF83300E0F72C /* YubiKitDeviceCapabilities+Testing.h */,
 				95C2964E206295A00091318B /* YubiKitExternalLocalization.h */,
 				95C2964F206295A00091318B /* YubiKitExternalLocalization.m */,
+				95233E542330DEDF00C51F92 /* YubiKitLogger.h */,
+				95233E532330DEDF00C51F92 /* YubiKitLogger.m */,
 				95C296582062A5970091318B /* YubiKitManager.h */,
 				95C296592062A5970091318B /* YubiKitManager.m */,
 				953A507F213EECED00929ABB /* Sessions */,
@@ -1344,6 +1351,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				95A04D1E2253920B008E3036 /* YKFFIDO2GetNextAssertionAPDU.m in Sources */,
+				95233E552330DEE000C51F92 /* YubiKitLogger.m in Sources */,
 				95F75BAB2175D63D00C13DC5 /* YKFKeyOATHValidateRequest.m in Sources */,
 				952564C8216F699500BC6F64 /* YKFOATHResetAPDU.m in Sources */,
 				95DD40872099A86A00363FEE /* YKFU2FSignAPDU.m in Sources */,

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #import "YubiKitManager.h"
+#import "YubiKitLogger.h"
 #import "YubiKitConfiguration.h"
 #import "YubiKitExternalLocalization.h"
 #import "YubiKitDeviceCapabilities.h"

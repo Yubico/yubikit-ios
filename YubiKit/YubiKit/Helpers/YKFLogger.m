@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #import "YKFLogger.h"
+#import "YubiKitLogger.h"
 
 // Prefix for showing Info logs.
 static NSString* const YKFLogPrefixInfo = @"►►[I]► YubiKit:";
@@ -30,6 +31,10 @@ void YKFLog(NSString *format, va_list args) {
 #ifdef DEBUG
     NSLogv(format, args);
 #endif
+    if (YubiKitLogger.customLogger) {
+        NSString *message = [[NSString alloc] initWithFormat:format arguments: args];
+        [YubiKitLogger.customLogger log:message];
+    }
 }
 
 void YKFLogInfo(NSString* _Nonnull format, ...) {

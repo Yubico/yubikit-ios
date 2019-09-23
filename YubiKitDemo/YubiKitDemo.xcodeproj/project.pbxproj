@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		81FA3C42231D52CB009C22AB /* CustomLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FA3C41231D52CB009C22AB /* CustomLogger.swift */; };
 		950A340B203DC54E005C9754 /* QRCodeScanNotAvailableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 950A340A203DC54E005C9754 /* QRCodeScanNotAvailableView.swift */; };
 		950A340D203DC564005C9754 /* QRCodeScanNotAvailableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 950A340C203DC564005C9754 /* QRCodeScanNotAvailableView.xib */; };
 		950A340F203EBA1B005C9754 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 950A340E203EBA1B005C9754 /* AboutViewController.swift */; };
@@ -73,6 +74,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		81FA3C41231D52CB009C22AB /* CustomLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLogger.swift; sourceTree = "<group>"; };
 		950A340A203DC54E005C9754 /* QRCodeScanNotAvailableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanNotAvailableView.swift; sourceTree = "<group>"; };
 		950A340C203DC564005C9754 /* QRCodeScanNotAvailableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = QRCodeScanNotAvailableView.xib; sourceTree = "<group>"; };
 		950A340E203EBA1B005C9754 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
@@ -321,6 +323,7 @@
 			isa = PBXGroup;
 			children = (
 				95CEDFC622560672001E2092 /* Observers */,
+				81FA3C41231D52CB009C22AB /* CustomLogger.swift */,
 			);
 			path = Examples;
 			sourceTree = "<group>";
@@ -509,6 +512,7 @@
 				950A340F203EBA1B005C9754 /* AboutViewController.swift in Sources */,
 				95FAFACB202C483E00121DD5 /* OTPScanViewController.swift in Sources */,
 				95F767E2203455FC00208B88 /* OTPDetailsViewController.swift in Sources */,
+				81FA3C42231D52CB009C22AB /* CustomLogger.swift in Sources */,
 				952C3BFE203C73FB0000A115 /* QRCodeScanWaitingView.swift in Sources */,
 				953AB4FE21A4107900A1823A /* RawCommandServiceDemoViewController.swift in Sources */,
 				95DF4A972199B5D10025A152 /* DemoCustomTabBar.swift in Sources */,

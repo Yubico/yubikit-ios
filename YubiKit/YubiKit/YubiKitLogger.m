@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import UIKit
+#import "YubiKitLogger.h"
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+@implementation YubiKitLogger
 
-    var window: UIWindow?
+static id<YubiKitLoggerProtocol> internalCustomLogger = nil;
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Setup custom UI appearance
-        ApplicationUIAppearance.setupNavigationBarAppearance()
-        
-        YubiKitLogger.customLogger = CustomLogger()
-        return true
-    }
++ (id<YubiKitLoggerProtocol>)customLogger {
+    return internalCustomLogger;
+}
++ (void)setCustomLogger:(id<YubiKitLoggerProtocol>)logger {
+    internalCustomLogger = logger;
 }
 
+@end
