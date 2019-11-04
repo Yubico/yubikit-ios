@@ -46,6 +46,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, nonatomic, assign, readonly) BOOL supportsNFCScanning;
 
 /*!
+ @property supportsISO7816NFCTags
+ 
+ @abstract
+    Returns YES if the device can communicate with ISO 7816 NFC compatible tags.
+ */
+@property (class, nonatomic, assign, readonly) BOOL supportsISO7816NFCTags;
+
+
+/*!
  @property supportsMFIAccessoryKey
  
  @abstract

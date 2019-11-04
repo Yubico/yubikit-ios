@@ -34,8 +34,8 @@
 
 #pragma mark - YKFKeyConnectionControllerProtocol
 
-- (void)execute:(NSData *)command completion:(YKFKeyConnectionControllerCommandResponseBlock)completion {
-    self.executionCommandData = command;
+- (void)execute:(YKFAPDU *)command completion:(YKFKeyConnectionControllerCommandResponseBlock)completion {
+    self.executionCommand = command;
     self.commandResponseBlock = completion;
     
     NSData *responseData = [self nextResponseDataInSequence];
@@ -48,8 +48,8 @@
     ++self.commandExecutionSequenceIndex;
 }
 
-- (void)execute:(NSData *)command configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyConnectionControllerCommandResponseBlock)completion {
-    self.executionCommandData = command;
+- (void)execute:(YKFAPDU *)command configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyConnectionControllerCommandResponseBlock)completion {
+    self.executionCommand = command;
     self.commandResponseBlock = completion;
     
     NSData *responseData = [self nextResponseDataInSequence];

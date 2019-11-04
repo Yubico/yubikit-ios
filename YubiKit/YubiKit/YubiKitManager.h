@@ -15,9 +15,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "YKFNFCReaderSession.h"
+#import "YKFNFCSession.h"
 #import "YKFQRReaderSession.h"
-#import "YKFKeySession.h"
+#import "YKFAccessorySession.h"
 
 /*!
  @protocol YubiKitManagerProtocol
@@ -31,9 +31,9 @@
  @property nfcReaderSession
  
  @abstract
-    Returns the shared instance of YKFNFCReaderSession to interact with the NFC reader.
+    Returns the shared instance of YKFNFCSession to interact with the NFC reader.
  */
-@property (nonatomic, readonly, nonnull) id<YKFNFCReaderSessionProtocol> nfcReaderSession NS_AVAILABLE_IOS(11.0);
+@property (nonatomic, readonly, nonnull) id<YKFNFCSessionProtocol> nfcSession NS_AVAILABLE_IOS(11.0);
 
 /*!
  @property qrReaderSession
@@ -44,12 +44,12 @@
 @property (nonatomic, readonly, nonnull) id<YKFQRReaderSessionProtocol> qrReaderSession;
 
 /*!
- @property keySession
+ @property accessorySession
  
  @abstract
-    Returns the shared instance of YKFKeySession to interact with the lighning device.
+    Returns the shared instance of YKFAccessorySession to interact with a MFi accessory YubiKey.
  */
-@property (nonatomic, readonly, nonnull) id<YKFKeySessionProtocol> keySession;
+@property (nonatomic, readonly, nonnull) id<YKFAccessorySessionProtocol> accessorySession;
 
 @end
 

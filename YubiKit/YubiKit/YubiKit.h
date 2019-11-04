@@ -24,11 +24,13 @@
 
 #import "YKFQRReaderSession.h"
 #import "YKFQRCodeScanError.h"
-#import "YKFNFCReaderSession.h"
-#import "YKFNFCReadError.h"
+#import "YKFNFCSession.h"
+#import "YKFNFCOTPService.h"
+#import "YKFNFCError.h"
+#import "YKFNFCTagDescription.h"
 
-#import "YKFKeySession.h"
-#import "YKFKeyDescription.h"
+#import "YKFAccessorySession.h"
+#import "YKFAccessoryDescription.h"
 
 #import "YKFKeySessionError.h"
 #import "YKFKeyFIDO2Error.h"

@@ -20,10 +20,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Setup custom UI appearance
+        // Setup the application window used by the SceneObserver instances.
+        SceneObserver.setupApplication(window: window!)
+        
+        // Setup the custom UI appearance.
         ApplicationUIAppearance.setupNavigationBarAppearance()
         
         YubiKitLogger.customLogger = CustomLogger()
+        
         return true
     }
 }

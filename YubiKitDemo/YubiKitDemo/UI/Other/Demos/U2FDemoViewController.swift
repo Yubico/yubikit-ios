@@ -69,8 +69,8 @@ class U2FDemoViewController: OtherDemoRootViewController {
 
     // MARK: - Session State Updates
     
-    override func keySessionStateDidChange() {
-        let sessionState = YubiKitManager.shared.keySession.sessionState
+    override func accessorySessionStateDidChange() {
+        let sessionState = YubiKitManager.shared.accessorySession.sessionState
         if sessionState == .closed {
             logTextView.text = nil
             setDemoButton(enabled: true)
@@ -85,7 +85,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
             completion(nil)
             return
         }
-        guard let u2fService = YubiKitManager.shared.keySession.u2fService else {
+        guard let u2fService = YubiKitManager.shared.accessorySession.u2fService else {
             log(message: "The U2F service is not available (the session is closed or the key is not connected).")
             completion(nil)
             return
@@ -114,7 +114,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
             completion(false)
             return
         }
-        guard let u2fService = YubiKitManager.shared.keySession.u2fService else {
+        guard let u2fService = YubiKitManager.shared.accessorySession.u2fService else {
             log(message: "The U2F service is not available (the session is closed or the key is not connected).")
             completion(false)
             return

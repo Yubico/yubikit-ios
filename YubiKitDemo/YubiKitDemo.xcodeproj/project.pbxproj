@@ -13,6 +13,8 @@
 		950A340F203EBA1B005C9754 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 950A340E203EBA1B005C9754 /* AboutViewController.swift */; };
 		951208FC2243C44B0037475A /* FIDO2PinInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951208FB2243C44B0037475A /* FIDO2PinInputController.swift */; };
 		951459B020BED84B00E6757A /* ApplicationUIAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951459AF20BED84B00E6757A /* ApplicationUIAppearance.swift */; };
+		9519A50823279FF00087EE8F /* ProgressHudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9519A50623279FF00087EE8F /* ProgressHudView.swift */; };
+		9519A50923279FF00087EE8F /* ProgressHudView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9519A50723279FF00087EE8F /* ProgressHudView.xib */; };
 		9526E3CC21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9526E3CB21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift */; };
 		9528AC9420B5685E00513302 /* UIViewAdditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9528AC9320B5685E00513302 /* UIViewAdditions.swift */; };
 		952AF236203ACD1E004C2FDB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952AF235203ACD1E004C2FDB /* RootViewController.swift */; };
@@ -47,8 +49,9 @@
 		95885AF7209B265000828D02 /* MFIKeyActionSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95885AF6209B265000828D02 /* MFIKeyActionSheetView.swift */; };
 		95885AF9209B266D00828D02 /* FIDO2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95885AF8209B266D00828D02 /* FIDO2ViewController.swift */; };
 		95885AFB209B42F700828D02 /* NamedColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95885AFA209B42F700828D02 /* NamedColors.swift */; };
-		95A04D1822523336008E3036 /* KeySessionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A04D1722523336008E3036 /* KeySessionObserver.swift */; };
+		95A04D1822523336008E3036 /* AccessorySessionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A04D1722523336008E3036 /* AccessorySessionObserver.swift */; };
 		95A04D1A2252334D008E3036 /* FIDO2ServiceObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A04D192252334D008E3036 /* FIDO2ServiceObserver.swift */; };
+		95AD1AB0232A339B00FC3313 /* SceneObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95AD1AAF232A339B00FC3313 /* SceneObserver.swift */; };
 		95AFD4AA22CB566500CDF8D3 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95AFD4A922CB566500CDF8D3 /* DataExtensions.swift */; };
 		95C70DDF224A2FE70024E220 /* U2FDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C70DDE224A2FE70024E220 /* U2FDemoViewController.swift */; };
 		95DA54D121944C1000B60C18 /* OtherDemosStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 95DA54D021944C1000B60C18 /* OtherDemosStoryboard.storyboard */; };
@@ -80,6 +83,8 @@
 		950A340E203EBA1B005C9754 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		951208FB2243C44B0037475A /* FIDO2PinInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIDO2PinInputController.swift; sourceTree = "<group>"; };
 		951459AF20BED84B00E6757A /* ApplicationUIAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationUIAppearance.swift; sourceTree = "<group>"; };
+		9519A50623279FF00087EE8F /* ProgressHudView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressHudView.swift; sourceTree = "<group>"; };
+		9519A50723279FF00087EE8F /* ProgressHudView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressHudView.xib; sourceTree = "<group>"; };
 		952365EB22F850AD00B8F8AB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		9526E3CB21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MFIKeyInteractionViewController.swift; sourceTree = "<group>"; };
 		9528AC9320B5685E00513302 /* UIViewAdditions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewAdditions.swift; sourceTree = "<group>"; };
@@ -115,9 +120,11 @@
 		95885AF6209B265000828D02 /* MFIKeyActionSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MFIKeyActionSheetView.swift; sourceTree = "<group>"; };
 		95885AF8209B266D00828D02 /* FIDO2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIDO2ViewController.swift; sourceTree = "<group>"; };
 		95885AFA209B42F700828D02 /* NamedColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamedColors.swift; sourceTree = "<group>"; };
-		95A04D1722523336008E3036 /* KeySessionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySessionObserver.swift; sourceTree = "<group>"; };
+		95A04D1722523336008E3036 /* AccessorySessionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessorySessionObserver.swift; sourceTree = "<group>"; };
 		95A04D192252334D008E3036 /* FIDO2ServiceObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIDO2ServiceObserver.swift; sourceTree = "<group>"; };
+		95AD1AAF232A339B00FC3313 /* SceneObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneObserver.swift; sourceTree = "<group>"; };
 		95AFD4A922CB566500CDF8D3 /* DataExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
+		95C4E87523326B90008582F2 /* YK3_NFCNotes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = YK3_NFCNotes.md; path = ../YK3_NFCNotes.md; sourceTree = "<group>"; };
 		95C70DDE224A2FE70024E220 /* U2FDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = U2FDemoViewController.swift; sourceTree = "<group>"; };
 		95CEBA002031D4D000AF0D91 /* YubiKitDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YubiKitDemo.entitlements; sourceTree = "<group>"; };
 		95DA54D021944C1000B60C18 /* OtherDemosStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OtherDemosStoryboard.storyboard; sourceTree = "<group>"; };
@@ -157,6 +164,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9519A50523279FDD0087EE8F /* ProgressHud */ = {
+			isa = PBXGroup;
+			children = (
+				9519A50623279FF00087EE8F /* ProgressHudView.swift */,
+				9519A50723279FF00087EE8F /* ProgressHudView.xib */,
+			);
+			path = ProgressHud;
+			sourceTree = "<group>";
+		};
 		9526E3CA21AFEE030003DAB8 /* MFIKeyActionSheet */ = {
 			isa = PBXGroup;
 			children = (
@@ -170,6 +186,8 @@
 		9528AC9220B5670B00513302 /* SharedUI */ = {
 			isa = PBXGroup;
 			children = (
+				9519A50523279FDD0087EE8F /* ProgressHud */,
+				95AD1AAE232A336F00FC3313 /* SceneObserver */,
 				9526E3CA21AFEE030003DAB8 /* MFIKeyActionSheet */,
 				951208FB2243C44B0037475A /* FIDO2PinInputController.swift */,
 				9528AC9320B5685E00513302 /* UIViewAdditions.swift */,
@@ -299,6 +317,14 @@
 			path = OTP;
 			sourceTree = "<group>";
 		};
+		95AD1AAE232A336F00FC3313 /* SceneObserver */ = {
+			isa = PBXGroup;
+			children = (
+				95AD1AAF232A339B00FC3313 /* SceneObserver.swift */,
+			);
+			path = SceneObserver;
+			sourceTree = "<group>";
+		};
 		95AFD4AB22CB584000CDF8D3 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -331,7 +357,7 @@
 		95CEDFC622560672001E2092 /* Observers */ = {
 			isa = PBXGroup;
 			children = (
-				95A04D1722523336008E3036 /* KeySessionObserver.swift */,
+				95A04D1722523336008E3036 /* AccessorySessionObserver.swift */,
 				95A04D192252334D008E3036 /* FIDO2ServiceObserver.swift */,
 			);
 			path = Observers;
@@ -379,6 +405,7 @@
 			isa = PBXGroup;
 			children = (
 				952365EB22F850AD00B8F8AB /* README.md */,
+				95C4E87523326B90008582F2 /* YK3_NFCNotes.md */,
 				95FAFAC7202C483E00121DD5 /* YubiKitDemo */,
 				95FAFAC6202C483E00121DD5 /* Products */,
 				956747CE202C48EC00C7B397 /* Frameworks */,
@@ -484,6 +511,7 @@
 				95F767CE20331E6900208B88 /* OTPWaitingScanView.xib in Resources */,
 				95F767D22033381700208B88 /* OTPScanResultsView.xib in Resources */,
 				95F767DA2033463900208B88 /* About.storyboard in Resources */,
+				9519A50923279FF00087EE8F /* ProgressHudView.xib in Resources */,
 				952C3C08203D75390000A115 /* QRCodeScanResultsView.xib in Resources */,
 				95FAFACE202C483E00121DD5 /* Main.storyboard in Resources */,
 				95F767D7203345D400208B88 /* QRDemo.storyboard in Resources */,
@@ -504,7 +532,7 @@
 				952C3C06203D751C0000A115 /* QRCodeScanResultsView.swift in Sources */,
 				9576AF3D224AAE4C00CA7C1B /* WebAuthnCreateUserResponse.swift in Sources */,
 				95885AFB209B42F700828D02 /* NamedColors.swift in Sources */,
-				95A04D1822523336008E3036 /* KeySessionObserver.swift in Sources */,
+				95A04D1822523336008E3036 /* AccessorySessionObserver.swift in Sources */,
 				957DE0EC2031B52D00B53569 /* OTPScanContainerView.swift in Sources */,
 				95885AF9209B266D00828D02 /* FIDO2ViewController.swift in Sources */,
 				951208FC2243C44B0037475A /* FIDO2PinInputController.swift in Sources */,
@@ -517,6 +545,7 @@
 				953AB4FE21A4107900A1823A /* RawCommandServiceDemoViewController.swift in Sources */,
 				95DF4A972199B5D10025A152 /* DemoCustomTabBar.swift in Sources */,
 				95340809224E3D9E00BB9A0D /* WebAuthnResponse.swift in Sources */,
+				9519A50823279FF00087EE8F /* ProgressHudView.swift in Sources */,
 				95A04D1A2252334D008E3036 /* FIDO2ServiceObserver.swift in Sources */,
 				95F767DC203347EF00208B88 /* QRScanViewController.swift in Sources */,
 				951459B020BED84B00E6757A /* ApplicationUIAppearance.swift in Sources */,
@@ -533,6 +562,7 @@
 				955DEB3B2099FB4C00259E71 /* WebServiceError.swift in Sources */,
 				950A340B203DC54E005C9754 /* QRCodeScanNotAvailableView.swift in Sources */,
 				95482973218B596600A3D8FA /* OTPUIResponder.swift in Sources */,
+				95AD1AB0232A339B00FC3313 /* SceneObserver.swift in Sources */,
 				952C3C02203D64F60000A115 /* QRCodeScanContainerView.swift in Sources */,
 				95EAD56B220872EE00CD7C18 /* OtherDemoRootViewController.swift in Sources */,
 				953407F9224BAB4700BB9A0D /* WebAuthnRegisterFinishRequest.swift in Sources */,
@@ -694,7 +724,7 @@
 				DEVELOPMENT_TEAM = LQA3CS5MM7;
 				HEADER_SEARCH_PATHS = "../YubiKit/**";
 				INFOPLIST_FILE = YubiKitDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.YubiKitDemoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -715,7 +745,7 @@
 				DEVELOPMENT_TEAM = LQA3CS5MM7;
 				HEADER_SEARCH_PATHS = "../YubiKit/**";
 				INFOPLIST_FILE = YubiKitDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.YubiKitDemoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";

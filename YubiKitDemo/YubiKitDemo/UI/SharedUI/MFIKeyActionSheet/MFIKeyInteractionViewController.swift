@@ -39,7 +39,7 @@ class MFIKeyInteractionViewController: RootViewController, MFIKeyActionSheetView
         NotificationCenter.default.removeObserver(self, name: notificationName, object: nil)
         
         // Remove observations.
-        observeSessionStateUpdates = false
+        observeAccessorySessionStateUpdates = false
         observeFIDO2ServiceStateUpdates = false
     }
     
@@ -77,50 +77,60 @@ class MFIKeyInteractionViewController: RootViewController, MFIKeyActionSheetView
         let interfaceOrientation = UIApplication.shared.statusBarOrientation
         self.mfiKeyActionSheetView?.updateInterfaceOrientation(orientation: interfaceOrientation)
     }
-    
+        
     // MARK: - Actionsheet Presenting
     
     func presentMFIKeyActionSheet(state: MFIKeyInteractionViewControllerState, message: String, completion: @escaping ()->Void = {}) {
-        guard mfiKeyActionSheetView == nil else {
-            set(state: state, message: message)
-            completion()
-            return
-        }
-        
-        mfiKeyActionSheetView = MFIKeyActionSheetView.loadViewFromNib()
-        
-        if let actionSheet = mfiKeyActionSheetView, let parentView = UIApplication.shared.keyWindow {
-            actionSheet.delegate = self
-            actionSheet.frame = parentView.bounds
-            parentView.addSubview(actionSheet)
-            
-            actionSheet.present(animated: true, completion: completion)
-            set(state: state, message: message)
-        } else {
-            fatalError()
-        }
-        
-        updateActionSheetOrientation()
-    }
-    
-    func dismissMFIKeyActionSheet(delayed: Bool = true, completion: @escaping ()->Void = {}) {
-        guard let actionSheet = mfiKeyActionSheetView else {
-            completion()
-            return
-        }
-        actionSheet.dismiss(animated: true, delayed: delayed) { [weak self] in
+        dispatchMain { [weak self] in
             guard let self = self else {
                 return
             }
-            if let lightingActionSheet = self.mfiKeyActionSheetView {
-                lightingActionSheet.removeFromSuperview()
-                self.mfiKeyActionSheetView = nil
+            guard self.mfiKeyActionSheetView == nil else {
+                self.set(state: state, message: message)
+                completion()
+                return
             }
-            completion()
+            
+            self.mfiKeyActionSheetView = MFIKeyActionSheetView.loadViewFromNib()
+            
+            if let actionSheet = self.mfiKeyActionSheetView, let parentView = UIApplication.shared.keyWindow {
+                actionSheet.delegate = self
+                actionSheet.frame = parentView.bounds
+                parentView.addSubview(actionSheet)
+                
+                actionSheet.present(animated: true, completion: completion)
+                self.set(state: state, message: message)
+            } else {
+                fatalError()
+            }
+            
+            self.updateActionSheetOrientation()
         }
     }
     
-    func dismissMFIKeyActionSheetAndShow(message: String) {
+    func dismissMFIKeyActionSheet(delayed: Bool = true, completion: @escaping ()->Void = {}) {
+        dispatchMain { [weak self] in
+            guard let self = self else {
+                return
+            }
+            guard let actionSheet = self.mfiKeyActionSheetView else {
+                completion()
+                return
+            }
+            actionSheet.dismiss(animated: true, delayed: delayed) { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                if let lightingActionSheet = self.mfiKeyActionSheetView {
+                    lightingActionSheet.removeFromSuperview()
+                    self.mfiKeyActionSheetView = nil
+                }
+                completion()
+            }
+        }
+    }
+    
+    func dismissMFIKeyActionSheetAndPresent(message: String) {
         dismissMFIKeyActionSheet { [weak self] in
             self?.present(message: message)
         }
@@ -133,33 +143,35 @@ class MFIKeyInteractionViewController: RootViewController, MFIKeyActionSheetView
     }
     
     // MARK: - State Observation
+        
+    private var isObservingAccessorySessionStateUpdates = false
+    private var accessorySessionStateObservation: NSKeyValueObservation?
     
-    private static var observationContext = 0
-    
-    private var isObservingSessionStateUpdates = false
-    
-    var observeSessionStateUpdates: Bool {
+    var observeAccessorySessionStateUpdates: Bool {
         get {
-            return isObservingSessionStateUpdates
+            return isObservingAccessorySessionStateUpdates
         }
         set {
-            guard newValue != isObservingSessionStateUpdates else {
+            guard newValue != isObservingAccessorySessionStateUpdates else {
                 return
             }
-            isObservingSessionStateUpdates = newValue
-            
-            let keySession = YubiKitManager.shared.keySession as AnyObject
-            let keyPath = #keyPath(YKFKeySession.sessionState)
-            
-            if isObservingSessionStateUpdates {
-                keySession.addObserver(self, forKeyPath: keyPath, options: [], context: &MFIKeyInteractionViewController.observationContext)
+            isObservingAccessorySessionStateUpdates = newValue
+                                    
+            if isObservingAccessorySessionStateUpdates {
+                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessorySession
+                accessorySessionStateObservation = accessorySession.observe(\.sessionState, changeHandler: { [weak self] session, change in
+                    DispatchQueue.main.async {
+                        self?.accessorySessionStateDidChange()
+                    }
+                })
             } else {
-                keySession.removeObserver(self, forKeyPath: keyPath)
+                accessorySessionStateObservation = nil
             }
         }
     }
     
     private var isObservingFIDO2ServiceStateUpdates = false
+    private var fido2ServiceStateObservation: NSKeyValueObservation?
     
     var observeFIDO2ServiceStateUpdates: Bool {
         get {
@@ -170,40 +182,22 @@ class MFIKeyInteractionViewController: RootViewController, MFIKeyActionSheetView
                 return
             }
             isObservingFIDO2ServiceStateUpdates = newValue
-            
-            let keySession = YubiKitManager.shared.keySession as AnyObject
-            let keyPath = #keyPath(YKFKeySession.fido2Service.keyState)
-            
+                                    
             if isObservingFIDO2ServiceStateUpdates {
-                keySession.addObserver(self, forKeyPath: keyPath, options: [], context: &MFIKeyInteractionViewController.observationContext)
+                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessorySession
+                fido2ServiceStateObservation = accessorySession.observe(\.fido2Service?.keyState, changeHandler: { [weak self] session, change in
+                    DispatchQueue.main.async {
+                        self?.fido2ServiceStateDidChange()
+                    }
+                })
             } else {
-                keySession.removeObserver(self, forKeyPath: keyPath)
+                fido2ServiceStateObservation = nil
             }
         }
-    }
+    }      
     
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard context == &MFIKeyInteractionViewController.observationContext else {
-            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-            return
-        }
-        
-        switch keyPath {
-        case #keyPath(YKFKeySession.sessionState):
-            DispatchQueue.main.async { [weak self] in
-                self?.keySessionStateDidChange()
-            }
-        case #keyPath(YKFKeySession.fido2Service.keyState):
-            DispatchQueue.main.async { [weak self] in
-                self?.fido2ServiceStateDidChange()
-            }
-        default:
-            fatalError()
-        }
-    }
-    
-    func keySessionStateDidChange() {
-        fatalError("Override the keySessionStateDidChange() to get Key Session state updates.")
+    func accessorySessionStateDidChange() {
+        fatalError("Override the accessorySessionStateDidChange() to get Key Session state updates.")
     }
     
     func fido2ServiceStateDidChange() {

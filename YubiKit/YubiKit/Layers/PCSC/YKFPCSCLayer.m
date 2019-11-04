@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFKeyConnectionController.h"
+#import "YKFAccessoryConnectionController.h"
 #import "YubiKitManager.h"
 #import "YKFPCSCLayer.h"
 #import "YKFPCSCErrors.h"
@@ -21,7 +21,7 @@
 #import "YKFBlockMacros.h"
 #import "YKFPCSCErrorMap.h"
 #import "YKFLogger.h"
-#import "YKFKeySession+Private.h"
+#import "YKFAccessorySession+Private.h"
 #import "YKFNSDataAdditions+Private.h"
 
 static NSString* const YKFPCSCLayerReaderName = @"YubiKey";
@@ -39,7 +39,7 @@ static const NSUInteger YKFPCSCLayerCardLimitPerContext = 10;
 
 @interface YKFPCSCLayer()
 
-@property (nonatomic) id<YKFKeySessionProtocol> keySession;
+@property (nonatomic) id<YKFAccessorySessionProtocol> accessorySession;
 @property (nonatomic) YKFPCSCErrorMap *errorMap;
 
 // Maps a context value to a list of card values
@@ -73,17 +73,17 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 #endif
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedInstance = [[YKFPCSCLayer alloc] initWithKeySession:YubiKitManager.shared.keySession];
+        sharedInstance = [[YKFPCSCLayer alloc] initWithAccessorySession:YubiKitManager.shared.accessorySession];
     });
     return sharedInstance;
 }
 
-- (instancetype)initWithKeySession:(id<YKFKeySessionProtocol>)session {
+- (instancetype)initWithAccessorySession:(id<YKFAccessorySessionProtocol>)session {
     YKFAssertAbortInit(session);
     
     self = [super init];
     if (self) {
-        self.keySession = session;        
+        self.accessorySession = session;        
         self.contextMap = [[NSMutableDictionary alloc] init];
         self.cardMap = [[NSMutableDictionary alloc] init];
         self.errorMap = [[YKFPCSCErrorMap alloc] init];
@@ -94,8 +94,8 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 #pragma mark - Property Overrides
 
 - (SInt32)cardState {
-    if (self.keySession.isKeyConnected) {
-        if (self.keySession.sessionState == YKFKeySessionStateOpen) {
+    if (self.accessorySession.isKeyConnected) {
+        if (self.accessorySession.sessionState == YKFAccessorySessionStateOpen) {
             return YKF_SCARD_SPECIFICMODE;
         }
         return YKF_SCARD_SWALLOWED;
@@ -104,8 +104,8 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 }
 
 - (NSString *)cardSerial {
-    if (self.keySession.isKeyConnected) {
-        return self.keySession.keyDescription.serialNumber;
+    if (self.accessorySession.isKeyConnected) {
+        return self.accessorySession.accessoryDescription.serialNumber;
     }
     return nil;
 }
@@ -115,29 +115,29 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 }
 
 - (SInt64)statusChange {
-    if (self.keySession.isKeyConnected) {
+    if (self.accessorySession.isKeyConnected) {
         return YKF_SCARD_STATE_PRESENT | YKF_SCARD_STATE_CHANGED;
     }
     return YKF_SCARD_STATE_EMPTY | YKF_SCARD_STATE_CHANGED;
 }
 
 - (NSString *)deviceFriendlyName {
-    if (self.keySession.isKeyConnected) {
-        return self.keySession.keyDescription.name;
+    if (self.accessorySession.isKeyConnected) {
+        return self.accessorySession.accessoryDescription.name;
     }
     return nil;
 }
 
 - (NSString *)deviceModelName {
-    if (self.keySession.isKeyConnected) {
-        return self.keySession.keyDescription.name;
+    if (self.accessorySession.isKeyConnected) {
+        return self.accessorySession.accessoryDescription.name;
     }
     return nil;
 }
 
 - (NSString *)deviceVendorName {
-    if (self.keySession.isKeyConnected) {
-        return self.keySession.keyDescription.manufacturer;
+    if (self.accessorySession.isKeyConnected) {
+        return self.accessorySession.accessoryDescription.manufacturer;
     }
     return nil;
 }
@@ -145,20 +145,20 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 #pragma mark - PC/SC
 
 - (SInt64)connectCard {
-    if (!self.keySession.isKeyConnected) {
+    if (!self.accessorySession.isKeyConnected) {
         return YKF_SCARD_E_NO_SMARTCARD;
     }
     
-    BOOL sessionOpened = [self.keySession startSessionSync];
+    BOOL sessionOpened = [self.accessorySession startSessionSync];
     return sessionOpened ? YKF_SCARD_S_SUCCESS : YKF_SCARD_F_WAITED_TOO_LONG;
 }
 
 - (SInt64)disconnectCard {
-    if (!self.keySession.isKeyConnected) {
+    if (!self.accessorySession.isKeyConnected) {
         return YKF_SCARD_E_NO_SMARTCARD;
     }
     
-    BOOL sessionClosed = [self.keySession stopSessionSync];
+    BOOL sessionClosed = [self.accessorySession stopSessionSync];
     return sessionClosed ? YKF_SCARD_S_SUCCESS : YKF_SCARD_F_WAITED_TOO_LONG;
 }
 
@@ -171,7 +171,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 }
 
 - (SInt64)transmit:(NSData *)commandData response:(NSData **)response {
-    YKFAssertReturnValue(self.keySession.sessionState == YKFKeySessionStateOpen, @"Session is closed. Cannot send command.", YKF_SCARD_E_READER_UNAVAILABLE);
+    YKFAssertReturnValue(self.accessorySession.sessionState == YKFAccessorySessionStateOpen, @"Session is closed. Cannot send command.", YKF_SCARD_E_READER_UNAVAILABLE);
     YKFAssertReturnValue(commandData.length, @"The command data is empty.", YKF_SCARD_E_INVALID_PARAMETER);
     
     YKFAPDU *command = [[YKFAPDU alloc] initWithData:commandData];
@@ -179,7 +179,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 
     __block NSData *responseData = nil;
     
-    [self.keySession.rawCommandService executeSyncCommand:command completion:^(NSData *resp, NSError *error) {
+    [self.accessorySession.rawCommandService executeSyncCommand:command completion:^(NSData *resp, NSError *error) {
         if (!error && resp) {
             responseData = resp;
         }
@@ -194,7 +194,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 }
 
 - (SInt64)listReaders:(NSString **)yubikeyReaderName {
-    if (self.keySession.isKeyConnected) {
+    if (self.accessorySession.isKeyConnected) {
         *yubikeyReaderName = YKFPCSCLayerReaderName;
         return YKF_SCARD_S_SUCCESS;
     }

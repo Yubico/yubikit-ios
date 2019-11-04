@@ -16,6 +16,7 @@ import UIKit
 
 class OTPWaitingScanView: UIView {
     
+    @IBOutlet weak var yubikeyImageView: UIImageView!
     @IBOutlet var messageLabel: UILabel!
     
     override func didMoveToSuperview() {

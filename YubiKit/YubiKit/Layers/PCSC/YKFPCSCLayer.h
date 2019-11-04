@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFKeySession.h"
+#import "YKFAccessorySession.h"
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
@@ -140,10 +140,10 @@
  @param session
     The session to be used by the layer when communicating with the key.
  */
-- (nullable instancetype)initWithKeySession:(nonnull id<YKFKeySessionProtocol>)session NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithAccessorySession:(nonnull id<YKFAccessorySessionProtocol>)session NS_DESIGNATED_INITIALIZER;
 
 /*
- Not available: use [initWithKeySession:]
+ Not available: use [initWithAccessorySession:]
  */
 - (nonnull instancetype)init NS_UNAVAILABLE;
 

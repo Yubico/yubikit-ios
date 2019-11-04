@@ -103,8 +103,8 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         logTextView.text = nil
         setDemoButtons(enabled: false)
 
-        let keySession = YubiKitManager.shared.keySession
-        guard keySession.sessionState == .open else {
+        let accessorySession = YubiKitManager.shared.accessorySession
+        guard accessorySession.sessionState == .open else {
             log(message: "The session with the key is closed. Plugin the key before running the demo.")
             setDemoButtons(enabled: true)
             return
@@ -129,8 +129,8 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     }
     
     private func verify(pin: String) {
-        let keySession = YubiKitManager.shared.keySession
-        guard let fido2Service = keySession.fido2Service else {
+        let accessorySession = YubiKitManager.shared.accessorySession
+        guard let fido2Service = accessorySession.fido2Service else {
             setDemoButtons(enabled: true)
             return
         }
@@ -176,8 +176,8 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         logTextView.text = nil
         setDemoButtons(enabled: false)
         
-        let keySession = YubiKitManager.shared.keySession
-        guard keySession.sessionState == .open else {
+        let accessorySession = YubiKitManager.shared.accessorySession
+        guard accessorySession.sessionState == .open else {
             log(message: "The session with the key is closed. Plugin the key before running the demo.")
             setDemoButtons(enabled: true)
             return
@@ -202,8 +202,8 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     }
     
     private func set(pin: String) {
-        let keySession = YubiKitManager.shared.keySession
-        guard let fido2Service = keySession.fido2Service else {
+        let accessorySession = YubiKitManager.shared.accessorySession
+        guard let fido2Service = accessorySession.fido2Service else {
             setDemoButtons(enabled: true)
             return
         }
@@ -233,9 +233,9 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         logTextView.text = nil
         setDemoButtons(enabled: false)
         
-        let keySession = YubiKitManager.shared.keySession
+        let accessorySession = YubiKitManager.shared.accessorySession
         
-        guard keySession.sessionState == .open else {
+        guard accessorySession.sessionState == .open else {
             log(message: "The session with the key is closed. Plugin the key before running the demo.")
             setDemoButtons(enabled: true)
             return
@@ -263,14 +263,14 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         logTextView.text = nil
         setDemoButtons(enabled: false)
         
-        let keySession = YubiKitManager.shared.keySession
+        let accessorySession = YubiKitManager.shared.accessorySession
         
-        guard keySession.sessionState == .open else {
+        guard accessorySession.sessionState == .open else {
             log(message: "The session with the key is closed. Plugin the key before running the demo.")
             setDemoButtons(enabled: true)
             return
         }
-        guard let fido2Service = keySession.fido2Service else {
+        guard let fido2Service = accessorySession.fido2Service else {
             setDemoButtons(enabled: true)
             return
         }
@@ -300,14 +300,14 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         logTextView.text = nil
         setDemoButtons(enabled: false)
         
-        let keySession = YubiKitManager.shared.keySession
+        let accessorySession = YubiKitManager.shared.accessorySession
         
-        guard keySession.sessionState == .open else {
+        guard accessorySession.sessionState == .open else {
             log(message: "The session with the key is closed. Plugin the key before running the demo.")
             setDemoButtons(enabled: true)
             return
         }
-        guard let fido2Service = keySession.fido2Service else {
+        guard let fido2Service = accessorySession.fido2Service else {
             setDemoButtons(enabled: true)
             return
         }
@@ -365,7 +365,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     }
     
     private func makeFIDO2CredentialWith(algorithm: NSInteger, makeOptions: [String: Bool], assertionOptions: [String: Bool]) {
-        guard let fido2Service = YubiKitManager.shared.keySession.fido2Service else {
+        guard let fido2Service = YubiKitManager.shared.accessorySession.fido2Service else {
             setDemoButtons(enabled: true)
             log(message: "The session with the key is closed. Plugin the key before running the demo.")
             return
@@ -444,7 +444,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     }
     
     private func getAssertionWith(request: YKFKeyFIDO2GetAssertionRequest) {
-        guard let fido2Service = YubiKitManager.shared.keySession.fido2Service else {
+        guard let fido2Service = YubiKitManager.shared.accessorySession.fido2Service else {
             setDemoButtons(enabled: true)
             return
         }
@@ -472,14 +472,14 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         logTextView.text = nil
         setDemoButtons(enabled: false)
         
-        let keySession = YubiKitManager.shared.keySession
+        let accessorySession = YubiKitManager.shared.accessorySession
         
-        guard keySession.sessionState == .open else {
+        guard accessorySession.sessionState == .open else {
             log(message: "The session with the key is closed. Plugin the key before running the demo.")
             setDemoButtons(enabled: true)
             return
         }
-        guard let fido2Service = keySession.fido2Service else {
+        guard let fido2Service = accessorySession.fido2Service else {
             setDemoButtons(enabled: true)
             return
         }
@@ -506,8 +506,8 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     
     // MARK: - Session State Updates
     
-    override func keySessionStateDidChange() {
-        let sessionState = YubiKitManager.shared.keySession.sessionState
+    override func accessorySessionStateDidChange() {
+        let sessionState = YubiKitManager.shared.accessorySession.sessionState
         if sessionState == .closed {
             logTextView.text = nil
             setDemoButtons(enabled: true)

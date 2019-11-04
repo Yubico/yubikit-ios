@@ -1,9 +1,5 @@
 # Yubico Mobile iOS SDK - YubiKit 2.0.1
 
-**Publishing an application which communicates with an external accessory, such as the YubiKey 5Ci, requires some additional steps before submitting it for an AppStore review. For more details read the [Publishing on AppStore](#appstore_publishing) section.**
-
----
-
 **YubiKit** is an iOS library provided by Yubico to interact with YubiKeys on iOS devices. 
 
 The library supports NFC-enabled YubiKeys and provides the APIs to request an OTP (Yubico OTP or HOTP) from the NFC YubiKeys using a NFC-enabled iOS device. The library provides also a built-in QR Code reader which can be used as an alternative enrolment mechanism for iOS devices which don't support NFC reading. 
@@ -29,7 +25,7 @@ The differences between the library versions are documented in this [Changelog](
 		- 2.3.6 [FIDO2 operations with the YubiKey 5Ci](#integration_steps_3_6)
 3. [Customising YubiKit](#customising_yubikit)
 4. [Using the demo application](#using_demo)
-5. [Publishing on AppStore](#appstore_publishing)
+5. [Publishing on Apple App Store](#app_store_publishing)
 6. [FAQ](#faq)
 7. [Additional resources](#additional_resources)
 
@@ -1445,18 +1441,17 @@ The YubiKit Demo application shows how the library is linked with a project so i
 
 YubiKit headers are documented and the documentation is available ether by reading the header file or by using the QuickHelp from Xcode (Option + Click symbol). Use this documentation for a more detailed explanation of all the methods, properties and parameters from the API.
 
-<a name="appstore_publishing"></a>
-## 5. Publishing on AppStore 
+<a name="app_store_publishing"></a>
+## 5. Publishing on Apple App Store 
 
-Before publishing on AppStore, a few additional steps may be required when using YubiKit, depending on what features from the library the application is using:
+Before publishing on the App Store, a few additional steps may be required when using YubiKit and a YubiKey 5Ci:
 
-- When using only the NFC functionality to read OTPs, there are no additional requirements from Apple prior to publish the application on AppStore. 
+- If your app is not interacting with the YubiKey 5Ci, there are no additional requirements from Apple prior to publish the application on the App Store.
 
-- When communicating with a MFi accessory YubiKey, the application will communicate with an external accessory. Apple requires from the manufacturer of the accessory (in this case Yubico) to provide a list of applications which can talk to the accessory over the iAP2 custom protocol (for the YubiKey the iAP2 protocol is called **com.yubico.ylp**). This process is called **Application Whitelisting**. The process involves adding the application *Bundle ID* to a list of allowed applications which can communicate with the YubiKey. This whitelisting has to be completed before submitting the application for an AppStore review because the AppStore reviewers will verify it. For more details about this process contact Yubico.
+- If your app is using YubiKit to interact with a YubiKey 5Ci, your app will need to be approved by Yubico and registered with Apple before submitting the app for review on the App Store. The
+YubiKey 5Ci is an Apple MFi certified lightning external accessory and Apple requires all apps communicating with MFi accessories to be registered with Apple prior to release on the App Store.
 
-- If the application was not submitted for an AppStore review (the application is still in development), there is no need to whitelist it before starting the development. If the [integration steps](#integration_steps) are correctly followed, the application can communicate with the YubiKey.
-
-- In case of applications signed with an Enterprise Distribution certificate (applications distributed within an organisation), the application whitelisting is not required. The whitelisting is required only for the applications published on the AppStore.
+The app registration process can be found [here](https://developers.yubico.com/Software_Projects/Mobile_SDK/App_Registration_Process/).
 
 <a name="faq"></a>
 ## 6. FAQ

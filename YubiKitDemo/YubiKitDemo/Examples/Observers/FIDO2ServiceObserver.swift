@@ -26,8 +26,8 @@ class FIDO2ServiceObserver: NSObject {
     private weak var delegate: FIDO2ServiceObserverDelegate?
     private var queue: DispatchQueue?
     
-    private static var observationContext = 0
     private var isObservingServiceKeyStateUpdates = false
+    private var fido2ServiceStateObservation: NSKeyValueObservation?
     
     init(delegate: FIDO2ServiceObserverDelegate, queue: DispatchQueue? = nil) {
         self.delegate = delegate
@@ -49,32 +49,18 @@ class FIDO2ServiceObserver: NSObject {
                 return
             }
             isObservingServiceKeyStateUpdates = newValue
-            
-            let keySession = YubiKitManager.shared.keySession as AnyObject
-            let keyPath = #keyPath(YKFKeySession.fido2Service.keyState)
-            
+                                                
             if isObservingServiceKeyStateUpdates {
-                keySession.addObserver(self, forKeyPath: keyPath, options: [], context: &FIDO2ServiceObserver.observationContext)
+                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessorySession
+                fido2ServiceStateObservation = accessorySession.observe(\.fido2Service?.keyState, changeHandler: { [weak self] session, change in
+                    self?.serviceKeyStateDidChange()
+                })
             } else {
-                keySession.removeObserver(self, forKeyPath: keyPath)
+                fido2ServiceStateObservation = nil
             }
         }
     }
-    
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard context == &FIDO2ServiceObserver.observationContext else {
-            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-            return
-        }
         
-        switch keyPath {
-        case #keyPath(YKFKeySession.fido2Service.keyState):
-            serviceKeyStateDidChange()
-        default:
-            fatalError()
-        }
-    }
-    
     func serviceKeyStateDidChange() {
         let queue = self.queue ?? DispatchQueue.main
         queue.async { [weak self] in
@@ -86,7 +72,7 @@ class FIDO2ServiceObserver: NSObject {
             }
             
             var state: YKFKeyFIDO2ServiceKeyState = .idle
-            if let fido2Service = YubiKitManager.shared.keySession.fido2Service {
+            if let fido2Service = YubiKitManager.shared.accessorySession.fido2Service {
                 state = fido2Service.keyState
             }
             delegate.fido2ServiceObserver(self, keyStateChangedTo: state)

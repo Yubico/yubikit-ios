@@ -23,7 +23,43 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
     }
     private var nextAction: FIDO2ViewControllerNextAction = .none
     
+    private enum FIDO2ViewControllerKeyType {
+        case unknown
+        case accessory
+        case nfc
+    }
+    private var keyType: FIDO2ViewControllerKeyType = .unknown
+
+    private var nfcSesionStateObservation: NSKeyValueObservation?
+    private var sceneObserver: SceneObserver?
+    
+    // MARK: - Services
+    
+    /**
+     The WS interface to communicate with the Yubico Demo website.
+     */
     private let webauthnService = WebAuthnService()
+    
+    /**
+     Returns the service associated with the desired session.
+     */
+    private var keyFido2Service: YKFKeyFIDO2ServiceProtocol {
+        get {
+            var fido2Service: YKFKeyFIDO2ServiceProtocol? = nil
+            if keyType == .accessory {
+                fido2Service = YubiKitManager.shared.accessorySession.fido2Service
+            } else {
+                guard #available(iOS 13.0, *) else {
+                    fatalError()
+                }
+                fido2Service = YubiKitManager.shared.nfcSession.fido2Service
+            }
+            guard fido2Service != nil else {
+                fatalError()
+            }
+            return fido2Service!
+        }
+    }
     
     // MARK: - Outlets
     
@@ -40,12 +76,12 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
         
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             // Make sure the session is started (in case it was closed by another demo).
-            YubiKitManager.shared.keySession.startSession()
+            YubiKitManager.shared.accessorySession.startSession()
         
             updateKeyInfo()
         
             // Enable state observation (see MFIKeyInteractionViewController)
-            observeSessionStateUpdates = true
+            observeAccessorySessionStateUpdates = true
             observeFIDO2ServiceStateUpdates = true
         } else {
             present(message: "This device or iOS version does not support operations with MFi accessory YubiKeys.")
@@ -57,16 +93,62 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
 
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             // Disable state observation (see MFIKeyInteractionViewController)
-            observeSessionStateUpdates = false
+            observeAccessorySessionStateUpdates = false
             observeFIDO2ServiceStateUpdates = false
         
-            YubiKitManager.shared.keySession.cancelCommands()
+            YubiKitManager.shared.accessorySession.cancelCommands()
         }
     }
 
     // MARK: - Actions
 
     @IBAction func actionButtonPressed(_ sender: Any) {
+        view.endEditing(true)
+        
+        guard !usernameTextField.text!.isEmpty && !passwordTextField.text!.isEmpty else {
+            present(message: "Enter the username and the password to register or authenticate.")
+            return
+        }
+        
+        let title = segmentedControl.selectedSegmentIndex == 0 ? "Register" : "Authenticate"
+        let message = "How do you want to \(title)?"
+        let actionSheet = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
+        
+        if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
+            actionSheet.addAction(UIAlertAction(title: "Scan my key - Over NFC", style: .default, handler: { [weak self]  (action) in
+                guard let self = self else {
+                    return
+                }
+                self.keyType = .nfc
+                self.executeFIDOAction()
+            }))
+        }
+        
+        actionSheet.addAction(UIAlertAction(title: "Plug my key - From MFi key", style: .default, handler: { [weak self] (action) in
+            guard let self = self else {
+                return
+            }
+            self.keyType = .accessory
+            self.executeFIDOAction()
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { [weak self] (action) in
+            self?.dismiss(animated: true, completion: nil)
+        }))
+        
+        // The action sheet requires a presentation popover on iPad.
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            actionSheet.modalPresentationStyle = .popover
+            if let presentationController = actionSheet.popoverPresentationController {
+                presentationController.sourceView = actionButton
+                presentationController.sourceRect = actionButton.bounds
+            }
+        }
+        
+        present(actionSheet, animated: true, completion: nil)
+    }
+    
+    private func executeFIDOAction() {
         if segmentedControl.selectedSegmentIndex == 0 {
             requestRegistration()
         } else {
@@ -85,14 +167,18 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
     @IBAction func didTapBackground(_ sender: Any) {
         view.endEditing(true)
     }
+        
+    // MARK: - MFIKeyActionSheetViewDelegate
     
     override func mfiKeyActionSheetDidDismiss(_ actionSheet: MFIKeyActionSheetView) {
         super.mfiKeyActionSheetDidDismiss(actionSheet)
         nextAction = .none
         
         webauthnService.cancelAllRequests()
-        YubiKitManager.shared.keySession.cancelCommands()
+        YubiKitManager.shared.accessorySession.cancelCommands()
     }
+    
+    // MARK: - UITextFieldDelegate
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == usernameTextField {
@@ -106,8 +192,8 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
     
     // MARK: - State Observation
     
-    override func keySessionStateDidChange() {
-        let state = YubiKitManager.shared.keySession.sessionState
+    override func accessorySessionStateDidChange() {
+        let state = YubiKitManager.shared.accessorySession.sessionState
         if state == .open {
             // The key session is ready to be used.
             switch nextAction {
@@ -131,41 +217,37 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
     }
     
     override func fido2ServiceStateDidChange() {
-        guard let fido2Service = YubiKitManager.shared.keySession.fido2Service else {
+        guard let fido2Service = YubiKitManager.shared.accessorySession.fido2Service else {
             return
         }
         if fido2Service.keyState == .touchKey {
-            presentMFIKeyActionSheetOnMain(state: .touchKey, message: "Touch the key to complete the operation.")
+            presentAuthenticationProgress(message: "Touch the key to complete the operation.", state: .touchKey)
         }
     }
 
     // MARK: - Registration
     
     private func requestRegistration() {
-        guard !usernameTextField.text!.isEmpty && !passwordTextField.text!.isEmpty else {
-            present(message: "Enter the username and the password to register a new account.")
-            return
-        }
-        view.endEditing(true)
-        
-        guard YubiKitManager.shared.keySession.sessionState == .open else {
-            nextAction = .register
-            presentMFIKeyActionSheetOnMain(state: .insertKey, message: "Insert the key to register a new account.")
-            return
+        if keyType == .accessory {
+            guard YubiKitManager.shared.accessorySession.sessionState == .open else {
+                nextAction = .register
+                presentAuthenticationProgress(message: "Insert the key to register a new account.", state: .insertKey)
+                return
+            }
         }
         
         let username = usernameTextField.text!
         let password = passwordTextField.text!
         let createRequest = WebAuthnUserRequest(username: username, password: password, type: .create)
         
-        presentMFIKeyActionSheetOnMain(state: .processing, message: "Creating account...")
+        presentAuthenticationProgress(message: "Creating account...", state: .processing)
         
         webauthnService.createUserWith(request: createRequest) { [weak self] (response, error) in
             guard let self = self else {
                 return
             }
             guard error == nil else {
-                self.dismissActionSheetAndPresent(error: error!)
+                self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
                 return
             }
             guard let response = response else {
@@ -175,14 +257,14 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
             let uuid = response.uuid
             let registerBeginRequest = WebAuthnRegisterBeginRequest(uuid: uuid)
             
-            self.presentMFIKeyActionSheetOnMain(state: .processing, message: "Requesting to add a new authenticator...")
+            self.presentAuthenticationProgress(message: "Requesting to add a new authenticator...", state: .processing)
             
             self.webauthnService.registerBeginWith(request: registerBeginRequest) { [weak self] (response, error) in
                 guard let self = self else {
                     return
                 }
                 guard error == nil else {
-                    self.dismissActionSheetAndPresent(error: error!)
+                    self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
                     return
                 }
                 guard let response = response else {
@@ -231,33 +313,52 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
         
         let makeOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: response.residentKey]
         makeCredentialRequest.options = makeOptions
-        
-        /*
-         Execute the Make Credential request.
-         */
-        guard let fido2Service = YubiKitManager.shared.keySession.fido2Service else {
-            return
-        }
-        fido2Service.execute(makeCredentialRequest) { [weak self] (response, error) in
+          
+        executeKeyRequestWith { [weak self] in
             guard let self = self else {
                 return
             }
-            guard error == nil else {
-                self.handleMakeCredential(error: error!, response: registerBeginResponse, uuid: uuid)
-                return
+            self.keyFido2Service.execute(makeCredentialRequest) { [weak self] (response, error) in
+                guard let self = self else {
+                    return
+                }
+                guard error == nil else {
+                    self.handleMakeCredential(error: error!, response: registerBeginResponse, uuid: uuid)
+                    return
+                }
+                
+                // The reponse from the key must not be empty at this point.
+                guard let response = response else {
+                    fatalError()
+                }
+                                
+                if self.keyType == .accessory {
+                    self.finalizeRegistration(response: response, uuid: uuid, requestId: requestId, clientDataJSON: clientDataJSON)
+                } else {
+                    guard #available(iOS 13.0, *) else {
+                        fatalError()
+                    }
+
+                    // Observe the scene activation to detect when the Core NFC system UI goes away.
+                    // For more details about this solution check the comments on SceneObserver.
+                    self.sceneObserver = SceneObserver(sceneActivationClosure: {  [weak self] in
+                        guard let self = self else {
+                            return
+                        }
+                        self.finalizeRegistration(response: response, uuid: uuid, requestId: requestId, clientDataJSON: clientDataJSON)
+                        self.sceneObserver = nil
+                    })
+
+                    // Stop the session to dismiss the Core NFC system UI.
+                    YubiKitManager.shared.nfcSession.stopIso7816Session()
+                }
             }
-            
-            // The reponse from the key must not be empty at this point.
-            guard let response = response else {
-                fatalError()
-            }
-            self.finalizeRegistration(response: response, uuid: uuid, requestId: requestId, clientDataJSON: clientDataJSON)
         }
     }
 
     private func finalizeRegistration(response: YKFKeyFIDO2MakeCredentialResponse, uuid: String, requestId: String, clientDataJSON: Data) {
-        presentMFIKeyActionSheetOnMain(state: .processing, message: "Adding authenticator to the account...")
-
+        presentAuthenticationProgress(message: "Adding authenticator to the account...", state: .processing)
+        
         let attestationObject = response.webauthnAttestationObject
         
         // Send back the response to the server.
@@ -271,40 +372,37 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
                 return
             }
             guard error == nil else {
-                self.dismissActionSheetAndPresent(error: error!)
+                self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
                 return
             }
-            self.dismissActionSheetAndPresent(message: "The registration was successful. The account will be valid for 24h.")
+            
+            self.dismissAuthenticationProgressAndPresent(message: "The registration was successful. The account will be valid for 24h.")
         }
     }
     
     // MARK: - Authentication
 
     private func requestAuthentication() {
-        guard !usernameTextField.text!.isEmpty && !passwordTextField.text!.isEmpty else {
-            present(message: "Enter the username and the password to authenticate.")
-            return
-        }
-        view.endEditing(true)
-        
-        guard YubiKitManager.shared.keySession.sessionState == .open else {
-            nextAction = .authenticate
-            presentMFIKeyActionSheetOnMain(state: .insertKey, message: "Insert the key to authenticate.")
-            return
+        if keyType == .accessory {
+            guard YubiKitManager.shared.accessorySession.sessionState == .open else {
+                nextAction = .authenticate
+                presentAuthenticationProgress(message: "Insert the key to authenticate.", state: .insertKey)
+                return
+            }
         }
         
         let username = usernameTextField.text!
         let password = passwordTextField.text!
         let loginRequest = WebAuthnUserRequest(username: username, password: password, type: .login)
         
-        presentMFIKeyActionSheetOnMain(state: .processing, message: "Authenticating...")
+        presentAuthenticationProgress(message: "Authenticating...", state: .processing)
         
         webauthnService.loginUserWith(request: loginRequest) { [weak self] (response, error) in
             guard let self = self else {
                 return
             }
             guard error == nil else {
-                self.dismissActionSheetAndPresent(error: error!)
+                self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
                 return
             }
             guard let response = response else {
@@ -314,14 +412,14 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
             let uuid = response.uuid
             let authenticateBeginRequest = WebAuthnAuthenticateBeginRequest(uuid: uuid)
             
-            self.presentMFIKeyActionSheetOnMain(state: .processing, message: "Requesting for authenticator challenge...")
+            self.presentAuthenticationProgress(message: "Requesting for authenticator challenge..." , state: .processing)
             
             self.webauthnService.authenticateBeginWith(request: authenticateBeginRequest) { [weak self] (response, error) in
                 guard let self = self else {
                     return
                 }
                 guard error == nil else {
-                    self.dismissActionSheetAndPresent(error: error!)
+                    self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
                     return
                 }
                 guard let response = response else {
@@ -367,32 +465,51 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
         }
         getAssertionRequest.allowList = allowList
         
-        /*
-         Execute the Get Assertion request.
-         */
-        guard let fido2Service = YubiKitManager.shared.keySession.fido2Service else {
-            fatalError()
-        }
-        fido2Service.execute(getAssertionRequest) { [weak self] (response, error) in
+        executeKeyRequestWith { [weak self] in
             guard let self = self else {
                 return
             }
-            guard error == nil else {
-                self.handleGetAssertion(error: error!, response: authenticateBeginResponse, uuid: uuid)
-                return
-            }
+            self.keyFido2Service.execute(getAssertionRequest) { [weak self] (response, error) in
+                guard let self = self else {
+                    return
+                }
+                guard error == nil else {
+                    self.handleGetAssertion(error: error!, response: authenticateBeginResponse, uuid: uuid)
+                    return
+                }
+                
+                // The reponse from the key must not be empty at this point.
+                guard let response = response else {
+                    fatalError()
+                }
+                
+                if self.keyType == .accessory {
+                    self.finalizeAuthentication(response: response, uuid: uuid, requestId: requestId, clientDataJSON: clientDataJSON)
+                } else {
+                    guard #available(iOS 13.0, *) else {
+                        fatalError()
+                    }
 
-            // The reponse from the key must not be empty at this point.
-            guard let response = response else {
-                fatalError()
+                    // Observe the scene activation to detect when the Core NFC system UI goes away.
+                    // For more details about this solution check the comments on SceneObserver.
+                    self.sceneObserver = SceneObserver(sceneActivationClosure: {  [weak self] in
+                        guard let self = self else {
+                            return
+                        }
+                        self.finalizeAuthentication(response: response, uuid: uuid, requestId: requestId, clientDataJSON: clientDataJSON)
+                        self.sceneObserver = nil
+                    })
+
+                    // Stop the session to dismiss the Core NFC system UI.
+                    YubiKitManager.shared.nfcSession.stopIso7816Session()
+                }
             }
-            self.finalizeAuthentication(response: response, uuid: uuid, requestId: requestId, clientDataJSON: clientDataJSON)
         }
     }
 
     private func finalizeAuthentication(response: YKFKeyFIDO2GetAssertionResponse, uuid: String, requestId: String, clientDataJSON: Data) {
-        presentMFIKeyActionSheetOnMain(state: .processing, message: "Authenticating...")
-
+        presentAuthenticationProgress(message:"Authenticating..." , state: .processing)
+        
         let authenticateFinishRequest = WebAuthnAuthenticateFinishRequest(uuid: uuid,
                                                                           requestId: requestId,
                                                                           credentialId: response.credential!.credentialId,
@@ -405,10 +522,11 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
                 return
             }
             guard error == nil else {
-                self.dismissActionSheetAndPresent(error: error!)
+                self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
                 return
             }
-            self.dismissActionSheetAndPresent(message: "The authentication was successful.")
+            
+            self.dismissAuthenticationProgressAndPresent(message: "The authentication was successful.")
         }
     }
     
@@ -430,22 +548,23 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
                     return
                 }
                 guard let pin = pin else {
-                    self.dismissActionSheetAndPresent(message: "The PIN is empty.")
-                    return
-                }
-                
-                guard let fido2Service = YubiKitManager.shared.keySession.fido2Service else {
+                    self.dismissAuthenticationProgressAndPresent(message: "The PIN is empty.")
                     return
                 }
                 guard let verifyPinRequest = YKFKeyFIDO2VerifyPinRequest(pin: pin) else {
-                    self.dismissActionSheetAndPresent(message: "Could not create the request to verify the PIN.")
+                    self.dismissAuthenticationProgressAndPresent(message: "Could not create the request to verify the PIN.")
                     return
                 }
                 
-                self.presentMFIKeyActionSheetOnMain(state: .processing, message: "Verifying PIN...")
-                
-                fido2Service.execute(verifyPinRequest) { (error) in
-                    completion(error)
+                self.presentAuthenticationProgress(message: "Verifying PIN...", state: .processing)
+                                                
+                self.executeKeyRequestWith { [weak self] in
+                    guard let self = self else {
+                        return
+                    }
+                    self.keyFido2Service.execute(verifyPinRequest) { (error) in
+                        completion(error)
+                    }
                 }
             }
         }
@@ -455,21 +574,47 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
         let makeCredentialError = error as NSError
         
         guard makeCredentialError.code == YKFKeyFIDO2ErrorCode.PIN_REQUIRED.rawValue else {
-            self.dismissActionSheetAndPresent(error: makeCredentialError)
+            dismissAuthenticationProgressAndPresent(message: makeCredentialError.localizedDescription)
             return
         }
-        
-        // PIN verification is required for the Make Credential request.
-        self.dismissMFIKeyActionSheetOnMain()
-        self.handlePinVerificationRequired { [weak self] (error) in
+                
+        let requestExecutionClosure = { [weak self] in
             guard let self = self else {
                 return
             }
-            guard error == nil else {
-                self.dismissActionSheetAndPresent(error: error!)
-                return
+            self.handlePinVerificationRequired { [weak self] (error) in
+                guard let self = self else {
+                    return
+                }
+                guard error == nil else {
+                    self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
+                    return
+                }
+                self.handleRegistration(response: response, uuid: uuid)
             }
-            self.handleRegistration(response: response, uuid: uuid)
+        }
+        
+        // PIN verification is required for the Make Credential request.
+        if keyType == .accessory {
+            dismissMFIKeyActionSheet()
+            requestExecutionClosure()
+        } else {
+            guard #available(iOS 13.0, *) else {
+                fatalError()
+            }
+            
+            // In case of NFC stop the session to allow the user to input the PIN (the NFC system action sheet blocks any interaction).
+            YubiKitManager.shared.nfcSession.stopIso7816Session()
+            
+            // Observe the scene activation to detect when the Core NFC system UI goes away.
+            // For more details about this solution check the comments on SceneObserver.
+            self.sceneObserver = SceneObserver(sceneActivationClosure: {  [weak self] in
+                guard let self = self else {
+                    return
+                }
+                requestExecutionClosure()
+                self.sceneObserver = nil
+            })
         }
     }
     
@@ -477,74 +622,127 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
         let getAssertionError = error as NSError
         
         guard getAssertionError.code == YKFKeyFIDO2ErrorCode.PIN_REQUIRED.rawValue else {
-            self.dismissActionSheetAndPresent(error: getAssertionError)
+            dismissAuthenticationProgressAndPresent(message: getAssertionError.localizedDescription)
             return
         }
         
         // PIN verification is required for the Get Assertion request.
-        self.dismissMFIKeyActionSheetOnMain()
+        if keyType == .accessory {
+            dismissMFIKeyActionSheet()
+        } else {
+            guard #available(iOS 13.0, *) else {
+                fatalError()
+            }
+            // In case of NFC stop the session to allow the user to input the PIN (the NFC system action sheet blocks any interaction).
+            YubiKitManager.shared.nfcSession.stopIso7816Session()
+        }
+        
         self.handlePinVerificationRequired { [weak self] (error) in
             guard let self = self else {
                 return
             }
             guard error == nil else {
-                self.dismissActionSheetAndPresent(error: error!)
+                self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
                 return
             }
             self.handleAuthentication(response: response, uuid: uuid)
         }
     }
     
-    // MARK: - Helpers
+    private func executeKeyRequestWith(execution: @escaping () -> Void) {
+        if keyType == .accessory {
+            // Execute the request right away.
+            execution()
+        } else {
+            guard #available(iOS 13.0, *) else {
+                fatalError()
+            }
+            
+            dismissProgressHud()
+            
+            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
+            if nfcSession.iso7816SessionState == .open {
+                execution()
+                return
+            }
+            
+            // The ISO7816 session is started only when required since it's blocking the application UI with the NFC system action sheet.
+            YubiKitManager.shared.nfcSession.startIso7816Session()
+            
+            // Execute the request after the key(tag) is connected.
+            nfcSesionStateObservation = nfcSession.observe(\.iso7816SessionState, changeHandler: { [weak self] session, change in
+                if session.iso7816SessionState == .open {
+                    execution()
+                    self?.nfcSesionStateObservation = nil // remove the observation
+                }
+            })
+        }
+    }
+    
+    // MARK: - Key Info
     
     private func updateKeyInfo() {
-        guard YubiKitManager.shared.keySession.sessionState == .open else {
+        guard YubiKitManager.shared.accessorySession.sessionState == .open else {
             keyInfoLabel.text = nil
             return
         }        
-        guard let keyDescription = YubiKitManager.shared.keySession.keyDescription else {
+        guard let accessoryDescription = YubiKitManager.shared.accessorySession.accessoryDescription else {
             keyInfoLabel.text = nil
             return
         }
         
         var keyInfoText = ""
-        if keyDescription.serialNumber.isEmpty {
-            keyInfoText = "- Key info -\nFirmware: \(keyDescription.firmwareRevision)"
+        if accessoryDescription.serialNumber.isEmpty {
+            keyInfoText = "- Key info -\nFirmware: \(accessoryDescription.firmwareRevision)"
         } else {
-            keyInfoText = "- Key info -\nSerial: \(keyDescription.serialNumber), Firmware: \(keyDescription.firmwareRevision)"
+            keyInfoText = "- Key info -\nSerial: \(accessoryDescription.serialNumber), Firmware: \(accessoryDescription.firmwareRevision)"
         }
         keyInfoLabel.text = keyInfoText
     }
     
-    private func dispatchMain(execute: @escaping ()->Void) {
-        if Thread.isMainThread {
-            execute()
-        } else {
-            DispatchQueue.main.async(execute: execute)
-        }
-    }
-    
-    private func presentMFIKeyActionSheetOnMain(state: MFIKeyInteractionViewControllerState, message: String) {
-        dispatchMain { [weak self] in
-            self?.presentMFIKeyActionSheet(state: state, message: message)
-        }
-    }
+    // MARK: - Authentication Progress
 
-    private func dismissMFIKeyActionSheetOnMain() {
-        dispatchMain { [weak self] in
-            self?.dismissMFIKeyActionSheet(delayed: false)
+    private func presentAuthenticationProgress(message: String, state: MFIKeyInteractionViewControllerState) {
+        switch state {
+        case .processing:
+            if keyType == .accessory {
+                presentMFIKeyActionSheet(state: state, message: message)
+            } else {
+                presentProgressHud(message: message)
+            }
+            
+        case .insertKey:
+            fallthrough
+        case .touchKey:
+            presentMFIKeyActionSheet(state: state, message: message)
         }
     }
     
-    private func dismissActionSheetAndPresent(error: Error) {
-        dispatchMain { [weak self] in
-            self?.dismissMFIKeyActionSheetAndShow(message: error.localizedDescription)
+    private func dismissAuthenticationProgressAndPresent(message: String) {
+        if keyType == .accessory {
+            dismissMFIKeyActionSheetAndPresent(message: message)
+        } else {
+            guard #available(iOS 13.0, *) else {
+                fatalError()
+            }
+            guard YubiKitManager.shared.nfcSession.iso7816SessionState != .closed else {
+                dismissProgressHudAndPresent(message: message)
+                return
+            }
+            
+            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
+            nfcSession.stopIso7816Session()
+            
+            // Observe the scene activation to detect when the Core NFC system UI goes away.
+            // For more details about this solution check the comments on SceneObserver.
+            self.sceneObserver = SceneObserver(sceneActivationClosure: {  [weak self] in
+                guard let self = self else {
+                    return
+                }
+                self.dismissProgressHudAndPresent(message: message)
+                self.sceneObserver = nil
+            })
         }
-    }
-    
-    private func dismissActionSheetAndPresent(message: String) {
-        dispatchMain { [weak self] in
-            self?.dismissMFIKeyActionSheetAndShow(message: message)
-        }
+        return
     }
 }

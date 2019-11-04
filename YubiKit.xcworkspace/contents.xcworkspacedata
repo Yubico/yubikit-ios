@@ -5,6 +5,9 @@
       location = "group:YubiKit/YubiKit.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:YubiKitFullStackTests/YubiKitFullStackTests.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:YubiKitDemo/YubiKitDemo.xcodeproj">
    </FileRef>
 </Workspace>

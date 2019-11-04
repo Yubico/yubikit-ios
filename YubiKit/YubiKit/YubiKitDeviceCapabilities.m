@@ -68,6 +68,27 @@
     return NO;
 }
 
++ (BOOL)supportsISO7816NFCTags {
+#ifdef DEBUG
+    // When this is set by UTs.
+    if (self.fakeDeviceCapabilities) {
+        return [[self.fakeDeviceCapabilities class] supportsISO7816NFCTags];
+    }
+#endif
+    
+    if (self.currentUIDevice.ykf_deviceModel == YKFDeviceModelSimulator) {
+        return NO;
+    }
+    if (@available(iOS 13, *)) {
+        // This check was introduced to avoid some random crashers caused by CoreNFC on devices which are not NFC enabled.
+        if ([self deviceIsNFCEnabled]) {
+            return NFCTagReaderSession.readingAvailable;
+        }
+        return NO;
+    }
+    return NO;
+}
+
 + (BOOL)supportsMFIAccessoryKey {
 #ifdef DEBUG
     // When this is set by UTs.

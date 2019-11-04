@@ -47,10 +47,10 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
         
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             // Make sure the session is started (in case it was closed by another demo).
-            YubiKitManager.shared.keySession.startSession()
+            YubiKitManager.shared.accessorySession.startSession()
         
             // Enable state observation (see MFIKeyInteractionViewController)
-            observeSessionStateUpdates = true
+            observeAccessorySessionStateUpdates = true
         } else {
             present(message: "This device or iOS version does not support operations with MFi accessory YubiKeys.")
         }
@@ -61,7 +61,7 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
         
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             // Disable state observation (see MFIKeyInteractionViewController)
-            observeSessionStateUpdates = false
+            observeAccessorySessionStateUpdates = false
         }
     }
     
@@ -182,9 +182,9 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
     }
     
     private func readOTPOverNFC() {
-        // Here is the important code snippet to ask YubiKit to scan a OTP NFC token
+        // Here is the important code snippet to ask YubiKit to scan an OTP.
         if #available(iOS 11, *) {
-            YubiKitManager.shared.nfcReaderSession.requestOTPToken { [weak self] (token, error) in
+            YubiKitManager.shared.nfcSession.otpService.requestOTPToken { [weak self] (token, error) in
                 guard let strongSelf = self else {
                     return
                 }
@@ -203,7 +203,7 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
         otpUIResponder.isEnabled = true
         waitingForReadingOTP = true
         
-        if YubiKitManager.shared.keySession.sessionState == .open {
+        if YubiKitManager.shared.accessorySession.sessionState == .open {
             presentMFIKeyActionSheet(state: .touchKey, message: "Touch the key to read the OTP.")
         } else {
             presentMFIKeyActionSheet(state: .insertKey, message: "Insert the key to read the OTP.")
@@ -212,11 +212,11 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
     
     // MARK: - State Observation
     
-    override func keySessionStateDidChange() {
+    override func accessorySessionStateDidChange() {
         guard waitingForReadingOTP else {
             return // If the view controller is not actively waiting for an OTP discard the updates.
         }
-        let state = YubiKitManager.shared.keySession.sessionState
+        let state = YubiKitManager.shared.accessorySession.sessionState
         
         if state == .open {
             presentMFIKeyActionSheet(state: .touchKey, message: "Touch the key to read the OTP.")

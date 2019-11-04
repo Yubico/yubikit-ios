@@ -24,6 +24,10 @@
     return YES;    
 }
 
++ (BOOL)supportsISO7816NFCTags {
+    return YES;
+}
+
 + (BOOL)supportsMFIAccessoryKey {
     return YES;
 }

@@ -17,6 +17,7 @@
 #import "YKFKeyRawCommandService.h"
 #import "YKFKeyRawCommandService+Private.h"
 #import "FakeYKFKeyConnectionController.h"
+#import "YKFAPDU+Private.h"
 
 @interface YKFKeyRawCommandServiceTests: YKFTestCase
 
@@ -36,107 +37,51 @@
 #pragma mark - Sync commands
 
 - (void)test_WhenRunningSyncRawCommandsAgainstTheKey_CommandsAreForwardedToTheKey {
-    NSData *command = [self dataWithBytes:@[@(0x00), @(0x01), @(0x02)]];
-    NSData *commandResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+    NSData *command = [self dataWithBytes:@[@(0x01), @(0x02)]];
+    NSData *commandResponse = [self dataWithBytes:@[@(0x90), @(0x00)]];
     self.keyConnectionController.commandExecutionResponseDataSequence = @[commandResponse];
     
     NSData *responseData = [self executeSyncCommand:command];
     XCTAssertNotNil(responseData);
     
-    NSData *executionCommandData = self.keyConnectionController.executionCommandData;
-    XCTAssertNotNil(executionCommandData, @"No command data executed on the connection controller.");
-    XCTAssertEqual(((UInt8*)executionCommandData.bytes)[0], 0x00);
-    
-    executionCommandData = [executionCommandData subdataWithRange:NSMakeRange(1, executionCommandData.length - 1)];
-    XCTAssert([executionCommandData isEqualToData:command], @"Command sent to the key does not match the initial command.");
+    YKFAPDU *executionCommand = self.keyConnectionController.executionCommand;
+    XCTAssert([executionCommand.apduData isEqualToData:command], @"Command sent to the key does not match the initial command.");
 }
 
-- (void)test_WhenRunningSyncRawCommandsAgainstTheKey_StatusCodeAreReturned {
-    NSData *command = [self dataWithBytes:@[@(0x00), @(0x01), @(0x02)]];
-    NSData *commandResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+- (void)test_WhenRunningSyncRawCommandsAgainstTheKey_StatusCodesAreReturned {
+    NSData *command = [self dataWithBytes:@[@(0x01), @(0x02)]];
+    NSData *commandResponse = [self dataWithBytes:@[@(0x90), @(0x00)]];
     self.keyConnectionController.commandExecutionResponseDataSequence = @[commandResponse];
     
     NSData *responseData = [self executeSyncCommand:command];
     
     XCTAssertEqual(responseData.length, 2, @"Response data too short.");
-    XCTAssert([responseData isEqualToData:[commandResponse subdataWithRange:NSMakeRange(1, 2)]]);
-}
-
-- (void)test_WhenRunningSyncRawCommandsAgainstTheKey_ReturnedDataDoesNotHaveIAPFrame {
-    
-    // Regular response
-    
-    NSData *command = [self dataWithBytes:@[@(0x00), @(0x01), @(0x02)]];
-    NSData *commandResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
-    self.keyConnectionController.commandExecutionResponseDataSequence = @[commandResponse];
-    
-    NSData *responseData = [self executeSyncCommand:command];
-    
-    UInt8 *bytes = (UInt8 *)responseData.bytes;
-    XCTAssertNotEqual(bytes[0], 0x00);
-    
-    // WTX response
-    
-    commandResponse = [self dataWithBytes:@[@(0x01), @(0x90), @(0x00)]];
-    self.keyConnectionController.commandExecutionResponseDataSequence = @[commandResponse];
-
-    responseData = [self executeSyncCommand:command];
-    
-    bytes = (UInt8 *)responseData.bytes;
-    XCTAssertNotEqual(bytes[0], 0x00);
+    XCTAssert([responseData isEqualToData:commandResponse]);
 }
 
 #pragma mark - Async commands
 
 - (void)test_WhenRunningAsyncRawCommandsAgainstTheKey_CommandsAreForwardedToTheKey {
-    NSData *command = [self dataWithBytes:@[@(0x00), @(0x01), @(0x02)]];
-    NSData *commandResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+    NSData *command = [self dataWithBytes:@[@(0x01), @(0x02)]];
+    NSData *commandResponse = [self dataWithBytes:@[@(0x90), @(0x00)]];
     self.keyConnectionController.commandExecutionResponseDataSequence = @[commandResponse];
     
     NSData *responseData = [self executeAsyncCommand:command];
     XCTAssertNotNil(responseData);
     
-    NSData *executionCommandData = self.keyConnectionController.executionCommandData;
-    XCTAssertNotNil(executionCommandData, @"No command data executed on the connection controller.");
-    XCTAssertEqual(((UInt8*)executionCommandData.bytes)[0], 0x00);
-    
-    executionCommandData = [executionCommandData subdataWithRange:NSMakeRange(1, executionCommandData.length - 1)];
-    XCTAssert([executionCommandData isEqualToData:command], @"Command sent to the key does not match the initial command.");
+    YKFAPDU *executionCommand = self.keyConnectionController.executionCommand;
+    XCTAssert([executionCommand.apduData isEqualToData:command], @"Command sent to the key does not match the initial command.");
 }
 
-- (void)test_WhenRunningAsyncRawCommandsAgainstTheKey_StatusCodeAreReturned {
-    NSData *command = [self dataWithBytes:@[@(0x00), @(0x01), @(0x02)]];
-    NSData *commandResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+- (void)test_WhenRunningAsyncRawCommandsAgainstTheKey_StatusCodesAreReturned {
+    NSData *command = [self dataWithBytes:@[@(0x01), @(0x02)]];
+    NSData *commandResponse = [self dataWithBytes:@[@(0x90), @(0x00)]];
     self.keyConnectionController.commandExecutionResponseDataSequence = @[commandResponse];
     
     NSData *responseData = [self executeAsyncCommand:command];
     
     XCTAssertEqual(responseData.length, 2, @"Response data too short.");
-    XCTAssert([responseData isEqualToData:[commandResponse subdataWithRange:NSMakeRange(1, 2)]]);
-}
-
-- (void)test_WhenRunningAsyncRawCommandsAgainstTheKey_ReturnedDataDoesNotHaveIAPFrame {
-    
-    // Regular response
-    
-    NSData *command = [self dataWithBytes:@[@(0x00), @(0x01), @(0x02)]];
-    NSData *commandResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
-    self.keyConnectionController.commandExecutionResponseDataSequence = @[commandResponse];
-    
-    NSData *responseData = [self executeAsyncCommand:command];
-    
-    UInt8 *bytes = (UInt8 *)responseData.bytes;
-    XCTAssertNotEqual(bytes[0], 0x00);
-    
-    // WTX response
-    
-    commandResponse = [self dataWithBytes:@[@(0x01), @(0x90), @(0x00)]];
-    self.keyConnectionController.commandExecutionResponseDataSequence = @[commandResponse];
-    
-    responseData = [self executeSyncCommand:command];
-    
-    bytes = (UInt8 *)responseData.bytes;
-    XCTAssertNotEqual(bytes[0], 0x00);
+    XCTAssert([responseData isEqualToData:commandResponse]);
 }
 
 #pragma mark - Helpers

@@ -48,7 +48,17 @@ class OTPScanContainerView: UIView {
     }
         
     private func showWaitingForScan() {
-        let view = Bundle.main.loadNibNamed("OTPWaitingScanView", owner: nil, options: nil)?.first as! UIView
+        let view = Bundle.main.loadNibNamed("OTPWaitingScanView", owner: nil, options: nil)?.first as! OTPWaitingScanView
+        
+        if #available(iOS 13.0, *) {
+            if traitCollection.userInterfaceStyle == .dark {
+                view.yubikeyImageView.isHidden = true
+            } else {
+                view.yubikeyImageView.isHidden = false
+            }
+        } else {
+            view.yubikeyImageView.isHidden = false
+        }
         setContained(view: view)
     }
     

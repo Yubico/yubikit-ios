@@ -13,11 +13,11 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFKeyConnectionController.h"
+#import "YKFAccessoryConnectionController.h"
 
 @interface FakeYKFKeyConnectionController: NSObject<YKFKeyConnectionControllerProtocol>
 
-@property (nonatomic) NSData *executionCommandData;
+@property (nonatomic) YKFAPDU *executionCommand;
 
 @property (nonatomic) YKFKeyConnectionControllerCommandResponseBlock commandResponseBlock;
 @property (nonatomic) YKFKeyConnectionControllerCompletionBlock operationExecutionBlock;

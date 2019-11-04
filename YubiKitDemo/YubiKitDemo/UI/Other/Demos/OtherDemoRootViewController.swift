@@ -15,14 +15,19 @@
 import UIKit
 
 class OtherDemoRootViewController: RootViewController {
-    
+       
     // MARK: - View Lifecycle
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        if (YubiKitDeviceCapabilities.supportsISO7816NFCTags) {
+            guard #available(iOS 13.0, *) else {
+                fatalError()
+            }
+            observeNfcSessionStateUpdates = true
+        }
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
-            YubiKitManager.shared.keySession.startSession()
+            YubiKitManager.shared.accessorySession.startSession()
             observeSessionStateUpdates = true
         } else {
             present(message: "This device or iOS version does not support operations with MFi accessory YubiKeys.")
@@ -34,19 +39,34 @@ class OtherDemoRootViewController: RootViewController {
         
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             observeSessionStateUpdates = false
-            YubiKitManager.shared.keySession.cancelCommands()
+            YubiKitManager.shared.accessorySession.cancelCommands()
+        }
+        
+        if (YubiKitDeviceCapabilities.supportsISO7816NFCTags) {
+            guard #available(iOS 13.0, *) else {
+                fatalError()
+            }
+            observeNfcSessionStateUpdates = false
         }
     }
     
     deinit {
         observeSessionStateUpdates = false
+
+        if #available(iOS 13.0, *) {
+            observeNfcSessionStateUpdates = false
+        } else {
+            // Fallback on earlier versions
+        }
     }
     
     // MARK: - Key State Observation
     
     private static var observationContext = 0
     private var isObservingSessionStateUpdates = false
-    
+    private var isNfcObservingSessionStateUpdates = false
+    private var nfcSesionStateObservation: NSKeyValueObservation?
+
     var observeSessionStateUpdates: Bool {
         get {
             return isObservingSessionStateUpdates
@@ -57,13 +77,37 @@ class OtherDemoRootViewController: RootViewController {
             }
             isObservingSessionStateUpdates = newValue
             
-            let keySession = YubiKitManager.shared.keySession as AnyObject
-            let sessionStateKeyPath = #keyPath(YKFKeySession.sessionState)
+            let accessorySession = YubiKitManager.shared.accessorySession as AnyObject
+            let sessionStateKeyPath = #keyPath(YKFAccessorySession.sessionState)
             
             if isObservingSessionStateUpdates {
-                keySession.addObserver(self, forKeyPath: sessionStateKeyPath, options: [], context: &OtherDemoRootViewController.observationContext)
+                accessorySession.addObserver(self, forKeyPath: sessionStateKeyPath, options: [], context: &OtherDemoRootViewController.observationContext)
             } else {
-                keySession.removeObserver(self, forKeyPath: sessionStateKeyPath)
+                accessorySession.removeObserver(self, forKeyPath: sessionStateKeyPath)
+            }
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    var observeNfcSessionStateUpdates: Bool {
+        get {
+            return isNfcObservingSessionStateUpdates
+        }
+        set {
+            guard newValue != isNfcObservingSessionStateUpdates else {
+                return
+            }
+            isNfcObservingSessionStateUpdates = newValue
+            
+            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
+            if isNfcObservingSessionStateUpdates {
+                self.nfcSesionStateObservation = nfcSession.observe(\.iso7816SessionState, changeHandler: { [weak self] session, change in
+                    DispatchQueue.main.async { [weak self] in
+                        self?.nfcSessionStateDidChange()
+                    }
+                })
+            } else {
+                self.nfcSesionStateObservation = nil
             }
         }
     }
@@ -75,16 +119,21 @@ class OtherDemoRootViewController: RootViewController {
         }
         
         switch keyPath {
-        case #keyPath(YKFKeySession.sessionState):
+        case #keyPath(YKFAccessorySession.sessionState):
             DispatchQueue.main.async { [weak self] in
-                self?.keySessionStateDidChange()
+                self?.accessorySessionStateDidChange()
             }
         default:
             fatalError()
         }
     }
         
-    func keySessionStateDidChange() {
-        fatalError("Override the keySessionStateDidChange() to get session state updates.")
+    func accessorySessionStateDidChange() {
+        fatalError("Override the accessorySessionStateDidChange() to get session state updates.")
+    }
+    
+    @available(iOS 13.0, *)
+    func nfcSessionStateDidChange() {
+        fatalError("Override the nfcSessionStateDidChange() to get session state updates.")
     }
 }

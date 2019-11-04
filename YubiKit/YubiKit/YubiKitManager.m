@@ -15,16 +15,16 @@
 #import <ExternalAccessory/ExternalAccessory.h>
 
 #import "YubiKitManager.h"
-#import "YKFKeySessionConfiguration.h"
+#import "YKFAccessorySessionConfiguration.h"
 
-#import "YKFNFCReaderSession+Private.h"
-#import "YKFKeySession+Private.h"
+#import "YKFNFCOTPService+Private.h"
+#import "YKFAccessorySession+Private.h"
 
 @interface YubiKitManager()
 
-@property (nonatomic, readwrite) id<YKFNFCReaderSessionProtocol> nfcReaderSession NS_AVAILABLE_IOS(11.0);
+@property (nonatomic, readwrite) id<YKFNFCSessionProtocol> nfcSession NS_AVAILABLE_IOS(11.0);
 @property (nonatomic, readwrite) id<YKFQRReaderSessionProtocol> qrReaderSession;
-@property (nonatomic, readwrite) id<YKFKeySessionProtocol> keySession;
+@property (nonatomic, readwrite) id<YKFAccessorySessionProtocol> accessorySession;
 
 @end
 
@@ -44,15 +44,14 @@ static id<YubiKitManagerProtocol> sharedInstance;
     self = [super init];
     if (self) {
         if (@available(iOS 11, *)) {
-            // Init with defaults
-            self.nfcReaderSession = [[YKFNFCReaderSession alloc] initWithTokenParser:nil session:nil];
+            self.nfcSession = [[YKFNFCSession alloc] init];
         }
         self.qrReaderSession = [[YKFQRReaderSession alloc] init];
         
-        YKFKeySessionConfiguration *configuration = [[YKFKeySessionConfiguration alloc] init];
+        YKFAccessorySessionConfiguration *configuration = [[YKFAccessorySessionConfiguration alloc] init];
         EAAccessoryManager *accessoryManager = [EAAccessoryManager sharedAccessoryManager];
         
-        self.keySession = [[YKFKeySession alloc] initWithAccessoryManager:accessoryManager configuration:configuration];
+        self.accessorySession = [[YKFAccessorySession alloc] initWithAccessoryManager:accessoryManager configuration:configuration];
     }
     return self;
 }

@@ -68,7 +68,7 @@
     XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];
     XCTAssert(result == XCTWaiterResultCompleted, @"");
 
-    XCTAssertNotNil(self.keyConnectionController.executionCommandData, @"No command data executed on the connection controller.");
+    XCTAssertNotNil(self.keyConnectionController.executionCommand, @"No command data executed on the connection controller.");
     XCTAssertTrue(completionBlockExecuted, @"Completion block not executed.");
 }
 
@@ -90,7 +90,7 @@
     XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];
     XCTAssert(result == XCTWaiterResultCompleted, @"");
     
-    XCTAssertNotNil(self.keyConnectionController.executionCommandData, @"No command data executed on the connection controller.");
+    XCTAssertNotNil(self.keyConnectionController.executionCommand, @"No command data executed on the connection controller.");
     XCTAssertTrue(completionBlockExecuted, @"Completion block not executed.");
 }
 
