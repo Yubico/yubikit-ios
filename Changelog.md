@@ -1,5 +1,26 @@
 # YubiKit Changelog
 
+#### 3.0.0-Preview2 [3.0.0-Preview1 -> 3.0.0-Preview2]
+
+- Adds support for OATH protocol over NFC on devices running iOS 13 or newer. Also wraps and simplifies raw APDU communication with NFC-Enabled YubiKeys.
+
+#### 3.0.0-Preview1 [2.0.1 -> 3.0.0-Preview1]
+
+`BREAKING CHANGES`: 
+- See `Refactoring Changes` section under [NFC-Notes](./NFC-Notes.md)
+
+---
+
+- This version now supports NFC-Enabled YubiKeys for FIDO2. `Note`: All NFC capabilities (except Yubico OTP) require iOS 13+ on the user's device. See [NFC-Notes.md](./NFC-Notes.md) for more details on the addition of NFC support and notable changes to the key sessions.
+
+- The YubiKit 3.0.0-Preview1 adds support for ISO 7816 tags which allows your application to use the FIDO2 functionality of the YubiKey over NFC on devices running iOS 13 or newer. 
+
+- The FIDO2 protocol implementation now supports any NFC-Enabled YubiKey, in addition to the YubiKey 5Ci. The library provides examples for implementing FIDO2 over an accessory (YubiKey 5Ci) or NFC. In addition, the [YubiKit Demo](./YubiKitDemo/README.md) application provides an end-to-end solution for both protocols.
+
+- To use YubiKit 3.0.0-Preview1, the application needs to be compiled with Xcode 11 or newer (iOS 13 SDK).
+
+---
+
 #### 2.0.1 [2.0.0 -> 2.0.1]
 
 - Fixed an edge case for CCID when the WTX responses are concatenated with the payload. This issue mostly affects the calculation of OATH credentials with touch.
