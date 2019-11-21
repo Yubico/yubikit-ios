@@ -43,6 +43,17 @@ typedef NS_ENUM(NSUInteger, YKFNFCISO7816SessionState) {
 @property (nonatomic, assign, readonly) YKFNFCISO7816SessionState iso7816SessionState;
 
 /*!
+ @property sessionErrorCode
+
+ @abstract
+    This property allows to check and observe error codes encountered during NFCSession.
+
+ NOTE:
+    This is a KVO compliant property. Observe it to get updates when the key is connected.
+ */
+@property (nonatomic, assign, readonly) NSInteger iso7816SessionErrorCode;
+
+/*!
  @property tagDescription
  
  @returns

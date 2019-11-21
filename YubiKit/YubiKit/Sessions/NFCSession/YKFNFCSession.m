@@ -33,6 +33,7 @@
 @interface YKFNFCSession()<NFCTagReaderSessionDelegate>
 
 @property (nonatomic, readwrite) YKFNFCISO7816SessionState iso7816SessionState;
+@property (nonatomic, readwrite) NSInteger iso7816SessionErrorCode;
 
 @property (nonatomic, readwrite) YKFNFCTagDescription *tagDescription API_AVAILABLE(ios(13.0));
 
@@ -83,6 +84,13 @@
     self.iso7816SessionState = state;
 }
 
+- (void)updateIso7816SessionError:(NSError *)error {
+    if (!error) {
+        return;
+    }
+    self.iso7816SessionErrorCode = error.code;
+}
+
 #pragma mark - Session lifecycle
 
 - (void)startIso7816Session API_AVAILABLE(ios(13.0)) {
@@ -92,7 +100,7 @@
         YKFLogInfo(@"NFC session already started. Ignoring start request.");
         return;
     }
-    
+    self.iso7816SessionErrorCode = 0;
     self.nfcTagReaderSession = [[NFCTagReaderSession alloc] initWithPollingOption:NFCPollingISO14443 delegate:self queue:nil];
     self.nfcTagReaderSession.alertMessage = YubiKitExternalLocalization.nfcScanAlertMessage;
     [self.nfcTagReaderSession beginSession];
@@ -130,6 +138,7 @@
 
 - (void)tagReaderSession:(NFCTagReaderSession *)session didInvalidateWithError:(NSError *)error API_AVAILABLE(ios(13.0)) {
     YKFLogNSError(error);
+    [self updateIso7816SessionError:error];
     [self updateServicesForTag:nil state:YKFNFCISO7816SessionStateClosed];
 }
 
