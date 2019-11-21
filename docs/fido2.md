@@ -66,6 +66,24 @@ if (!fido2Service) {
 }];
 ```
 
+Using the FIDO APIs over the NFC session is identical to using the APIs over the accessory (used for the YubiKey 5Ci as an MFi accessory) session. The application builds the requests in the same way and the application can choose to execute requests over the *accessory* or the *NFC* session:
+
+```swift
+var fido2Service: YKFKeyFIDO2ServiceProtocol? = nil
+
+// #1 Use the fido2Service instance from the accessory session              
+fido2Service = YubiKitManager.shared.accessorySession.fido2Service
+
+// #2 Use the fido2Service instance from the NFC session
+fido2Service = YubiKitManager.shared.nfcSession.fido2Service   
+
+...
+
+fido2Service.execute(makeCredentialRequest) { [weak self] (response, error) in
+    ...
+}
+```
+
 A new FIDO2 credential can be created by calling `[executeMakeCredentialRequest:completion:]` on the FIDO2 service. The following code will create a new credential with a non-resident ECC key:
  
 #### Swift

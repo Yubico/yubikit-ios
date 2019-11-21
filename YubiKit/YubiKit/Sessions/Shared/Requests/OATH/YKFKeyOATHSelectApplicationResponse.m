@@ -49,7 +49,12 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHSelectApplicationResponseTag) {
         
         UInt8 lengthOfVersion = bytes[readIndex];
         YKFAssertAbortInit(lengthOfVersion > 0);
-        
+
+        NSRange versionRange = NSMakeRange(readIndex, lengthOfVersion);
+        YKFAssertAbortInit([responseData ykf_containsRange:versionRange]);
+
+        UInt8 majorVersion = bytes[readIndex];
+
         readIndex += lengthOfVersion + 1;
         YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
         
@@ -86,14 +91,17 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHSelectApplicationResponseTag) {
             YKFAssertAbortInit([responseData ykf_containsRange:challengeRange]);
             self.challenge = [responseData subdataWithRange:NSMakeRange(readIndex, challengeLength)];
             
-            readIndex += challengeLength;
-            YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
-            UInt8 algorithmTag = bytes[readIndex];
-            YKFAssertAbortInit(algorithmTag == YKFKeyOATHSelectApplicationResponseTagAlgorithm);
-            
-            readIndex += 2; // 1 byte is length which is always 1
-            YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
-            self.algorithm = bytes[readIndex];
+            if (majorVersion > 3) {
+                // old NEO versions didn't have algorithm tag
+                readIndex += challengeLength;
+                YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
+                UInt8 algorithmTag = bytes[readIndex];
+                YKFAssertAbortInit(algorithmTag == YKFKeyOATHSelectApplicationResponseTagAlgorithm);
+                
+                readIndex += 2; // 1 byte is length which is always 1
+                YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
+                self.algorithm = bytes[readIndex];
+            }
         }
     }
     return self;

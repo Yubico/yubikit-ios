@@ -35,7 +35,7 @@ class QRScanViewController: RootViewController, QRCodeScanResultsViewDelegate {
     // MARK: Actions
     
     @IBAction func scanQRCodeButtonPressed(_ sender: Any) {                
-        YubiKitManager.shared.qrReaderSession.scanQrCode(withPresenter: self) { [weak self] (payload, error) in
+        YKFQRReaderSession.shared.scanQrCode(withPresenter: self) { [weak self] (payload, error) in
             guard let strongSelf = self else {
                 return
             }

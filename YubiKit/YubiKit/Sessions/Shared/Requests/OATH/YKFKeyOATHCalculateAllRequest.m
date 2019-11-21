@@ -20,12 +20,15 @@
 @implementation YKFKeyOATHCalculateAllRequest
 
 - (instancetype)init {
+    return [self initWithTimestamp: [NSDate date]];
+}
+
+- (instancetype)initWithTimestamp: (NSDate*) timestamp {
     self = [super init];
     if (self) {
-        self.timestamp = [NSDate date];
+        self.timestamp = timestamp;
         self.apdu = [[YKFOATHCalculateAllAPDU alloc] initWithTimestamp:self.timestamp];
     }
     return self;
 }
-
 @end

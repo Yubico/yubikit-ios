@@ -1,4 +1,4 @@
-# YubiKit 3.0.0-Preview1 - NFC Notes
+# YubiKit 3.0.0-Preview - NFC Notes
 
 See [**Changelog**](./Changelog.md) for a general list of changes made since the last release.
 This document is intended to cover the changes made to the YubiKit for iOS to support NFC (added in YubiKit 3.0.0) and what you need to know when integrating your app with the YubiKit SDK to support NFC-Enabled YubiKeys.
@@ -27,9 +27,13 @@ To add support for NFC YubiKeys in your application, follow these steps:
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
+<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
 <array>
 	<string>A000000527471117</string> // YubiKey Management Application AID
-	<string>A0000006472F0001</string> // FIDO AID
+	<string>A0000006472F0001</string> // FIDO/U2F AID
+    <string>A0000005272101</string>   // OATH AID
+    <string>A000000308</string>       // PIV AID
+    <string>A000000527200101</string> // YubiKey application/OTP AID
 </array>
 </plist>
 ```

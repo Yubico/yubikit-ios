@@ -16,7 +16,6 @@
 #import <UIKit/UIKit.h>
 
 #import "YKFNFCSession.h"
-#import "YKFQRReaderSession.h"
 #import "YKFAccessorySession.h"
 
 /*!
@@ -34,14 +33,6 @@
     Returns the shared instance of YKFNFCSession to interact with the NFC reader.
  */
 @property (nonatomic, readonly, nonnull) id<YKFNFCSessionProtocol> nfcSession NS_AVAILABLE_IOS(11.0);
-
-/*!
- @property qrReaderSession
- 
- @abstract
-    Returns the shared instance of YKFQRReaderSession to interact with the QR Code reader.
- */
-@property (nonatomic, readonly, nonnull) id<YKFQRReaderSessionProtocol> qrReaderSession;
 
 /*!
  @property accessorySession

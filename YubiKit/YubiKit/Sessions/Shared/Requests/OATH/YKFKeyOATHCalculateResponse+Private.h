@@ -17,6 +17,6 @@
 
 @interface YKFKeyOATHCalculateResponse()
 
-- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData requestTimetamp:(nonnull NSDate *)timestamp requestPeriod:(NSUInteger)period NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData requestTimetamp:(nonnull NSDate *)timestamp requestPeriod:(NSUInteger)period truncateResult:(BOOL)truncate NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -128,7 +128,8 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         }
         YKFKeyOATHCalculateResponse *response = [[YKFKeyOATHCalculateResponse alloc] initWithKeyResponseData:result
                                                                                              requestTimetamp:request.timestamp
-                                                                                               requestPeriod:request.credential.period];
+                                                                                               requestPeriod:request.credential.period
+                                                                                              truncateResult: !request.credential.notTruncated];
         if (!response) {
             completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeBadCalculationResponse]);
             return;
@@ -138,10 +139,9 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     }];
 }
 
-- (void)executeCalculateAllRequestWithCompletion:(YKFKeyOATHServiceCalculateAllCompletionBlock)completion {
+- (void)executeCalculateAllRequest:(YKFKeyOATHCalculateAllRequest *)request
+                        completion:(YKFKeyOATHServiceCalculateAllCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
-    
-    YKFKeyOATHCalculateAllRequest *request = [[YKFKeyOATHCalculateAllRequest alloc] init];
     
     [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         if (error) {

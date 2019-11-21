@@ -61,4 +61,18 @@ typedef void (^YKFQRCodeResponseBlock)(NSString* _Nullable, NSError* _Nullable);
 @end
 
 @interface YKFQRReaderSession : NSObject<YKFQRReaderSessionProtocol>
+
+/*!
+ @property shared
+ 
+ @abstract
+    YKFQRReaderSessionProtocol is a singleton and should be accessed only by using the shared instance provided by this property.
+ */
+@property (class, nonatomic, readonly, nonnull) id<YKFQRReaderSessionProtocol> shared;
+
+/*
+ Not available: use the shared property from YKFQRReaderSessionProtocol to retreive the shared single instance.
+ */
+- (nonnull instancetype)init NS_UNAVAILABLE;
+
 @end

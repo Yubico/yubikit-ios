@@ -26,6 +26,21 @@
 
 @implementation YKFQRReaderSession
 
+
+static id<YKFQRReaderSessionProtocol> sharedInstance;
+
++ (id<YKFQRReaderSessionProtocol>)shared {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[YKFQRReaderSession alloc] initOnce];
+    });
+    return sharedInstance;
+}
+
+- (instancetype)initOnce {
+    return [super init];
+}
+
 #pragma mark - YubiKitManagerProtocol
 
 - (void)scanQrCodeWithPresenter:(UIViewController *)viewController completion:(YKFQRCodeResponseBlock)completion {

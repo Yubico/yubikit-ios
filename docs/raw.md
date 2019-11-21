@@ -129,7 +129,17 @@ rawCommandService.executeSyncCommand(secondApdu) { (response, error) in
     // Use the response from the key
 }    
 ```    
-    
+Using the raw command service APIs over the NFC session is identical to using the APIs over the accessory (used for the YubiKey 5Ci as an MFi accessory) session. The application builds the requests in the same way and the application can choose to execute requests over the *accessory* or the *NFC* session:
+
+```swift
+let rawCommandService = YubiKitManager.shared.nfcSession.rawCommandService
+```
+
+```objective-c
+id<YKFKeyRawCommandServiceProtocol> rawCommandService =  YubiKitManager.shared.nfcSession.rawCommandService;
+```
+
+
 The YubiKit Demo application has a more detailed demo on how to use the Raw Command service in `RawCommandServiceDemoViewController`.
     
 YubiKit provides also a `PC/SC like` interface for sending raw commands to the key. This interface is exposed in `YKFPCSC.h`. For a complete list of methods consult the header file and the code level documentation.

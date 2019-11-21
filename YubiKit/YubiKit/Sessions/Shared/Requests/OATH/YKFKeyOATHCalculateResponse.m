@@ -31,7 +31,7 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHCalculateResponseType) {
 
 @implementation YKFKeyOATHCalculateResponse
 
-- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData requestTimetamp:(NSDate *)timestamp requestPeriod:(NSUInteger)period {
+- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData requestTimetamp:(NSDate *)timestamp requestPeriod:(NSUInteger)period truncateResult:(BOOL)truncate {
     YKFAssertAbortInit(responseData.length);
     YKFAssertAbortInit(timestamp);
     
@@ -40,7 +40,9 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHCalculateResponseType) {
         UInt8 *bytes = (UInt8 *)responseData.bytes;
         
         UInt8 responseType = bytes[0];
-        YKFAssertAbortInit(responseType == YKFKeyOATHCalculateResponseTypeTruncated);
+        if (truncate) {
+            YKFAssertAbortInit(responseType == YKFKeyOATHCalculateResponseTypeTruncated);
+        }
         
         YKFAssertAbortInit([responseData ykf_containsRange:NSMakeRange(1, 2)]);
         UInt8 responseLength = bytes[1];
@@ -48,9 +50,14 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHCalculateResponseType) {
         YKFAssertAbortInit(digits == 6 || digits == 7 || digits == 8);
         
         UInt8 otpBytesLength = responseLength - 1;
-        YKFAssertAbortInit(otpBytesLength == 4);
-        
-        self.otp = [responseData ykf_parseOATHOTPFromIndex:3 digits:digits];
+        if (truncate) {
+            YKFAssertAbortInit(otpBytesLength == 4);
+            self.otp = [responseData ykf_parseOATHOTPFromIndex:3 digits:digits];
+        } else {
+            UInt8 offset = bytes[otpBytesLength - 1] & 0xF + 3;
+            UInt32 otpResponseValue = CFSwapInt32BigToHost(*((UInt32 *)&bytes[offset]));
+            self.otp = [NSString stringWithFormat:@"%d", (unsigned int)otpResponseValue];
+        }
         YKFAssertAbortInit(self.otp);
         
         if (period > 0) {

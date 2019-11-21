@@ -228,11 +228,7 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
     YKFParameterAssertReturnValue(urlComponents, NO);
     
     NSString *issuer = [self queryParameterValueForName:YKFOATHCredentialURLParameterIssuer inUrlComponents:urlComponents];
-    if (issuer && self.issuer) {
-        if (![issuer isEqualToString:self.issuer]) { // Malformed URI: issuers don't match
-            return NO;
-        }
-    } else if (issuer) {
+    if (issuer) {
         self.issuer = issuer;
     }
     return YES;

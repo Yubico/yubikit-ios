@@ -7,11 +7,11 @@
 #### 3.0.0-Preview1 [2.0.1 -> 3.0.0-Preview1]
 
 `BREAKING CHANGES`: 
-- See `Refactoring Changes` section under [NFC-Notes](./NFC-Notes.md)
+- See `Refactoring Changes` section under [NFC-Notes](./docs/NFC-Notes.md)
 
 ---
 
-- This version now supports NFC-Enabled YubiKeys for FIDO2. `Note`: All NFC capabilities (except Yubico OTP) require iOS 13+ on the user's device. See [NFC-Notes.md](./NFC-Notes.md) for more details on the addition of NFC support and notable changes to the key sessions.
+- This version now supports NFC-Enabled YubiKeys for FIDO2. `Note`: All NFC capabilities (except Yubico OTP) require iOS 13+ on the user's device. See [NFC-Notes.md](./docs/NFC-Notes.md) for more details on the addition of NFC support and notable changes to the key sessions.
 
 - The YubiKit 3.0.0-Preview1 adds support for ISO 7816 tags which allows your application to use the FIDO2 functionality of the YubiKey over NFC on devices running iOS 13 or newer. 
 

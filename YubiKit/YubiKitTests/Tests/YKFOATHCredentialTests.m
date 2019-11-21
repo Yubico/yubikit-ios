@@ -141,6 +141,12 @@
     XCTAssertNil(credential.issuer, @"Issuer is not nil when key URI does not contain an issuer.");
 }
 
+- (void)test_WhenCredentialIsCreatedWithURLWithAnotherIssuerInURLParam_IssuerIsParsedFromTheURL {
+    NSString *url = @"otpauth://totp/ACME(Bank):john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&digits=6&period=30&issuer=ACME";
+    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    XCTAssert([credential.issuer isEqualToString:@"ACME"], @"Credential is missing the issuer.");
+}
+
 #pragma mark - Label
 
 - (void)test_WhenCredentialIsManuallyCreatedWithLabel_AssignedLabelIsReturnedWhenReadingTheProperty {

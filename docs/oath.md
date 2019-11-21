@@ -196,3 +196,57 @@ In addition to these requests, the OATH Service provides an interface for settin
 Authenticators often use QR codes to pass the URL for setting up the credentials. The built-in QR Code reader from YubiKit can be used to read the credential URL.
 
 ---
+
+To request a QR Code scan call `scanQrCodeWithPresenter:completion:` on the `qrReaderSession` instance from `YubiKitManager`:
+
+##### Objective-C
+
+```objective-c
+#import <YubiKit/YubiKit.h>
+...
+// Here self is a view controller.
+[YKFQRReaderSession.shared scanQrCodeWithPresenter:self completion:^(NSString *payload, NSError *error) {
+    // Start using the payload
+    // ...
+}];
+```    
+##### Swift    
+
+```swift
+// Here self is a view controller.
+YKFQRReaderSession.shared.scanQrCode(withPresenter: self) { [weak self] (payload, error) in    
+    // Start using the payload
+    // ...    
+}
+```
+
+In the current version of YubiKit the library doesn't make any assumption about the format of the scanned QR code payload but this may change in future versions.
+
+---
+
+Before calling the APIs for QR Code scanning it is recommended to check for the capabilities of the OS/Device. If the device or the OS does not support a capability **the library will fire an assertion** in debug builds when calling a method without having the required capability. YubiKit provides a handy utility class to check for these capabilities: `YubiKitDeviceCapabilities`:
+
+##### Objective-C
+
+```objective-c
+#import <YubiKit/YubiKit.h>
+...   
+// QR Code scanning is available
+if (YubiKitDeviceCapabilities.supportsQRCodeScanning) {
+    // Provide additional setup when QR Code scanning is available 
+} else {
+    // Handle the missing QR code support
+}
+```
+        
+##### Swift    
+
+```swift
+if YubiKitDeviceCapabilities.supportsQRCodeScanning {
+    // Provide additional setup when QR Code scanning is available             
+} else {
+    // Handle the missing QR code support
+}
+```
+
+---

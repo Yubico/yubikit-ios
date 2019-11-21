@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		811F91F023848D5E002158ED /* YKFKeyOATHCalculateAllRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95A4566F21777D0E00AD5A94 /* YKFKeyOATHCalculateAllRequest.h */; };
 		816C684B2343126100209342 /* YKFNFCTagDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 816C684A2343126100209342 /* YKFNFCTagDescription.m */; };
 		816C684E23431BE600209342 /* YKFNFCTagDescription.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 816C68492343126100209342 /* YKFNFCTagDescription.h */; };
 		95081DEE2214255B006CD08C /* YKFKeyRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 95081DED2214255B006CD08C /* YKFKeyRequest.m */; };
@@ -234,6 +235,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				811F91F023848D5E002158ED /* YKFKeyOATHCalculateAllRequest.h in CopyFiles */,
 				816C684E23431BE600209342 /* YKFNFCTagDescription.h in CopyFiles */,
 				95294B46231527F50014C30B /* YKFNFCSession.h in CopyFiles */,
 				95233E562330DEF200C51F92 /* YubiKitLogger.h in CopyFiles */,
@@ -299,9 +301,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		811F91EF2383C57B002158ED /* Changelog.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = Changelog.md; path = ../Changelog.md; sourceTree = "<group>"; };
 		816C68492343126100209342 /* YKFNFCTagDescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFNFCTagDescription.h; sourceTree = "<group>"; };
 		816C684A2343126100209342 /* YKFNFCTagDescription.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFNFCTagDescription.m; sourceTree = "<group>"; };
 		816C684C234315CC00209342 /* YKFNFCTagDescription+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFNFCTagDescription+Private.h"; sourceTree = "<group>"; };
+		81DF8FD9237B531700737268 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		81DF8FDA237B534D00737268 /* docs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = docs; path = ../docs; sourceTree = "<group>"; };
 		95081DEC2214255B006CD08C /* YKFKeyRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyRequest.h; sourceTree = "<group>"; };
 		95081DED2214255B006CD08C /* YKFKeyRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyRequest.m; sourceTree = "<group>"; };
 		950C70072298051700E48458 /* UIDevice+Testing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIDevice+Testing.h"; sourceTree = "<group>"; };
@@ -1036,6 +1041,9 @@
 		95C29608206247210091318B = {
 			isa = PBXGroup;
 			children = (
+				811F91EF2383C57B002158ED /* Changelog.md */,
+				81DF8FDA237B534D00737268 /* docs */,
+				81DF8FD9237B531700737268 /* README.md */,
 				956DB683206402AA006B1738 /* build.sh */,
 				95C29613206247210091318B /* YubiKit */,
 				95885B2620A3187700828D02 /* YubiKitTests */,

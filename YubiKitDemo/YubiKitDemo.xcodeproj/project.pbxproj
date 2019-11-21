@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		81DF8FD6237B530000737268 /* docassets in Resources */ = {isa = PBXBuildFile; fileRef = 81DF8FD4237B530000737268 /* docassets */; };
+		81DF8FD7237B530000737268 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 81DF8FD5237B530000737268 /* README.md */; };
 		81FA3C42231D52CB009C22AB /* CustomLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FA3C41231D52CB009C22AB /* CustomLogger.swift */; };
 		950A340B203DC54E005C9754 /* QRCodeScanNotAvailableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 950A340A203DC54E005C9754 /* QRCodeScanNotAvailableView.swift */; };
 		950A340D203DC564005C9754 /* QRCodeScanNotAvailableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 950A340C203DC564005C9754 /* QRCodeScanNotAvailableView.xib */; };
@@ -77,6 +79,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		81DF8FD4237B530000737268 /* docassets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = docassets; sourceTree = "<group>"; };
+		81DF8FD5237B530000737268 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		81FA3C41231D52CB009C22AB /* CustomLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLogger.swift; sourceTree = "<group>"; };
 		950A340A203DC54E005C9754 /* QRCodeScanNotAvailableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanNotAvailableView.swift; sourceTree = "<group>"; };
 		950A340C203DC564005C9754 /* QRCodeScanNotAvailableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = QRCodeScanNotAvailableView.xib; sourceTree = "<group>"; };
@@ -85,7 +89,6 @@
 		951459AF20BED84B00E6757A /* ApplicationUIAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationUIAppearance.swift; sourceTree = "<group>"; };
 		9519A50623279FF00087EE8F /* ProgressHudView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressHudView.swift; sourceTree = "<group>"; };
 		9519A50723279FF00087EE8F /* ProgressHudView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressHudView.xib; sourceTree = "<group>"; };
-		952365EB22F850AD00B8F8AB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		9526E3CB21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MFIKeyInteractionViewController.swift; sourceTree = "<group>"; };
 		9528AC9320B5685E00513302 /* UIViewAdditions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewAdditions.swift; sourceTree = "<group>"; };
 		952AF235203ACD1E004C2FDB /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
@@ -124,7 +127,6 @@
 		95A04D192252334D008E3036 /* FIDO2ServiceObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIDO2ServiceObserver.swift; sourceTree = "<group>"; };
 		95AD1AAF232A339B00FC3313 /* SceneObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneObserver.swift; sourceTree = "<group>"; };
 		95AFD4A922CB566500CDF8D3 /* DataExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
-		95C4E87523326B90008582F2 /* YK3_NFCNotes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = YK3_NFCNotes.md; path = ../YK3_NFCNotes.md; sourceTree = "<group>"; };
 		95C70DDE224A2FE70024E220 /* U2FDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = U2FDemoViewController.swift; sourceTree = "<group>"; };
 		95CEBA002031D4D000AF0D91 /* YubiKitDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YubiKitDemo.entitlements; sourceTree = "<group>"; };
 		95DA54D021944C1000B60C18 /* OtherDemosStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OtherDemosStoryboard.storyboard; sourceTree = "<group>"; };
@@ -404,8 +406,8 @@
 		95FAFABC202C483E00121DD5 = {
 			isa = PBXGroup;
 			children = (
-				952365EB22F850AD00B8F8AB /* README.md */,
-				95C4E87523326B90008582F2 /* YK3_NFCNotes.md */,
+				81DF8FD4237B530000737268 /* docassets */,
+				81DF8FD5237B530000737268 /* README.md */,
 				95FAFAC7202C483E00121DD5 /* YubiKitDemo */,
 				95FAFAC6202C483E00121DD5 /* Products */,
 				956747CE202C48EC00C7B397 /* Frameworks */,
@@ -502,6 +504,7 @@
 			files = (
 				950A340D203DC564005C9754 /* QRCodeScanNotAvailableView.xib in Resources */,
 				95DA54D121944C1000B60C18 /* OtherDemosStoryboard.storyboard in Resources */,
+				81DF8FD6237B530000737268 /* docassets in Resources */,
 				95885AF2209B1EB300828D02 /* FIDO2Demo.storyboard in Resources */,
 				952C3C00203C74150000A115 /* QRCodeScanWaitingView.xib in Resources */,
 				95F767D42033439F00208B88 /* OTPDemo.storyboard in Resources */,
@@ -510,6 +513,7 @@
 				95FAFAD0202C483E00121DD5 /* Assets.xcassets in Resources */,
 				95F767CE20331E6900208B88 /* OTPWaitingScanView.xib in Resources */,
 				95F767D22033381700208B88 /* OTPScanResultsView.xib in Resources */,
+				81DF8FD7237B530000737268 /* README.md in Resources */,
 				95F767DA2033463900208B88 /* About.storyboard in Resources */,
 				9519A50923279FF00087EE8F /* ProgressHudView.xib in Resources */,
 				952C3C08203D75390000A115 /* QRCodeScanResultsView.xib in Resources */,

@@ -35,6 +35,18 @@ NS_ASSUME_NONNULL_BEGIN
     performed afterwards.
  */
 @interface YKFKeyOATHCalculateAllRequest: YKFKeyOATHRequest
+
+/*!
+ @method initWithTimestamp:
+ 
+ @abstract
+    The initializer for this type of request that allows to provide custom timestamp. 
+ 
+ @param timestamp
+    The challenge used for the TOTP calculation. This can be used to provide a custom point in time for the TOTP generation.
+ */
+- (nullable instancetype)initWithTimestamp:(nonnull NSDate*)timestamp;
+
 @end
 
 NS_ASSUME_NONNULL_END
