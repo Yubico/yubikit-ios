@@ -27,6 +27,17 @@ static NSString *internalNfcScanAlertMessage = @"Scan your YubiKey";
     internalNfcScanAlertMessage = nfcScanAlertMessage;
 }
 
+static NSString *internalNfcScanSuccessAlertMessage = @"Success";
+
++ (NSString *)nfcScanSuccessAlertMessage {
+    return internalNfcScanSuccessAlertMessage;
+}
+
++ (void)setNfcScanSuccessAlertMessage:(NSString *)nfcScanAlertMessage {
+    NSParameterAssert(nfcScanAlertMessage.length);
+    internalNfcScanSuccessAlertMessage = nfcScanAlertMessage;
+}
+
 static NSString *internalQrCodeScanHintMessage = @"Point the camera at the QR Code";
 
 + (NSString *)qrCodeScanHintMessage {

@@ -23,9 +23,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSUInteger, YKFNFCISO7816SessionState) {
+    /// The session is closed. No commands can be sent to the key.
     YKFNFCISO7816SessionStateClosed,
+    
+    /// The session is in an intermediary state between closed and opened. Before the tag was discovered.
+    /// The application should not send commands to the key when the session is in this state.
     YKFNFCISO7816SessionStatePooling,
-    YKFNFCISO7816SessionStateOpening,
+
+    /// The session is opened and ready to use. The application can send immediately commands to the key.
     YKFNFCISO7816SessionStateOpen
 };
 
@@ -41,6 +46,15 @@ typedef NS_ENUM(NSUInteger, YKFNFCISO7816SessionState) {
     This is a KVO compliant property. Observe it to get updates when the key is connected.
  */
 @property (nonatomic, assign, readonly) YKFNFCISO7816SessionState iso7816SessionState;
+
+/*!
+ @property sessionError
+  @abstract
+    This property allows to check errors encountered during NFCSession.
+  NOTE:
+    The property is available when key gets disconnected, state is closed and session is invalidated
+ */
+@property (nonatomic, readonly, nullable) NSError *iso7816SessionError;
 
 /*!
  @property tagDescription
@@ -129,6 +143,7 @@ typedef NS_ENUM(NSUInteger, YKFNFCISO7816SessionState) {
  */
 - (void)cancelCommands API_AVAILABLE(ios(13.0));
 
+- (void)setAlertMessage:(NSString*) alertMessage API_AVAILABLE(ios(13.0));
 @end
 
 @interface YKFNFCSession: NSObject<YKFNFCSessionProtocol>

@@ -39,6 +39,15 @@
  */
 @property (class, nonatomic, nonnull) NSString *nfcScanAlertMessage;
 
+/*!
+ @property nfcScanSuccessAlertMessage
+ 
+ @abstract
+    The message shown in the system NFC scan UI when session is invalidated by user without an error. You can customize this by setting a localized value on this property.
+    Defaults to a non-localized english string.
+ */
+@property (class, nonatomic, nonnull) NSString *nfcScanSuccessAlertMessage;
+
 #pragma mark - QR code scan
 
 /*!
