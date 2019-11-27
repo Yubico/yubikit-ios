@@ -83,6 +83,9 @@ static YKFDeviceModel ykf_deviceModelInternal = YKFDeviceModelUnknown;
     if ([self ykf_deviceName:deviceName isInList:@[@"iPhone11,8"]]) {
         return YKFDeviceModelIPhoneXR;
     }
+    if ([self ykf_deviceName:deviceName isInList:@[@"iPhone12,1", @"iPhone12,3", @"iPhone12,5"]]) {
+        return YKFDeviceModelIPhone11;
+    }
 
     // iPad models
 

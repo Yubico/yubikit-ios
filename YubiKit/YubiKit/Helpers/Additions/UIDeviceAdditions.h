@@ -40,6 +40,8 @@ typedef NS_ENUM(NSUInteger, YKFDeviceModel) {
     YKFDeviceModelIPhoneXS,
     YKFDeviceModelIPhoneXSMax,
     YKFDeviceModelIPhoneXR,
+    YKFDeviceModelIPhone11,
+
     
     // iPad models
     

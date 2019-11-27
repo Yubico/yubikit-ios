@@ -129,6 +129,7 @@
             deviceModel == YKFDeviceModelIPhone8 || deviceModel == YKFDeviceModelIPhone8Plus ||
             deviceModel == YKFDeviceModelIPhoneX ||
             deviceModel == YKFDeviceModelIPhoneXS || deviceModel == YKFDeviceModelIPhoneXSMax || deviceModel == YKFDeviceModelIPhoneXR ||
+            deviceModel == YKFDeviceModelIPhone11 || 
             deviceModel == YKFDeviceModelUnknown; // A newer device which is not in the list yet
     });
     
