@@ -134,6 +134,14 @@ static YKFDeviceModel ykf_deviceModelInternal = YKFDeviceModelUnknown;
     if ([self ykf_deviceName:deviceName isInList:@[@"iPad8,1", @"iPad8,2", @"iPad8,3", @"iPad8,4", @"iPad8,5", @"iPad8,6", @"iPad8,7", @"iPad8,8"]]) {
         return YKFDeviceModelIPadPro3;
     }
+    if ([self ykf_deviceName:deviceName isInList:@[@"iPad11,1", @"iPad11,2"]]) {
+        return YKFDeviceModelIPadMini5;
+    }
+    if ([self ykf_deviceName:deviceName isInList:@[@"iPad11,3", @"iPad11,4"]]) {
+        return YKFDeviceModelIPadAir3;
+    }
+    
+    
     
     // iPod models
 
@@ -154,6 +162,9 @@ static YKFDeviceModel ykf_deviceModelInternal = YKFDeviceModelUnknown;
     }
     if ([self ykf_deviceName:deviceName isInList:@[@"iPod7,1"]]) {
         return YKFDeviceModelIPodTouch6;
+    }
+    if ([self ykf_deviceName:deviceName isInList:@[@"iPod9,1"]]) {
+        return YKFDeviceModelIPodTouch7;
     }
 
     // Unknown device

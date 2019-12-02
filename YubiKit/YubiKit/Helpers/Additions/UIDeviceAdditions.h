@@ -60,6 +60,8 @@ typedef NS_ENUM(NSUInteger, YKFDeviceModel) {
     YKFDeviceModelIPadPro2,
     YKFDeviceModelIPad6,
     YKFDeviceModelIPadPro3,
+    YKFDeviceModelIPadMini5,
+    YKFDeviceModelIPadAir3,
     
     // iPod models
     
@@ -68,7 +70,8 @@ typedef NS_ENUM(NSUInteger, YKFDeviceModel) {
     YKFDeviceModelIPodTouch3,
     YKFDeviceModelIPodTouch4,
     YKFDeviceModelIPodTouch5,
-    YKFDeviceModelIPodTouch6
+    YKFDeviceModelIPodTouch6,
+    YKFDeviceModelIPodTouch7
 };
 
 NS_ASSUME_NONNULL_BEGIN
