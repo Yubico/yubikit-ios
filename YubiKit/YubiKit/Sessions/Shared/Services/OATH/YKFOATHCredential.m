@@ -88,7 +88,7 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
     if (!_key) {
         NSString *keyLabel = self.label;
         
-        if (![self.label containsString: @":"] && self.issuer) {
+        if (![keyLabel containsString: @":"] && self.issuer) {
             keyLabel = [NSString stringWithFormat:@"%@:%@", self.issuer, self.account];
         }
         
@@ -107,9 +107,6 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
 }
 
 - (NSString *)label {
-    if (_label) {
-        return _label;
-    }
     YKFAssertReturnValue(self.account, @"Missing OATH credential account. Cannot build the credential label.", nil);
     
     if (self.issuer) {
@@ -254,10 +251,8 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
     if (!label.length) {
         return NO;
     }
-    self.label = label;
-    
-    if ([self.label containsString:@":"]) { // Issuer is present in the label
-        NSArray *labelComponents = [self.label componentsSeparatedByString:@":"];
+    if ([label containsString:@":"]) { // Issuer is present in the label
+        NSArray *labelComponents = [label componentsSeparatedByString:@":"];
         self.issuer = labelComponents.firstObject; // It's fine if nil
         self.account = labelComponents.lastObject;
     } else {
