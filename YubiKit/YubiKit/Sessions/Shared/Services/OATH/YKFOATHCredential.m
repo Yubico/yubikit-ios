@@ -87,11 +87,7 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
 - (NSString *)key {
     if (!_key) {
         NSString *keyLabel = self.label;
-        
-        if (![keyLabel containsString: @":"] && self.issuer) {
-            keyLabel = [NSString stringWithFormat:@"%@:%@", self.issuer, self.account];
-        }
-        
+
         if (self.type == YKFOATHCredentialTypeTOTP) {
             if (self.period != YKFOATHCredentialDefaultPeriod) {
                 return [NSString stringWithFormat:@"%ld/%@", (unsigned long)self.period, keyLabel];
