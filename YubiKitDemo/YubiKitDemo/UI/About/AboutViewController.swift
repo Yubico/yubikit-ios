@@ -28,7 +28,7 @@ class AboutViewController: UIViewController {
         
         let appBundle = Bundle(for: AboutViewController.self)
         
-        let libraryVersion = "2.0.1"
+        let libraryVersion = "3.0.0"
         let appVersion = appBundle.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
         
         frameworkVersionLabel.text = "Library version: \(libraryVersion)"
