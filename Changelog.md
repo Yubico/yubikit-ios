@@ -1,5 +1,10 @@
 # YubiKit Changelog
 
+#### 3.0.0 (3.0.0-Preview2 -> 3.0.0)
+
+- Improvements to NFC API: ability to cusomize NFC alert message at any point of time it's visible, an error in case if NFC session was closed without successful invalidation (including cancellation), allows to handle multiple tags during one open nfc session and do not close session if key was removed from NFC reader.
+- Added ability for application to subscribe for logger events and customize/create it's own logger (e.g. sent logs to the file)
+
 #### 3.0.0-Preview2 [3.0.0-Preview1 -> 3.0.0-Preview2]
 
 - Adds support for OATH protocol over NFC on devices running iOS 13 or newer. Also wraps and simplifies raw APDU communication with NFC-Enabled YubiKeys.

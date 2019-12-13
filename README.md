@@ -25,12 +25,39 @@ The YubiKit Demo application shows how the library is linked with a project so i
 
 This section is intended for developers that want to start with their own iOS app and add  the YubiKit manually.
 
-<details><summary><strong>Step-by-step instructions</strong></summary><p>
+<details><summary><strong>Setup instructions</strong></summary><p>
 
-YubiKit SDK is currently available as a library and can be added to any new or existing iOS Xcode project.
+YubiKit SDK is currently available as a library and can be added to any new or existing iOS Xcode project through Cocoapods or manual setup.
 
-**Download or Clone YubiKit SDK source**
+**[Cocoapods Setup]**
 
+The YubiKit SDK for iOS is available through CocoaPods. CocoaPods is a centralized dependency manager for Objective-C and Swift. Go [here](https://guides.cocoapods.org/using/index.html) to learn more.
+
+Add YubiKit to your [Podfile](https://guides.cocoapods.org/using/the-podfile.html).
+
+```ruby
+use_frameworks!
+
+pod 'YubiKit', '~> 3.0.0'
+
+```
+If you want to have latest changes, replace the last line with:
+
+```ruby
+
+pod 'YubiKit', :git => 'https://github.com/Yubico/yubikit-ios.git'
+
+```
+
+Once YubiKit is added to your `Podfile`, run `pod install` and open the `*.xcworkspace` with Xcode.
+
+Continue SDK setup by skipping over `Manual Setup` to `Enable Custom Lightning Protocol`.
+
+---
+
+**[Manual Setup]**
+
+Download or Clone YubiKit SDK source
 1.  [Download](https://github.com/Yubico/yubikit-ios/releases/) the latest YubiKit SDK (.zip) to your desktop `or` 
 
     `git clone https://github.com/Yubico/yubikit-ios.git`
@@ -58,6 +85,7 @@ Click + and add the ``libYubiKit.a``
 
 6. If your target project is written in Swift, you need to provide a bridge to the YubiKit library by adding ``#import <YubiKit/YubiKit.h>`` to your bridging header. If a bridging header does not exist within your project, you can add one by following this [documentation](https://developer.apple.com/library/content/documentation/Swift/Conceptual/BuildingCocoaApps/MixandMatch.html).
     
+---
 
 **Enable Custom Lightning Protocol**
 
@@ -213,8 +241,6 @@ For all the available properties and their use look at the code documentation fo
 
 ## **YubiKit FAQ**
 
-<details><summary><strong>Frequently Asked Questions About YubiKit</strong></summary><p>
-
 #### Q1. Does YubiKit store any data on the device?
 
 Yubikit doesn't store any data locally on the device. This includes NSUserDefaults, application sandbox folders and Keychain. All the data required to perform an operation is stored in memory for the duration of the operation and then discarded.
@@ -250,7 +276,6 @@ Starting from Xcode 9, the IDE provides the ability to debug the application wir
 The USB-C type iOS devices, such as the iPad Pro 3rd generation, have limited support when using the YubiKey 5Ci or another type of YubiKey with USB-C connector. The OS is not officially supporting external accessories on these devices. However these devices support external USB keyboards, so the OTP functionality of the key will work and the key can be used to generate Yubico OTPs and HOTPs. 
 
 </p>
-</details>
 
 ## **Additional resources**
 

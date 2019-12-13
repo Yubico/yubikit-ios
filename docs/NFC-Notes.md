@@ -1,4 +1,4 @@
-# YubiKit 3.0.0-Preview - NFC Notes
+# YubiKit 3.0.0 - NFC Notes
 
 See [**Changelog**](./Changelog.md) for a general list of changes made since the last release.
 This document is intended to cover the changes made to the YubiKit for iOS to support NFC (added in YubiKit 3.0.0) and what you need to know when integrating your app with the YubiKit SDK to support NFC-Enabled YubiKeys.
