@@ -241,7 +241,8 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
     [self dispatchBlockOnCommunicationQueue:^(NSOperation *operation) {
         ykf_safe_strong_self();
         NSDate *commandStartDate = [NSDate date];
-        
+        YKFLogVerbose(@"Sent(IAP): %@", [command.ylpApduData ykf_hexadecimalString]);
+
         // 1. Send the command to the key.
         BOOL success = [strongSelf writeData:command.ylpApduData configuration:configuration parentOperation:operation];
         
@@ -274,7 +275,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
             
             // 3. Read the command result.
             success = [strongSelf readData:&commandResult configuration:configuration parentOperation:operation];
-            
+
             if ((!success || commandResult.length == 0) && !operation.isCancelled) {
                 NSError *error = nil;
                 if (strongSelf.inputStream.streamError) {
@@ -298,10 +299,11 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
                 YKFLogVerbose(@"The key is busy, processing the request. Waiting for response...");
             }
         }
-        
+
         NSTimeInterval executionTime = [[NSDate date] timeIntervalSinceDate: commandStartDate];
+        YKFLogVerbose(@"Received(IAP): %@", [commandResult ykf_hexadecimalString]);
         commandResult = [self dataAndStatusFromKeyResponse:commandResult];
-        
+
         completion(commandResult, nil, executionTime);
         
         YKFLogVerbose(@"Command execution time: %lf seconds", executionTime);

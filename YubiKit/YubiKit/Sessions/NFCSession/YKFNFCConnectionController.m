@@ -17,6 +17,7 @@
 #import "YKFBlockMacros.h"
 #import "YKFLogger.h"
 #import "YKFAssert.h"
+#import "YKFNSDataAdditions+Private.h"
 #import "YKFAPDU+Private.h"
 
 typedef void (^YKFKeyConnectionControllerCommunicationQueueBlock)(NSOperation *operation);
@@ -54,7 +55,7 @@ typedef void (^YKFKeyConnectionControllerCommunicationQueueBlock)(NSOperation *o
     YKFParameterAssertReturn(completion);
     
     YKFLogVerbose(@"NFCConnectionController - Execute command...");
-    
+
     ykf_weak_self();
     [self dispatchBlockOnCommunicationQueue:^(NSOperation *operation) {
         ykf_safe_strong_self();
@@ -76,7 +77,8 @@ typedef void (^YKFKeyConnectionControllerCommunicationQueueBlock)(NSOperation *o
         __block NSData *executionResult = nil;
         NSDate *commandStartDate = [NSDate date];
         dispatch_semaphore_t executionSemaphore = dispatch_semaphore_create(0);
-        
+        YKFLogVerbose(@"Sent(NFC): %@", [command.apduData ykf_hexadecimalString]);
+
         [strongSelf.tag sendCommandAPDU:cnApdu completionHandler:^(NSData *responseData, uint8_t sw1, uint8_t sw2, NSError *error) {
             if (error) {
                 executionError = error;
@@ -84,11 +86,14 @@ typedef void (^YKFKeyConnectionControllerCommunicationQueueBlock)(NSOperation *o
                 return;
             }
             
+
             NSMutableData *fullResponse = [[NSMutableData alloc] initWithData:responseData];
             [fullResponse ykf_appendByte:sw1];
             [fullResponse ykf_appendByte:sw2];
             executionResult = [fullResponse copy];
-            
+
+            YKFLogVerbose(@"Received(NFC): %@", [executionResult ykf_hexadecimalString]);
+
             dispatch_semaphore_signal(executionSemaphore);
         }];
         
