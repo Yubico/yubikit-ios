@@ -24,7 +24,7 @@
 
 #pragma mark - Key Response
 
-- (NSData *)dataFromKeyResponse:(NSData *)response {
++ (NSData *)dataFromKeyResponse:(NSData *)response {
     YKFParameterAssertReturnValue(response, [NSData data]);
     YKFAssertReturnValue(response.length >= 2, @"Key response data is too short.", [NSData data]);
     
@@ -38,7 +38,7 @@
 
 #pragma mark - Status Code
 
-- (UInt16)statusCodeFromKeyResponse:(NSData *)response {    
++ (UInt16)statusCodeFromKeyResponse:(NSData *)response {
     YKFParameterAssertReturnValue(response, YKFKeyAPDUErrorCodeWrongLength);
     YKFAssertReturnValue(response.length >= 2, @"Key response data is too short.", YKFKeyAPDUErrorCodeWrongLength);
     
@@ -51,7 +51,7 @@
 
 #pragma mark - YKFKeyServiceDelegate
 
-- (void)keyService:(YKFKeyService *)service willExecuteRequest:(YKFKeyRequest *)request {
++ (void)keyService:(YKFKeyService *)service willExecuteRequest:(YKFKeyRequest *)request {
     // Does nothing: override this in the service subclasses when necessary.
 }
 

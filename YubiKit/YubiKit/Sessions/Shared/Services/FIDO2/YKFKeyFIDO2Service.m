@@ -542,7 +542,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
         if (error) {
             returnedError = error;
         } else {
-            int statusCode = [strongSelf statusCodeFromKeyResponse: result];
+            int statusCode = [YKFKeyService statusCodeFromKeyResponse: result];
             switch (statusCode) {
                 case YKFKeyAPDUErrorCodeNoError:
                     break;
@@ -603,7 +603,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
             return;
         }
         
-        UInt16 statusCode = [strongSelf statusCodeFromKeyResponse: result];
+        UInt16 statusCode = [YKFKeyService statusCodeFromKeyResponse: result];
         
         switch (statusCode) {
             case YKFKeyAPDUErrorCodeNoError: {
@@ -649,7 +649,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
 #pragma mark - Helpers
 
 - (UInt8)errorCodeFromKeyResponsePayloadData:(NSData *)response {
-    NSData *responsePayload = [self dataFromKeyResponse:response];
+    NSData *responsePayload = [YKFKeyService dataFromKeyResponse:response];
     YKFAssertReturnValue(responsePayload.length >= 1, @"Cannot extract FIDO2 error code from the key response.", YKFKeyFIDO2ErrorCodeOTHER);
     
     UInt8 *payloadBytes = (UInt8 *)responsePayload.bytes;
@@ -657,7 +657,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
 }
 
 - (NSData *)cborFromKeyResponsePayloadData:(NSData *)response {
-    NSData *responsePayload = [self dataFromKeyResponse:response];
+    NSData *responsePayload = [YKFKeyService dataFromKeyResponse:response];
     YKFAssertReturnValue(responsePayload.length >= 1, @"Cannot extract FIDO2 cbor from the key response.", nil);
     
     // discard the error byte

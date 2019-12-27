@@ -366,7 +366,18 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     NSString *hexString = @"313233343536";
     NSData *data = [self.testDataGenerator dataFromHexString:hexString];
 
-    [self executeYubiKeyApplicationSelection];
+    YKFKeyChallengeResponseService *service = [[YKFKeyChallengeResponseService alloc] initWithService:YubiKitManager.shared.accessorySession.rawCommandService];
+
+    [service sendChallenge:data slot:YKFShortTouch completion:^(NSData *result, NSError *error) {
+        if (error) {
+            [TestSharedLogger.shared logError: @"When requesting challenge: %@", error.localizedDescription];
+            return;
+        }
+        [TestSharedLogger.shared logMessage:@"Received data length: %d", result.length];
+
+        [TestSharedLogger.shared logMessage:@"Challenge data:\n%@", data];
+    }];
+/*    [self executeYubiKeyApplicationSelection];
 
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0x01 p1:0x30 p2:0 data:data type:YKFAPDUTypeShort];
 
@@ -380,7 +391,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         NSData *respData = [result subdataWithRange:NSMakeRange(0, result.length - 2)];
         [TestSharedLogger.shared logMessage:@"Challenge data:\n%@", data];
         [TestSharedLogger.shared logMessage:@"Response data:\n%@", respData];
-    }];
+    }];*/
 }
 
 #pragma mark - Piv Tests

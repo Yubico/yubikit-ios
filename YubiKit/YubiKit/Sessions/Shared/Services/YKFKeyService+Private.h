@@ -32,15 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<YKFKeyServiceDelegate> delegate;
 
-/// Removes the YLP headers and status code from the response data received from a key command response.
-- (NSData *)dataFromKeyResponse:(NSData *)response;
-
-/// Returns the status code from a response received from a key command response.
-- (UInt16)statusCodeFromKeyResponse:(NSData *)response;
-
-/// Returns the first byte value of the status code.
-- (UInt8)shortStatusCodeFromStatusCode:(UInt16)statusCode;
-
 @end
 
 NS_ASSUME_NONNULL_END
