@@ -115,7 +115,6 @@ static const int YKFKeyOATHListResponseNameTag = 0x72;
         credential.period = period;
         credential.issuer = issuer;
         credential.account = account;
-        credential.label = label;
         
         [parsedCredentials addObject:credential];
         

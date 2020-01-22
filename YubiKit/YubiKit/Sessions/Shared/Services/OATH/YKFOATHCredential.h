@@ -69,7 +69,7 @@ typedef NS_ENUM(NSUInteger, YKFOATHCredentialAlgorithm) {
  The Label of the credential as defined in the Key URI Format specifications:
  https://github.com/google/google-authenticator/wiki/Key-Uri-Format
  */
-@property (nonatomic, nullable) NSString *label;
+@property (nonatomic, nullable, readonly) NSString *label;
 
 /*!
  The Secret of the credential as defined in the Key URI Format specifications:

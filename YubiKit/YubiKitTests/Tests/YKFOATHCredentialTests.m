@@ -149,14 +149,6 @@
 
 #pragma mark - Label
 
-- (void)test_WhenCredentialIsManuallyCreatedWithLabel_AssignedLabelIsReturnedWhenReadingTheProperty {
-    YKFOATHCredential *credential = [[YKFOATHCredential alloc] init];
-    NSString *label = @"issuer:account";
-    
-    credential.label = label;
-    XCTAssert([credential.label isEqualToString:label], @"Credential label is not returned if assigned.");
-}
-
 - (void)test_WhenCredentialIsManuallyCreatedWithoutLabel_LabelIsBuildFromTheIssuerAndAccount {
     YKFOATHCredential *credential = [[YKFOATHCredential alloc] init];
     NSString *label = @"issuer:account";
