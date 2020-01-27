@@ -17,6 +17,8 @@
 #import "YKFBlockMacros.h"
 #import "YKFLogger.h"
 #import "YKFAssert.h"
+#import "YKFKeySessionError.h"
+#import "YKFKeySessionError+Private.h"
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFAPDU+Private.h"
 
@@ -67,6 +69,7 @@ typedef void (^YKFKeyConnectionControllerCommunicationQueueBlock)(NSOperation *o
         
         // Check availability before executing. If the command is queued, the tag may become unavailable at execution time.
         if (!strongSelf.tag.isAvailable) {
+            completion(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorConnectionLost], 0);
             return;
         }
                 
