@@ -358,6 +358,10 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
                 }
                 break;
                 
+            case YKFKeyAPDUErrorCodeDataInvalid:
+                completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeNoSuchObject]);
+                break;
+
             // Errors - The status code is the error. The key doesn't send any other information.
             default: {
                 YKFKeySessionError *connectionError = [YKFKeySessionError errorWithCode:statusCode];
