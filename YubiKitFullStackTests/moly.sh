@@ -1,6 +1,6 @@
 #!/bin/sh
 
-MOLY_STATIC_IP="192.168.2.2"
+MOLY_STATIC_IP="moly01.local"
 MOLY_SERVER_PORT="8080"
 MOLY_COMMAND_PATH="moly"
 
