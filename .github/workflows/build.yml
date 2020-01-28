@@ -4,7 +4,6 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: macos-latest
 
     steps:
@@ -12,18 +11,30 @@ jobs:
 
       - name: Build for device
         run: |
-          xcodebuild -sdk iphoneos -workspace YubiKit.xcworkspace -scheme YubiKit build CODE_SIGNING_ALLOWED=NO DSTROOT=/tmp/deploy SYMROOT=/tmp/deploy
+          cd YubiKit
+          ./build.sh
+          cd ..
                         
       - name: Test on emulator
         run: |
-          xcodebuild -sdk iphonesimulator -workspace YubiKit.xcworkspace -scheme YubiKit -destination "platform=iOS Simulator,OS=13.2.2,name=iPhone 8" test| xcpretty --test --color
+          xcodebuild -sdk iphonesimulator -workspace YubiKit.xcworkspace -scheme YubiKit -destination "platform=iOS Simulator,OS=13.2.2,name=iPhone 8" test | xcpretty --test --color
          
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
           name: yubikit-ios
-          path: /tmp/deploy
+          path: releases
+          
+  tests:
+    needs: build
+    runs-on: self-hosted
 
-      - name: Cleanup
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Test on device
         run: |
-          rm -rf /tmp/deploy
+          xcodebuild -sdk iphoneos -workspace YubiKit.xcworkspace -scheme YubiKitFullStackTests -destination "platform=iOS,name=Irina’s iPhone" test | xcpretty --test --color
+
+
+
