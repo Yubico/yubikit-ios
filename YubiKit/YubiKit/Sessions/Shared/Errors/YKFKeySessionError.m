@@ -25,6 +25,7 @@ static NSString* const YKFKeySessionErrorWriteTimeoutDescription = @"Unable to w
 static NSString* const YKFKeySessionErrorTouchTimeoutDescription = @"Operation ended. User didn't touch the key.";
 static NSString* const YKFKeySessionErrorKeyBusyDescription = @"The key is busy performing another operation";
 static NSString* const YKFKeySessionErrorMissingApplicationDescription = @"The requested functionality is missing or disabled in the key configuration.";
+static NSString* const YKFKeySessionErrorConnectionLostDescription = @"Connection lost.";
 
 #pragma mark - YKFKeySessionError
 
@@ -53,6 +54,7 @@ static NSDictionary *errorMap = nil;
       @(YKFKeySessionErrorTouchTimeoutCode):        YKFKeySessionErrorTouchTimeoutDescription,
       @(YKFKeySessionErrorKeyBusyCode):             YKFKeySessionErrorKeyBusyDescription,
       @(YKFKeySessionErrorMissingApplicationCode):  YKFKeySessionErrorMissingApplicationDescription,            
+      @(YKFKeySessionErrorConnectionLost):          YKFKeySessionErrorConnectionLostDescription,
       };
 }
 

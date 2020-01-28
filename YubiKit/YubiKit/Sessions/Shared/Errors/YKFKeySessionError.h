@@ -54,7 +54,12 @@ typedef NS_ENUM(NSUInteger, YKFKeySessionErrorCode) {
     /*! A certain key application is missing or it was disabled using a configuration tool like YubiKey Manager. In such a scenario
      the functionality of the key should be enabled before trying again the request.
      */
-    YKFKeySessionErrorMissingApplicationCode = 0x000005
+    YKFKeySessionErrorMissingApplicationCode = 0x000005,
+    
+    /*! A request to the key cannot be performed because the connection was lost
+     (e.g. Tag was lost when key was taken away from NFC reader)
+     */
+    YKFKeySessionErrorConnectionLost = 0x000006
 };
 
 /*!
