@@ -23,7 +23,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: yubikit-ios
-          path: releases
+          path: YubiKit/releases
           
   tests:
     needs: build
