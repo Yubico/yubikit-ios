@@ -17,30 +17,48 @@
 @implementation NSString(NSString_OATH)
 
 - (void)ykf_OATHKeyExtractPeriod:(NSUInteger *)period issuer:(NSString **)issuer account:(NSString **)account label:(NSString **)label {
-    NSString *key = self;
+    NSString *periodIssuer;
+    NSMutableArray *componentsArray;
     
+    BOOL noIssuer = FALSE;
+
+    if ([self containsString: @":"]) {
+        // TOTP key with format [period]/[issuer]:[account]
+        NSArray *labelComponents = [self componentsSeparatedByString:@":"];
+        *account = labelComponents.lastObject;
+
+        componentsArray = [NSMutableArray arrayWithArray: labelComponents];
+        [componentsArray removeLastObject];
+        periodIssuer = [componentsArray componentsJoinedByString: @":"];
+    } else {
+        noIssuer = TRUE;
+        periodIssuer = self;
+    }
+
     // TOTP key with format [period]/[label]
-    if ([self containsString:@"/"]) {
-        NSArray *stringComponents = [self componentsSeparatedByString:@"/"];
-        if (stringComponents.count == 2) {
+    if ([periodIssuer containsString:@"/"]) {
+        NSArray *stringComponents = [periodIssuer componentsSeparatedByString:@"/"];
+        if (stringComponents.count > 1) {
             NSUInteger interval = [stringComponents[0] intValue];
             if (interval) {
                 *period = interval;
+
+                componentsArray = [NSMutableArray arrayWithArray: stringComponents];
+                [componentsArray removeObjectAtIndex: 0];
+                periodIssuer = [componentsArray componentsJoinedByString: @"/"];
             }
-            key = stringComponents[1];
         }
     }
-    
-    *label = key;
 
-    // Parse the label as [issuer]:[account]
-    NSArray *labelComponents = [key componentsSeparatedByString:@":"];
-    if (labelComponents.count == 2) {
-        *issuer = labelComponents[0];
-        *account = labelComponents[1];
+    if (noIssuer) {
+        *account = periodIssuer;
     } else {
-        *account = key;
+        *issuer = periodIssuer;
     }
+
+    *label = (*issuer != nil)
+        ? [NSString stringWithFormat:@"%@:%@", *issuer, *account]
+        : *account;
 }
 
 @end
