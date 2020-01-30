@@ -144,10 +144,14 @@ The YubiKit Demo application has a more detailed demo on how to use the Raw Comm
     
 YubiKit provides also a `PC/SC like` interface for sending raw commands to the key. This interface is exposed in `YKFPCSC.h`. For a complete list of methods consult the header file and the code level documentation.
 
+Currently this service is supported only for `accessorySession`.
+
 ---
 
 **Note:**
 In iOS there is no native concept of PC/SC. This interface is just an adaptation of the PC/SC interface, specific to YubiKit. The reason to have this interface is to provide a familiar API for the developers who are used to the PC/SC interface. The PC/SC is a low level C API which can be sometimes harder to use than the Raw Command service. If possible, it's recommended to use the Raw Command Service because it's designed to be integrated easier with an iOS application.  
+
+
 
 ---
 

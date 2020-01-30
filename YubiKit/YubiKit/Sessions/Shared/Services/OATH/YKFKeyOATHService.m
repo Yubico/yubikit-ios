@@ -329,11 +329,11 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         }
         YKFAssertReturn(result != nil, @"Invalid OATH request execution result value on success.");
 
-        NSData *responseData = [self dataFromKeyResponse:result];
+        NSData *responseData = [YKFKeyService dataFromKeyResponse:result];
         [responseDataBuffer appendData:responseData];
         
-        int statusCode = [strongSelf statusCodeFromKeyResponse: result];
-        int shortStatusCode = [strongSelf shortStatusCodeFromStatusCode:statusCode];
+        int statusCode = [YKFKeyService statusCodeFromKeyResponse: result];
+        int shortStatusCode = [YKFKeyService shortStatusCodeFromStatusCode:statusCode];
         
         if (shortStatusCode == YKFKeyAPDUErrorCodeMoreData) {
             YKFLogInfo(@"Key has more data to send. Requesting for remaining data...");            
@@ -394,10 +394,10 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
             return;
         }
         
-        int statusCode = [strongSelf statusCodeFromKeyResponse: result];
+        int statusCode = [YKFKeyService statusCodeFromKeyResponse: result];
         switch (statusCode) {
             case YKFKeyAPDUErrorCodeNoError: {
-                    NSData *responseData = [self dataFromKeyResponse:result];
+                    NSData *responseData = [YKFKeyService dataFromKeyResponse:result];
                     YKFKeyOATHSelectApplicationResponse *response = [[YKFKeyOATHSelectApplicationResponse alloc] initWithResponseData:responseData];
                     if (response) {
                         // Cache the response.

@@ -42,6 +42,9 @@
 #import "YKFKeyFIDO2Service.h"
 #import "YKFKeyOATHService.h"
 #import "YKFKeyRawCommandService.h"
+#import "YKFKeyChallengeResponseService.h"
+
+#import "YKFSlot.h"
 
 #import "YKFKeyFIDO2Request.h"
 #import "YKFKeyFIDO2MakeCredentialRequest.h"

@@ -24,7 +24,7 @@
 
 #pragma mark - Key Response
 
-- (NSData *)dataFromKeyResponse:(NSData *)response {
++ (NSData *)dataFromKeyResponse:(NSData *)response {
     YKFParameterAssertReturnValue(response, [NSData data]);
     YKFAssertReturnValue(response.length >= 2, @"Key response data is too short.", [NSData data]);
     
@@ -38,14 +38,14 @@
 
 #pragma mark - Status Code
 
-- (UInt16)statusCodeFromKeyResponse:(NSData *)response {    
++ (UInt16)statusCodeFromKeyResponse:(NSData *)response {
     YKFParameterAssertReturnValue(response, YKFKeyAPDUErrorCodeWrongLength);
     YKFAssertReturnValue(response.length >= 2, @"Key response data is too short.", YKFKeyAPDUErrorCodeWrongLength);
     
     return [response ykf_getBigEndianIntegerInRange:NSMakeRange([response length] - 2, 2)];
 }
 
-- (UInt8)shortStatusCodeFromStatusCode:(UInt16)statusCode {
++ (UInt8)shortStatusCodeFromStatusCode:(UInt16)statusCode {
     return (UInt8)(statusCode >> 8);
 }
 

@@ -12,22 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import <Foundation/Foundation.h>
-#import "YKFKeyRequest.h"
+#import "YKFSelectYubiKeyApplicationAPDU.h"
+#import "YKFAPDUCommandInstruction.h"
 
-NS_ASSUME_NONNULL_BEGIN
+static const NSUInteger YKFYubiKeyAIDSize = 8;
+static const UInt8 YKFYubiKeyAID[YKFYubiKeyAIDSize] = {0xA0, 0x00, 0x00, 0x05, 0x27, 0x20, 0x01, 0x01};
 
-@interface YKFKeyService: NSObject
+@implementation YKFSelectYubiKeyApplicationAPDU
 
-/// Removes the YLP headers and status code from the response data received from a key command response.
-+ (NSData *)dataFromKeyResponse:(NSData *)response;
-
-/// Returns the status code from a response received from a key command response.
-+ (UInt16)statusCodeFromKeyResponse:(NSData *)response;
-
-/// Returns the first byte value of the status code.
-+ (UInt8)shortStatusCodeFromStatusCode:(UInt16)statusCode;
+- (instancetype)init {
+    NSData *data = [NSData dataWithBytes:YKFYubiKeyAID length:YKFYubiKeyAIDSize];
+    return [super initWithCla:0x00 ins:YKFAPDUCommandInstructionSelectApplication p1:0x04 p2:0x00 data:data type:YKFAPDUTypeShort];
+}
 
 @end
-
-NS_ASSUME_NONNULL_END

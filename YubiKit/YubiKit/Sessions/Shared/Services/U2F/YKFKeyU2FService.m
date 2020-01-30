@@ -112,7 +112,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
         if (error) {
             returnedError = error;
         } else {
-            int statusCode = [strongSelf statusCodeFromKeyResponse: result];            
+            int statusCode = [YKFKeyService statusCodeFromKeyResponse: result];
             switch (statusCode) {
                 case YKFKeyAPDUErrorCodeNoError:
                     break;
@@ -164,7 +164,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
             completion(nil, error);
             return;
         }
-        int statusCode = [strongSelf statusCodeFromKeyResponse: result];
+        int statusCode = [YKFKeyService statusCodeFromKeyResponse: result];
         
         switch (statusCode) {
             case YKFKeyAPDUErrorCodeConditionNotSatisfied: {
@@ -230,12 +230,12 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 #pragma mark - Key responses
 
 - (YKFKeyU2FSignResponse *)processSignData:(NSData *)data request:(YKFKeyU2FSignRequest *)request {
-    NSData *signature = [self dataFromKeyResponse:data];
+    NSData *signature = [YKFKeyService dataFromKeyResponse:data];
     return [[YKFKeyU2FSignResponse alloc] initWithKeyHandle:request.keyHandle clientData:request.clientData signature:signature];
 }
 
 - (YKFKeyU2FRegisterResponse *)processRegisterData:(NSData *)data request:(YKFKeyU2FRegisterRequest *)request {
-    NSData *registrationData = [self dataFromKeyResponse:data];
+    NSData *registrationData = [YKFKeyService dataFromKeyResponse:data];
     return [[YKFKeyU2FRegisterResponse alloc] initWithClientData:request.clientData registrationData:registrationData];
 }
 

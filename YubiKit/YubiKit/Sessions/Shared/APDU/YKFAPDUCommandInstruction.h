@@ -39,6 +39,10 @@ typedef NS_ENUM(NSUInteger, YKFAPDUCommandInstruction) {
     YKFAPDUCommandInstructionOATHCalculateAll = 0xA4,
     YKFAPDUCommandInstructionOATHSendRemaining = 0xA5,
     
+    /* Challenge-response instructions */
+    YKFAPDUCommandInstructionChalRespSend = 0x01,
+
+    
     /* Application selection */
     YKFAPDUCommandInstructionSelectApplication = 0xA4
 };
