@@ -10,8 +10,8 @@
 #define YKFSlot_h
 
 typedef NS_ENUM(NSUInteger, YKFSlot) {
-    YKFShortTouch = 0,
-    YKFLongTouch = 1,
+    YKFSlotOne = 0,
+    YKFSlotTwo = 1,
 };
 
 #endif /* YKFSlot_h */

@@ -156,8 +156,7 @@ if (YubiKitDeviceCapabilities.supportsISO7816NFCTags) {
     // Handle the missing NFC support
 }
 ```
-
-An important property of the `YKFKeySession` is the `sessionState` which can be used to check the state of the session. This property can be observed using KVO. Observe this property to see when the key is connected or disconnected and take appropriate actions to update the UI and to send requests to the key. Because the KVO code can be verbose, a complete example on how to observe this property is provided in the Demo application and not here. When the host application prefers a delegate pattern to observe this property, the YubiKit Demo application provides an example on how to isolate the KVO observation into a separate class and use a delegate to update about changes. The example can be found in the Examples/Observers project group.
+An important property of the `YKFAccessorySession` is the `sessionState`( or `iso7816SessionState` of `NFCSession`)  which can be used to check the state of the session. This property can be observed using KVO. Observe this property to see when the key is connected or disconnected and take appropriate actions to update the UI and to send requests to the key. Because the KVO code can be verbose, a complete example on how to observe this property is provided in the Demo application and not here. When the host application prefers a delegate pattern to observe this property, the YubiKit Demo application provides an example on how to isolate the KVO observation into a separate class and use a delegate to update about changes. The example can be found in the Examples/Observers project group.
 
 The session was designed to provide a list of services. A service usually maps a major capability of the key. Over the same session the application can talk to different functionalities provided by the key. For example, The YKFKeyU2FService will communicate with the U2F functionality from the key. The U2F service lifecycle is fully controlled by the key session and it must not be created by the host application. The lifecycle of the U2F service is dependent on the session state. When the session is opened and it can communicate with the key, the U2F service become available. If the session is closed the U2F service is nil.
 After the key session was started and a key was connected the session state becomes open so the application can start sending requests to the key.
@@ -173,6 +172,9 @@ List of services is documented below with it's own specifics and samples:
 - [OTP](./docs/otp.md) - Provides implementation classes to obtain YubiKey OTP via accessory (5Ci) or NFC.
 
 - [RAW](./docs/raw.md) - Allows sending raw commands to YubiKeys over two channels: *YKFKeyRawCommandService* or over a [PC/SC](https://en.wikipedia.org/wiki/PC/SC) like interface.
+
+- [Challenge-response](./docs/chr.md) - Provides a method to use HMAC-SHA1 challenge-response.
+
 
 ## Customize the Library
 YubiKit allows customizing some of its behavior by using `YubiKitConfiguration` and `YubiKitExternalLocalization`.

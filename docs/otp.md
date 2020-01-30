@@ -15,7 +15,7 @@ Most of the time the OTP value is not important for the user so displaying it do
 
 One way of intercepting the keyboard input is to use `UIKeyCommand`. Key commands are usually used to intercept key combinations from the external keyboard and they can be attached to any `UIResponder`. The most common UIResponders are `UIView` and `UIViewController`. These fundamental classes of UIKit have the ability to `becomeFirstResponder` and they provide a property called `keyCommands` which can return a list of commands which will be triggered when the user is pressing a certain key combination on the external keyboard. An `UIKeyCommand` doesn't have to be a key combination. A certain character can be detected if the key command is created without modifiers. An example of such responder, `OTPUIResponder`, is implemented in the YubiKit Demo application. In the OTP demo the application will intercept the keyboard input using the `OTPUIResponder` to read the OTP from the YubiKey.
 
-Sometimes the UX may involve some guiding steps for the user to plugin or to touch the key. In such a scenario YubiKit can be used to determine if the key is plugged in, in the same way as it's done in the FIDO2 demo, by observing the `sessionState` on `YKFKeySession`.
+Sometimes the UX may involve some guiding steps for the user to plugin or to touch the key. In such a scenario YubiKit can be used to determine if the key is plugged in, in the same way as it's done in the FIDO2 demo, by observing the `sessionState` on `YKFAccessorySession` or  `iso7816SessionState` on `NFCSession`.
 
 ## Reading OTPs from NFC-Enabled YubiKeys
 

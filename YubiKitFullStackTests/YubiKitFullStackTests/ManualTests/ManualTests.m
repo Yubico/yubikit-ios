@@ -365,21 +365,39 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
 - (void)test_WhenSendingChallengeToSlot1_KeySendsHmacResponse {
     NSString *hexString = @"313233343536";
     NSData *data = [self.testDataGenerator dataFromHexString:hexString];
+    [TestSharedLogger.shared logMessage:@"Challenge data:\n%@", data];
 
-    YKFKeyChallengeResponseService *service = [[YKFKeyChallengeResponseService alloc] initWithService:YubiKitManager.shared.accessorySession.rawCommandService];
+    [TestSharedLogger.shared logMessage:@"Using YKFKeyChallengeResponseService"];
 
-    [service sendChallenge:data slot:YKFShortTouch completion:^(NSData *result, NSError *error) {
+    YKFKeyChallengeResponseService *service = [[YKFKeyChallengeResponseService alloc] init];
+
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    
+    [service sendChallenge:data slot:YKFSlotOne completion:^(NSData *result, NSError *error) {
         if (error) {
             [TestSharedLogger.shared logError: @"When requesting challenge: %@", error.localizedDescription];
+            dispatch_semaphore_signal(semaphore);
             return;
         }
         [TestSharedLogger.shared logMessage:@"Received data length: %d", result.length];
 
-        [TestSharedLogger.shared logMessage:@"Challenge data:\n%@", data];
+        [TestSharedLogger.shared logMessage:@"Response data:\n%@", result];
+        dispatch_semaphore_signal(semaphore);
     }];
-/*    [self executeYubiKeyApplicationSelection];
+    
+    // waiting until completed before starting another test
+    long timeout = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC));
+    if (timeout) {
+        [TestSharedLogger.shared logMessage:@"Failed with timeout"];
+    }
 
+    [self executeYubiKeyApplicationSelection];
+
+    // another method of doing challenge response without YKFKeyChallengeResponseService
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0x01 p1:0x30 p2:0 data:data type:YKFAPDUTypeShort];
+
+    [TestSharedLogger.shared logSepparator];
+    [TestSharedLogger.shared logMessage:@"Using YKFKeyRawCommandService"];
 
     [self executeCommandWithAPDU:apdu completion:^(NSData *result, NSError *error) {
         if (error) {
@@ -389,9 +407,8 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         [TestSharedLogger.shared logMessage:@"Received data length: %d", result.length];
 
         NSData *respData = [result subdataWithRange:NSMakeRange(0, result.length - 2)];
-        [TestSharedLogger.shared logMessage:@"Challenge data:\n%@", data];
         [TestSharedLogger.shared logMessage:@"Response data:\n%@", respData];
-    }];*/
+    }];
 }
 
 #pragma mark - Piv Tests

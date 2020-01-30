@@ -45,13 +45,13 @@
     return [response ykf_getBigEndianIntegerInRange:NSMakeRange([response length] - 2, 2)];
 }
 
-- (UInt8)shortStatusCodeFromStatusCode:(UInt16)statusCode {
++ (UInt8)shortStatusCodeFromStatusCode:(UInt16)statusCode {
     return (UInt8)(statusCode >> 8);
 }
 
 #pragma mark - YKFKeyServiceDelegate
 
-+ (void)keyService:(YKFKeyService *)service willExecuteRequest:(YKFKeyRequest *)request {
+- (void)keyService:(YKFKeyService *)service willExecuteRequest:(YKFKeyRequest *)request {
     // Does nothing: override this in the service subclasses when necessary.
 }
 

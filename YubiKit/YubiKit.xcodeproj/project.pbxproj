@@ -15,8 +15,7 @@
 		8152340B23B573E4004D4788 /* YKFKeyChalRespRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8152340A23B573E4004D4788 /* YKFKeyChalRespRequest.m */; };
 		8152340C23B59A4A004D4788 /* YKFKeyChallengeResponseService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 81311F3823AAFA4A00765522 /* YKFKeyChallengeResponseService.h */; };
 		8152340D23B59B85004D4788 /* YKFSlot.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 815233FA23B569A1004D4788 /* YKFSlot.h */; };
-		8152340E23B5A18F004D4788 /* YKFKeyChalRespSendRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 815233FC23B56A6F004D4788 /* YKFKeyChalRespSendRequest.h */; };
-		8152340F23B5A18F004D4788 /* YKFKeyChalRespRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8152340923B573E4004D4788 /* YKFKeyChalRespRequest.h */; };
+		8152341223BAE9D2004D4788 /* YKFKeyChallengeResponseError.m in Sources */ = {isa = PBXBuildFile; fileRef = 8152341123BAE9D2004D4788 /* YKFKeyChallengeResponseError.m */; };
 		816C684B2343126100209342 /* YKFNFCTagDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 816C684A2343126100209342 /* YKFNFCTagDescription.m */; };
 		816C684E23431BE600209342 /* YKFNFCTagDescription.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 816C68492343126100209342 /* YKFNFCTagDescription.h */; };
 		95081DEE2214255B006CD08C /* YKFKeyRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 95081DED2214255B006CD08C /* YKFKeyRequest.m */; };
@@ -244,8 +243,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				8152340E23B5A18F004D4788 /* YKFKeyChalRespSendRequest.h in CopyFiles */,
-				8152340F23B5A18F004D4788 /* YKFKeyChalRespRequest.h in CopyFiles */,
 				8152340D23B59B85004D4788 /* YKFSlot.h in CopyFiles */,
 				8152340C23B59A4A004D4788 /* YKFKeyChallengeResponseService.h in CopyFiles */,
 				811F91F023848D5E002158ED /* YKFKeyOATHCalculateAllRequest.h in CopyFiles */,
@@ -327,6 +324,8 @@
 		8152340823B573C9004D4788 /* YKFKeyChalRespRequest+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyChalRespRequest+Private.h"; sourceTree = "<group>"; };
 		8152340923B573E4004D4788 /* YKFKeyChalRespRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyChalRespRequest.h; sourceTree = "<group>"; };
 		8152340A23B573E4004D4788 /* YKFKeyChalRespRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyChalRespRequest.m; sourceTree = "<group>"; };
+		8152341023BAE9D2004D4788 /* YKFKeyChallengeResponseError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyChallengeResponseError.h; sourceTree = "<group>"; };
+		8152341123BAE9D2004D4788 /* YKFKeyChallengeResponseError.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyChallengeResponseError.m; sourceTree = "<group>"; };
 		816C68492343126100209342 /* YKFNFCTagDescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFNFCTagDescription.h; sourceTree = "<group>"; };
 		816C684A2343126100209342 /* YKFNFCTagDescription.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFNFCTagDescription.m; sourceTree = "<group>"; };
 		816C684C234315CC00209342 /* YKFNFCTagDescription+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFNFCTagDescription+Private.h"; sourceTree = "<group>"; };
@@ -1301,6 +1300,8 @@
 				9551882B2265E8DE001A4191 /* YKFKeyOATHError.m */,
 				955188262265E4B9001A4191 /* YKFKeyU2FError.h */,
 				955188272265E4B9001A4191 /* YKFKeyU2FError.m */,
+				8152341023BAE9D2004D4788 /* YKFKeyChallengeResponseError.h */,
+				8152341123BAE9D2004D4788 /* YKFKeyChallengeResponseError.m */,
 			);
 			path = Errors;
 			sourceTree = "<group>";
@@ -1496,6 +1497,7 @@
 				95DD409E2099A89600363FEE /* YKFKeyU2FSignRequest.m in Sources */,
 				955BCC0A215A463E00C2EA2B /* YKFOATHCredential.m in Sources */,
 				95C296442062656C0091318B /* YKFOTPURIParser.m in Sources */,
+				8152341223BAE9D2004D4788 /* YKFKeyChallengeResponseError.m in Sources */,
 				95D9D3E021D5111500473888 /* YKFCBORDecoder.m in Sources */,
 				95885B1820A2F94700828D02 /* YKFAccessoryConnectionController.m in Sources */,
 				95DD409C2099A89600363FEE /* YKFKeyU2FSignResponse.m in Sources */,

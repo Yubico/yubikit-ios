@@ -16,7 +16,7 @@
 - (instancetype)initWithRequest:(YKFKeyChalRespSendRequest *)request {
     YKFAssertAbortInit(request);
     
-    UInt8 slot = request.slot == YKFShortTouch ? 0x30 : 0x38;
+    UInt8 slot = request.slot == YKFSlotOne ? 0x30 : 0x38;
     return [super initWithCla:0 ins:YKFAPDUCommandInstructionChalRespSend p1:slot p2:0 data:request.challenge type:YKFAPDUTypeShort];
 }
 
