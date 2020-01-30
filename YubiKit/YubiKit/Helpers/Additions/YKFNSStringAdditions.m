@@ -18,26 +18,33 @@
 
 - (void)ykf_OATHKeyExtractPeriod:(NSUInteger *)period issuer:(NSString **)issuer account:(NSString **)account label:(NSString **)label {
     NSString *key = self;
-    
+    NSMutableArray *componentsArray;
+
     // TOTP key with format [period]/[label]
-    if ([self containsString:@"/"]) {
-        NSArray *stringComponents = [self componentsSeparatedByString:@"/"];
-        if (stringComponents.count == 2) {
+    if ([key containsString:@"/"]) {
+        NSArray *stringComponents = [key componentsSeparatedByString:@"/"];
+        if (stringComponents.count > 1) {
             NSUInteger interval = [stringComponents[0] intValue];
             if (interval) {
                 *period = interval;
+
+                componentsArray = [NSMutableArray arrayWithArray: stringComponents];
+                [componentsArray removeObjectAtIndex: 0];
+                key = [componentsArray componentsJoinedByString: @"/"];
             }
-            key = stringComponents[1];
         }
     }
     
     *label = key;
-
+    
     // Parse the label as [issuer]:[account]
-    NSArray *labelComponents = [key componentsSeparatedByString:@":"];
-    if (labelComponents.count == 2) {
-        *issuer = labelComponents[0];
-        *account = labelComponents[1];
+    if ([key containsString: @":"]) {
+        NSArray *labelComponents = [key componentsSeparatedByString:@":"];
+        *account = labelComponents.lastObject;
+
+        componentsArray = [NSMutableArray arrayWithArray: labelComponents];
+        [componentsArray removeLastObject];
+        *issuer = [componentsArray componentsJoinedByString: @":"];
     } else {
         *account = key;
     }
