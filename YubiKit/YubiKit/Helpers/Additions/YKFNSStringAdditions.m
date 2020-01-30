@@ -17,27 +17,12 @@
 @implementation NSString(NSString_OATH)
 
 - (void)ykf_OATHKeyExtractPeriod:(NSUInteger *)period issuer:(NSString **)issuer account:(NSString **)account label:(NSString **)label {
-    NSString *periodIssuer;
+    NSString *key = self;
     NSMutableArray *componentsArray;
-    
-    BOOL noIssuer = FALSE;
-
-    if ([self containsString: @":"]) {
-        // TOTP key with format [period]/[issuer]:[account]
-        NSArray *labelComponents = [self componentsSeparatedByString:@":"];
-        *account = labelComponents.lastObject;
-
-        componentsArray = [NSMutableArray arrayWithArray: labelComponents];
-        [componentsArray removeLastObject];
-        periodIssuer = [componentsArray componentsJoinedByString: @":"];
-    } else {
-        noIssuer = TRUE;
-        periodIssuer = self;
-    }
 
     // TOTP key with format [period]/[label]
-    if ([periodIssuer containsString:@"/"]) {
-        NSArray *stringComponents = [periodIssuer componentsSeparatedByString:@"/"];
+    if ([key containsString:@"/"]) {
+        NSArray *stringComponents = [key componentsSeparatedByString:@"/"];
         if (stringComponents.count > 1) {
             NSUInteger interval = [stringComponents[0] intValue];
             if (interval) {
@@ -45,20 +30,24 @@
 
                 componentsArray = [NSMutableArray arrayWithArray: stringComponents];
                 [componentsArray removeObjectAtIndex: 0];
-                periodIssuer = [componentsArray componentsJoinedByString: @"/"];
+                key = [componentsArray componentsJoinedByString: @"/"];
             }
         }
     }
+    
+    *label = key;
+    
+    // Parse the label as [issuer]:[account]
+    if ([key containsString: @":"]) {
+        NSArray *labelComponents = [key componentsSeparatedByString:@":"];
+        *account = labelComponents.lastObject;
 
-    if (noIssuer) {
-        *account = periodIssuer;
+        componentsArray = [NSMutableArray arrayWithArray: labelComponents];
+        [componentsArray removeLastObject];
+        *issuer = [componentsArray componentsJoinedByString: @":"];
     } else {
-        *issuer = periodIssuer;
+        *account = key;
     }
-
-    *label = (*issuer != nil)
-        ? [NSString stringWithFormat:@"%@:%@", *issuer, *account]
-        : *account;
 }
 
 @end
