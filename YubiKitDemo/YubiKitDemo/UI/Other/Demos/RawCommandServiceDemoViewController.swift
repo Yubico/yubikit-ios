@@ -46,60 +46,32 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
     
     // MARK: - Actions
     @IBAction func runDemoButtonPressed(_ sender: Any) {
-                
-        let title = "Run PIV demo"
-        let message = "How do you want to \(title)?"
+        // NOTE: session for accessories has been started for app delegate,
+        // because we're watching YubiKey connection in every UI controller,
+        // but potentially it could be started when this controller is initialized
+        // and stopped when it's being deallocated (or any custom logic when stop/start watching connection)
+        YubiKitExternalLocalization.nfcScanAlertMessage = "Insert YubiKey or scan over the top edge of your iPhone";
+        let keyConnected = YubiKitManager.shared.accessorySession.sessionState == .open
 
-        let actionSheet = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
-        if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
-            actionSheet.addAction(UIAlertAction(title: "Scan my key - Over NFC", style: .default, handler: { [weak self]  (action) in
-                guard let strongSelf = self else {
-                    return
-                }
-                guard #available(iOS 13.0, *) else {
-                    fatalError()
-                }
-
-                strongSelf.keyType = .nfc
-                YubiKitManager.shared.nfcSession.startIso7816Session()
-            }))
-        }
-        
-        actionSheet.addAction(UIAlertAction(title: "Plug my key - From MFi key", style: .default, handler: { [weak self] (action) in
-            guard let strongSelf = self else {
-                return
+        if YubiKitDeviceCapabilities.supportsISO7816NFCTags && !keyConnected {
+            guard #available(iOS 13.0, *) else {
+                fatalError()
             }
-            strongSelf.keyType = .accessory
+            YubiKitManager.shared.nfcSession.startIso7816Session()
+        } else {
+            keyType = .accessory
 
-            strongSelf.logTextView.text = nil
-            strongSelf.setDemoButton(enabled: false)
+            logTextView.text = nil
+            setDemoButton(enabled: false)
 
             DispatchQueue.global(qos: .default).async { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                self.runPIVDemo()
-                self.setDemoButton(enabled: true)
-            }
-        }))
-        
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { [weak self] (action) in
-            guard let strongSelf = self else {
-                return
-            }
-            strongSelf.dismiss(animated: true, completion: nil)
-        }))
-        
-        // The action sheet requires a presentation popover on iPad.
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            actionSheet.modalPresentationStyle = .popover
-            if let presentationController = actionSheet.popoverPresentationController {
-                presentationController.sourceView = runDemoButton
-                presentationController.sourceRect = runDemoButton.bounds
-            }
+               guard let self = self else {
+                   return
+               }
+               self.runPIVDemo(keyService: YubiKitManager.shared.accessorySession.rawCommandService)
+               self.setDemoButton(enabled: true)
+           }
         }
-        
-        present(actionSheet, animated: true, completion: nil)        
     }
     
     private func setDemoButton(enabled: Bool) {
@@ -111,69 +83,29 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
             self.runDemoButton.backgroundColor = enabled ? NamedColor.yubicoGreenColor : UIColor.lightGray
         }
     }
-    
-    /**
-     Returns the service associated with the desired session.
-     */
-    private var keyService: YKFKeyRawCommandServiceProtocol? {
-        get {
-            var service: YKFKeyRawCommandServiceProtocol? = nil
-            if keyType == .accessory {
-                service = YubiKitManager.shared.accessorySession.rawCommandService
-            } else if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
-                guard #available(iOS 13.0, *) else {
-                    fatalError()
-                }
-
-                service = YubiKitManager.shared.nfcSession.rawCommandService
-            } else {
-                fatalError()
-            }
-            return service
-        }
-    }
 
     // MARK: - Raw Command Service Example
     
-    private func runPIVDemo() {
-        let keyType = self.keyType
-        if keyType == .accessory {
-            let accessorySession = YubiKitManager.shared.accessorySession
-            
+    private func runPIVDemo(keyService: YKFKeyRawCommandServiceProtocol?) {
+        let keyPluggedIn = YubiKitManager.shared.accessorySession.sessionState == .open
+        if keyPluggedIn {
             /*
-             1. Check if the key is connected.
+                Key is plugged in, we can use accessorySession: e.g. Show serial number.
              */
-            let keyConnected = accessorySession.isKeyConnected
-            guard keyConnected else {
-                log(message: "The key is not plugged in.")
-                return
-            }
-            
-            /*
-             2. Start the session.
-             */
-            let sessionStarted = accessorySession.startSessionSync()
-            guard sessionStarted else {
-                log(message: "Could not connect to the key.")
-                return
-            }
-            
-            /*
-             3. Show serial number.
-             */
-            let serialNumber = accessorySession.accessoryDescription!.serialNumber
+            let serialNumber = YubiKitManager.shared.accessorySession.accessoryDescription!.serialNumber
             log(message: "The key serial number is: \(serialNumber).")
         }
+        
+        guard let keyService = keyService else {
+            log(message: "The key is not connected")
+            return
+        }
+
         /*
-         4. Select the PIV application.
+         1. Select the PIV application.
          */
         let selectPIVCommand = Data([0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08])
         guard let selectPIVApdu = YKFAPDU(data: selectPIVCommand) else {
-            return
-        }
-        
-        guard let keyService = self.keyService else {
-            log(message: "Connection was lost.")
             return
         }
         
@@ -198,7 +130,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
         
         
         /*
-         5. Verify against the PIV application from the key (PIN is default 123456).
+         2. Verify against the PIV application from the key (PIN is default 123456).
          */
         let verifyCommand = Data([0x00, 0x20, 0x00, 0x80, 0x08, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0xff, 0xff])
         guard let verifyApdu = YKFAPDU(data: verifyCommand) else {
@@ -225,7 +157,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
         })
     
         /*
-         6.1 Read the certificate stored on the PIV application in slot 9C.
+         3.1 Read the certificate stored on the PIV application in slot 9C.
 
          Note: Reading a certificate is not something which requires verification since the certificate
          is something which is ment to public. Only adding a new certificate requires verification.
@@ -284,7 +216,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
         }
 
         /*
-         6.2 Parse the certificate object.
+         3.2 Parse the certificate object.
          */
 
         guard let certificate = RawDemoSecCertificate(keyData: readBuffer) else {
@@ -293,7 +225,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
         }
 
         /*
-         6.3 Use the certificate to verify a signature.
+         3.3 Use the certificate to verify a signature.
          */
 
         // The data which was signed with the private key of the stored certificate.
@@ -315,57 +247,59 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
 
         let signatureIsValid = certificate.verify(data: signedData, signature: signatureData!)
         log(message:signatureIsValid ? "Signature is valid." : "Signature is not valid.")
-
-        /*
-         7. Close the session.
-         */
-        
-        if keyType == .accessory {
-            // Temporary disable the observation to not wipe the logs after the session was closed.
-            observeSessionStateUpdates = false
-            
-            YubiKitManager.shared.accessorySession.stopSessionSync()
-
-            observeSessionStateUpdates = true
-        } else {
-            guard #available(iOS 13.0, *) else {
-                fatalError()
-            }
-
-            // Stop the session to dismiss the Core NFC system UI.
-            YubiKitManager.shared.nfcSession.stopIso7816Session()
-
-        }
     }
     
     // MARK: - Session State Updates
     
     override func accessorySessionStateDidChange() {
-        let sessionState = YubiKitManager.shared.accessorySession.sessionState
-        if sessionState == .closed {
+        switch YubiKitManager.shared.accessorySession.sessionState {
+        case .closed:
             logTextView.text = nil
             setDemoButton(enabled: true)
+        case .open:
+            if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
+                guard #available(iOS 13.0, *) else {
+                    fatalError()
+                }
+            
+                DispatchQueue.global(qos: .default).async { [weak self] in
+                    // if NFC UI is visible we consider the button is pressed
+                    // and we run demo as soon as 5ci connected
+                    if (YubiKitManager.shared.nfcSession.iso7816SessionState != .closed) {
+                        guard let self = self else {
+                                return
+                        }
+                        YubiKitManager.shared.nfcSession.stopIso7816Session()
+                        self.runPIVDemo(keyService: YubiKitManager.shared.accessorySession.rawCommandService)
+                    }
+                }
+            }
+        default:
+            break
         }
     }
     
     @available(iOS 13.0, *)
     override func nfcSessionStateDidChange() {
         // Execute the request after the key(tag) is connected.
-        if YubiKitManager.shared.nfcSession.iso7816SessionState == .open {
+        switch YubiKitManager.shared.nfcSession.iso7816SessionState {
+        case .open:
             DispatchQueue.global(qos: .default).async { [weak self] in
                 guard let self = self else {
                     return
                 }
+                
                 // NOTE: session can be closed during the execution of demo on background thread,
                 // so we need to make sure that we handle case when rawCommandService for nfcSession is nil
-                self.runPIVDemo()
+                self.runPIVDemo(keyService: YubiKitManager.shared.nfcSession.rawCommandService)
                 // Stop the session to dismiss the Core NFC system UI.
                 YubiKitManager.shared.nfcSession.stopIso7816Session()
             }
-            return
+        default:
+            break
         }
     }
-    
+        
     // MARK: - Logging Helpers
     
     private func log(message: String) {
