@@ -224,6 +224,7 @@
 		95F75BAB2175D63D00C13DC5 /* YKFKeyOATHValidateRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 95F75BAA2175D63D00C13DC5 /* YKFKeyOATHValidateRequest.m */; };
 		95F75BAE2175D6D600C13DC5 /* YKFOATHValidateAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 95F75BAD2175D6D600C13DC5 /* YKFOATHValidateAPDU.m */; };
 		95F75BAF2175D8E300C13DC5 /* YKFKeyOATHValidateRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95F75BA92175D63D00C13DC5 /* YKFKeyOATHValidateRequest.h */; };
+		A51F7B1D23EFC6DB0046F6A3 /* YKFNSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 95EA81E62178805D0020595D /* YKFNSStringAdditions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1439,6 +1440,7 @@
 				95D7364F21CA44EF0039141A /* YKFPCSCTests.m in Sources */,
 				951446A021873D43002BB3C5 /* YKFNSMutableDataAdditions.m in Sources */,
 				9529CBBA214903FA0041D2F8 /* YKFAccessorySessionConfigurationTests.m in Sources */,
+				A51F7B1D23EFC6DB0046F6A3 /* YKFNSStringAdditions.m in Sources */,
 				95B8547E21E898F3000D6D7A /* YKFCBORDecoderTests.m in Sources */,
 				9564333220A58EDA007621BD /* YKFOTPURIParserTests.m in Sources */,
 				9529CBBF2149105F0041D2F8 /* YKFAccessoryDescriptionTests.m in Sources */,
