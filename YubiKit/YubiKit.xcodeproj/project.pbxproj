@@ -225,6 +225,7 @@
 		95F75BAE2175D6D600C13DC5 /* YKFOATHValidateAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 95F75BAD2175D6D600C13DC5 /* YKFOATHValidateAPDU.m */; };
 		95F75BAF2175D8E300C13DC5 /* YKFKeyOATHValidateRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95F75BA92175D63D00C13DC5 /* YKFKeyOATHValidateRequest.h */; };
 		A51F7B1D23EFC6DB0046F6A3 /* YKFNSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 95EA81E62178805D0020595D /* YKFNSStringAdditions.m */; };
+		A54DCC0323F2147500E95259 /* YKNSStringAdditionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A54DCC0223F2147500E95259 /* YKNSStringAdditionTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -646,6 +647,7 @@
 		95F75BAA2175D63D00C13DC5 /* YKFKeyOATHValidateRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyOATHValidateRequest.m; sourceTree = "<group>"; };
 		95F75BAC2175D6D600C13DC5 /* YKFOATHValidateAPDU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHValidateAPDU.h; sourceTree = "<group>"; };
 		95F75BAD2175D6D600C13DC5 /* YKFOATHValidateAPDU.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHValidateAPDU.m; sourceTree = "<group>"; };
+		A54DCC0223F2147500E95259 /* YKNSStringAdditionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKNSStringAdditionTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -883,6 +885,7 @@
 				9529CBC0214927D80041D2F8 /* YKFKeyU2FServiceTests.m */,
 				956884C020AAD98500E0F72C /* YKFNFCOTPServiceTests.m */,
 				95DD659021664B6800BA85C9 /* YKFOATHCredentialTests.m */,
+				A54DCC0223F2147500E95259 /* YKNSStringAdditionTests.m */,
 				95D61A03216F9159001E7AC8 /* YKFOATHCredentialValidatorTests.m */,
 				9564333320A5B99F007621BD /* YKFOTPTextParserTests.m */,
 				9564333520A5C03C007621BD /* YKFOTPTokenParserTests.m */,
@@ -1446,6 +1449,7 @@
 				9529CBBF2149105F0041D2F8 /* YKFAccessoryDescriptionTests.m in Sources */,
 				95885B3220A31F1D00828D02 /* YKFOTPTokenValidator.m in Sources */,
 				95D7364D21C94BFD0039141A /* FakeYKFPCSCLayer.m in Sources */,
+				A54DCC0323F2147500E95259 /* YKNSStringAdditionTests.m in Sources */,
 				956884D320AB012200E0F72C /* FakeYKFOTPURIParser.m in Sources */,
 				956884CD20AAFB3F00E0F72C /* FakeYubiKitDeviceCapabilities.m in Sources */,
 				9529CBC421492A3E0041D2F8 /* FakeYKFKeyConnectionController.m in Sources */,
