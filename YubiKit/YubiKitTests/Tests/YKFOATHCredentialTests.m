@@ -14,6 +14,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import "YKFNSStringAdditions.h"
 #import "YKFTestCase.h"
 #import "YKFOATHCredential.h"
 #import "YKFOATHCredential+Private.h"
