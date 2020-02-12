@@ -7,10 +7,20 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "YKFKeyVersion.h"
+#import "YKFMGMTInterfaceConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFKeyMGMTReadConfigurationResponse : NSObject
+
+@property (nonatomic, readonly, nullable) YKFMGMTInterfaceConfiguration* configuration;
+@property (nonatomic, readonly, nonnull) YKFKeyVersion* version;
+
+@property (nonatomic, readonly) NSUInteger serialNumber;
+@property (nonatomic, readonly) NSUInteger formFactor;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

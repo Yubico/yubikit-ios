@@ -15,11 +15,10 @@
 		814813E023EA380A0003893B /* YKFKeyMGMTReadConfigurationResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 814813D323EA380A0003893B /* YKFKeyMGMTReadConfigurationResponse.m */; };
 		814813E123EA380A0003893B /* YKFKeyMGMTReadConfigurationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 814813D723EA380A0003893B /* YKFKeyMGMTReadConfigurationRequest.m */; };
 		814813E223EA380A0003893B /* YKFKeyMGMTSelectApplicationResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 814813D823EA380A0003893B /* YKFKeyMGMTSelectApplicationResponse.m */; };
-		814813E323EA380A0003893B /* YKFKeyMGMTWriteConfigurationResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 814813D923EA380A0003893B /* YKFKeyMGMTWriteConfigurationResponse.m */; };
 		814813E423EA380A0003893B /* YKFKeyMGMTRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 814813DD23EA380A0003893B /* YKFKeyMGMTRequest.m */; };
 		814813E523EA380A0003893B /* YKFKeyMGMTWriteConfigurationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 814813DE23EA380A0003893B /* YKFKeyMGMTWriteConfigurationRequest.m */; };
 		814813EB23EA381F0003893B /* YKFKeyMGMTService.m in Sources */ = {isa = PBXBuildFile; fileRef = 814813E823EA381F0003893B /* YKFKeyMGMTService.m */; };
-		814813EC23EA381F0003893B /* YKFMGMTConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 814813EA23EA381F0003893B /* YKFMGMTConfiguration.m */; };
+		814813EC23EA381F0003893B /* YKFMGMTInterfaceConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 814813EA23EA381F0003893B /* YKFMGMTInterfaceConfiguration.m */; };
 		815233F123AD438E004D4788 /* YKFSelectYubiKeyApplicationAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 815233EF23AD438E004D4788 /* YKFSelectYubiKeyApplicationAPDU.m */; };
 		815233FE23B56A6F004D4788 /* YKFKeyChalRespSendRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 815233FD23B56A6F004D4788 /* YKFKeyChalRespSendRequest.m */; };
 		8152340623B56F80004D4788 /* YKFHMAC1ChallengeResponseAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 8152340323B56F80004D4788 /* YKFHMAC1ChallengeResponseAPDU.m */; };
@@ -29,6 +28,8 @@
 		8152341223BAE9D2004D4788 /* YKFKeyChallengeResponseError.m in Sources */ = {isa = PBXBuildFile; fileRef = 8152341123BAE9D2004D4788 /* YKFKeyChallengeResponseError.m */; };
 		816C684B2343126100209342 /* YKFNFCTagDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 816C684A2343126100209342 /* YKFNFCTagDescription.m */; };
 		816C684E23431BE600209342 /* YKFNFCTagDescription.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 816C68492343126100209342 /* YKFNFCTagDescription.h */; };
+		81F94D8323ECD9D800475A70 /* YKFKeyVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 81F94D8223ECD9D800475A70 /* YKFKeyVersion.m */; };
+		81F94D8A23F2371200475A70 /* YKFKeyMGMTError.m in Sources */ = {isa = PBXBuildFile; fileRef = 81F94D8923F2371200475A70 /* YKFKeyMGMTError.m */; };
 		95081DEE2214255B006CD08C /* YKFKeyRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 95081DED2214255B006CD08C /* YKFKeyRequest.m */; };
 		95081DEF22142581006CD08C /* YKFKeyRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95081DEC2214255B006CD08C /* YKFKeyRequest.h */; };
 		950C70092298095F00E48458 /* YubiKitDeviceCapabilitiesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C70082298095F00E48458 /* YubiKitDeviceCapabilitiesTests.m */; };
@@ -334,22 +335,19 @@
 		814813CD23EA37F60003893B /* YKFMGMTWriteAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YKFMGMTWriteAPDU.m; path = MGMT/YKFMGMTWriteAPDU.m; sourceTree = "<group>"; };
 		814813CE23EA37F60003893B /* YKFSelectMGMTApplicationAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YKFSelectMGMTApplicationAPDU.h; path = MGMT/YKFSelectMGMTApplicationAPDU.h; sourceTree = "<group>"; };
 		814813D323EA380A0003893B /* YKFKeyMGMTReadConfigurationResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YKFKeyMGMTReadConfigurationResponse.m; path = MGMT/YKFKeyMGMTReadConfigurationResponse.m; sourceTree = "<group>"; };
-		814813D423EA380A0003893B /* YKFKeyMGMTWriteConfigurationResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YKFKeyMGMTWriteConfigurationResponse.h; path = MGMT/YKFKeyMGMTWriteConfigurationResponse.h; sourceTree = "<group>"; };
 		814813D523EA380A0003893B /* YKFKeyMGMTReadConfigurationResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YKFKeyMGMTReadConfigurationResponse.h; path = MGMT/YKFKeyMGMTReadConfigurationResponse.h; sourceTree = "<group>"; };
 		814813D623EA380A0003893B /* YKFKeyMGMTRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YKFKeyMGMTRequest.h; path = MGMT/YKFKeyMGMTRequest.h; sourceTree = "<group>"; };
 		814813D723EA380A0003893B /* YKFKeyMGMTReadConfigurationRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YKFKeyMGMTReadConfigurationRequest.m; path = MGMT/YKFKeyMGMTReadConfigurationRequest.m; sourceTree = "<group>"; };
 		814813D823EA380A0003893B /* YKFKeyMGMTSelectApplicationResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YKFKeyMGMTSelectApplicationResponse.m; path = MGMT/YKFKeyMGMTSelectApplicationResponse.m; sourceTree = "<group>"; };
-		814813D923EA380A0003893B /* YKFKeyMGMTWriteConfigurationResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YKFKeyMGMTWriteConfigurationResponse.m; path = MGMT/YKFKeyMGMTWriteConfigurationResponse.m; sourceTree = "<group>"; };
 		814813DA23EA380A0003893B /* YKFKeyMGMTWriteConfigurationRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YKFKeyMGMTWriteConfigurationRequest.h; path = MGMT/YKFKeyMGMTWriteConfigurationRequest.h; sourceTree = "<group>"; };
 		814813DB23EA380A0003893B /* YKFKeyMGMTRequest+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "YKFKeyMGMTRequest+Private.h"; path = "MGMT/YKFKeyMGMTRequest+Private.h"; sourceTree = "<group>"; };
 		814813DC23EA380A0003893B /* YKFKeyMGMTSelectApplicationResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YKFKeyMGMTSelectApplicationResponse.h; path = MGMT/YKFKeyMGMTSelectApplicationResponse.h; sourceTree = "<group>"; };
 		814813DD23EA380A0003893B /* YKFKeyMGMTRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YKFKeyMGMTRequest.m; path = MGMT/YKFKeyMGMTRequest.m; sourceTree = "<group>"; };
 		814813DE23EA380A0003893B /* YKFKeyMGMTWriteConfigurationRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YKFKeyMGMTWriteConfigurationRequest.m; path = MGMT/YKFKeyMGMTWriteConfigurationRequest.m; sourceTree = "<group>"; };
 		814813DF23EA380A0003893B /* YKFKeyMGMTReadConfigurationRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YKFKeyMGMTReadConfigurationRequest.h; path = MGMT/YKFKeyMGMTReadConfigurationRequest.h; sourceTree = "<group>"; };
-		814813E723EA381F0003893B /* YKFMGMTConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YKFMGMTConfiguration.h; path = MGMT/YKFMGMTConfiguration.h; sourceTree = "<group>"; };
 		814813E823EA381F0003893B /* YKFKeyMGMTService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YKFKeyMGMTService.m; path = MGMT/YKFKeyMGMTService.m; sourceTree = "<group>"; };
 		814813E923EA381F0003893B /* YKFKeyMGMTService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YKFKeyMGMTService.h; path = MGMT/YKFKeyMGMTService.h; sourceTree = "<group>"; };
-		814813EA23EA381F0003893B /* YKFMGMTConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YKFMGMTConfiguration.m; path = MGMT/YKFMGMTConfiguration.m; sourceTree = "<group>"; };
+		814813EA23EA381F0003893B /* YKFMGMTInterfaceConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YKFMGMTInterfaceConfiguration.m; path = MGMT/YKFMGMTInterfaceConfiguration.m; sourceTree = "<group>"; };
 		815233EF23AD438E004D4788 /* YKFSelectYubiKeyApplicationAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFSelectYubiKeyApplicationAPDU.m; sourceTree = "<group>"; };
 		815233F023AD438E004D4788 /* YKFSelectYubiKeyApplicationAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFSelectYubiKeyApplicationAPDU.h; sourceTree = "<group>"; };
 		815233FA23B569A1004D4788 /* YKFSlot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSlot.h; sourceTree = "<group>"; };
@@ -367,6 +365,17 @@
 		816C684C234315CC00209342 /* YKFNFCTagDescription+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFNFCTagDescription+Private.h"; sourceTree = "<group>"; };
 		81DF8FD9237B531700737268 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		81DF8FDA237B534D00737268 /* docs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = docs; path = ../docs; sourceTree = "<group>"; };
+		81F94D8123ECD9D800475A70 /* YKFKeyVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = YKFKeyVersion.h; path = MGMT/YKFKeyVersion.h; sourceTree = "<group>"; };
+		81F94D8223ECD9D800475A70 /* YKFKeyVersion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = YKFKeyVersion.m; path = MGMT/YKFKeyVersion.m; sourceTree = "<group>"; };
+		81F94D8523EE246C00475A70 /* YKFMGMTInterfaceConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YKFMGMTInterfaceConfiguration.h; path = MGMT/YKFMGMTInterfaceConfiguration.h; sourceTree = "<group>"; };
+		81F94D8623F2060A00475A70 /* YKFKeyMGMTReadConfigurationResponse+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "YKFKeyMGMTReadConfigurationResponse+Private.h"; path = "MGMT/YKFKeyMGMTReadConfigurationResponse+Private.h"; sourceTree = "<group>"; };
+		81F94D8723F2149E00475A70 /* YKFMGMTReadConfigurationTags.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = YKFMGMTReadConfigurationTags.h; path = MGMT/YKFMGMTReadConfigurationTags.h; sourceTree = "<group>"; };
+		81F94D8823F2371200475A70 /* YKFKeyMGMTError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyMGMTError.h; sourceTree = "<group>"; };
+		81F94D8923F2371200475A70 /* YKFKeyMGMTError.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyMGMTError.m; sourceTree = "<group>"; };
+		81F94D8B23F2411A00475A70 /* YKFKeyMGMTSelectApplicationResponse+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "YKFKeyMGMTSelectApplicationResponse+Private.h"; path = "MGMT/YKFKeyMGMTSelectApplicationResponse+Private.h"; sourceTree = "<group>"; };
+		81F94D8C23F26F7B00475A70 /* YKFMGMTInterfaceConfiguration+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "YKFMGMTInterfaceConfiguration+Private.h"; path = "MGMT/YKFMGMTInterfaceConfiguration+Private.h"; sourceTree = "<group>"; };
+		81F94D8D23F3585100475A70 /* YKFMGMTApplicationType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFMGMTApplicationType.h; sourceTree = "<group>"; };
+		81F94D8E23F3605000475A70 /* YKFMGMTTransportType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFMGMTTransportType.h; sourceTree = "<group>"; };
 		95081DEC2214255B006CD08C /* YKFKeyRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyRequest.h; sourceTree = "<group>"; };
 		95081DED2214255B006CD08C /* YKFKeyRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyRequest.m; sourceTree = "<group>"; };
 		950C70072298051700E48458 /* UIDevice+Testing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIDevice+Testing.h"; sourceTree = "<group>"; };
@@ -734,17 +743,18 @@
 			children = (
 				814813DF23EA380A0003893B /* YKFKeyMGMTReadConfigurationRequest.h */,
 				814813D723EA380A0003893B /* YKFKeyMGMTReadConfigurationRequest.m */,
+				81F94D8723F2149E00475A70 /* YKFMGMTReadConfigurationTags.h */,
 				814813D523EA380A0003893B /* YKFKeyMGMTReadConfigurationResponse.h */,
 				814813D323EA380A0003893B /* YKFKeyMGMTReadConfigurationResponse.m */,
+				81F94D8623F2060A00475A70 /* YKFKeyMGMTReadConfigurationResponse+Private.h */,
 				814813D623EA380A0003893B /* YKFKeyMGMTRequest.h */,
 				814813DD23EA380A0003893B /* YKFKeyMGMTRequest.m */,
 				814813DB23EA380A0003893B /* YKFKeyMGMTRequest+Private.h */,
 				814813DC23EA380A0003893B /* YKFKeyMGMTSelectApplicationResponse.h */,
 				814813D823EA380A0003893B /* YKFKeyMGMTSelectApplicationResponse.m */,
+				81F94D8B23F2411A00475A70 /* YKFKeyMGMTSelectApplicationResponse+Private.h */,
 				814813DA23EA380A0003893B /* YKFKeyMGMTWriteConfigurationRequest.h */,
 				814813DE23EA380A0003893B /* YKFKeyMGMTWriteConfigurationRequest.m */,
-				814813D423EA380A0003893B /* YKFKeyMGMTWriteConfigurationResponse.h */,
-				814813D923EA380A0003893B /* YKFKeyMGMTWriteConfigurationResponse.m */,
 			);
 			name = MGMT;
 			sourceTree = "<group>";
@@ -754,8 +764,13 @@
 			children = (
 				814813E923EA381F0003893B /* YKFKeyMGMTService.h */,
 				814813E823EA381F0003893B /* YKFKeyMGMTService.m */,
-				814813E723EA381F0003893B /* YKFMGMTConfiguration.h */,
-				814813EA23EA381F0003893B /* YKFMGMTConfiguration.m */,
+				81F94D8523EE246C00475A70 /* YKFMGMTInterfaceConfiguration.h */,
+				814813EA23EA381F0003893B /* YKFMGMTInterfaceConfiguration.m */,
+				81F94D8C23F26F7B00475A70 /* YKFMGMTInterfaceConfiguration+Private.h */,
+				81F94D8123ECD9D800475A70 /* YKFKeyVersion.h */,
+				81F94D8223ECD9D800475A70 /* YKFKeyVersion.m */,
+				81F94D8D23F3585100475A70 /* YKFMGMTApplicationType.h */,
+				81F94D8E23F3605000475A70 /* YKFMGMTTransportType.h */,
 			);
 			name = MGMT;
 			sourceTree = "<group>";
@@ -1386,6 +1401,8 @@
 				955188272265E4B9001A4191 /* YKFKeyU2FError.m */,
 				8152341023BAE9D2004D4788 /* YKFKeyChallengeResponseError.h */,
 				8152341123BAE9D2004D4788 /* YKFKeyChallengeResponseError.m */,
+				81F94D8823F2371200475A70 /* YKFKeyMGMTError.h */,
+				81F94D8923F2371200475A70 /* YKFKeyMGMTError.m */,
 			);
 			path = Errors;
 			sourceTree = "<group>";
@@ -1548,7 +1565,7 @@
 			files = (
 				95A04D1E2253920B008E3036 /* YKFFIDO2GetNextAssertionAPDU.m in Sources */,
 				95233E552330DEE000C51F92 /* YubiKitLogger.m in Sources */,
-				814813EC23EA381F0003893B /* YKFMGMTConfiguration.m in Sources */,
+				814813EC23EA381F0003893B /* YKFMGMTInterfaceConfiguration.m in Sources */,
 				95F75BAB2175D63D00C13DC5 /* YKFKeyOATHValidateRequest.m in Sources */,
 				814813D123EA37F60003893B /* YKFMGMTWriteAPDU.m in Sources */,
 				952564C8216F699500BC6F64 /* YKFOATHResetAPDU.m in Sources */,
@@ -1617,7 +1634,6 @@
 				95D9D3E321D67AAA00473888 /* YKFCBORType.m in Sources */,
 				9535F0122175FFB600A6D617 /* YKFKeyOATHValidateResponse.m in Sources */,
 				958D0B64215D106F00942CB9 /* YKFKeyService.m in Sources */,
-				814813E323EA380A0003893B /* YKFKeyMGMTWriteConfigurationResponse.m in Sources */,
 				954E2C572211B53100720D2B /* YKFKeyFIDO2ClientPinResponse.m in Sources */,
 				956DBB8D21EE0A0B004D6EE3 /* YKFFIDO2CommandAPDU.m in Sources */,
 				95C2964A20627F2F0091318B /* YKFNFCError.m in Sources */,
@@ -1638,6 +1654,7 @@
 				95D61A0A2170DEEF001E7AC8 /* YKFKeyOATHSetCodeRequest.m in Sources */,
 				958793EE216E0DB2001A0406 /* YKFKeyOATHListResponse.m in Sources */,
 				95DD408E2099A88500363FEE /* YKFKeySessionError.m in Sources */,
+				81F94D8323ECD9D800475A70 /* YKFKeyVersion.m in Sources */,
 				815233F123AD438E004D4788 /* YKFSelectYubiKeyApplicationAPDU.m in Sources */,
 				954E2C5A2211C64900720D2B /* YKFKeyFIDO2VerifyPinRequest.m in Sources */,
 				957BDF5421F7130900899B5B /* YKFKeyFIDO2GetAssertionRequest.m in Sources */,
@@ -1647,6 +1664,7 @@
 				95CCAE5F2241220600B567D2 /* YKFKeyFIDO2SetPinRequest.m in Sources */,
 				95DD40A72099A8A400363FEE /* YKFAccessorySession.m in Sources */,
 				95DD409D2099A89600363FEE /* YKFKeyU2FRegisterResponse.m in Sources */,
+				81F94D8A23F2371200475A70 /* YKFKeyMGMTError.m in Sources */,
 				95A4566C2177663800AD5A94 /* YKFKeyOATHCalculateAllResponse.m in Sources */,
 				953A5079213E9F4600929ABB /* YKFAccessoryDescription.m in Sources */,
 				956DBB9021EE1E5E004D6EE3 /* YKFFIDO2GetInfoAPDU.m in Sources */,

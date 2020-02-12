@@ -8,13 +8,27 @@
 
 #import "YKFMGMTWriteAPDU.h"
 #import "YKFAPDUCommandInstruction.h"
-#import "YKFKeyMGMTWriteConfigurationRequest.h"
+#import "YKFMGMTInterfaceConfiguration+Private.h"
+#import "YKFMGMTReadConfigurationTags.h"
+#import "YKFNSMutableDataAdditions.h"
+#import "YKFAssert.h"
 
 @implementation YKFMGMTWriteAPDU
 
 - (instancetype)initWithRequest:(nonnull YKFKeyMGMTWriteConfigurationRequest *)request {
-    // TODO: put data
-    return [super initWithCla:0x00 ins:YKFAPDUCommandInstructionMGMTWrite p1:0x00 p2:0x00 data:[NSData data] type:YKFAPDUTypeShort];
+    YKFAssertAbortInit(request);
+
+    NSMutableData *rawRequest = [[NSMutableData alloc] init];
+    YKFMGMTInterfaceConfiguration *configuration = request.configuration;
+    if (configuration.usbMaskChanged) {
+        [rawRequest ykf_appendShortWithTag:YKFMGMTReadConfigurationTagsUsbEnabled data:configuration.usbEnabledMask];
+    }
+    
+    if (configuration.nfcMaskChanged) {
+        [rawRequest ykf_appendShortWithTag:YKFMGMTReadConfigurationTagsUsbEnabled data:configuration.nfcEnabledMask];
+    }
+
+    return [super initWithCla:0x00 ins:YKFAPDUCommandInstructionMGMTWrite p1:0x00 p2:0x00 data:rawRequest type:YKFAPDUTypeShort];
 }
 
 @end

@@ -7,10 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "YKFKeyVersion.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFKeyMGMTSelectApplicationResponse : NSObject
+
+@property (nonatomic, readonly, nonnull) YKFKeyVersion* version;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

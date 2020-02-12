@@ -28,6 +28,7 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHSelectApplicationResponseTag) {
 @property (nonatomic, readwrite) NSData *selectID;
 @property (nonatomic, readwrite) NSData *challenge;
 @property (nonatomic, assign, readwrite) YKFOATHCredentialAlgorithm algorithm;
+@property (nonatomic, readwrite) NSData *version;
 
 @end
 
@@ -53,7 +54,9 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHSelectApplicationResponseTag) {
         NSRange versionRange = NSMakeRange(readIndex, lengthOfVersion);
         YKFAssertAbortInit([responseData ykf_containsRange:versionRange]);
 
-        UInt8 majorVersion = bytes[readIndex];
+        self.version = [responseData subdataWithRange:versionRange];
+        UInt8 *versionBytes = (UInt8 *)self.version.bytes;
+        UInt8 majorVersion = versionBytes[0];
 
         readIndex += lengthOfVersion + 1;
         YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);

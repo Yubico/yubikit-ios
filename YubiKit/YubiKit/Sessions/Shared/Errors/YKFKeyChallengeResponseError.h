@@ -13,7 +13,7 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHErrorCode) {
     
     /*! The host application does not have any active connection with YubiKey
      */
-    YKFKeyChallengeResponseNoConnection = 0x000200,
+    YKFKeyChallengeResponseNoConnection = YKFKeySessionErrorNoConnection,
     
     /*! Key does not have programmed secret on slot
      */

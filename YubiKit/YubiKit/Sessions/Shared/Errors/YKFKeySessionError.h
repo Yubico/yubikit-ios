@@ -59,7 +59,11 @@ typedef NS_ENUM(NSUInteger, YKFKeySessionErrorCode) {
     /*! A request to the key cannot be performed because the connection was lost
      (e.g. Tag was lost when key was taken away from NFC reader)
      */
-    YKFKeySessionErrorConnectionLost = 0x000006
+    YKFKeySessionErrorConnectionLost = 0x000006,
+    
+    /*! A request to the key cannot be performed because the connection was not found
+     */
+    YKFKeySessionErrorNoConnection = 0x000007
 };
 
 /*!

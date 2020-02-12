@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *selectID;
 @property (nonatomic, readonly, nullable) NSData *challenge;
 @property (nonatomic, assign, readonly) YKFOATHCredentialAlgorithm algorithm;
+@property (nonatomic, readonly) NSData *version;
 
 - (nullable instancetype)initWithResponseData:(NSData *)responseData NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

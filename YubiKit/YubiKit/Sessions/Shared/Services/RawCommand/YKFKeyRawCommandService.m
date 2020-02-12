@@ -42,7 +42,7 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
     self = [super init];
     if (self) {
         self.connectionController = connectionController;
-        self.commandExecutionConfiguration = [YKFKeyCommandConfiguration defaultCommandCofiguration];
+        self.commandExecutionConfiguration = [YKFKeyCommandConfiguration fastCommandCofiguration];
     }
     return self;
 }

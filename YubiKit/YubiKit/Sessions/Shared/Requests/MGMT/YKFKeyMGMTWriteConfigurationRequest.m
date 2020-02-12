@@ -7,7 +7,27 @@
 //
 
 #import "YKFKeyMGMTWriteConfigurationRequest.h"
+#import "YKFKeyMGMTRequest+Private.h"
+#import "YKFAssert.h"
+#import "YKFMGMTWriteAPDU.h"
+
+@interface YKFKeyMGMTWriteConfigurationRequest()
+
+@property (nonatomic, readwrite) YKFMGMTInterfaceConfiguration *configuration;
+
+@end
 
 @implementation YKFKeyMGMTWriteConfigurationRequest
+
+- (instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration {
+    YKFAssertAbortInit(configuration);
+    
+    self = [super init];
+    if (self) {
+        self.configuration = configuration;
+        self.apdu = [[YKFMGMTWriteAPDU alloc] initWithRequest:self];
+    }
+    return self;
+}
 
 @end
