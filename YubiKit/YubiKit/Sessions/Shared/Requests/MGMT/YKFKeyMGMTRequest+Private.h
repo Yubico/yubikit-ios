@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
+#import "YKFKeyMGMTRequest.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

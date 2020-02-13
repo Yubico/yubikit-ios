@@ -58,7 +58,7 @@
         case YKFMGMTTransportTypeNFC:
             return (self.nfcEnabledMask & application) == application;
         case YKFMGMTTransportTypeUSB:
-            return (self.usbSupportedMask & application) == application;
+            return (self.usbEnabledMask & application) == application;
         default:
             YKFAssertReturnValue(true, @"Not supperted transport type", false);
             break;
@@ -73,7 +73,10 @@
         // check if there is no changes needs to be applied
         return;
     }
-        
+
+    YKFAssertReturn(self.isConfigurationLocked, @"Configuration is locked.")
+    YKFAssertReturn([self isSupported: application overTransport:transport], @"This YubiKey interface is not supported.")
+
     switch (transport) {
         case YKFMGMTTransportTypeNFC:
             self.nfcEnabledMask = newEnabledMask;

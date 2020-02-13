@@ -7,6 +7,7 @@
 //
 
 #import "YKFKeyMGMTRequest.h"
+#import "YKFKeyMGMTRequest+Private.h"
 
 @implementation YKFKeyMGMTRequest
 

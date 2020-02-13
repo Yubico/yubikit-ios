@@ -10,11 +10,11 @@
 
 @interface YKFKeyMGMTReadConfigurationResponse()
 
-@property (nonatomic, readonly) NSUInteger usbSupportedMask;
-@property (nonatomic, readonly) NSUInteger nfcSupportedMask;
+@property (nonatomic, readwrite) NSUInteger usbSupportedMask;
+@property (nonatomic, readwrite) NSUInteger nfcSupportedMask;
 
-@property (nonatomic, readonly) NSUInteger usbEnabledMask;
-@property (nonatomic, readonly) NSUInteger nfcEnabledMask;
+@property (nonatomic, readwrite) NSUInteger usbEnabledMask;
+@property (nonatomic, readwrite) NSUInteger nfcEnabledMask;
 
 @property (nonatomic, nullable, readwrite) NSData *configurationLocked;
 

@@ -7,6 +7,7 @@
 //
 
 #import "YKFKeyMGMTReadConfigurationResponse.h"
+#import "YKFKeyMGMTReadConfigurationResponse+Private.h"
 #import "YKFAssert.h"
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFMGMTReadConfigurationTags.h"
@@ -17,13 +18,6 @@
 @property (nonatomic, readwrite, nonnull) YKFKeyVersion *version;
 @property (nonatomic, readwrite) NSUInteger serialNumber;
 @property (nonatomic, readwrite) NSUInteger formFactor;
-@property (nonatomic, readwrite, nullable) NSData *configurationLocked;
-
-@property (nonatomic, readwrite) NSUInteger usbSupportedMask;
-@property (nonatomic, readwrite) NSUInteger nfcSupportedMask;
-
-@property (nonatomic, readwrite) NSUInteger usbEnabledMask;
-@property (nonatomic, readwrite) NSUInteger nfcEnabledMask;
 
 @end
 

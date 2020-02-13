@@ -26,6 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly, nonnull) YKFMGMTInterfaceConfiguration *configuration;
 
+/*!
+ Whether require reboot after updating of configurations
+ */
+@property (nonatomic, readwrite) BOOL reboot;
 
 /*!
  @method initWithConfiguration:

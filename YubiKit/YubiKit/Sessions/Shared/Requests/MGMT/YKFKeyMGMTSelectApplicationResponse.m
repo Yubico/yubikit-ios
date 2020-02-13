@@ -7,9 +7,9 @@
 //
 
 #import "YKFKeyMGMTSelectApplicationResponse.h"
+#import "YKFKeyMGMTSelectApplicationResponse+Private.h"
 #import "YKFKeyVersion.h"
 #import "YKFAssert.h"
-#import "YKFNSDataAdditions+Private.h"
 
 @interface YKFKeyMGMTSelectApplicationResponse()
 
@@ -19,24 +19,24 @@
 
 @implementation YKFKeyMGMTSelectApplicationResponse
 
+static NSUInteger const MinFirmwareVersionStringSize = 5; // e.g. "5.2.3"
+
 - (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData {
     YKFAssertAbortInit(responseData.length);
     
     self = [super init];
     if (self) {
         // Parses version from string format "Firmware version 5.2.1"
-        YKFAssertAbortInit(responseData.length < 5);
+        YKFAssertAbortInit(responseData.length > MinFirmwareVersionStringSize);
 
-        NSUInteger lastIndex = responseData.length - 1;
-        
-        NSRange versionRange = NSMakeRange(lastIndex - 5, lastIndex);
-        YKFAssertAbortInit([responseData ykf_containsRange:versionRange]);
-        
-        NSData *version = [responseData subdataWithRange:versionRange];
-        UInt8 *versionBytes = (UInt8 *)version.bytes;
-        NSString *versionString =[[NSString alloc] initWithBytes:versionBytes length:sizeof(versionBytes) encoding:NSASCIIStringEncoding];
+        NSString *responseString = [[NSString alloc] initWithBytes:responseData.bytes length:responseData.length encoding:NSASCIIStringEncoding];
+        NSArray *responseArray = [responseString componentsSeparatedByString:@" "];
+
+        YKFAssertAbortInit(responseArray.count > 0);
+        NSString *versionString = responseArray.lastObject;
+
         NSArray *versionArray = [versionString componentsSeparatedByString:@"."];
-        YKFAssertAbortInit(versionArray.count > 3)
+        YKFAssertAbortInit(versionArray.count == 3)
         
         NSUInteger major = [versionArray[0] intValue];
         NSUInteger minor = [versionArray[1] intValue];
