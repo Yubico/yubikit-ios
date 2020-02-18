@@ -31,8 +31,8 @@ static NSDictionary *errorMap = nil;
 
 + (void)buildErrorMap {
     errorMap =
-    @{@(YKFKeyChallengeResponseNoConnection): YKFKeyChallengeResponseNoConnectionDescription,
-      @(YKFKeyChallengeResponseEmptyResponse): YKFKeyChallengeResponseEmptyResponseDescription,
+    @{@(YKFKeyChallengeResponseErrorCodeNoConnection): YKFKeyChallengeResponseNoConnectionDescription,
+      @(YKFKeyChallengeResponseErrorCodeEmptyResponse): YKFKeyChallengeResponseEmptyResponseDescription,
       };
 }
 

@@ -9,15 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "YKFKeySessionError.h"
 
-typedef NS_ENUM(NSUInteger, YKFKeyOATHErrorCode) {
+typedef NS_ENUM(NSUInteger, YKFKeyChallengeResponseErrorCode) {
     
     /*! The host application does not have any active connection with YubiKey
      */
-    YKFKeyChallengeResponseNoConnection = YKFKeySessionErrorNoConnection,
+    YKFKeyChallengeResponseErrorCodeNoConnection = YKFKeySessionErrorNoConnection,
     
     /*! Key does not have programmed secret on slot
      */
-    YKFKeyChallengeResponseEmptyResponse = 0x000201,
+    YKFKeyChallengeResponseErrorCodeEmptyResponse = 0x000201,
 };
 
 NS_ASSUME_NONNULL_BEGIN
