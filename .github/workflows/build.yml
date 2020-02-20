@@ -24,17 +24,3 @@ jobs:
         with:
           name: yubikit-ios
           path: YubiKit/releases
-          
-  tests:
-    needs: build
-    runs-on: self-hosted
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Test on device
-        run: |
-          xcodebuild -sdk iphoneos -workspace YubiKit.xcworkspace -scheme YubiKitFullStackTests -destination "platform=iOS,name=Irina’s iPhone" test | xcpretty --test --color
-
-
-
