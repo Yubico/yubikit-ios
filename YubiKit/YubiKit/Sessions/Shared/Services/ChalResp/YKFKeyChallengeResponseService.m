@@ -49,7 +49,7 @@
         completion(nil, [YKFKeyChallengeResponseError errorWithCode:YKFKeyChallengeResponseNoConnection]);
         return;
     }
-    
+       
     [self selectYubiKeyApplication:rawCommandService completion:^(NSError *error) {
         if (error) {
             completion(nil, error);
@@ -67,7 +67,7 @@
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
-    [rawCommandService executeCommand:request.apdu completion:^(NSData *response, NSError *error) {
+    [rawCommandService executeCommand:request.apdu configuration:[YKFKeyCommandConfiguration fastCommandCofiguration] completion:^(NSData *response, NSError *error) {
         
         if (error) {
             completion(nil, error);
@@ -96,7 +96,7 @@
                                               completion:(void (^)(NSError *))completion {
     YKFAPDU *selectYubiKeyApplicationAPDU = [[YKFSelectYubiKeyApplicationAPDU alloc] init];
             
-    [rawCommandService executeCommand:selectYubiKeyApplicationAPDU completion:^(NSData *response, NSError *error) {
+    [rawCommandService executeCommand:selectYubiKeyApplicationAPDU configuration:[YKFKeyCommandConfiguration fastCommandCofiguration] completion:^(NSData *response, NSError *error) {
 
         NSError *returnedError = nil;
         

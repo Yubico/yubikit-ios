@@ -29,7 +29,7 @@
 + (YKFKeyCommandConfiguration *)defaultCommandCofiguration {
     YKFKeyCommandConfiguration *configuration = [[YKFKeyCommandConfiguration alloc] init];
 
-    configuration.commandTime = 0.2;
+    configuration.commandTime = 0.002;
     configuration.commandTimeout = 10;
     configuration.commandProbeTime = 0.05;
     
@@ -39,7 +39,7 @@
 + (YKFKeyCommandConfiguration *)longCommandCofiguration {
     YKFKeyCommandConfiguration *configuration = [[YKFKeyCommandConfiguration alloc] init];
     
-    configuration.commandTime = 2;
+    configuration.commandTime = 0.2;
     configuration.commandTimeout = 30;
     configuration.commandProbeTime = 0.05;
     
