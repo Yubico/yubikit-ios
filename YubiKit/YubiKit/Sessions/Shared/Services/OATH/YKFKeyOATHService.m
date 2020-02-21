@@ -64,6 +64,8 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
  */
 @property (nonatomic) YKFKeyOATHSelectApplicationResponse *cachedSelectApplicationResponse;
 
+@property (nonatomic, readwrite) YKFKeyVersion* version;
+
 @end
 
 @implementation YKFKeyOATHService
@@ -402,6 +404,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
                     if (response) {
                         // Cache the response.
                         strongSelf.cachedSelectApplicationResponse = response;
+                        strongSelf.version = response.version;
                         completion(response, nil);
                     } else {
                         completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeBadApplicationSelectionResponse]);

@@ -23,6 +23,7 @@
 #import "YKFKeyOATHValidateRequest.h"
 #import "YKFKeyOATHListResponse.h"
 #import "YKFKeyOATHCalculateAllResponse.h"
+#import "YKFKeyVersion.h"
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
@@ -99,6 +100,15 @@ NS_ASSUME_NONNULL_BEGIN
     Defines the interface for YKFKeyOATHService.
  */
 @protocol YKFKeyOATHServiceProtocol<NSObject>
+
+/*!
+@property version
+ @abstract
+   Firmware version that returned with selection of OATH service on YubiKey.
+ NOTE:
+   The property is available when key gets disconnected and any request was executed, otherwise nil
+*/
+@property (nonatomic, readonly, nullable) YKFKeyVersion* version;
 
 /*!
  @method executePutRequest:completion:
