@@ -211,7 +211,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
     // This request does not reuse the select applet to get the salt for building the APDU and not ending in error.
     ykf_weak_self();
-    [self selectOATHApplicationWithCompletion:^(YKFKeyOATHSelectApplicationResponse *response, NSError *error) {
+    [self selectOATHApplicationWithCompletion:^(YKFKeyOATHSelectApplicationResponse * _Nullable response, NSError * _Nullable error) {
         ykf_safe_strong_self();
         if (error) {
             completion(error);
@@ -243,7 +243,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
     // This request does not reuse the select applet to get the salt for building the APDU and not ending in error.
     ykf_weak_self();
-    [self selectOATHApplicationWithCompletion:^(YKFKeyOATHSelectApplicationResponse *response, NSError *error) {
+    [self selectOATHApplicationWithCompletion:^(YKFKeyOATHSelectApplicationResponse * _Nullable response, NSError * _Nullable error) {
         ykf_safe_strong_self();
         if (error) {
             completion(error);
@@ -294,7 +294,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     [self.delegate keyService:self willExecuteRequest:request];
     
     ykf_weak_self();
-    [self selectOATHApplicationWithCompletion:^(YKFKeyOATHSelectApplicationResponse *response, NSError *error) {
+    [self selectOATHApplicationWithCompletion:^(YKFKeyOATHSelectApplicationResponse * _Nullable response, NSError * _Nullable error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
@@ -376,7 +376,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 #pragma mark - Application Selection
 
-- (void)selectOATHApplicationWithCompletion:(void (^)(YKFKeyOATHSelectApplicationResponse* _Nullable, NSError* _Nullable))completion {
+- (void)selectOATHApplicationWithCompletion:(YKFKeyOATHSelectApplicationCompletionBlock)completion {
     YKFAPDU *selectOATHApplicationAPDU = [[YKFSelectOATHApplicationAPDU alloc] init];
     
     // Return cached response if available.
@@ -404,7 +404,6 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
                     if (response) {
                         // Cache the response.
                         strongSelf.cachedSelectApplicationResponse = response;
-                        strongSelf.version = response.version;
                         completion(response, nil);
                     } else {
                         completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeBadApplicationSelectionResponse]);
