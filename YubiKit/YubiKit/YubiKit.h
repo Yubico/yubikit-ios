@@ -43,6 +43,7 @@
 #import "YKFKeyOATHService.h"
 #import "YKFKeyRawCommandService.h"
 #import "YKFKeyChallengeResponseService.h"
+#import "YKFKeyMGMTService.h"
 
 #import "YKFSlot.h"
 

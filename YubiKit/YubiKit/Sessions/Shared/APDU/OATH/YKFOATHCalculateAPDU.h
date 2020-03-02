@@ -14,6 +14,7 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
+#import "YKFKeyOATHCalculateRequest.h"
 
 @class YKFKeyOATHCalculateRequest;
 
@@ -21,10 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFOATHCalculateAPDU: YKFAPDU
 
-/*
- Note: Timestamp is passed to make sure the same exact timestamp is shared between the request and the response.
- */
-- (nullable instancetype)initWithRequest:(YKFKeyOATHCalculateRequest *)request timestamp:(NSDate *)timestamp NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithRequest:(YKFKeyOATHCalculateRequest *)request NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

@@ -28,6 +28,7 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHSelectApplicationResponseTag) {
 @property (nonatomic, readwrite) NSData *selectID;
 @property (nonatomic, readwrite) NSData *challenge;
 @property (nonatomic, assign, readwrite) YKFOATHCredentialAlgorithm algorithm;
+@property (nonatomic, readwrite) YKFKeyVersion *version;
 
 @end
 
@@ -48,14 +49,19 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHSelectApplicationResponseTag) {
         YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
         
         UInt8 lengthOfVersion = bytes[readIndex];
-        YKFAssertAbortInit(lengthOfVersion > 0);
+        YKFAssertAbortInit(lengthOfVersion >= 3);
 
+        ++readIndex;
         NSRange versionRange = NSMakeRange(readIndex, lengthOfVersion);
         YKFAssertAbortInit([responseData ykf_containsRange:versionRange]);
 
-        UInt8 majorVersion = bytes[readIndex];
+        NSData *version = [responseData subdataWithRange:versionRange];
+        UInt8 *versionBytes = (UInt8 *)version.bytes;
+        YKFAssertAbortInit([responseData ykf_containsRange:versionRange]);
 
-        readIndex += lengthOfVersion + 1;
+        self.version = [[YKFKeyVersion alloc] initWithBytes:versionBytes[0] minor:versionBytes[1] micro:versionBytes[2]];
+
+        readIndex += lengthOfVersion;
         YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
         
         UInt8 nameTag = bytes[readIndex];
@@ -91,7 +97,7 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHSelectApplicationResponseTag) {
             YKFAssertAbortInit([responseData ykf_containsRange:challengeRange]);
             self.challenge = [responseData subdataWithRange:NSMakeRange(readIndex, challengeLength)];
             
-            if (majorVersion > 3) {
+            if (self.version.major > 3) {
                 // old NEO versions didn't have algorithm tag
                 readIndex += challengeLength;
                 YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);

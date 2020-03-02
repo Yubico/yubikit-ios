@@ -23,11 +23,7 @@ The YubiKit Demo application shows how the library is linked with a project so i
 
 ## Integrate the library
 
-This section is intended for developers that want to start with their own iOS app and add  the YubiKit manually.
-
-<details><summary><strong>Setup instructions</strong></summary><p>
-
-YubiKit SDK is currently available as a library and can be added to any new or existing iOS Xcode project through Cocoapods or manual setup.
+YubiKit SDK is available as a library and can be added to any new or existing iOS Xcode project through Cocoapods or manual setup.
 
 **[Cocoapods Setup]**
 
@@ -84,7 +80,8 @@ Click + and add the ``libYubiKit.a``
 **Bridging-Header**
 
 6. If your target project is written in Swift, you need to provide a bridge to the YubiKit library by adding ``#import <YubiKit/YubiKit.h>`` to your bridging header. If a bridging header does not exist within your project, you can add one by following this [documentation](https://developer.apple.com/library/content/documentation/Swift/Conceptual/BuildingCocoaApps/MixandMatch.html).
-    
+
+<details><summary><strong>Additional instructions</strong></summary><p>
 ---
 
 **Enable Custom Lightning Protocol**
@@ -125,7 +122,7 @@ To add support for NFC YubiKeys in your application, follow these steps:
     <string>A0000006472F0001</string> // FIDO/U2F AID
     <string>A0000005272101</string>   // OATH AID
     <string>A000000308</string>       // PIV AID
-    <string>A000000527200101</string> // YubiKey application/OTP AID
+    <string>A000000527200101</string> // YubiKey application/OTP AID (for HMAC SHA1 challenge-response)
 </array>
 </plist>
 ```

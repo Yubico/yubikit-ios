@@ -94,6 +94,14 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     [chalRespTests addObject:hmacChalSlot1RespTestEntry];
 
     //// -------------------------------------------------------------------------------------------------------------------------------------------------------
+    //// Management tests
+    NSMutableArray *mgmtTests = [[NSMutableArray alloc] init];
+
+    NSValue *selector = [NSValue valueWithPointer:@selector(test_WhenDisablingOTPApplicationOverNFCandUSB)];
+    NSArray *testEntry = @[@"MGMT read and write", @"Enables/disables YubiKey interfaces", selector];
+    [mgmtTests addObject:testEntry];
+
+    //// -------------------------------------------------------------------------------------------------------------------------------------------------------
     //// PIV tests
     NSMutableArray *pivTests = [[NSMutableArray alloc] init];
 
@@ -161,6 +169,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
                       @[@"Application version tests", applicationVersionTests],
                       @[@"OATH Tests", oathTests],
                       @[@"Chal/Resp Tests", chalRespTests],
+                      @[@"Management Tests", mgmtTests],
                       @[@"PIV Tests", pivTests],
                       @[@"Touch Tests", touchTests],
                       @[@"FIDO2 Tests", fido2Tests]];
@@ -408,6 +417,59 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
 
         NSData *respData = [result subdataWithRange:NSMakeRange(0, result.length - 2)];
         [TestSharedLogger.shared logMessage:@"Response data:\n%@", respData];
+    }];
+}
+
+#pragma mark MGMT (management) Tests
+
+- (void) test_WhenDisablingOTPApplicationOverNFCandUSB {
+    YKFKeyMGMTService *service = [[YKFKeyMGMTService alloc] init];
+    [service readConfigurationWithCompletion:^(YKFKeyMGMTReadConfigurationResponse *selectionResponse, NSError *error) {
+        if (error) {
+            [TestSharedLogger.shared logError: @"When reading configurations: %@", error.localizedDescription];
+            return;
+        }
+        YKFMGMTInterfaceConfiguration *configuration = selectionResponse.configuration;
+        
+        YKFMGMTTransportType transport = YKFMGMTTransportTypeNFC;
+        if(![configuration isSupported:YKFMGMTApplicationTypeOTP overTransport:transport]) {
+            [TestSharedLogger.shared logMessage:@"OTP over NFC is not supported"];
+            transport = YKFMGMTTransportTypeUSB;
+        }
+        
+        BOOL isOTPenabled = [configuration isEnabled:YKFMGMTApplicationTypeOTP overTransport:transport];
+        if (isOTPenabled) {
+            [TestSharedLogger.shared logMessage:@"OTP is enabled"];
+        } else {
+            [TestSharedLogger.shared logMessage:@"OTP is disabled"];
+        }
+
+        [configuration setEnabled:!isOTPenabled application:YKFMGMTApplicationTypeOTP overTransport:transport];
+        
+        [TestSharedLogger.shared logMessage:@"Updating configuration"];
+        [service writeConfiguration:configuration completion:^(NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logError: @"When writing configurations: %@", error.localizedDescription];
+                return;
+            }
+            
+            [TestSharedLogger.shared logMessage:@"Configuration has been updated."];
+
+            [service readConfigurationWithCompletion:^(YKFKeyMGMTReadConfigurationResponse *selectionResponse, NSError *error) {
+                if (error) {
+                    [TestSharedLogger.shared logError: @"When reading configurations: %@", error.localizedDescription];
+                    return;
+                }
+                YKFMGMTInterfaceConfiguration *configuration = selectionResponse.configuration;
+
+                BOOL isOTPenabled = [configuration isEnabled:YKFMGMTApplicationTypeOTP overTransport:transport];
+                if (isOTPenabled) {
+                    [TestSharedLogger.shared logMessage:@"OTP is enabled"];
+                } else {
+                    [TestSharedLogger.shared logMessage:@"OTP is disabled"];
+                }
+            }];
+        }];
     }];
 }
 

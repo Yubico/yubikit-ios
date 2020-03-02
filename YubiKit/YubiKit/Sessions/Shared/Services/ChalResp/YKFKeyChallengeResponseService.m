@@ -46,7 +46,7 @@
     }
     
     if (rawCommandService == nil) {
-        completion(nil, [YKFKeyChallengeResponseError errorWithCode:YKFKeyChallengeResponseNoConnection]);
+        completion(nil, [YKFKeyChallengeResponseError errorWithCode:YKFKeyChallengeResponseErrorCodeNoConnection]);
         return;
     }
     
@@ -78,7 +78,7 @@
                     if (response.length > 2) {
                         completion([YKFKeyService dataFromKeyResponse:response], nil);
                     } else {
-                        completion(nil, [YKFKeyChallengeResponseError errorWithCode:YKFKeyChallengeResponseEmptyResponse]);
+                        completion(nil, [YKFKeyChallengeResponseError errorWithCode:YKFKeyChallengeResponseErrorCodeEmptyResponse]);
                     }
                     break;
                     

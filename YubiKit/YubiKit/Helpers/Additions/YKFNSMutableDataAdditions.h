@@ -32,6 +32,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ykf_appendEntryWithTag:(UInt8)tag data:(NSData *)data;
 
 /*
+Appends [tag] + 0x02 + 2 bytes to the mutable data buffer.
+*/
+- (void)ykf_appendShortWithTag:(UInt8)tag data:(NSUInteger)data;
+
+/*
  Appends a tag with the data = [header bytes] + [data];
  */
 - (void)ykf_appendEntryWithTag:(UInt8)tag headerBytes:(NSArray *)headerBytes data:(NSData *)data;

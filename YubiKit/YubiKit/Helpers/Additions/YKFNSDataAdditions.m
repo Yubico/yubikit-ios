@@ -255,7 +255,7 @@
 
 #pragma mark - HEX string conversion
 
-@implementation NSData (NSData_Conversion)
+@implementation NSData (NSData_HexConversion)
 
 - (NSString *)ykf_hexadecimalString
 {
@@ -276,3 +276,25 @@
 
 @end
 
+#pragma mark - INT conversion
+
+@implementation NSData (NSData_IntConversion)
+
+- (NSUInteger)ykf_integerValue
+{
+    UInt8 *dataBytes = (UInt8 *)self.bytes;
+    if (!dataBytes) {
+        return 0;
+    }
+    
+    NSUInteger value = 0;
+    NSUInteger dataLength  = [self length];
+    for (int i = 0; i < dataLength; ++i) {
+        value <<= 8;
+        value += dataBytes[i];
+    }
+
+    return value;
+}
+
+@end

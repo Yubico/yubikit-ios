@@ -41,7 +41,7 @@
     if (self) {
         self.credential = credential;
         self.timestamp = timestamp;
-        self.apdu = [[YKFOATHCalculateAPDU alloc] initWithRequest:self timestamp:self.timestamp];
+        self.apdu = [[YKFOATHCalculateAPDU alloc] initWithRequest:self];
     }
     return self;
 }

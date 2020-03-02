@@ -61,4 +61,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+
+@interface NSData (NSData_IntConversion)
+
+/*!
+@method ykf_integerValue:
+
+@return
+   An integer value from data object.
+*/
+- (NSUInteger)ykf_integerValue;
+
+@end
+
 NS_ASSUME_NONNULL_END

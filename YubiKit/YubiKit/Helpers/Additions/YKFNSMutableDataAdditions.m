@@ -31,6 +31,15 @@
     [self appendData:data];
 }
 
+- (void)ykf_appendShortWithTag:(UInt8)tag data:(NSUInteger)data {
+    YKFParameterAssertReturn(tag > 0);
+    NSMutableData *shortData =  [[NSMutableData alloc] init];
+    [shortData ykf_appendByte: data & 0xff00 >> 8];
+    [shortData ykf_appendByte: data & 0xff];
+    [self ykf_appendEntryWithTag:tag data:shortData];
+}
+
+
 - (void)ykf_appendEntryWithTag:(UInt8)tag headerBytes:(NSArray *)headerBytes data:(NSData *)data {
     YKFParameterAssertReturn(tag > 0);
     YKFParameterAssertReturn(headerBytes.count > 0);

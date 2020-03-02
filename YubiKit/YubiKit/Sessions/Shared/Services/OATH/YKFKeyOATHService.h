@@ -23,6 +23,8 @@
 #import "YKFKeyOATHValidateRequest.h"
 #import "YKFKeyOATHListResponse.h"
 #import "YKFKeyOATHCalculateAllResponse.h"
+#import "YKFKeyOATHSelectApplicationResponse.h"
+#import "YKFKeyVersion.h"
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
@@ -85,6 +87,21 @@ typedef void (^YKFKeyOATHServiceListCompletionBlock)
  */
 typedef void (^YKFKeyOATHServiceCalculateAllCompletionBlock)
     (YKFKeyOATHCalculateAllResponse* _Nullable response, NSError* _Nullable error);
+
+/*!
+ @abstract
+    Response block for [selectOATHApplicationWithCompletion:] which provides the result for the execution
+    of the Calculate All request.
+ 
+ @param response
+    The response of the request when it was successful. In case of error this parameter is nil.
+ 
+ @param error
+    In case of a failed request this parameter contains the error. If the request was successful this
+    parameter is nil.
+ */
+typedef void (^YKFKeyOATHSelectApplicationCompletionBlock)
+    (YKFKeyOATHSelectApplicationResponse* _Nullable response, NSError* _Nullable error);
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
@@ -262,6 +279,22 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)executeValidateRequest:(YKFKeyOATHValidateRequest *)request
                     completion:(YKFKeyOATHServiceCompletionBlock)completion;
+/*!
+ @method selectOATHApplicationWithCompletion:
+ 
+ @abstract
+    Sends to the key an OATH select request. This is the first request that is executed before sending any other request be defualt.
+    This method can be executed to receive response on selection.
+ 
+ @param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread. If the intention is to update the UI, dispatch the results
+    on the main thread to avoid an UIKit assertion.
+ 
+ @note
+    This method is thread safe and can be invoked from any thread (main or a background thread).
+ */
+- (void)selectOATHApplicationWithCompletion:(YKFKeyOATHSelectApplicationCompletionBlock)completion;
 
 @end
 
