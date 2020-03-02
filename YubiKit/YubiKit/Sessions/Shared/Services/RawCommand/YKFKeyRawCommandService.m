@@ -15,7 +15,6 @@
 #import "YKFKeyRawCommandService.h"
 #import "YKFKeyRawCommandService+Private.h"
 #import "YKFAccessoryConnectionController.h"
-#import "YKFKeyCommandConfiguration.h"
 #import "YKFKeySessionError.h"
 #import "YKFBlockMacros.h"
 #import "YKFAssert.h"
@@ -30,7 +29,6 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
 @interface YKFKeyRawCommandService()
 
 @property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
-@property (nonatomic) YKFKeyCommandConfiguration *commandExecutionConfiguration;
 
 @end
 
@@ -42,21 +40,20 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
     self = [super init];
     if (self) {
         self.connectionController = connectionController;
-        self.commandExecutionConfiguration = [YKFKeyCommandConfiguration defaultCommandCofiguration];
     }
     return self;
 }
 
 #pragma mark - Command Execution
 
-- (void)executeCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandServiceResponseBlock)completion {
+- (void)executeCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandServiceResponseBlock)completion {
     YKFParameterAssertReturn(apdu);
     YKFParameterAssertReturn(completion);
     
     [self.delegate keyService:self willExecuteRequest:nil];
     
     [self.connectionController execute:apdu
-                         configuration:self.commandExecutionConfiguration
+                         configuration:configuration
                             completion:^(NSData *response, NSError * error, NSTimeInterval executionTime) {
         if (error) {
             completion(nil, error);
@@ -66,7 +63,11 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
     }];
 }
 
-- (void)executeSyncCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandServiceResponseBlock)completion {
+- (void)executeCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandServiceResponseBlock)completion {
+    [self executeCommand:apdu configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:completion];
+}
+
+- (void)executeSyncCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandServiceResponseBlock)completion {
     YKFParameterAssertReturn(apdu);
     YKFParameterAssertReturn(completion);
     
@@ -77,9 +78,9 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
     ykf_weak_self();
-    [self.connectionController execute:apdu
-                         configuration:self.commandExecutionConfiguration
-                            completion:^(NSData *response, NSError * error, NSTimeInterval executionTime) {
+    [self executeCommand:apdu
+           configuration:configuration
+             completion:^(NSData *response, NSError * error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
@@ -99,4 +100,7 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
     }
 }
 
+- (void)executeSyncCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandServiceResponseBlock)completion {
+    [self executeSyncCommand:apdu configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:completion];
+}
 @end
