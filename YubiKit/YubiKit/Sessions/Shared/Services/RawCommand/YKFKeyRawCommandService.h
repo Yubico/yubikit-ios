@@ -14,6 +14,7 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFKeyService.h"
+#import "YKFKeyCommandConfiguration.h"
 #import "YKFAPDU.h"
 
 /**
@@ -50,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
     Defines the interface for YKFKeyRawCommandService.
  */
 @protocol YKFKeyRawCommandServiceProtocol<NSObject>
-
+   
 /*!
  @method executeCommand:completion:
  
@@ -90,6 +91,60 @@ NS_ASSUME_NONNULL_BEGIN
     resume its execution.
  */
 - (void)executeSyncCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandServiceResponseBlock)completion;
+
+/*!
+@method executeCommand:completion:
+
+@abstract
+    Sends to the key a raw APDU command to be executed by the key. The request is performed asynchronously
+    on a background execution queue.
+
+@param apdu
+    The APDU command to be executed.
+
+@param configuration
+    Allows to specify some configurations for command execution:
+    1) The expected avarage execution time for the command.
+    2) The timeout for a command.
+    3) The time to wait between data availabe checks.
+    Default configuration should work for commands in general, but if you'd like to speed up communication or getting timedout on some heavy operations specify this configurations to fast command or long one.
+
+@param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread.
+
+@note:
+    This method is thread safe and can be invoked from any thread (main or a background thread).
+*/
+- (void)executeCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandServiceResponseBlock)completion;
+
+/*!
+ @method executeSyncCommand:completion:
+ 
+ @abstract
+    Sends synchronously to the key a raw APDU command to be executed. Calling this method will block the
+    execution of the calling thread until the request is fulfilled by the key or if it's timing out.
+
+ @discussion
+    This method should never be called from the main thread. If the application calls
+    it from the main thread, an assertion will be fired in debug configurations.
+ 
+ @param apdu
+    The APDU command to be executed.
+ 
+ @param configuration
+    Allows to specify some configurations for command execution:
+    1) The expected avarage execution time for the command.
+    2) The timeout for a command.
+    3) The time to wait between data availabe checks.
+    Default configuration should work for commands in general, but if you'd like to speed up communication or getting timedout on some heavy operations specify this configurations to fast command or long one.
+ 
+ @param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread. After the completion block is executed the calling thread will
+    resume its execution.
+ */
+- (void)executeSyncCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandServiceResponseBlock)completion;
 
 @end
 

@@ -51,6 +51,7 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHSelectApplicationResponseTag) {
         UInt8 lengthOfVersion = bytes[readIndex];
         YKFAssertAbortInit(lengthOfVersion >= 3);
 
+        ++readIndex;
         NSRange versionRange = NSMakeRange(readIndex, lengthOfVersion);
         YKFAssertAbortInit([responseData ykf_containsRange:versionRange]);
 
@@ -60,7 +61,7 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHSelectApplicationResponseTag) {
 
         self.version = [[YKFKeyVersion alloc] initWithBytes:versionBytes[0] minor:versionBytes[1] micro:versionBytes[2]];
 
-        readIndex += lengthOfVersion + 1;
+        readIndex += lengthOfVersion;
         YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
         
         UInt8 nameTag = bytes[readIndex];

@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFKeyCommandConfiguration: NSObject
 
-/// The expected avarage execution time for the command.
+/// The expected avarage execution time for the command. The timeout between sending command to the device and receiving response
 @property (nonatomic, assign) NSTimeInterval commandTime;
 
 /// The timeout for a command.
