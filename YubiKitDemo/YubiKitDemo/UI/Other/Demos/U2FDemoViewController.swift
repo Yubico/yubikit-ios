@@ -72,7 +72,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
             }
             guard let keyHandle = keyHandle else {
                 self.log(message: "The Register request did not return a key handle.")
-                self.setDemoButton(enabled: true)
+                self.finishDemo()
                 return
             }
             
@@ -82,15 +82,25 @@ class U2FDemoViewController: OtherDemoRootViewController {
                 guard let self = self else {
                     return
                 }
+                self.finishDemo()
+
                 guard success else {
                     self.log(message: "The Sign request did not return a signature.")
-                    self.setDemoButton(enabled: true)
                     return
                 }
                 self.log(message: "The Sign request was successful.")
-                self.setDemoButton(enabled: true)
             })
         }
+    }
+    
+    private func finishDemo() {
+
+        // Stop the session to dismiss the Core NFC system UI.
+        if #available(iOS 13.0, *) {
+            YubiKitManager.shared.nfcSession.stopIso7816Session()
+        }
+        
+        self.setDemoButton(enabled: true)
     }
     
     private func setDemoButton(enabled: Bool) {
@@ -100,13 +110,6 @@ class U2FDemoViewController: OtherDemoRootViewController {
             }
             self.runDemoButton.isEnabled = enabled
             self.runDemoButton.backgroundColor = enabled ? NamedColor.yubicoGreenColor : UIColor.lightGray
-            
-            // Stop the session to dismiss the Core NFC system UI.
-            if #available(iOS 13.0, *) {
-                if (enabled) {
-                    YubiKitManager.shared.nfcSession.stopIso7816Session()
-                }
-            }
         }
     }
 
@@ -151,6 +154,8 @@ class U2FDemoViewController: OtherDemoRootViewController {
                 // so we need to make sure that we handle case when service for nfcSession is nil
                 self.runDemo(keyService: YubiKitManager.shared.nfcSession.u2fService)
             }
+        case .closed:
+            self.setDemoButton(enabled: true)
         default:
             break
         }

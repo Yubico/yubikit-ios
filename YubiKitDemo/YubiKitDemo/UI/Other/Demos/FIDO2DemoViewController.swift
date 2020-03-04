@@ -60,9 +60,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             }
             fido2Service = service
         }
-                
 
-        
         switch selectedOperation {
         case .GetInfo:
             runGetInfoDemo(fido2Service: fido2Service)
@@ -81,6 +79,16 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         default:
             break
         }
+    }
+    
+    private func finishDemo() {
+
+        // Stop the session to dismiss the Core NFC system UI.
+        if #available(iOS 13.0, *) {
+            YubiKitManager.shared.nfcSession.stopIso7816Session()
+        }
+        
+        self.setDemoButtons(enabled: true)
     }
     
     @IBAction func runDemoButtonPressed(_ sender: Any) {
@@ -133,7 +141,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         })
         actionSheet.addAction(UIAlertAction(title: "Change PIN", style: .default) { [weak self]  (action) in
             self?.selectedOperation = .PinChange
-            self?.runDemo()
+            self?.runChangePin()
         })
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel) { [weak self] (action) in
             self?.dismiss(animated: true, completion: nil)
@@ -161,15 +169,6 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             
             self.pinManagementButton.isEnabled = enabled
             self.pinManagementButton.backgroundColor = enabled ? NamedColor.yubicoGreenColor : UIColor.lightGray
-
-            // Stop the session to dismiss the Core NFC system UI.
-            if #available(iOS 13.0, *) {
-                if (enabled) {
-                    YubiKitManager.shared.nfcSession.stopIso7816Session()
-                }
-            } else {
-                // Fallback on earlier versions
-            }
         }
     }
     
@@ -194,17 +193,12 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
                 }
             }
             self.log(message: "PIN verification canceled.")
+
             self.setDemoButtons(enabled: true)
         }
     }
     
     private func verify(fido2Service: YKFKeyFIDO2ServiceProtocol, pin: String) {
-        let accessorySession = YubiKitManager.shared.accessorySession
-        guard let fido2Service = accessorySession.fido2Service else {
-            setDemoButtons(enabled: true)
-            return
-        }
-                
         fido2Service.executeGetPinRetries { [weak self] (retries, error) in
             guard let self = self else {
                 return
@@ -228,14 +222,14 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
                 guard let self = self else {
                     return
                 }
+                self.finishDemo()
+
                 guard error == nil else {
                     self.log(message: "Error while executing Verify PIN request: \((error! as NSError).code) - \(error!.localizedDescription)")
-                    self.setDemoButtons(enabled: true)
                     return
                 }
                 
                 self.log(message: "Verify PIN request was successful.")
-                self.setDemoButtons(enabled: true)
             }
         }
     }
@@ -272,15 +266,15 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             guard let self = self else {
                 return
             }
+
+            self.finishDemo()
+
             guard error == nil else {
                 self.log(message: "Error while executing Set PIN request: \((error! as NSError).code) - \(error!.localizedDescription)")
-                self.setDemoButtons(enabled: true)
                 return
             }
             
             self.log(message: "Set PIN request was successful.")
-            
-            self.setDemoButtons(enabled: true)
         }
     }
     
@@ -320,15 +314,15 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             guard let self = self else {
                 return
             }
+
+            self.finishDemo()
+
             guard error == nil else {
                 self.log(message: "Error while executing Change PIN request: \((error! as NSError).code) - \(error!.localizedDescription)")
-                self.setDemoButtons(enabled: true)
                 return
             }
             
             self.log(message: "Change PIN request was successful.")
-            
-            self.setDemoButtons(enabled: true)
         }
     }
     
@@ -342,15 +336,16 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             guard let self = self else {
                 return
             }
+            
+            self.finishDemo()
+
             guard error == nil else {
                 self.log(message: "Error while executing Get Info request: \((error! as NSError).code) - \(error!.localizedDescription)")
-                self.setDemoButtons(enabled: true)
                 return
             }
             
             self.log(message: "Get Info request was successful.\n")
             self.logFIDO2GetInfo(response: response!)
-            self.setDemoButtons(enabled: true)
         }
     }
     
@@ -421,13 +416,14 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             guard let self = self else {
                 return
             }
+            
             guard error == nil else {
                 self.log(message: "Error while executing Make Credential request: \((error! as NSError).code) - \(error!.localizedDescription)")
-                self.setDemoButtons(enabled: true)
+                self.finishDemo()
                 return
             }
             guard let authenticatorData = response!.authenticatorData else {
-                self.setDemoButtons(enabled: true)
+                self.finishDemo()
                 return
             }
             
@@ -455,30 +451,27 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
              4. Get the assertion (signature).
              */
             
-            self.getAssertionWith(request: getAssertionRequest)
+            self.getAssertionWith(fido2Service: fido2Service, request: getAssertionRequest)
         }
     }
     
-    private func getAssertionWith(request: YKFKeyFIDO2GetAssertionRequest) {
-        guard let fido2Service = YubiKitManager.shared.accessorySession.fido2Service else {
-            setDemoButtons(enabled: true)
-            return
-        }
-        
+    private func getAssertionWith(fido2Service: YKFKeyFIDO2ServiceProtocol, request: YKFKeyFIDO2GetAssertionRequest) {
+
         fido2Service.execute(request) { [weak self] (response, error) in
             guard let self = self else {
                 return
             }
+
+            self.finishDemo()
+
             guard error == nil else {
                 self.log(message: "Error while executing Get Assertion request: \((error! as NSError).code) - \(error!.localizedDescription)")
-                self.setDemoButtons(enabled: true)
                 return
             }
             
             self.log(message: "Get Assertion was successful.\n")
             self.logFIDO2GetAssertion(response: response!)
             
-            self.setDemoButtons(enabled: true)
         }
     }
     
@@ -496,14 +489,15 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             guard let self = self else {
                 return
             }
+
+            self.finishDemo()
+
             guard error == nil else {
                 self.log(message: "Error while executing Reset request: \((error! as NSError).code) - \(error!.localizedDescription)")
-                self.setDemoButtons(enabled: true)
                 return
             }
             
             self.log(message: "Reset request was successful.")
-            self.setDemoButtons(enabled: true)
         }
     }
     
@@ -514,6 +508,24 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         if sessionState == .closed {
             logTextView.text = nil
             setDemoButtons(enabled: true)
+        } else if sessionState == .open {
+            if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
+                guard #available(iOS 13.0, *) else {
+                    fatalError()
+                }
+            
+                DispatchQueue.global(qos: .default).async { [weak self] in
+                    // if NFC UI is visible we consider the button is pressed
+                    // and we run demo as soon as 5ci connected
+                    if (YubiKitManager.shared.nfcSession.iso7816SessionState != .closed) {
+                        guard let self = self else {
+                                return
+                        }
+                        YubiKitManager.shared.nfcSession.stopIso7816Session()
+                        self.runDemo()
+                    }
+                }
+            }
         }
     }
     
@@ -531,6 +543,8 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
                 // so we need to make sure that we handle case when service for nfcSession is nil
                 self.runDemo()
             }
+        case .closed:
+            self.setDemoButtons(enabled: true)
         default:
             break
         }
