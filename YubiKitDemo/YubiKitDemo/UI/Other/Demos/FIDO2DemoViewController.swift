@@ -48,6 +48,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             }
             guard let service = YubiKitManager.shared.nfcSession.fido2Service else {
                 log(message: "The session with the key is closed. Plugin the key or tap over NFC reader.")
+                YubiKitManager.shared.nfcSession.startIso7816Session()
                 return
             }
             fido2Service = service
@@ -83,6 +84,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     }
     
     @IBAction func runDemoButtonPressed(_ sender: Any) {
+        logTextView.text = nil
         let actionSheet = UIAlertController(title: "Run Demo", message: "Select which demo you want to run.", preferredStyle: .actionSheet)
 
         actionSheet.addAction(UIAlertAction(title: "Get Info Demo", style: .default) { [weak self]  (action) in
@@ -159,13 +161,21 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             
             self.pinManagementButton.isEnabled = enabled
             self.pinManagementButton.backgroundColor = enabled ? NamedColor.yubicoGreenColor : UIColor.lightGray
+
+            // Stop the session to dismiss the Core NFC system UI.
+            if #available(iOS 13.0, *) {
+                if (enabled) {
+                    YubiKitManager.shared.nfcSession.stopIso7816Session()
+                }
+            } else {
+                // Fallback on earlier versions
+            }
         }
     }
     
     // MARK: - Verify PIN
     
     private func runVerifyPin() {
-        logTextView.text = nil
         setDemoButtons(enabled: false)
         
         let pinInputController = FIDO2PinInputController()
@@ -233,9 +243,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     // MARK: - Set PIN
     
     private func runSetPin() {
-        logTextView.text = nil
         setDemoButtons(enabled: false)
-        
         let pinInputController = FIDO2PinInputController()
         pinInputController.showPinInputController(presenter: self, type: .setPin) { [weak self](pin, pinConfirmation, _, setPin) in
             guard let self = self else {
@@ -279,7 +287,6 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     // MARK: - Change PIN
     
     private func runChangePin() {
-        logTextView.text = nil
         setDemoButtons(enabled: false)
         
         let pinInputController = FIDO2PinInputController()
@@ -304,7 +311,6 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     }
     
     private func change(fido2Service: YKFKeyFIDO2ServiceProtocol, to newPin: String, oldPin: String) {
-        logTextView.text = nil
         setDemoButtons(enabled: false)
         
         guard let changePinRequest = YKFKeyFIDO2ChangePinRequest(newPin: newPin, oldPin: oldPin) else {
@@ -329,7 +335,6 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     // MARK: - GetInfo Demo
     
     private func runGetInfoDemo(fido2Service: YKFKeyFIDO2ServiceProtocol) {
-        logTextView.text = nil
         setDemoButtons(enabled: false)
                 
         log(message: "Executing Get Info request...")
@@ -345,7 +350,6 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             
             self.log(message: "Get Info request was successful.\n")
             self.logFIDO2GetInfo(response: response!)
-            
             self.setDemoButtons(enabled: true)
         }
     }
@@ -353,7 +357,6 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     // MARK: - ES256, EdDSA Demos
     
     private func runECCDemo(fido2Service: YKFKeyFIDO2ServiceProtocol) {
-        logTextView.text = nil
         setDemoButtons(enabled: false)
         
         log(message: "Executing ECC Demo...")
@@ -369,7 +372,6 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     }
     
     private func runEdDSADemo(fido2Service: YKFKeyFIDO2ServiceProtocol) {
-        logTextView.text = nil
         setDemoButtons(enabled: false)
         
         log(message: "Executing EdDSA (Ed25519) Demo...")
@@ -483,7 +485,6 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     // MARK: - FIDO2 Application Reset
     
     private func runApplicationReset(fido2Service: YKFKeyFIDO2ServiceProtocol) {
-        logTextView.text = nil
         setDemoButtons(enabled: false)
         
         log(message: "(!) The Reset operation must be executed within 5 seconds after the key was powered up. Otherwise the key will return an error.")
@@ -529,8 +530,6 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
                 // NOTE: session can be closed during the execution of demo on background thread,
                 // so we need to make sure that we handle case when service for nfcSession is nil
                 self.runDemo()
-                // Stop the session to dismiss the Core NFC system UI.
-                YubiKitManager.shared.nfcSession.stopIso7816Session()
             }
         default:
             break
