@@ -40,8 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
  @param configuration
     The configuration for the request. The configuration contains list of interfaces that needs to be on and off.
     This configuration has already valid set of iterface changes that ineed to be applied.
+ 
+ @param withReboot
+    The device reboot after setting configuration.
  */
-- (nullable instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration;
+- (nullable instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration withReboot: (BOOL) withReboot;
 
 @end
 

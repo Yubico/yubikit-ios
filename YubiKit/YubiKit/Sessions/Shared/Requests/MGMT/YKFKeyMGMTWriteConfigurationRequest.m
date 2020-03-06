@@ -19,12 +19,15 @@
 
 @implementation YKFKeyMGMTWriteConfigurationRequest
 
-- (instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration {
+@synthesize reboot = _reboot;
+
+- (instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration withReboot: (BOOL) withReboot {
     YKFAssertAbortInit(configuration);
     
     self = [super init];
     if (self) {
         self.configuration = configuration;
+        self.reboot = withReboot;
         self.apdu = [[YKFMGMTWriteAPDU alloc] initWithRequest:self];
     }
     return self;

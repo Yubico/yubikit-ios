@@ -86,7 +86,9 @@ typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
     YKFParameterAssertReturn(configuration);
     YKFParameterAssertReturn(configuration);
     
-    YKFKeyMGMTWriteConfigurationRequest* request = [[YKFKeyMGMTWriteConfigurationRequest alloc] initWithConfiguration:configuration];
+    YKFKeyMGMTWriteConfigurationRequest* request = [[YKFKeyMGMTWriteConfigurationRequest alloc]
+                                                    initWithConfiguration: configuration
+                                                    withReboot: TRUE];
 
     [self executeRequest: request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         completion(error);
