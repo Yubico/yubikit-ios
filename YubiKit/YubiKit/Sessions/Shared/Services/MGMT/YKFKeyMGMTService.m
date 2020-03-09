@@ -82,13 +82,13 @@ typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
     }];
 }
 
-- (void) writeConfiguration:(YKFMGMTInterfaceConfiguration*) configuration completion: (nonnull YKFKeyMGMTServiceWriteCompletionBlock) completion {
+- (void) writeConfiguration:(YKFMGMTInterfaceConfiguration*) configuration withReboot: (BOOL) reboot completion: (nonnull YKFKeyMGMTServiceWriteCompletionBlock) completion {
     YKFParameterAssertReturn(configuration);
     YKFParameterAssertReturn(configuration);
     
     YKFKeyMGMTWriteConfigurationRequest* request = [[YKFKeyMGMTWriteConfigurationRequest alloc]
                                                     initWithConfiguration: configuration
-                                                    withReboot: TRUE];
+                                                    withReboot: reboot];
 
     [self executeRequest: request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         completion(error);
