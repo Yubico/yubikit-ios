@@ -20,7 +20,7 @@
 
 @implementation YKFKeyMGMTWriteConfigurationRequest
 
-- (instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration withReboot: (BOOL) reboot {
+- (instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration reboot: (BOOL) reboot {
     YKFAssertAbortInit(configuration);
     
     self = [super init];

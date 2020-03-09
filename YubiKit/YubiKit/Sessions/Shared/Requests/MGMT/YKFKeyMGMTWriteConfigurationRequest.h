@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param reboot
     The device reboot after setting configuration.
  */
-- (nullable instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration withReboot: (BOOL) reboot;
+- (nullable instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration reboot: (BOOL) reboot;
 
 @end
 

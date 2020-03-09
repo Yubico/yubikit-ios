@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 @note:
    This method is thread safe and can be invoked from any thread (main or a background thread).
 */
-- (void)writeConfiguration:(YKFMGMTInterfaceConfiguration*) configuration withReboot: (BOOL) reboot completion: (nonnull YKFKeyMGMTServiceWriteCompletionBlock) completion;
+- (void)writeConfiguration:(YKFMGMTInterfaceConfiguration*) configuration reboot: (BOOL) reboot completion: (nonnull YKFKeyMGMTServiceWriteCompletionBlock) completion;
 
 @end
 
