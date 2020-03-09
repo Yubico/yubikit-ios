@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
     This configuration has already valid set of iterface changes that ineed to be applied.
  
  @param reboot
-    The device reboot after setting configuration.
+    The device reboots after setting configuration.
  */
 - (nullable instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration reboot: (BOOL) reboot;
 

@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
     The configurations that represent information on which interfaces/applications need to be enabled
 
 @param reboot
-    The device reboot after setting configuration.
+    The device reboots after setting configuration.
  
 @param completion
     The response block which is executed after the request was processed by the key. The completion block
