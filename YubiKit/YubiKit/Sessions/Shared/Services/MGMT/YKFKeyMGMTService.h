@@ -66,14 +66,17 @@ NS_ASSUME_NONNULL_BEGIN
 @param configuration
     The configurations that represent information on which interfaces/applications need to be enabled
 
- @param completion
-   The response block which is executed after the request was processed by the key. The completion block
-   will be executed on a background thread.
+@param reboot
+    The device reboots after setting configuration.
+ 
+@param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread.
 
 @note:
    This method is thread safe and can be invoked from any thread (main or a background thread).
 */
-- (void)writeConfiguration:(YKFMGMTInterfaceConfiguration*) configuration completion: (nonnull YKFKeyMGMTServiceWriteCompletionBlock) completion;
+- (void)writeConfiguration:(YKFMGMTInterfaceConfiguration*) configuration reboot: (BOOL) reboot completion: (nonnull YKFKeyMGMTServiceWriteCompletionBlock) completion;
 
 @end
 

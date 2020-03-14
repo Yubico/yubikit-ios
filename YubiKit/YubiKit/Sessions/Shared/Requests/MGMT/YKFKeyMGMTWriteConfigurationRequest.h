@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  Whether require reboot after updating of configurations
  */
-@property (nonatomic, readwrite) BOOL reboot;
+@property (nonatomic, readonly) BOOL reboot;
 
 /*!
  @method initWithConfiguration:
@@ -40,8 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
  @param configuration
     The configuration for the request. The configuration contains list of interfaces that needs to be on and off.
     This configuration has already valid set of iterface changes that ineed to be applied.
+ 
+ @param reboot
+    The device reboots after setting configuration.
  */
-- (nullable instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration;
+- (nullable instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration reboot: (BOOL) reboot;
 
 @end
 
