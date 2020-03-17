@@ -2,7 +2,7 @@
 
 #### 3.1.0 (3.0.0 -> 3.1.0)
 
-- Raw service commands now allows to specify timeouts on each command using `YKFKeyCommandConfiguration` in case if user wants to speed up communication with YubiKey or getting timeouts on execution of specifc command. 
+- Raw commands service `YKFKeyRawCommandService` now allows to specify timeouts on each command using `YKFKeyCommandConfiguration` in case if user wants to speed up communication with YubiKey or getting timeouts on execution of specific command. 
 
 - Reduced default timeout between sending command to YubiKey and receiving response from YubiKey in order to be more performant over Lightning.
 
@@ -14,12 +14,12 @@
 
 - Added `YKFKeyOATHService` method `selectOATHApplication` that provides response on selection of OATH applet. It contains firmware version which can be used as one of the methods to detect firmware version over NFC.
 
-- Improvements in YubiKitDemo application: U2F and FIDO2 in Other demo section now supports NFC-Enabled YubiKeys.
+- Improvements in YubiKitDemo application: U2F and FIDO2 in Other demo section now support NFC-Enabled YubiKeys.
 ---
 
 #### 3.0.0 (3.0.0-Preview2 -> 3.0.0)
 
-- Improvements to NFC API: ability to cusomize NFC alert message at any point of time it's visible, an error in case if NFC session was closed without successful invalidation (including cancellation), allows to handle multiple tags during one open nfc session and do not close session if key was removed from NFC reader.
+- Improvements to NFC API: ability to customize NFC alert message at any point of time it's visible, an error in case if NFC session was closed without successful invalidation (including cancellation), allows to handle multiple tags during one open nfc session and do not close session if key was removed from NFC reader.
 
 - Added ability for application to subscribe for logger events and customize/create it's own logger (e.g. sent logs to the file)
 ---

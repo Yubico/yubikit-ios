@@ -148,7 +148,7 @@ Open info.plist and add the following usage:
 </p>
 
 ## Documentation
-YubiKit headers are documented and the documentation is available either by reading the header file or by using the QuickHelp from Xcode (Option + Click symbol). Use this documentation for a more detailed explanation of all the methods, properties, and parameters from the API. If you are interested in implementation details for a specific category like U2F, FIDO2, or OATH, checkout the [./docs](./docs/) section.
+YubiKit headers are documented and the documentation is available either by reading the header file or by using the QuickHelp from Xcode (Option + Click symbol). Use this documentation for a more detailed explanation of all the methods, properties, and parameters from the API. If you are interested in implementation details for a specific category like U2F, FIDO2, or OATH, check out the [./docs](./docs/) section.
 
 ## Using the Library
 
