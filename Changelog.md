@@ -1,13 +1,33 @@
 # YubiKit Changelog
 
+#### 3.1.0 (3.0.0 -> 3.1.0)
+
+- Raw commands service `YKFKeyRawCommandService` now allows to specify timeouts on each command using `YKFKeyCommandConfiguration` in case if user wants to speed up communication with YubiKey or getting timeouts on execution of specific command. 
+
+- Reduced default timeout between sending command to YubiKey and receiving response from YubiKey in order to be more performant over Lightning.
+
+- This SDK version now provides  `YKFKeyChallengeResponseService` which allows to calculate HMAC-SHA1 on pre-programmed YubiKey. Read more about usage of [Challenge-response](./docs/chr.md)
+
+- Added `YKFKeyMGMTService` which allows to check whether application is available on YubiKey. And can enable or disable interfaces/application on YubiKey (if they are available). Read more about usage of [management service](./docs/mgmt.md)
+
+- Fixes OATH credential parser for credentials that contain "\" or ":". 
+
+- Added `YKFKeyOATHService` method `selectOATHApplication` that provides response on selection of OATH applet. It contains firmware version which can be used as one of the methods to detect firmware version over NFC.
+
+- Improvements in YubiKitDemo application: U2F and FIDO2 in Other demo section now support NFC-Enabled YubiKeys.
+---
+
 #### 3.0.0 (3.0.0-Preview2 -> 3.0.0)
 
-- Improvements to NFC API: ability to cusomize NFC alert message at any point of time it's visible, an error in case if NFC session was closed without successful invalidation (including cancellation), allows to handle multiple tags during one open nfc session and do not close session if key was removed from NFC reader.
+- Improvements to NFC API: ability to customize NFC alert message at any point of time it's visible, an error in case if NFC session was closed without successful invalidation (including cancellation), allows to handle multiple tags during one open nfc session and do not close session if key was removed from NFC reader.
+
 - Added ability for application to subscribe for logger events and customize/create it's own logger (e.g. sent logs to the file)
+---
 
 #### 3.0.0-Preview2 [3.0.0-Preview1 -> 3.0.0-Preview2]
 
 - Adds support for OATH protocol over NFC on devices running iOS 13 or newer. Also wraps and simplifies raw APDU communication with NFC-Enabled YubiKeys.
+---
 
 #### 3.0.0-Preview1 [2.0.1 -> 3.0.0-Preview1]
 

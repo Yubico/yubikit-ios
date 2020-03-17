@@ -34,7 +34,7 @@ Add YubiKit to your [Podfile](https://guides.cocoapods.org/using/the-podfile.htm
 ```ruby
 use_frameworks!
 
-pod 'YubiKit', '~> 3.0.0'
+pod 'YubiKit', '~> 3.1.0'
 
 ```
 If you want to have latest changes, replace the last line with:
@@ -45,13 +45,16 @@ pod 'YubiKit', :git => 'https://github.com/Yubico/yubikit-ios.git'
 
 ```
 
-Once YubiKit is added to your `Podfile`, run `pod install` and open the `*.xcworkspace` with Xcode.
+Once YubiKit is added to your `Podfile`, run `pod install` and open the `*.xcworkspace` with Xcode. 
+
+Then import the YubiKit module and you can use it's classes and methods.
+```
+import YubiKit
+```
 
 Continue SDK setup by skipping over `Manual Setup` to `Enable Custom Lightning Protocol`.
 
----
-
-**[Manual Setup]**
+<details><summary><strong>Manual Setup</strong></summary><p>
 
 Download or Clone YubiKit SDK source
 1.  [Download](https://github.com/Yubico/yubikit-ios/releases/) the latest YubiKit SDK (.zip) to your desktop `or` 
@@ -81,7 +84,8 @@ Click + and add the ``libYubiKit.a``
 
 6. If your target project is written in Swift, you need to provide a bridge to the YubiKit library by adding ``#import <YubiKit/YubiKit.h>`` to your bridging header. If a bridging header does not exist within your project, you can add one by following this [documentation](https://developer.apple.com/library/content/documentation/Swift/Conceptual/BuildingCocoaApps/MixandMatch.html).
 
-<details><summary><strong>Additional instructions</strong></summary><p>
+</details>
+
 ---
 
 **Enable Custom Lightning Protocol**
@@ -142,10 +146,9 @@ Open info.plist and add the following usage:
 'Privacy - Camera Usage Description' - "This application needs access to Camera for reading QR codes."
 
 </p>
-</details>
 
 ## Documentation
-YubiKit headers are documented and the documentation is available either by reading the header file or by using the QuickHelp from Xcode (Option + Click symbol). Use this documentation for a more detailed explanation of all the methods, properties, and parameters from the API. If you are interested in implementation details for a specific category like U2F, FIDO2, or OATH, checkout the [./docs](./docs/) section.
+YubiKit headers are documented and the documentation is available either by reading the header file or by using the QuickHelp from Xcode (Option + Click symbol). Use this documentation for a more detailed explanation of all the methods, properties, and parameters from the API. If you are interested in implementation details for a specific category like U2F, FIDO2, or OATH, check out the [./docs](./docs/) section.
 
 ## Using the Library
 
@@ -199,6 +202,8 @@ List of services is documented below with it's own specifics and samples:
 - [RAW](./docs/raw.md) - Allows sending raw commands to YubiKeys over two channels: *YKFKeyRawCommandService* or over a [PC/SC](https://en.wikipedia.org/wiki/PC/SC) like interface.
 
 - [Challenge-response](./docs/chr.md) - Provides a method to use HMAC-SHA1 challenge-response.
+
+- [MGMT](./docs/mgmt.md) - Provides ability to enable or disable available application on YubiKey
 
 
 ## Customize the Library
