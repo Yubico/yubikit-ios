@@ -252,7 +252,7 @@
     NSError *error = NULL;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern: @"[A-Za-z2-7=]*" options: 0 error: &error];
     NSRange foundRange = [regex rangeOfFirstMatchInString: base32String options: 0 range: range];
-    if (NSEqualRanges(range, foundRange)) return nil;
+    if (!NSEqualRanges(range, foundRange)) return nil;
     
     return [self dataWithBase32String: base32String];
 }
