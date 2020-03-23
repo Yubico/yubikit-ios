@@ -62,7 +62,7 @@
                 if( c == '=' ) break; // padding...
 
                 c = decodingTable[c];
-                if( c == __ ) continue;
+                if( c == __ ) return nil;
 
                 encodedBlock[encodedBlockIndex++] = c;
                 if( encodedBlockIndex == 8 ) {
