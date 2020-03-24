@@ -22,25 +22,25 @@
     XCTAssertNotNil(result, @"Returned data object from a Base32 encoded string");
 }
 
+- (void)test_WhenSecretContainsPaddingAndSymbolsFromTheTable_ObjectNotNil {
+    NSString *secret = @"a2=";
+    NSData *result = [NSData ykf_dataWithBase32String: secret];
+    
+    XCTAssertNotNil(result, @"Returned data object from a Base32 encoded string");
+}
+
 - (void)test_WhenSecretContainsSomeSymbolsNotFromTheTableAndSomeNot_ObjectNil {
     NSString *secret = @"AAA111";
     NSData *result = [NSData ykf_dataWithBase32String: secret];
     
-    XCTAssertNil(result, @"Returned nil because the secret could not be parsed");
+    XCTAssertNil(result, @"Returned nil because the secret contains symbol that could not be decoded");
 }
 
 - (void)test_WhenSecretContainsNumbersNotFromTheTable_ObjectNil {
     NSString *secret = @"0189";
     NSData *result = [NSData ykf_dataWithBase32String: secret];
     
-    XCTAssertNil(result, @"Returned nil because the secret could not be parsed");
-}
-
-- (void)test_WhenSecretContainsPaddingAndSymbolsFromTheTable_ObjectNotNil {
-    NSString *secret = @"a=2";
-    NSData *result = [NSData ykf_dataWithBase32String: secret];
-    
-    XCTAssertNotNil(result, @"Returned data object from a Base32 encoded string");
+    XCTAssertNil(result, @"Returned nil because the secret contains symbol that could not be decoded");
 }
 
 @end

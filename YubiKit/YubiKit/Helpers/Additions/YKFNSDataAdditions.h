@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
  @method ykf_dataWithBase32String:
  
  @return
-    A data object from a Base32 encoded string or nil if the string could not be parsed.
+    A data object from a Base32 encoded string or nil if the string contains symbol that could not be decoded.
  */
 + (nullable NSData *)ykf_dataWithBase32String:(NSString *)base32String;
 
