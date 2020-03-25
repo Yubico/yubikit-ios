@@ -248,7 +248,13 @@
 @implementation NSData(NSData_Base32Additions)
 
 + (NSData *)ykf_dataWithBase32String:(NSString *)base32String {
-    return [self dataWithBase32String:base32String];
+    NSRange range = NSMakeRange(0, [base32String length]);
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern: @"[A-Za-z2-7=]*" options: 0 error: &error];
+    NSRange foundRange = [regex rangeOfFirstMatchInString: base32String options: 0 range: range];
+    if (!NSEqualRanges(range, foundRange)) return nil;
+    
+    return [self dataWithBase32String: base32String];
 }
 
 @end

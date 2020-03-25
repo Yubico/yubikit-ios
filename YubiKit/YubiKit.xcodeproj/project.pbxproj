@@ -244,6 +244,7 @@
 		95F75BAB2175D63D00C13DC5 /* YKFKeyOATHValidateRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 95F75BAA2175D63D00C13DC5 /* YKFKeyOATHValidateRequest.m */; };
 		95F75BAE2175D6D600C13DC5 /* YKFOATHValidateAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 95F75BAD2175D6D600C13DC5 /* YKFOATHValidateAPDU.m */; };
 		95F75BAF2175D8E300C13DC5 /* YKFKeyOATHValidateRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95F75BA92175D63D00C13DC5 /* YKFKeyOATHValidateRequest.h */; };
+		A5016E5C24297FEF005A0C21 /* YKFNSDataAdditionsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A5016E5B24297FEF005A0C21 /* YKFNSDataAdditionsTests.m */; };
 		A51F7B1D23EFC6DB0046F6A3 /* YKFNSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 95EA81E62178805D0020595D /* YKFNSStringAdditions.m */; };
 		A54DCC0323F2147500E95259 /* YKNSStringAdditionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A54DCC0223F2147500E95259 /* YKNSStringAdditionTests.m */; };
 /* End PBXBuildFile section */
@@ -706,6 +707,7 @@
 		95F75BAA2175D63D00C13DC5 /* YKFKeyOATHValidateRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyOATHValidateRequest.m; sourceTree = "<group>"; };
 		95F75BAC2175D6D600C13DC5 /* YKFOATHValidateAPDU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHValidateAPDU.h; sourceTree = "<group>"; };
 		95F75BAD2175D6D600C13DC5 /* YKFOATHValidateAPDU.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHValidateAPDU.m; sourceTree = "<group>"; };
+		A5016E5B24297FEF005A0C21 /* YKFNSDataAdditionsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFNSDataAdditionsTests.m; sourceTree = "<group>"; };
 		A54DCC0223F2147500E95259 /* YKNSStringAdditionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKNSStringAdditionTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1002,6 +1004,7 @@
 				95EF75C1213FEF0500059C79 /* YKFTestCase.h */,
 				95EF75C2213FEF0500059C79 /* YKFTestCase.m */,
 				950C70082298095F00E48458 /* YubiKitDeviceCapabilitiesTests.m */,
+				A5016E5B24297FEF005A0C21 /* YKFNSDataAdditionsTests.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -1568,6 +1571,7 @@
 				956884CD20AAFB3F00E0F72C /* FakeYubiKitDeviceCapabilities.m in Sources */,
 				9529CBC421492A3E0041D2F8 /* FakeYKFKeyConnectionController.m in Sources */,
 				956884C920AAE70E00E0F72C /* UIDeviceAdditions.m in Sources */,
+				A5016E5C24297FEF005A0C21 /* YKFNSDataAdditionsTests.m in Sources */,
 				95EEEF6321664E4600BE7D7B /* MF_Base32Additions.m in Sources */,
 				95DD659121664B6800BA85C9 /* YKFOATHCredentialTests.m in Sources */,
 				95D61A04216F9159001E7AC8 /* YKFOATHCredentialValidatorTests.m in Sources */,
