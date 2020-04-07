@@ -63,15 +63,22 @@ typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
             completion(nil, [YKFKeyMGMTError errorWithCode:YKFKeyMGMTErrorCodeUnexpectedResponse]);
             return;
         }
+        
+        if (selectionResponse.version.major < 5) {
+            completion(nil, [YKFKeyMGMTError errorWithCode:YKFKeyMGMTErrorCodeUnexpectedResponse]);
+            return;
+        }
                 
-       [self executeRequestWithoutApplicationSelection:rawCommandService request:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+        [self executeRequestWithoutApplicationSelection:rawCommandService request:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
             if (error) {
                 completion(nil, error);
                 return;
             }
             YKFKeyMGMTReadConfigurationResponse *response =
                 [[YKFKeyMGMTReadConfigurationResponse alloc] initWithKeyResponseData:result version:selectionResponse.version];
-            
+           
+          
+           
            if (!response) {
                 completion(nil, [YKFKeyMGMTError errorWithCode:YKFKeyMGMTErrorCodeUnexpectedResponse]);
                 return;
