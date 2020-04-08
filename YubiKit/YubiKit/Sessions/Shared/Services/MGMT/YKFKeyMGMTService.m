@@ -72,8 +72,6 @@ typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
             YKFKeyMGMTReadConfigurationResponse *response =
                 [[YKFKeyMGMTReadConfigurationResponse alloc] initWithKeyResponseData:result version:selectionResponse.version];
            
-          
-           
            if (!response) {
                 completion(nil, [YKFKeyMGMTError errorWithCode:YKFKeyMGMTErrorCodeUnexpectedResponse]);
                 return;
