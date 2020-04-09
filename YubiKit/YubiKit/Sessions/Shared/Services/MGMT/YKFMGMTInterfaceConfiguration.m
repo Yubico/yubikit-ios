@@ -32,7 +32,18 @@
     YKFAssertAbortInit(response);
     self = [super init];
     if (self) {
-        self.isConfigurationLocked = response.configurationLocked != nil;
+
+        self.isConfigurationLocked = false;
+        if (response.configurationLocked != nil && response.configurationLocked.length > 0) {
+            const char* configBytes = (const char*)[response.configurationLocked bytes];
+            for (NSUInteger index = 0; index < response.configurationLocked.length; index++) {
+                if (configBytes[index] != 0) {
+                    self.isConfigurationLocked = true;
+                    break;
+                }
+            }
+        }
+        
         self.usbSupportedMask = response.usbSupportedMask;
         self.nfcSupportedMask = response.nfcSupportedMask;
         self.usbEnabledMask = response.usbEnabledMask;
@@ -74,7 +85,7 @@
         return;
     }
 
-    YKFAssertReturn(self.isConfigurationLocked, @"Configuration is locked.")
+    YKFAssertReturn(!self.isConfigurationLocked, @"Configuration is locked.")
     YKFAssertReturn([self isSupported: application overTransport:transport], @"This YubiKey interface is not supported.")
 
     switch (transport) {
