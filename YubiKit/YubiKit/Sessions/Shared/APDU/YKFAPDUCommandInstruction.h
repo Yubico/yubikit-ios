@@ -33,6 +33,7 @@ typedef NS_ENUM(NSUInteger, YKFAPDUCommandInstruction) {
     YKFAPDUCommandInstructionOATHDelete = 0x02,
     YKFAPDUCommandInstructionOATHSet = 0x03,
     YKFAPDUCommandInstructionOATHReset = 0x04,
+    YKFAPDUCommandInstructionOATHRename = 0x05,
     YKFAPDUCommandInstructionOATHList = 0xA1,
     YKFAPDUCommandInstructionOATHCalculate = 0xA2,
     YKFAPDUCommandInstructionOATHValidate = 0xA3,

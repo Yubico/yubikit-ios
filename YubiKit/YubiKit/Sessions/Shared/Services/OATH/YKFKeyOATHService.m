@@ -112,6 +112,21 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     }];
 }
 
+- (void)executeRenameRequest:(YKFKeyOATHRenameRequest *)request completion:(YKFKeyOATHServiceCompletionBlock)completion {
+    YKFParameterAssertReturn(request);
+    YKFParameterAssertReturn(completion);
+    
+    YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:request.credential includeSecret:YES];
+    if (credentialError) {
+        completion(credentialError);
+    }
+    
+    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+        // No result except status code
+        completion(error);
+    }];
+}
+
 #pragma mark - Credential Calculation
 
 - (void)executeCalculateRequest:(YKFKeyOATHCalculateRequest *)request completion:(YKFKeyOATHServiceCalculateCompletionBlock)completion {
