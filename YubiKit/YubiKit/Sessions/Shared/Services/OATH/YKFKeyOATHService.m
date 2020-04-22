@@ -97,7 +97,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
     
-    YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:request.credential includeSecret:YES];
+    YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:request.credential includeSecret:NO];
     if (credentialError) {
         completion(credentialError);
     }
