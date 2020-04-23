@@ -34,10 +34,7 @@ static const UInt8 YKFOATHRenameAPDUNameTag = 0x71;
     [rawRequest ykf_appendEntryWithTag:YKFOATHRenameAPDUNameTag data:nameData];
     
     // New name
-    YKFOATHCredential *credential = request.credential;
-    credential.issuer = request.issuer;
-    credential.account = request.account;
-    NSString *newName = credential.key;
+    NSString *newName = request.renamedCredential.key;
     NSData *newNameData = [newName dataUsingEncoding:NSUTF8StringEncoding];
     [rawRequest ykf_appendEntryWithTag:YKFOATHRenameAPDUNameTag data:newNameData];
     

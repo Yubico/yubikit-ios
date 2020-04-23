@@ -32,14 +32,9 @@
 @property (nonatomic, readonly, nonnull) YKFOATHCredential *credential;
 
 /*!
-The new issuer for the credential. This value is set at initialization.
+The renamed credential for the request. This value is set at initialization.
 */
-@property (nonatomic, readonly, nonnull) NSString *issuer;
-
-/*!
-The new account name for the credential. This value is set at initialization.
-*/
-@property (nonatomic, readonly, nonnull) NSString *account;
+@property (nonatomic, readonly, nonnull) YKFOATHCredential *renamedCredential;
 
 /*!
  @method initWithCredential:

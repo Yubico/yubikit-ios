@@ -20,21 +20,26 @@
 @interface YKFKeyOATHRenameRequest()
 
 @property (nonatomic, readwrite) YKFOATHCredential *credential;
-@property (nonatomic, readwrite) NSString *issuer;
-@property (nonatomic, readwrite) NSString *account;
+@property (nonatomic, readwrite) YKFOATHCredential *renamedCredential;
 
 @end
 
 @implementation YKFKeyOATHRenameRequest
 
 - (nullable instancetype)initWithCredential:(nonnull YKFOATHCredential*)credential issuer:(nonnull NSString *)issuer account:(nonnull NSString *)account {
-    YKFAssertAbortInit(credential);
     
+    YKFAssertAbortInit(credential);
+
+    YKFOATHCredential *renamedCredential = credential.copy;
+    renamedCredential.issuer = issuer;
+    renamedCredential.account = account;
+
+    YKFAssertAbortInit(renamedCredential.label.length);
+
     self = [super init];
     if (self) {
         self.credential = credential;
-        self.issuer = issuer;
-        self.account = account;
+        self.renamedCredential = renamedCredential;
         self.apdu = [[YKFOATHRenameAPDU alloc] initWithRequest:self];
     }
     return self;
