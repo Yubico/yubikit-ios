@@ -165,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @abstract
     Sends to the key an OATH Rename request to update issuer and account on an existing credential. The request is performed
-    asynchronously on a background execution queue.
+    asynchronously on a background execution queue. This operation is available on Yubikeys from version 5.3.1.
  
  @param request
     The request which contains the required information to rename a credential.
