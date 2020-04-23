@@ -53,7 +53,7 @@ typedef NS_ENUM(NSUInteger, YKFOATHCredentialAlgorithm) {
  @abstract
     The YKFOATHCredential is a data model which contains a list of properties defining an OATH credential.
  */
-@interface YKFOATHCredential: NSObject
+@interface YKFOATHCredential: NSObject <NSCopying>
 
 /*!
  The credential type (HOTP or TOTP).
