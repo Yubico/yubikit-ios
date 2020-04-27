@@ -447,7 +447,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         [configuration setEnabled:!isOTPenabled application:YKFMGMTApplicationTypeOTP overTransport:transport];
         
         [TestSharedLogger.shared logMessage:@"Updating configuration"];
-        [service writeConfiguration:configuration completion:^(NSError * _Nullable error) {
+        [service writeConfiguration:configuration reboot:NO completion:^(NSError * _Nullable error) {
             if (error) {
                 [TestSharedLogger.shared logError: @"When writing configurations: %@", error.localizedDescription];
                 return;
