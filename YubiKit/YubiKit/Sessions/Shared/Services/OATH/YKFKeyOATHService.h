@@ -14,19 +14,19 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFKeyService.h"
-#import "YKFKeyOATHPutRequest.h"
-#import "YKFKeyOATHDeleteRequest.h"
-#import "YKFKeyOATHRenameRequest.h"
-#import "YKFKeyOATHCalculateRequest.h"
-#import "YKFKeyOATHCalculateAllRequest.h"
-#import "YKFKeyOATHCalculateResponse.h"
-#import "YKFKeyOATHSetCodeRequest.h"
-#import "YKFKeyOATHValidateRequest.h"
-#import "YKFKeyOATHListResponse.h"
-#import "YKFKeyOATHCalculateAllResponse.h"
-#import "YKFKeyOATHSelectApplicationResponse.h"
 #import "YKFKeyVersion.h"
 
+@class YKFKeyOATHCalculateAllRequest,
+       YKFKeyOATHCalculateAllResponse,
+       YKFKeyOATHCalculateRequest,
+       YKFKeyOATHCalculateResponse,
+       YKFKeyOATHDeleteRequest,
+       YKFKeyOATHListResponse,
+       YKFKeyOATHPutRequest,
+       YKFKeyOATHRenameRequest,
+       YKFKeyOATHSelectApplicationResponse,
+       YKFKeyOATHSetCodeRequest,
+       YKFKeyOATHValidateRequest;
 /**
  * ---------------------------------------------------------------------------------------------------------------------
  * @name OATH Service Response Blocks
