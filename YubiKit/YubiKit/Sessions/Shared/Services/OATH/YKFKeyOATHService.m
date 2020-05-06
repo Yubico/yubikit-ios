@@ -116,6 +116,10 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     if (credentialError) {
         completion(credentialError);
     }
+    YKFKeySessionError *renamedCredentialError = [YKFOATHCredentialValidator validateCredential:request.renamedCredential includeSecret:NO];
+    if (renamedCredentialError) {
+        completion(renamedCredentialError);
+    }
     
     [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         // No result except status code
