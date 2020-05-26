@@ -28,14 +28,23 @@ static const int YKFKeyOATHListResponseNameTag = 0x72;
 
 @end
 
+@interface YKFKeyOATHResponse()
+
+@property (nonatomic, readwrite) YKFKeyVersion* keyVersion;
+
+@end
+
 @implementation YKFKeyOATHListResponse
 
-- (nullable instancetype)initWithKeyResponseData:(NSData *)responseData {
+@synthesize keyVersion;
+
+- (nullable instancetype)initWithKeyResponseData:(NSData *)responseData keyVersion:(nonnull YKFKeyVersion *)keyVersion  {
     YKFAssertAbortInit(responseData);
     
     self = [super init];
     if (self) {
-        BOOL success = [self readCredentialsFromData:responseData];        
+        BOOL success = [self readCredentialsFromData:responseData];
+        self.keyVersion = keyVersion;
         YKFAbortInitWhen(!success)
     }
     return self;

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
+#import "YKFKeyOATHResponse.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
  @abstract
     Response from List OATH credentials request.
  */
-@interface YKFKeyOATHListResponse : NSObject
+@interface YKFKeyOATHListResponse : YKFKeyOATHResponse
 
 /*!
  The list of stored credentials (YKFOATHCredential type) on the key.

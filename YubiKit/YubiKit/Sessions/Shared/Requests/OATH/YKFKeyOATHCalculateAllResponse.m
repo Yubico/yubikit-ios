@@ -17,6 +17,7 @@
 #import "YKFAssert.h"
 #import "YKFNSStringAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
+#import "YKFKeyVersion.h"
 
 static const UInt8 YKFKeyOATHCalculateAllNameTag = 0x71;
 static const UInt8 YKFKeyOATHCalculateAllResponseHOTPTag = 0x77;
@@ -49,6 +50,11 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
 
 @end
 
+@interface YKFKeyOATHResponse()
+
+@property (nonatomic, readwrite) YKFKeyVersion* keyVersion;
+
+@end
 
 @interface YKFKeyOATHCalculateAllResponse()
 
@@ -58,7 +64,9 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
 
 @implementation YKFKeyOATHCalculateAllResponse
 
-- (instancetype)initWithKeyResponseData:(NSData *)responseData requestTimetamp:(NSDate *)timestamp {
+@synthesize keyVersion;
+
+- (instancetype)initWithKeyResponseData:(NSData *)responseData keyVersion:(YKFKeyVersion *)keyVersion requestTimetamp:(NSDate *)timestamp {
     YKFAssertAbortInit(responseData);
     
     self = [super init];
@@ -168,6 +176,7 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
             [responseCredentials addObject:credentialResult];
         }
         self.credentials = [responseCredentials copy];
+        self.keyVersion = keyVersion;
     }
     return self;
 }

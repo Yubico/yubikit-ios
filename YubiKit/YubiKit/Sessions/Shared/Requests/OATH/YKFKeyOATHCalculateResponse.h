@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
+#import "YKFKeyOATHResponse.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
  @abstract
     Response from Calculate OATH credential request.
  */
-@interface YKFKeyOATHCalculateResponse: NSObject
+@interface YKFKeyOATHCalculateResponse: YKFKeyOATHResponse
 
 /*!
  The OTP value for the credential. The value of this string is numeric and may have

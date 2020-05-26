@@ -22,7 +22,7 @@
 
 @interface YKFKeyOATHCalculateAllResponse()
 
-- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData requestTimetamp:(nonnull NSDate *)timestamp NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData keyVersion:(nonnull YKFKeyVersion *)keyVersion requestTimetamp:(nonnull NSDate *)timestamp NS_DESIGNATED_INITIALIZER;
 
 @end
 

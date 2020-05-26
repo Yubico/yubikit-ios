@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2020 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,20 +13,24 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFOATHCredential.h"
-#import "YKFKeyVersion.h"
+
+@class YKFKeyVersion;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFKeyOATHSelectApplicationResponse : NSObject
+/*!
+@class YKFKeyOATHResponse
 
-@property (nonatomic, readonly) NSData *selectID;
-@property (nonatomic, readonly, nullable) NSData *challenge;
-@property (nonatomic, assign, readonly) YKFOATHCredentialAlgorithm algorithm;
-@property (nonatomic, readonly) YKFKeyVersion *version;
+@abstract
+   Base clase for OATH responses. Use subclasses of this type for building specific
+   OATH responses from the key.
+*/
+@interface YKFKeyOATHResponse: NSObject
 
-- (nullable instancetype)initWithResponseData:(NSData *)responseData NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+/*!
+Firmware version of the key returning the response.
+*/
+@property (nonatomic, readonly) YKFKeyVersion* keyVersion;
 
 @end
 

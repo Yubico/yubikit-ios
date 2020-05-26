@@ -29,14 +29,23 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHCalculateResponseType) {
 
 @end
 
+@interface YKFKeyOATHResponse()
+
+@property (nonatomic, readwrite) YKFKeyVersion* keyVersion;
+
+@end
+
 @implementation YKFKeyOATHCalculateResponse
 
-- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData requestTimetamp:(NSDate *)timestamp requestPeriod:(NSUInteger)period truncateResult:(BOOL)truncate {
+@synthesize keyVersion;
+
+- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData keyVersion:(nonnull YKFKeyVersion *)keyVersion requestTimetamp:(NSDate *)timestamp requestPeriod:(NSUInteger)period truncateResult:(BOOL)truncate {
     YKFAssertAbortInit(responseData.length);
     YKFAssertAbortInit(timestamp);
     
     self = [super init];
     if (self) {
+        self.keyVersion = keyVersion;
         UInt8 *bytes = (UInt8 *)responseData.bytes;
         
         UInt8 responseType = bytes[0];

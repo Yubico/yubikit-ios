@@ -14,6 +14,7 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFOATHCredential.h"
+#import "YKFKeyOATHResponse.h"
 
 /*!
  @class YKFOATHCredentialCalculateResult
@@ -74,7 +75,7 @@
  @abstract
     Response from Calculate All request for calculating all OATH credentials saved on the key.
  */
-@interface YKFKeyOATHCalculateAllResponse : NSObject
+@interface YKFKeyOATHCalculateAllResponse: YKFKeyOATHResponse
 
 /*!
  The list of credentials (YKFOATHCredentialCalculateResult type) with the calculated OTPs.

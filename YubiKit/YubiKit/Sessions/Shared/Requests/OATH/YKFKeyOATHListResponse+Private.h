@@ -16,6 +16,6 @@
 
 @interface YKFKeyOATHListResponse()
 
-- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData keyVersion:(nonnull YKFKeyVersion *)keyVersion  NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -42,7 +42,6 @@
 #import "YKFKeyOATHCalculateAllRequest.h"
 #import "YKFKeyOATHCalculateAllResponse+Private.h"
 #import "YKFKeyOATHCalculateAllResponse.h"
-#import "YKFKeyOATHCalculateAllResponse.h"
 #import "YKFKeyOATHCalculateRequest+Private.h"
 #import "YKFKeyOATHCalculateRequest.h"
 #import "YKFKeyOATHCalculateResponse+Private.h"
@@ -62,7 +61,7 @@
 
 static const NSTimeInterval YKFKeyOATHServiceTimeoutThreshold = 10; // seconds
 
-typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
+typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result, YKFKeyVersion* _Nullable keyVersion, NSError* _Nullable error);
 
 @interface YKFKeyOATHService()
 
@@ -74,8 +73,6 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
  timeout the cache gets invalidated to allow again the following requests to select the application again.
  */
 @property (nonatomic) YKFKeyOATHSelectApplicationResponse *cachedSelectApplicationResponse;
-
-@property (nonatomic, readwrite) YKFKeyVersion* version;
 
 @end
 
@@ -102,7 +99,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         completion(credentialError);
     }
     
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    [self executeOATHRequest:request completion:^(NSData * _Nullable result, YKFKeyVersion * _Nullable keyVersion, NSError * _Nullable error) {
         // No result except status code
         completion(error);
     }];
@@ -121,7 +118,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         completion(renamedCredentialError);
     }
     
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    [self executeOATHRequest:request completion:^(NSData * _Nullable result, YKFKeyVersion * _Nullable keyVersion, NSError * _Nullable error) {
         // No result except status code
         completion(error);
     }];
@@ -140,7 +137,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         completion(renamedCredentialError);
     }
     
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    [self executeOATHRequest:request completion:^(NSData * _Nullable result, YKFKeyVersion * _Nullable keyVersion, NSError * _Nullable error) {
         // No result except status code
         completion(error);
     }];
@@ -157,12 +154,13 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         completion(nil, credentialError);
     }
 
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    [self executeOATHRequest:request completion:^(NSData * _Nullable result, YKFKeyVersion * _Nullable keyVersion, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
             return;
         }
         YKFKeyOATHCalculateResponse *response = [[YKFKeyOATHCalculateResponse alloc] initWithKeyResponseData:result
+                                                                                                  keyVersion:keyVersion
                                                                                              requestTimetamp:request.timestamp
                                                                                                requestPeriod:request.credential.period
                                                                                               truncateResult: !request.credential.notTruncated];
@@ -179,12 +177,13 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
                         completion:(YKFKeyOATHServiceCalculateAllCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    [self executeOATHRequest:request completion:^(NSData * _Nullable result, YKFKeyVersion * _Nullable keyVersion, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
             return;
         }        
         YKFKeyOATHCalculateAllResponse *response = [[YKFKeyOATHCalculateAllResponse alloc] initWithKeyResponseData:result
+                                                                                                        keyVersion:keyVersion
                                                                                                    requestTimetamp:request.timestamp];
         if (!response) {
             completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeBadCalculateAllResponse]);
@@ -202,13 +201,13 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     
     YKFKeyOATHListRequest *request = [[YKFKeyOATHListRequest alloc] init];
     
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    [self executeOATHRequest:request completion:^(NSData * _Nullable result, YKFKeyVersion * _Nullable keyVersion, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
             return;
         }
         
-        YKFKeyOATHListResponse *response = [[YKFKeyOATHListResponse alloc] initWithKeyResponseData:result];
+        YKFKeyOATHListResponse *response = [[YKFKeyOATHListResponse alloc] initWithKeyResponseData:result keyVersion: keyVersion];
         if (!response) {
             completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeBadListResponse]);
             return;
@@ -226,7 +225,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     YKFKeyOATHResetRequest *request = [[YKFKeyOATHResetRequest alloc] init];
     
     ykf_weak_self();
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    [self executeOATHRequest:request completion:^(NSData * _Nullable result, YKFKeyVersion * _Nullable keyVersion, NSError * _Nullable error) {
         ykf_safe_strong_self();
         if (error) {
             completion(error);
@@ -261,7 +260,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         // Build the request APDU with the select ID salt
         request.apdu = [[YKFOATHSetCodeAPDU alloc] initWithRequest:request salt:response.selectID];
         
-        [strongSelf executeOATHRequestWithoutApplicationSelection:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+        [strongSelf executeOATHRequestWithoutApplicationSelection:request keyVersion:response.version completion:^(NSData * _Nullable result, YKFKeyVersion * _Nullable keyVersion, NSError * _Nullable error) {
             if (error) {
                 completion(error);
                 return;
@@ -293,7 +292,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         // Build the request APDU with the select ID salt
         request.apdu = [[YKFOATHValidateAPDU alloc] initWithRequest:request challenge:response.challenge salt:response.selectID];
         
-        [strongSelf executeOATHRequestWithoutApplicationSelection:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+        [strongSelf executeOATHRequestWithoutApplicationSelection:request keyVersion:response.version completion:^(NSData * _Nullable result, YKFKeyVersion * _Nullable keyVersion, NSError * _Nullable error) {
             if (error) {
                 if (error.code == YKFKeyAPDUErrorCodeWrongData) {
                     completion([YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeWrongPassword]);
@@ -331,14 +330,14 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     [self selectOATHApplicationWithCompletion:^(YKFKeyOATHSelectApplicationResponse * _Nullable response, NSError * _Nullable error) {
         ykf_safe_strong_self();
         if (error) {
-            completion(nil, error);
+            completion(nil, nil, error);
             return;
-        }        
-        [strongSelf executeOATHRequestWithoutApplicationSelection:request completion:completion];
+        }
+        [strongSelf executeOATHRequestWithoutApplicationSelection:request keyVersion:response.version completion:completion];
     }];
 }
 
-- (void)executeOATHRequestWithoutApplicationSelection:(YKFKeyOATHRequest *)request completion:(YKFKeyOATHServiceResultCompletionBlock)completion {
+- (void)executeOATHRequestWithoutApplicationSelection:(YKFKeyOATHRequest *)request keyVersion:(YKFKeyVersion *)keyVersion completion:(YKFKeyOATHServiceResultCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
@@ -360,7 +359,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
             if (error.code == YKFKeySessionErrorReadTimeoutCode) {
                 strongSelf.cachedSelectApplicationResponse = nil;
             }
-            completion(nil, error);
+            completion(nil, nil, error);
             return;
         }
         YKFAssertReturn(result != nil, @"Invalid OATH request execution result value on success.");
@@ -382,26 +381,26 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         
         switch (statusCode) {
             case YKFKeyAPDUErrorCodeNoError:
-                completion(responseDataBuffer, nil);
+                completion(responseDataBuffer, keyVersion, nil);
                 break;
             
             case YKFKeyAPDUErrorCodeAuthenticationRequired:
                 if (executionTime < YKFKeyOATHServiceTimeoutThreshold) {
                     strongSelf.cachedSelectApplicationResponse = nil; // Clear the cache to allow the application selection again.
-                    completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeAuthenticationRequired]);
+                    completion(nil, nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeAuthenticationRequired]);
                 } else {
-                    completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeTouchTimeout]);
+                    completion(nil, nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeTouchTimeout]);
                 }
                 break;
                 
             case YKFKeyAPDUErrorCodeDataInvalid:
-                completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeNoSuchObject]);
+                completion(nil, nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeNoSuchObject]);
                 break;
 
             // Errors - The status code is the error. The key doesn't send any other information.
             default: {
                 YKFKeySessionError *connectionError = [YKFKeySessionError errorWithCode:statusCode];
-                completion(nil, connectionError);
+                completion(nil, nil, connectionError);
             }
         }
     };

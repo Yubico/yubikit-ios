@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2020 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,21 +13,8 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFOATHCredential.h"
-#import "YKFKeyVersion.h"
+#import "YKFKeyOATHResponse.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface YKFKeyOATHSelectApplicationResponse : NSObject
-
-@property (nonatomic, readonly) NSData *selectID;
-@property (nonatomic, readonly, nullable) NSData *challenge;
-@property (nonatomic, assign, readonly) YKFOATHCredentialAlgorithm algorithm;
-@property (nonatomic, readonly) YKFKeyVersion *version;
-
-- (nullable instancetype)initWithResponseData:(NSData *)responseData NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+@implementation YKFKeyOATHResponse
 
 @end
-
-NS_ASSUME_NONNULL_END
