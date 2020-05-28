@@ -89,9 +89,8 @@ A new FIDO2 credential can be created by calling `[executeMakeCredentialRequest:
 #### Swift
 
 ```swift
-// Not a resident key and no PIN required.
-let makeCredentialOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: false, 
-								  YKFKeyFIDO2MakeCredentialRequestOptionUV: false]	
+// Not a resident key.
+let makeCredentialOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: false]	
 let alg = YKFFIDO2PublicKeyAlgorithmES256
 	
 guard let fido2Service = YubiKitManager.shared.accessorySession.fido2Service else {           
@@ -140,9 +139,8 @@ fido2Service.execute(makeCredentialRequest) { (response, error) in
 #import <YubiKit/YubiKit.h>
 ...
 
-// Not a resident key and no PIN required.
-NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2MakeCredentialRequestOptionRK: @(NO),
-                                        YKFKeyFIDO2MakeCredentialRequestOptionUV: @(NO)};
+// Not a resident key.
+NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2MakeCredentialRequestOptionRK: @(NO)};
 NSInteger alg = YKFFIDO2PublicKeyAlgorithmES256;
 	
 YKFKeyFIDO2MakeCredentialRequest *makeCredentialRequest = [[YKFKeyFIDO2MakeCredentialRequest alloc] init];
