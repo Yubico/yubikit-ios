@@ -127,7 +127,8 @@ extern NSString* const YKFKeyFIDO2MakeCredentialRequestOptionUV;
     uv            | user verification: Instructs the authenticator to
                     require a gesture that verifies the user to complete
                     the request. Examples of such gestures are fingerprint
-                    scan or a PIN.
+                    scan or a PIN. This key is not supported by the 5Ci
+                    nor the NFC Yubikeys.
     -------------------------------------------------------------------
     up            | user presence: The key will return an error if this
                     parameter is set when creating a credential.
