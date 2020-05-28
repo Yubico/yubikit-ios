@@ -119,20 +119,20 @@ extern NSString* const YKFKeyFIDO2MakeCredentialRequestOptionUV;
     This parameter is optional.
  
     @code
-    Key           | Default value      | Definition
+    Key           | Definition
+    -------------------------------------------------------------------
+    rk            | resident key: Instructs the authenticator to store
+                    the key material on the device.
     ----------------------------------------------------------------------------------------
-    rk            | false              | resident key: Instructs the authenticator to store
-                                         the key material on the device.
-    ----------------------------------------------------------------------------------------
-    uv            | false              | user verification: Instructs the authenticator to
-                                         require a gesture that verifies the user to complete
-                                         the request. Examples of such gestures are fingerprint
-                                         scan or a PIN.
-    ----------------------------------------------------------------------------------------
-    up            | INVALID            | user presence: The key will return an error if this
-                                         parameter is set when creating a credential.
-                                         UP cannot be configured when creating a credential
-                                         because it's implicitly set to true.
+    uv            | user verification: Instructs the authenticator to
+                    require a gesture that verifies the user to complete
+                    the request. Examples of such gestures are fingerprint
+                    scan or a PIN.
+    -------------------------------------------------------------------
+    up            | user presence: The key will return an error if this
+                    parameter is set when creating a credential.
+                    UP cannot be configured when creating a credential
+                    because it's implicitly set to true.
     @endcode
  */
 @property (nonatomic, nullable) NSDictionary *options;
