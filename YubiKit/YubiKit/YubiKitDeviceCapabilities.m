@@ -99,7 +99,8 @@
 
     // Simulator and USB-C type devices
     if (self.currentUIDevice.ykf_deviceModel == YKFDeviceModelSimulator ||
-        self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro3) {
+        self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro3 ||
+        self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro4) {
         return NO;
     }
     if (@available(iOS 10, *)) {
@@ -129,7 +130,8 @@
             deviceModel == YKFDeviceModelIPhone8 || deviceModel == YKFDeviceModelIPhone8Plus ||
             deviceModel == YKFDeviceModelIPhoneX ||
             deviceModel == YKFDeviceModelIPhoneXS || deviceModel == YKFDeviceModelIPhoneXSMax || deviceModel == YKFDeviceModelIPhoneXR ||
-            deviceModel == YKFDeviceModelIPhone11 || 
+            deviceModel == YKFDeviceModelIPhone11 ||
+            deviceModel == YKFDeviceModelIPhoneSE2 ||
             deviceModel == YKFDeviceModelUnknown; // A newer device which is not in the list yet
     });
     
