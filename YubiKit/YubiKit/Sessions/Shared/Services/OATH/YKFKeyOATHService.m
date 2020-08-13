@@ -35,19 +35,30 @@
 #import "YKFNSDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
 
-#import "YKFKeyOATHListRequest.h"
-#import "YKFKeyOATHResetRequest.h"
-#import "YKFKeyOATHCalculateAllRequest.h"
-#import "YKFKeyOATHCalculateAllRequest+Private.h"
-#import "YKFKeyOATHSelectApplicationResponse.h"
-#import "YKFKeyOATHValidateResponse.h"
-#import "YKFKeyOATHCalculateAllResponse.h"
-
-#import "YKFKeyOATHCalculateResponse+Private.h"
-#import "YKFKeyOATHListResponse+Private.h"
-#import "YKFKeyOATHCalculateAllResponse+Private.h"
-#import "YKFKeyOATHCalculateRequest+Private.h"
 #import "YKFAPDU+Private.h"
+
+#import "YKFKeyOATHCalculateAllRequest+Private.h"
+#import "YKFKeyOATHCalculateAllRequest.h"
+#import "YKFKeyOATHCalculateAllRequest.h"
+#import "YKFKeyOATHCalculateAllResponse+Private.h"
+#import "YKFKeyOATHCalculateAllResponse.h"
+#import "YKFKeyOATHCalculateAllResponse.h"
+#import "YKFKeyOATHCalculateRequest+Private.h"
+#import "YKFKeyOATHCalculateRequest.h"
+#import "YKFKeyOATHCalculateResponse+Private.h"
+#import "YKFKeyOATHCalculateResponse.h"
+#import "YKFKeyOATHDeleteRequest.h"
+#import "YKFKeyOATHListRequest.h"
+#import "YKFKeyOATHListResponse+Private.h"
+#import "YKFKeyOATHListResponse.h"
+#import "YKFKeyOATHPutRequest.h"
+#import "YKFKeyOATHRenameRequest.h"
+#import "YKFKeyOATHResetRequest.h"
+#import "YKFKeyOATHSelectApplicationResponse.h"
+#import "YKFKeyOATHSelectApplicationResponse.h"
+#import "YKFKeyOATHSetCodeRequest.h"
+#import "YKFKeyOATHValidateRequest.h"
+#import "YKFKeyOATHValidateResponse.h"
 
 static const NSTimeInterval YKFKeyOATHServiceTimeoutThreshold = 10; // seconds
 
@@ -104,6 +115,25 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:request.credential includeSecret:NO];
     if (credentialError) {
         completion(credentialError);
+    }
+    
+    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+        // No result except status code
+        completion(error);
+    }];
+}
+
+- (void)executeRenameRequest:(YKFKeyOATHRenameRequest *)request completion:(YKFKeyOATHServiceCompletionBlock)completion {
+    YKFParameterAssertReturn(request);
+    YKFParameterAssertReturn(completion);
+    
+    YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:request.credential includeSecret:NO];
+    if (credentialError) {
+        completion(credentialError);
+    }
+    YKFKeySessionError *renamedCredentialError = [YKFOATHCredentialValidator validateCredential:request.renamedCredential includeSecret:NO];
+    if (renamedCredentialError) {
+        completion(renamedCredentialError);
     }
     
     [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {

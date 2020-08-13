@@ -302,4 +302,21 @@ static NSString* const YKFOATHCredentialURLParameterValueSHA512 = @"SHA512";
     return [urlComponents.queryItems filteredArrayUsingPredicate:predicate].firstObject.value;
 }
 
+#pragma mark - NSCopying
+
+- (nonnull id)copyWithZone:(nullable NSZone *)zone {
+    YKFOATHCredential *copy = [YKFOATHCredential new];
+    copy.account = [self.account copyWithZone:zone];
+    copy.issuer = [self.issuer copyWithZone:zone];
+    copy.period = self.period;
+    copy.digits = self.digits;
+    copy.type = self.type;
+    copy.algorithm = self.algorithm;
+    copy.counter = self.counter;
+    if (self.secret) {
+        copy.secret = [self.secret copyWithZone:zone];
+    }
+    return copy;
+}
+
 @end

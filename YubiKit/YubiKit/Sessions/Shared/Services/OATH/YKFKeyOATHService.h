@@ -14,18 +14,19 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFKeyService.h"
-#import "YKFKeyOATHPutRequest.h"
-#import "YKFKeyOATHDeleteRequest.h"
-#import "YKFKeyOATHCalculateRequest.h"
-#import "YKFKeyOATHCalculateAllRequest.h"
-#import "YKFKeyOATHCalculateResponse.h"
-#import "YKFKeyOATHSetCodeRequest.h"
-#import "YKFKeyOATHValidateRequest.h"
-#import "YKFKeyOATHListResponse.h"
-#import "YKFKeyOATHCalculateAllResponse.h"
-#import "YKFKeyOATHSelectApplicationResponse.h"
 #import "YKFKeyVersion.h"
 
+@class YKFKeyOATHCalculateAllRequest,
+       YKFKeyOATHCalculateAllResponse,
+       YKFKeyOATHCalculateRequest,
+       YKFKeyOATHCalculateResponse,
+       YKFKeyOATHDeleteRequest,
+       YKFKeyOATHListResponse,
+       YKFKeyOATHPutRequest,
+       YKFKeyOATHRenameRequest,
+       YKFKeyOATHSelectApplicationResponse,
+       YKFKeyOATHSetCodeRequest,
+       YKFKeyOATHValidateRequest;
 /**
  * ---------------------------------------------------------------------------------------------------------------------
  * @name OATH Service Response Blocks
@@ -157,6 +158,27 @@ NS_ASSUME_NONNULL_BEGIN
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
 - (void)executeDeleteRequest:(YKFKeyOATHDeleteRequest *)request
+                  completion:(YKFKeyOATHServiceCompletionBlock)completion;
+
+/*!
+ @method executeRenameRequest:completion:
+ 
+ @abstract
+    Sends to the key an OATH Rename request to update issuer and account on an existing credential. The request is performed
+    asynchronously on a background execution queue. This operation is available on Yubikeys from version 5.3.1.
+ 
+ @param request
+    The request which contains the required information to rename a credential.
+ 
+ @param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread. If the intention is to update the UI, dispatch the results
+    on the main thread to avoid an UIKit assertion.
+ 
+ @note
+    This method is thread safe and can be invoked from any thread (main or a background thread).
+ */
+- (void)executeRenameRequest:(YKFKeyOATHRenameRequest *)request
                   completion:(YKFKeyOATHServiceCompletionBlock)completion;
 
 /*!
