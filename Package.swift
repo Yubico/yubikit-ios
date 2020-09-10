@@ -4,20 +4,20 @@
 import PackageDescription
 
 let package = Package(
-    name: "Yubikit",
+    name: "YubiKit",
     products: [
         .library(
-            name: "Yubikit",
-            targets: ["Yubikit"]),
+            name: "YubiKit",
+            targets: ["YubiKit"]),
     ],
     dependencies: [],
     targets: [
         .target(
-            name: "Yubikit",
-            path: "Yubikit/Yubikit"),
+            name: "YubiKit",
+            path: "YubiKit/YubiKit"),
         .testTarget(
             name: "YubikitTests",
-            dependencies: ["Yubikit"],
-            path: "YubikitFullStackTests"),
+            dependencies: ["YubiKit"],
+            path: "Yubikit/YubiKitTests"),
     ]
 )
