@@ -25,7 +25,7 @@ The YubiKit Demo application shows how the library is linked with a project so i
 
 YubiKit SDK is available as a library and can be added to any new or existing iOS Xcode project through SPM, Cocoapods, or manual setup.
 
-**[SPM]**
+**[SPM Setup]**
 
 The YubiKit SDK for iOS is availble Swift Package Manger (SPM). SPM is a dependency manager built into recent versions of Xcode. Go [here](https://swift.org/package-manager/) to learn more.
 
