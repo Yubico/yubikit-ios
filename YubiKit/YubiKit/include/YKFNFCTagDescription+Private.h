@@ -1,0 +1,1 @@
+..//Sessions/NFCSession/YKFNFCTagDescription+Private.h
