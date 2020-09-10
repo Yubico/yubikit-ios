@@ -23,7 +23,18 @@ The YubiKit Demo application shows how the library is linked with a project so i
 
 ## Integrate the library
 
-YubiKit SDK is available as a library and can be added to any new or existing iOS Xcode project through Cocoapods or manual setup.
+YubiKit SDK is available as a library and can be added to any new or existing iOS Xcode project through SPM, Cocoapods, or manual setup.
+
+**[SPM]**
+
+The YubiKit SDK for iOS is availble Swift Package Manger (SPM). SPM is a dependency manager built into recent versions of Xcode. Go [here](https://swift.org/package-manager/) to learn more.
+
+1. Open Xcode and click "File" -> "Swift Packages" -> "Add Package Dependency..."
+
+2. Paste the following URL: https://github.com/Yubico/yubikit-ios
+
+3. Click "Next" -> "Next" -> "Finish"
+
 
 **[Cocoapods Setup]**
 
