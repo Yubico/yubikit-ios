@@ -17,7 +17,7 @@ jobs:
                         
       - name: Test on emulator
         run: |
-          set -o pipefail && xcodebuild -sdk iphonesimulator -workspace YubiKit.xcworkspace -scheme YubiKit -destination "platform=iOS Simulator,OS=13.6,name=iPhone 11" test | xcpretty --test --color
+          set -o pipefail && xcodebuild -sdk iphonesimulator -workspace YubiKit.xcworkspace -scheme YubiKit -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" test | xcpretty --test --color
          
       - name: Upload artifact
         uses: actions/upload-artifact@v1
