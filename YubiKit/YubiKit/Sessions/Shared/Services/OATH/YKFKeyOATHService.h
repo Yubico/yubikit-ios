@@ -118,6 +118,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol YKFKeyOATHServiceProtocol<NSObject>
 
+@property (nonatomic, readonly) YKFKeyVersion* version;
+
 /*!
  @method executePutRequest:completion:
  

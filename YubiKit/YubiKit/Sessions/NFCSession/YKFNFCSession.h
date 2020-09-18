@@ -36,6 +36,10 @@ typedef NS_ENUM(NSUInteger, YKFNFCISO7816SessionState) {
 
 @protocol YKFNFCSessionProtocol<NSObject>
 
+typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError* _Nullable);
+
+- (void)oathApplication:(OATHApplication _Nonnull)callback;
+
 /*!
  @property sessionState
  

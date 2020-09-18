@@ -40,6 +40,9 @@
 #import "EAAccessory+Testing.h"
 #import "EASession+Testing.h"
 
+#import "YKFKeySessionError.h"
+#import "YKFKeySessionError+Private.h"
+
 #pragma mark - Private Block Types
 
 typedef void (^YKFAccessorySessionDispatchBlock)(void);
@@ -111,6 +114,21 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
         [self setupCommunicationQueue];
     }
     return self;
+}
+
+- (void)oathApplication:(OATHApplication _Nonnull)callback {
+    if (!self.oathService) {
+        callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
+    }
+    ykf_weak_self();
+    [self.oathService selectOATHApplicationWithCompletion:^(YKFKeyOATHSelectApplicationResponse * _Nullable response, NSError * _Nullable error) {
+        ykf_safe_strong_self();
+        if (error != nil) {
+            callback(nil, error);
+        } else {
+            callback(strongSelf.oathService, nil);
+        }
+    }];
 }
 
 - (void)dealloc {
