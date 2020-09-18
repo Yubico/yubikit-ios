@@ -75,8 +75,6 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
  */
 @property (nonatomic) YKFKeyOATHSelectApplicationResponse *cachedSelectApplicationResponse;
 
-@property (nonatomic, readwrite) YKFKeyVersion* version;
-
 @end
 
 @implementation YKFKeyOATHService
@@ -89,6 +87,10 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         self.connectionController = connectionController;
     }
     return self;
+}
+
+-(YKFKeyVersion *)version {
+    return _cachedSelectApplicationResponse.version;
 }
 
 #pragma mark - Credential Add/Delete
