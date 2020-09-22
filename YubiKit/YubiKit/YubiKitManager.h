@@ -16,7 +16,7 @@
 #import <UIKit/UIKit.h>
 
 #import "YKFNFCSession.h"
-#import "YKFAccessorySession.h"
+#import "YKFAccessoryConnection.h"
 
 /*!
  @protocol YubiKitManagerProtocol
@@ -40,7 +40,7 @@
  @abstract
     Returns the shared instance of YKFAccessorySession to interact with a MFi accessory YubiKey.
  */
-@property (nonatomic, readonly, nonnull) id<YKFAccessorySessionProtocol> accessorySession;
+@property (nonatomic, readonly, nonnull) id<YKFAccessoryConnectionProtocol> accessorySession;
 
 @end
 

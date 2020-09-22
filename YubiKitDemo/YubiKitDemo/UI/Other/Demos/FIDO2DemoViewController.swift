@@ -40,7 +40,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     // MARK: - Actions
     
     private func runDemo() {
-        let keyPluggedIn = YubiKitManager.shared.accessorySession.sessionState == .open
+        let keyPluggedIn = YubiKitManager.shared.accessorySession.connectionState == .open
         let fido2Service: YKFKeyFIDO2ServiceProtocol
         if YubiKitDeviceCapabilities.supportsISO7816NFCTags && !keyPluggedIn {
             guard #available(iOS 13.0, *) else {
@@ -504,7 +504,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     // MARK: - Session State Updates
     
     override func accessorySessionStateDidChange() {
-        let sessionState = YubiKitManager.shared.accessorySession.sessionState
+        let sessionState = YubiKitManager.shared.accessorySession.connectionState
         if sessionState == .closed {
             logTextView.text = nil
             setDemoButtons(enabled: true)

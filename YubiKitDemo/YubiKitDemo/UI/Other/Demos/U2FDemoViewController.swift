@@ -41,7 +41,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
         setDemoButton(enabled: false)
         
         YubiKitExternalLocalization.nfcScanAlertMessage = "Insert YubiKey or scan over the top edge of your iPhone";
-        let keyConnected = YubiKitManager.shared.accessorySession.sessionState == .open
+        let keyConnected = YubiKitManager.shared.accessorySession.connectionState == .open
 
         if YubiKitDeviceCapabilities.supportsISO7816NFCTags && !keyConnected {
             guard #available(iOS 13.0, *) else {
@@ -115,7 +115,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
 
     // MARK: - Session State Updates
     override func accessorySessionStateDidChange() {
-        let sessionState = YubiKitManager.shared.accessorySession.sessionState
+        let sessionState = YubiKitManager.shared.accessorySession.connectionState
         if sessionState == .closed {
             logTextView.text = nil
             setDemoButton(enabled: true)

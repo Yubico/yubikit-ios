@@ -13,7 +13,7 @@
 // limitations under the License.
 
 protocol AccessorySessionObserverDelegate: NSObjectProtocol {
-    func accessorySessionObserver(_ observer: AccessorySessionObserver, sessionStateChangedTo state: YKFAccessorySessionState)
+    func accessorySessionObserver(_ observer: AccessorySessionObserver, sessionStateChangedTo state: YKFAccessoryConnectionState)
 }
 
 /*
@@ -51,8 +51,8 @@ class AccessorySessionObserver: NSObject {
             isObservingSessionStateUpdates = newValue
                         
             if isObservingSessionStateUpdates {
-                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessorySession
-                accessorySessionStateObservation = accessorySession.observe(\.sessionState, changeHandler: { [weak self] session, change in
+                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessoryConnection
+                accessorySessionStateObservation = accessorySession.observe(\.connectionState, changeHandler: { [weak self] session, change in
                     self?.accessorySessionStateDidChange()
                 })
             } else {
@@ -71,7 +71,7 @@ class AccessorySessionObserver: NSObject {
                 return
             }
             
-            let state = YubiKitManager.shared.accessorySession.sessionState
+            let state = YubiKitManager.shared.accessorySession.connectionState
             delegate.accessorySessionObserver(self, sessionStateChangedTo: state)
         }
     }

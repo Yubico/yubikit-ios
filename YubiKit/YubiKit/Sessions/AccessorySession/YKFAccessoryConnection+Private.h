@@ -13,18 +13,18 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFAccessorySession.h"
 
-NS_ASSUME_NONNULL_BEGIN
+#import "YKFAccessoryConnectionConfiguration.h"
+#import "EAAccessoryManager+Testing.h"
 
-#ifdef DEBUG
+typedef void (^YKFAccessoryConnectionStateChangeBlock)(YKFAccessoryConnectionState, YKFAccessoryConnectionState);
 
-@interface YKFAccessorySession(Debugging)
+@interface YKFAccessoryConnection()
 
-- (void)checkApplicationConfiguration;
+/*
+ Hidden initializer to avoid the creation of multiple instances outside YubiKit.
+ */
+- (nullable instancetype)initWithAccessoryManager:(nonnull id<YKFEAAccessoryManagerProtocol>)accessoryManager
+                                    configuration:(nonnull YKFAccessoryConnectionConfiguration *)configuration;
 
 @end
-
-#endif
-
-NS_ASSUME_NONNULL_END

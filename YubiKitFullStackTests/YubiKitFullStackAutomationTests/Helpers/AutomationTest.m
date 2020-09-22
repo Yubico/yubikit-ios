@@ -41,28 +41,28 @@ static const NSTimeInterval MoLYConnectionTouchDelay = 1.5; // seconds
 
 #pragma mark - Computed properties
 
-- (YKFAccessorySession *)accessorySession {
+- (YKFAccessoryConnection *)accessorySession {
     return YubiKitManager.shared.accessorySession;
 }
 
 #pragma mark - MoLY commands
 
 - (void)connectKey {
-    YKFAccessorySessionState sessionState = [YubiKitManager shared].accessorySession.sessionState;
-    if (sessionState == YKFAccessorySessionStateOpen) {
+    YKFAccessoryConnectionState sessionState = [YubiKitManager shared].accessorySession.connectionState;
+    if (sessionState == YKFAccessoryConnectionStateOpen) {
         return;
     }
     
     XCTAssert([[MoLYService shared] plugin], @"Plugging in the key failed.");
     [AutomationTest waitForTimeInterval:MoLYConnectionPlugoutPluginDelay];
     
-    sessionState = [YubiKitManager shared].accessorySession.sessionState;
-    XCTAssert(sessionState == YKFAccessorySessionStateOpen, @"The session is not open after the key was connected to the device.");
+    sessionState = [YubiKitManager shared].accessorySession.connectionState;
+    XCTAssert(sessionState == YKFAccessoryConnectionStateOpen, @"The session is not open after the key was connected to the device.");
 }
 
 - (void)disconnectKeyAndWaitForTimeInterval:(NSTimeInterval)delay {
-    YKFAccessorySessionState sessionState = [YubiKitManager shared].accessorySession.sessionState;
-    if (sessionState == YKFAccessorySessionStateOpen) {
+    YKFAccessoryConnectionState sessionState = [YubiKitManager shared].accessorySession.connectionState;
+    if (sessionState == YKFAccessoryConnectionStateOpen) {
         XCTAssert([[MoLYService shared] plugout], @"Plugging out the key failed.");
     }
     

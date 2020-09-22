@@ -193,7 +193,7 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
     // MARK: - State Observation
     
     override func accessorySessionStateDidChange() {
-        let state = YubiKitManager.shared.accessorySession.sessionState
+        let state = YubiKitManager.shared.accessorySession.connectionState
         if state == .open {
             // The key session is ready to be used.
             switch nextAction {
@@ -229,7 +229,7 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
     
     private func requestRegistration() {
         if keyType == .accessory {
-            guard YubiKitManager.shared.accessorySession.sessionState == .open else {
+            guard YubiKitManager.shared.accessorySession.connectionState == .open else {
                 nextAction = .register
                 presentAuthenticationProgress(message: "Insert the key to register a new account.", state: .insertKey)
                 return
@@ -384,7 +384,7 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
 
     private func requestAuthentication() {
         if keyType == .accessory {
-            guard YubiKitManager.shared.accessorySession.sessionState == .open else {
+            guard YubiKitManager.shared.accessorySession.connectionState == .open else {
                 nextAction = .authenticate
                 presentAuthenticationProgress(message: "Insert the key to authenticate.", state: .insertKey)
                 return
@@ -682,7 +682,7 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
     // MARK: - Key Info
     
     private func updateKeyInfo() {
-        guard YubiKitManager.shared.accessorySession.sessionState == .open else {
+        guard YubiKitManager.shared.accessorySession.connectionState == .open else {
             keyInfoLabel.text = nil
             return
         }        

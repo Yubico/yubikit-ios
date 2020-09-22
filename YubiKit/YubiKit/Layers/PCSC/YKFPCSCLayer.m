@@ -21,7 +21,7 @@
 #import "YKFBlockMacros.h"
 #import "YKFPCSCErrorMap.h"
 #import "YKFLogger.h"
-#import "YKFAccessorySession+Private.h"
+#import "YKFAccessoryConnection+Private.h"
 #import "YKFNSDataAdditions+Private.h"
 
 static NSString* const YKFPCSCLayerReaderName = @"YubiKey";
@@ -39,7 +39,7 @@ static const NSUInteger YKFPCSCLayerCardLimitPerContext = 10;
 
 @interface YKFPCSCLayer()
 
-@property (nonatomic) id<YKFAccessorySessionProtocol> accessorySession;
+@property (nonatomic) id<YKFAccessoryConnectionProtocol> accessorySession;
 @property (nonatomic) YKFPCSCErrorMap *errorMap;
 
 // Maps a context value to a list of card values
@@ -78,7 +78,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
     return sharedInstance;
 }
 
-- (instancetype)initWithAccessorySession:(id<YKFAccessorySessionProtocol>)session {
+- (instancetype)initWithAccessorySession:(id<YKFAccessoryConnectionProtocol>)session {
     YKFAssertAbortInit(session);
     
     self = [super init];
@@ -95,7 +95,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 
 - (SInt32)cardState {
     if (self.accessorySession.isKeyConnected) {
-        if (self.accessorySession.sessionState == YKFAccessorySessionStateOpen) {
+        if (self.accessorySession.connectionState == YKFAccessoryConnectionStateOpen) {
             return YKF_SCARD_SPECIFICMODE;
         }
         return YKF_SCARD_SWALLOWED;
@@ -171,7 +171,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 }
 
 - (SInt64)transmit:(NSData *)commandData response:(NSData **)response {
-    YKFAssertReturnValue(self.accessorySession.sessionState == YKFAccessorySessionStateOpen, @"Session is closed. Cannot send command.", YKF_SCARD_E_READER_UNAVAILABLE);
+    YKFAssertReturnValue(self.accessorySession.connectionState == YKFAccessoryConnectionStateOpen, @"Session is closed. Cannot send command.", YKF_SCARD_E_READER_UNAVAILABLE);
     YKFAssertReturnValue(commandData.length, @"The command data is empty.", YKF_SCARD_E_INVALID_PARAMETER);
     
     YKFAPDU *command = [[YKFAPDU alloc] initWithData:commandData];

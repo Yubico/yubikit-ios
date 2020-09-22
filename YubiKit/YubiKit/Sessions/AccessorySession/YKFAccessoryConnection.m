@@ -15,13 +15,13 @@
 #import <ExternalAccessory/ExternalAccessory.h>
 #import <UIKit/UIKit.h>
 
-#import "YKFAccessorySession.h"
-#import "YKFAccessorySession+Private.h"
-#import "YKFAccessorySession+Debugging.h"
+#import "YKFAccessoryConnection.h"
+#import "YKFAccessoryConnection+Private.h"
+#import "YKFAccessoryConnection+Debugging.h"
 
 #import "YubiKitDeviceCapabilities.h"
 #import "YKFAccessoryConnectionController.h"
-#import "YKFAccessorySessionConfiguration.h"
+#import "YKFAccessoryConnectionConfiguration.h"
 #import "YKFKeyCommandConfiguration.h"
 #import "YKFAccessoryDescription.h"
 #import "YKFKVOObservation.h"
@@ -49,16 +49,16 @@ typedef void (^YKFAccessorySessionDispatchBlock)(void);
 
 #pragma mark - Constants
 
-NSString* const YKFAccessorySessionStatePropertyKey = @"sessionState";
-NSString* const YKFAccessorySessionU2FServicePropertyKey = @"u2fService";
-NSString* const YKFAccessorySessionFIDO2ServicePropertyKey = @"fido2Service";
+NSString* const YKFAccessoryConnectionStatePropertyKey = @"sessionState";
+NSString* const YKFAccessoryConnectionU2FServicePropertyKey = @"u2fService";
+NSString* const YKFAccessoryConnectionFIDO2ServicePropertyKey = @"fido2Service";
 
 static NSTimeInterval const YubiAccessorySessionStartDelay = 0.05; // seconds
 static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // seconds
 
 #pragma mark - YKFAccessorySession
 
-@interface YKFAccessorySession()<NSStreamDelegate, YKFKeyServiceDelegate>
+@interface YKFAccessoryConnection()<NSStreamDelegate, YKFKeyServiceDelegate>
 
 // Dispatching
 
@@ -77,7 +77,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 // Services
 
-@property (nonatomic, assign, readwrite) YKFAccessorySessionState sessionState;
+@property (nonatomic, assign, readwrite) YKFAccessoryConnectionState connectionState;
 
 @property (nonatomic, readwrite) id<YKFKeyU2FServiceProtocol, YKFKeyServiceDelegate> u2fService;
 @property (nonatomic, readwrite) id<YKFKeyFIDO2ServiceProtocol, YKFKeyServiceDelegate> fido2Service;
@@ -91,7 +91,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 // Behaviour
 
-@property (nonatomic) id<YKFAccessorySessionConfigurationProtocol> configuration;
+@property (nonatomic) id<YKFAccessoryConnectionConfigurationProtocol> configuration;
 @property (nonatomic) NSString *currentKeyProtocol; // The protocol used to create a communication session with the key.
 
 // Flags
@@ -100,9 +100,9 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 @end
 
-@implementation YKFAccessorySession
+@implementation YKFAccessoryConnection
 
-- (instancetype)initWithAccessoryManager:(id<YKFEAAccessoryManagerProtocol>)accessoryManager configuration:(YKFAccessorySessionConfiguration *)configuration {
+- (instancetype)initWithAccessoryManager:(id<YKFEAAccessoryManagerProtocol>)accessoryManager configuration:(YKFAccessoryConnectionConfiguration *)configuration {
     YKFAssertAbortInit(accessoryManager);
     YKFAssertAbortInit(configuration);
     
@@ -157,7 +157,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     [self checkApplicationConfiguration];
 #endif
     
-    if (self.sessionState != YKFAccessorySessionStateClosed) {
+    if (self.connectionState != YKFAccessoryConnectionStateClosed) {
         YKFLogInfo(@"Accessory session start ignored. The session is already started.");
         return;
     }
@@ -174,15 +174,15 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     YKFAssertReturnValue(YubiKitDeviceCapabilities.supportsMFIAccessoryKey, @"Cannot start the accessory session on an unsupported device.", NO);
     YKFAssertReturnValue(self.isKeyConnected, @"Cannot start the session if the key is not connected.", NO);
     
-    if (self.sessionState == YKFAccessorySessionStateOpen) {
+    if (self.connectionState == YKFAccessoryConnectionStateOpen) {
         return YES;
     }
     
     dispatch_semaphore_t openSemaphore = dispatch_semaphore_create(0);
     
-    YKFKVOObservation *observation = [[YKFKVOObservation alloc] initWithTarget:self keyPath:YKFAccessorySessionStatePropertyKey callback:^(id oldValue, id newValue) {
-        YKFAccessorySessionState newState = ((NSNumber *)newValue).unsignedLongValue;
-        if (newState == YKFAccessorySessionStateOpen) {
+    YKFKVOObservation *observation = [[YKFKVOObservation alloc] initWithTarget:self keyPath:YKFAccessoryConnectionStatePropertyKey callback:^(id oldValue, id newValue) {
+        YKFAccessoryConnectionState newState = ((NSNumber *)newValue).unsignedLongValue;
+        if (newState == YKFAccessoryConnectionStateOpen) {
             dispatch_semaphore_signal(openSemaphore);
         }
     }];
@@ -196,7 +196,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     observation = nil;
     
     // There was an error when opening the session
-    if (self.sessionState != YKFAccessorySessionStateOpen) {
+    if (self.connectionState != YKFAccessoryConnectionStateOpen) {
         return NO;
     }
     
@@ -206,7 +206,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 - (void)stopSession {
     YKFLogInfo(@"Accessory session stop requested.");
     
-    if (self.sessionState != YKFAccessorySessionStateOpen) {
+    if (self.connectionState != YKFAccessoryConnectionStateOpen) {
         YKFLogInfo(@"Accessory session stop ignored. The session is already stopped.");
         return;
     }
@@ -221,15 +221,15 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     YKFAssertOffMainThread();
     YKFAssertReturnValue(self.isKeyConnected, @"Cannot stop the session if the key is not connected.", NO);
     
-    if (self.sessionState == YKFAccessorySessionStateClosed) {
+    if (self.connectionState == YKFAccessoryConnectionStateClosed) {
         return YES;
     }
         
     dispatch_semaphore_t closeSemaphore = dispatch_semaphore_create(0);
     
-    YKFKVOObservation *observation = [[YKFKVOObservation alloc] initWithTarget:self keyPath:YKFAccessorySessionStatePropertyKey callback:^(id oldValue, id newValue) {
-        YKFAccessorySessionState newState = ((NSNumber *)newValue).unsignedLongValue;
-        if (newState == YKFAccessorySessionStateClosed) {
+    YKFKVOObservation *observation = [[YKFKVOObservation alloc] initWithTarget:self keyPath:YKFAccessoryConnectionStatePropertyKey callback:^(id oldValue, id newValue) {
+        YKFAccessoryConnectionState newState = ((NSNumber *)newValue).unsignedLongValue;
+        if (newState == YKFAccessoryConnectionStateClosed) {
             dispatch_semaphore_signal(closeSemaphore);
         }
     }];
@@ -243,7 +243,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     observation = nil;
     
     // There was an error when closing the session
-    if (self.sessionState != YKFAccessorySessionStateClosed) {
+    if (self.connectionState != YKFAccessoryConnectionStateClosed) {
         return NO;
     }
     
@@ -306,12 +306,12 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 #pragma mark - Session state
 
-- (void)setSessionState:(YKFAccessorySessionState)sessionState {
+- (void)setConnectionState:(YKFAccessoryConnectionState)sessionState {
     // Avoid updating the state if the same to not trigger unnecessary KVO notifications.
-    if (sessionState == _sessionState) {
+    if (sessionState == _connectionState) {
         return;
     }
-    _sessionState = sessionState;
+    _connectionState = sessionState;
 }
 
 #pragma mark - Shared communication queue
@@ -363,19 +363,19 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
         return;
     }
     
-    self.sessionState = YKFAccessorySessionStateOpening;
+    self.connectionState = YKFAccessoryConnectionStateOpening;
     
     ykf_weak_self();
     [self dispatchOnSharedQueueBlock:^{
         ykf_safe_strong_self();
         BOOL success = [strongSelf openSession];
         if (!success) {
-            strongSelf.sessionState = YKFAccessorySessionStateClosed;
+            strongSelf.connectionState = YKFAccessoryConnectionStateClosed;
             return;
         }
         
         [strongSelf dispatchOnSharedQueueBlock:^{
-            strongSelf.sessionState = YKFAccessorySessionStateOpen;
+            strongSelf.connectionState = YKFAccessoryConnectionStateOpen;
         } delay:YubiAccessorySessionStreamOpenDelay]; // Add a small delay to allow the streams to open.
     }
     delay:YubiAccessorySessionStartDelay]; // Add a small delay to allow the Key to initialize after connected.
@@ -407,7 +407,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification {
-    if (self.sessionState == YKFAccessorySessionStateClosed) {
+    if (self.connectionState == YKFAccessoryConnectionStateClosed) {
         return;
     }
     
@@ -418,7 +418,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
         YKFLogVerbose(@"Background task expired.");
     }];
     
-    if (self.sessionState == YKFAccessorySessionStateOpen || self.sessionState == YKFAccessorySessionStateOpening) {
+    if (self.connectionState == YKFAccessoryConnectionStateOpen || self.connectionState == YKFAccessoryConnectionStateOpening) {
         self.reconnectOnApplicationActive = YES;
         [self closeSession];
     }
@@ -481,11 +481,11 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     if (!self.session) {
         return;
     }
-    if (self.sessionState == YKFAccessorySessionStateClosed || self.sessionState == YKFAccessorySessionStateClosing) {
+    if (self.connectionState == YKFAccessoryConnectionStateClosed || self.connectionState == YKFAccessoryConnectionStateClosing) {
         return;
     }
     
-    self.sessionState = YKFAccessorySessionStateClosing;
+    self.connectionState = YKFAccessoryConnectionStateClosing;
         
     ykf_weak_self();
     [self.connectionController closeConnectionWithCompletion:^{
@@ -500,7 +500,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
         strongSelf.connectionController = nil;
         strongSelf.session = nil;
         
-        strongSelf.sessionState = YKFAccessorySessionStateClosed;
+        strongSelf.connectionState = YKFAccessoryConnectionStateClosed;
         YKFLogInfo(@"Session closed.");
     }];
 }
@@ -519,7 +519,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     }
     
     // Stream was closed as a part of a normal session shutdown
-    if (self.sessionState != YKFAccessorySessionStateOpen) {
+    if (self.connectionState != YKFAccessoryConnectionStateOpen) {
         return;
     }
     

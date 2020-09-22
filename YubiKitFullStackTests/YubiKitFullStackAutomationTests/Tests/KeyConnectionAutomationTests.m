@@ -26,8 +26,8 @@ static const int KeyConnectionAutomationTestsReconnectIterations = 10;
 
     [self connectKey];
     
-    YKFAccessorySessionState sessionState = self.accessorySession.sessionState;
-    BOOL sessionOpened = sessionState == YKFAccessorySessionStateOpen;
+    YKFAccessoryConnectionState sessionState = self.accessorySession.sessionState;
+    BOOL sessionOpened = sessionState == YKFAccessoryConnectionStateOpen;
     
     [TestSharedLogger.shared logCondition:sessionOpened onSuccess:@"Session is open." onFailure:@"Session is closed."];
     XCTAssert(sessionOpened);
@@ -41,8 +41,8 @@ static const int KeyConnectionAutomationTestsReconnectIterations = 10;
     
     [self connectKey];
     
-    YKFAccessorySessionState sessionState = self.accessorySession.sessionState;
-    BOOL sessionOpened = sessionState == YKFAccessorySessionStateOpen;
+    YKFAccessoryConnectionState sessionState = self.accessorySession.sessionState;
+    BOOL sessionOpened = sessionState == YKFAccessoryConnectionStateOpen;
     
     [TestSharedLogger.shared logCondition:sessionOpened onSuccess:@"Session is open." onFailure:@"Session is closed."];
     XCTAssert(sessionOpened);
@@ -50,7 +50,7 @@ static const int KeyConnectionAutomationTestsReconnectIterations = 10;
     [self disconnectKey];
         
     sessionState = self.accessorySession.sessionState;
-    BOOL sessionClosed = sessionState == YKFAccessorySessionStateClosed;
+    BOOL sessionClosed = sessionState == YKFAccessoryConnectionStateClosed;
     
     [TestSharedLogger.shared logCondition:sessionClosed onSuccess:@"Session is closed." onFailure:@"Session is open."];
     XCTAssert(sessionClosed);
@@ -64,8 +64,8 @@ static const int KeyConnectionAutomationTestsReconnectIterations = 10;
     
     [self connectKey];
     
-    YKFAccessorySessionState sessionState = self.accessorySession.sessionState;
-    BOOL sessionOpened = sessionState == YKFAccessorySessionStateOpen;
+    YKFAccessoryConnectionState sessionState = self.accessorySession.sessionState;
+    BOOL sessionOpened = sessionState == YKFAccessoryConnectionStateOpen;
     
     [TestSharedLogger.shared logCondition:sessionOpened onSuccess:@"Session is open." onFailure:@"Session is closed."];
     XCTAssert(sessionOpened);
@@ -77,7 +77,7 @@ static const int KeyConnectionAutomationTestsReconnectIterations = 10;
     [AutomationTest waitForTimeInterval:1];
     
     sessionState = self.accessorySession.sessionState;
-    BOOL sessionClosed = sessionState == YKFAccessorySessionStateClosed;
+    BOOL sessionClosed = sessionState == YKFAccessoryConnectionStateClosed;
     
     [TestSharedLogger.shared logCondition:sessionClosed onSuccess:@"Session is closed." onFailure:@"Session is open."];
     XCTAssert(sessionClosed);
@@ -87,7 +87,7 @@ static const int KeyConnectionAutomationTestsReconnectIterations = 10;
     [AutomationTest waitForTimeInterval:1];
     
     sessionState = self.accessorySession.sessionState;
-    sessionOpened = sessionState == YKFAccessorySessionStateOpen;
+    sessionOpened = sessionState == YKFAccessoryConnectionStateOpen;
     
     [TestSharedLogger.shared logCondition:sessionOpened onSuccess:@"Session is open." onFailure:@"Session is closed."];
     XCTAssert(sessionOpened);
@@ -105,8 +105,8 @@ static const int KeyConnectionAutomationTestsReconnectIterations = 10;
         [TestSharedLogger.shared logMessage:@"Iteration #%d", i];
         [self connectKey];
         
-        YKFAccessorySessionState sessionState = self.accessorySession.sessionState;
-        BOOL sessionOpened = sessionState == YKFAccessorySessionStateOpen;
+        YKFAccessoryConnectionState sessionState = self.accessorySession.sessionState;
+        BOOL sessionOpened = sessionState == YKFAccessoryConnectionStateOpen;
         
         [TestSharedLogger.shared logCondition:sessionOpened onSuccess:@"Session is open." onFailure:@"Session is closed."];
         XCTAssert(sessionOpened);
@@ -114,7 +114,7 @@ static const int KeyConnectionAutomationTestsReconnectIterations = 10;
         [self disconnectKey];
         
         sessionState = self.accessorySession.sessionState;
-        BOOL sessionClosed = sessionState == YKFAccessorySessionStateClosed;
+        BOOL sessionClosed = sessionState == YKFAccessoryConnectionStateClosed;
         
         [TestSharedLogger.shared logCondition:sessionClosed onSuccess:@"Session is closed." onFailure:@"Session is open."];
         XCTAssert(sessionClosed);
@@ -129,8 +129,8 @@ static const int KeyConnectionAutomationTestsReconnectIterations = 10;
     
     [self connectKey];
     
-    YKFAccessorySessionState sessionState = self.accessorySession.sessionState;
-    BOOL sessionOpened = sessionState == YKFAccessorySessionStateOpen;
+    YKFAccessoryConnectionState sessionState = self.accessorySession.sessionState;
+    BOOL sessionOpened = sessionState == YKFAccessoryConnectionStateOpen;
     
     [TestSharedLogger.shared logCondition:sessionOpened onSuccess:@"Session is open." onFailure:@"Session is closed."];
     XCTAssert(sessionOpened);
@@ -143,7 +143,7 @@ static const int KeyConnectionAutomationTestsReconnectIterations = 10;
         [AutomationTest waitForTimeInterval:1];
         
         sessionState = self.accessorySession.sessionState;
-        BOOL sessionClosed = sessionState == YKFAccessorySessionStateClosed;
+        BOOL sessionClosed = sessionState == YKFAccessoryConnectionStateClosed;
         
         [TestSharedLogger.shared logCondition:sessionClosed onSuccess:@"Session is closed." onFailure:@"Session is open."];
         XCTAssert(sessionClosed);
@@ -153,7 +153,7 @@ static const int KeyConnectionAutomationTestsReconnectIterations = 10;
         [AutomationTest waitForTimeInterval:1];
         
         sessionState = self.accessorySession.sessionState;
-        sessionOpened = sessionState == YKFAccessorySessionStateOpen;
+        sessionOpened = sessionState == YKFAccessoryConnectionStateOpen;
         
         [TestSharedLogger.shared logCondition:sessionOpened onSuccess:@"Session is open." onFailure:@"Session is closed."];
         XCTAssert(sessionOpened);

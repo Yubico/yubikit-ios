@@ -158,8 +158,8 @@ class MFIKeyInteractionViewController: RootViewController, MFIKeyActionSheetView
             isObservingAccessorySessionStateUpdates = newValue
                                     
             if isObservingAccessorySessionStateUpdates {
-                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessorySession
-                accessorySessionStateObservation = accessorySession.observe(\.sessionState, changeHandler: { [weak self] session, change in
+                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessoryConnection
+                accessorySessionStateObservation = accessorySession.observe(\.connectionState, changeHandler: { [weak self] session, change in
                     DispatchQueue.main.async {
                         self?.accessorySessionStateDidChange()
                     }
@@ -184,7 +184,7 @@ class MFIKeyInteractionViewController: RootViewController, MFIKeyActionSheetView
             isObservingFIDO2ServiceStateUpdates = newValue
                                     
             if isObservingFIDO2ServiceStateUpdates {
-                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessorySession
+                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessoryConnection
                 fido2ServiceStateObservation = accessorySession.observe(\.fido2Service?.keyState, changeHandler: { [weak self] session, change in
                     DispatchQueue.main.async {
                         self?.fido2ServiceStateDidChange()
