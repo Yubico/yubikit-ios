@@ -149,7 +149,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 #pragma mark - Session start/stop
 
-- (void)startSession {
+- (void)start {
     YKFAssertReturn(YubiKitDeviceCapabilities.supportsMFIAccessoryKey, @"Cannot start the key session on an unsupported device.");
     YKFLogInfo(@"Accessory session start requested.");
     
@@ -168,7 +168,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     [self connectToExistingKey]; // If a key is already plugged, connect to it.
 }
 
-- (BOOL)startSessionSync {
+- (BOOL)startSynchronous {
     YKFAssertOffMainThread();
     
     YKFAssertReturnValue(YubiKitDeviceCapabilities.supportsMFIAccessoryKey, @"Cannot start the accessory session on an unsupported device.", NO);
@@ -188,7 +188,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     }];
     YKFAssertReturnValue(observation, @"Could not observe the session state.", NO);
     
-    [self startSession];
+    [self start];
     
     YKFKeyCommandConfiguration *configuration = [YKFKeyCommandConfiguration defaultCommandCofiguration];
     dispatch_semaphore_wait(openSemaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(configuration.commandTimeout * NSEC_PER_SEC)));
@@ -203,7 +203,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     return YES;
 }
 
-- (void)stopSession {
+- (void)stop {
     YKFLogInfo(@"Accessory session stop requested.");
     
     if (self.connectionState != YKFAccessoryConnectionStateOpen) {
@@ -217,7 +217,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     [self closeSession];
 }
 
-- (BOOL)stopSessionSync {
+- (BOOL)stopSynchronous {
     YKFAssertOffMainThread();
     YKFAssertReturnValue(self.isKeyConnected, @"Cannot stop the session if the key is not connected.", NO);
     
@@ -235,7 +235,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     }];
     YKFAssertReturnValue(observation, @"Could not observe the session state.", NO);
     
-    [self stopSession];
+    [self stop];
     
     YKFKeyCommandConfiguration *configuration = [YKFKeyCommandConfiguration defaultCommandCofiguration];
     dispatch_semaphore_wait(closeSemaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(configuration.commandTimeout * NSEC_PER_SEC)));

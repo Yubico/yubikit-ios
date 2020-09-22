@@ -47,7 +47,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
             guard #available(iOS 13.0, *) else {
                 fatalError()
             }
-            YubiKitManager.shared.nfcSession.startIso7816Session()
+            YubiKitManager.shared.nfcSession.start()
         } else {
             logTextView.text = nil
             setDemoButton(enabled: false)
@@ -97,7 +97,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
 
         // Stop the session to dismiss the Core NFC system UI.
         if #available(iOS 13.0, *) {
-            YubiKitManager.shared.nfcSession.stopIso7816Session()
+            YubiKitManager.shared.nfcSession.stop()
         }
         
         self.setDemoButton(enabled: true)
@@ -128,11 +128,11 @@ class U2FDemoViewController: OtherDemoRootViewController {
                 DispatchQueue.global(qos: .default).async { [weak self] in
                     // if NFC UI is visible we consider the button is pressed
                     // and we run demo as soon as 5ci connected
-                    if (YubiKitManager.shared.nfcSession.iso7816SessionState != .closed) {
+                    if (YubiKitManager.shared.nfcSession.nfcConnectionState != .closed) {
                         guard let self = self else {
                                 return
                         }
-                        YubiKitManager.shared.nfcSession.stopIso7816Session()
+                        YubiKitManager.shared.nfcSession.stop()
                         self.runDemo(keyService: YubiKitManager.shared.accessorySession.u2fService)
                     }
                 }
@@ -143,7 +143,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
     @available(iOS 13.0, *)
     override func nfcSessionStateDidChange() {
         // Execute the request after the key(tag) is connected.
-        switch YubiKitManager.shared.nfcSession.iso7816SessionState {
+        switch YubiKitManager.shared.nfcSession.nfcConnectionState {
         case .open:
             DispatchQueue.global(qos: .default).async { [weak self] in
                 guard let self = self else {

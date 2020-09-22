@@ -149,7 +149,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
         return YKF_SCARD_E_NO_SMARTCARD;
     }
     
-    BOOL sessionOpened = [self.accessorySession startSessionSync];
+    BOOL sessionOpened = [self.accessorySession startSynchronous];
     return sessionOpened ? YKF_SCARD_S_SUCCESS : YKF_SCARD_F_WAITED_TOO_LONG;
 }
 
@@ -158,7 +158,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
         return YKF_SCARD_E_NO_SMARTCARD;
     }
     
-    BOOL sessionClosed = [self.accessorySession stopSessionSync];
+    BOOL sessionClosed = [self.accessorySession stopSynchronous];
     return sessionClosed ? YKF_SCARD_S_SUCCESS : YKF_SCARD_F_WAITED_TOO_LONG;
 }
 

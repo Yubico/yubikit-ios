@@ -48,7 +48,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             }
             guard let service = YubiKitManager.shared.nfcSession.fido2Service else {
                 log(message: "The session with the key is closed. Plugin the key or tap over NFC reader.")
-                YubiKitManager.shared.nfcSession.startIso7816Session()
+                YubiKitManager.shared.nfcSession.start()
                 return
             }
             fido2Service = service
@@ -85,7 +85,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
 
         // Stop the session to dismiss the Core NFC system UI.
         if #available(iOS 13.0, *) {
-            YubiKitManager.shared.nfcSession.stopIso7816Session()
+            YubiKitManager.shared.nfcSession.stop()
         }
         
         self.setDemoButtons(enabled: true)
@@ -517,11 +517,11 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
                 DispatchQueue.global(qos: .default).async { [weak self] in
                     // if NFC UI is visible we consider the button is pressed
                     // and we run demo as soon as 5ci connected
-                    if (YubiKitManager.shared.nfcSession.iso7816SessionState != .closed) {
+                    if (YubiKitManager.shared.nfcSession.nfcConnectionState != .closed) {
                         guard let self = self else {
                                 return
                         }
-                        YubiKitManager.shared.nfcSession.stopIso7816Session()
+                        YubiKitManager.shared.nfcSession.stop()
                         self.runDemo()
                     }
                 }
@@ -532,7 +532,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     @available(iOS 13.0, *)
     override func nfcSessionStateDidChange() {
         // Execute the request after the key(tag) is connected.
-        switch YubiKitManager.shared.nfcSession.iso7816SessionState {
+        switch YubiKitManager.shared.nfcSession.nfcConnectionState {
         case .open:
             DispatchQueue.global(qos: .default).async { [weak self] in
                 guard let self = self else {

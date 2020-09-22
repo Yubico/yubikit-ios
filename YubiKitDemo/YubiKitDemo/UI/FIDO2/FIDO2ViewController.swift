@@ -76,7 +76,7 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
         
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             // Make sure the session is started (in case it was closed by another demo).
-            YubiKitManager.shared.accessorySession.startSession()
+            YubiKitManager.shared.accessorySession.start()
         
             updateKeyInfo()
         
@@ -350,7 +350,7 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
                     })
 
                     // Stop the session to dismiss the Core NFC system UI.
-                    YubiKitManager.shared.nfcSession.stopIso7816Session()
+                    YubiKitManager.shared.nfcSession.stop()
                 }
             }
         }
@@ -501,7 +501,7 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
                     })
 
                     // Stop the session to dismiss the Core NFC system UI.
-                    YubiKitManager.shared.nfcSession.stopIso7816Session()
+                    YubiKitManager.shared.nfcSession.stop()
                 }
             }
         }
@@ -604,7 +604,7 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
             }
             
             // In case of NFC stop the session to allow the user to input the PIN (the NFC system action sheet blocks any interaction).
-            YubiKitManager.shared.nfcSession.stopIso7816Session()
+            YubiKitManager.shared.nfcSession.stop()
             
             // Observe the scene activation to detect when the Core NFC system UI goes away.
             // For more details about this solution check the comments on SceneObserver.
@@ -634,7 +634,7 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
                 fatalError()
             }
             // In case of NFC stop the session to allow the user to input the PIN (the NFC system action sheet blocks any interaction).
-            YubiKitManager.shared.nfcSession.stopIso7816Session()
+            YubiKitManager.shared.nfcSession.stop()
         }
         
         self.handlePinVerificationRequired { [weak self] (error) in
@@ -660,18 +660,18 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
             
             dismissProgressHud()
             
-            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
-            if nfcSession.iso7816SessionState == .open {
+            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCConnection
+            if nfcSession.nfcConnectionState == .open {
                 execution()
                 return
             }
             
             // The ISO7816 session is started only when required since it's blocking the application UI with the NFC system action sheet.
-            YubiKitManager.shared.nfcSession.startIso7816Session()
+            YubiKitManager.shared.nfcSession.start()
             
             // Execute the request after the key(tag) is connected.
-            nfcSesionStateObservation = nfcSession.observe(\.iso7816SessionState, changeHandler: { [weak self] session, change in
-                if session.iso7816SessionState == .open {
+            nfcSesionStateObservation = nfcSession.observe(\.nfcConnectionState, changeHandler: { [weak self] session, change in
+                if session.nfcConnectionState == .open {
                     execution()
                     self?.nfcSesionStateObservation = nil // remove the observation
                 }
@@ -725,13 +725,13 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
             guard #available(iOS 13.0, *) else {
                 fatalError()
             }
-            guard YubiKitManager.shared.nfcSession.iso7816SessionState != .closed else {
+            guard YubiKitManager.shared.nfcSession.nfcConnectionState != .closed else {
                 dismissProgressHudAndPresent(message: message)
                 return
             }
             
-            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
-            nfcSession.stopIso7816Session()
+            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCConnection
+            nfcSession.stop()
             
             // Observe the scene activation to detect when the Core NFC system UI goes away.
             // For more details about this solution check the comments on SceneObserver.
