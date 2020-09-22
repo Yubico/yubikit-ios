@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		51323C2F251A3BE600579915 /* YKFAccessoryConnectionConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 958491722130286900D7E2A3 /* YKFAccessoryConnectionConfiguration.m */; };
 		5177C45624572C9100954533 /* YKFKeyOATHRenameRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51A5D25B2451D81600C7161E /* YKFKeyOATHRenameRequest.h */; };
 		5177C45724572CE000954533 /* YKFKeyOATHListRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 958793E8216CE6B9001A0406 /* YKFKeyOATHListRequest.h */; };
 		5177C45824572D1200954533 /* YKFKeyOATHResetRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95B67183216F6A6300FA20E6 /* YKFKeyOATHResetRequest.h */; };
@@ -57,7 +58,7 @@
 		95233E562330DEF200C51F92 /* YubiKitLogger.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95233E542330DEDF00C51F92 /* YubiKitLogger.h */; };
 		952564C8216F699500BC6F64 /* YKFOATHResetAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 952564C7216F699500BC6F64 /* YKFOATHResetAPDU.m */; };
 		95294B46231527F50014C30B /* YKFNFCConnection.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95E152A52315257600C4B7E7 /* YKFNFCConnection.h */; };
-		9529CBBA214903FA0041D2F8 /* YKFAccessorySessionConfigurationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9529CBB9214903FA0041D2F8 /* YKFAccessorySessionConfigurationTests.m */; };
+		9529CBBA214903FA0041D2F8 /* YKFAccessoryConnectionConfigurationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9529CBB9214903FA0041D2F8 /* YKFAccessoryConnectionConfigurationTests.m */; };
 		9529CBBD214905770041D2F8 /* FakeEAAccessory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9529CBBC214905770041D2F8 /* FakeEAAccessory.m */; };
 		9529CBBF2149105F0041D2F8 /* YKFAccessoryDescriptionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9529CBBE2149105F0041D2F8 /* YKFAccessoryDescriptionTests.m */; };
 		9529CBC1214927D80041D2F8 /* YKFKeyU2FServiceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9529CBC0214927D80041D2F8 /* YKFKeyU2FServiceTests.m */; };
@@ -429,7 +430,7 @@
 		95233E542330DEDF00C51F92 /* YubiKitLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YubiKitLogger.h; sourceTree = "<group>"; };
 		952564C6216F699500BC6F64 /* YKFOATHResetAPDU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHResetAPDU.h; sourceTree = "<group>"; };
 		952564C7216F699500BC6F64 /* YKFOATHResetAPDU.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHResetAPDU.m; sourceTree = "<group>"; };
-		9529CBB9214903FA0041D2F8 /* YKFAccessorySessionConfigurationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFAccessorySessionConfigurationTests.m; sourceTree = "<group>"; };
+		9529CBB9214903FA0041D2F8 /* YKFAccessoryConnectionConfigurationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFAccessoryConnectionConfigurationTests.m; sourceTree = "<group>"; };
 		9529CBBB214905770041D2F8 /* FakeEAAccessory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FakeEAAccessory.h; sourceTree = "<group>"; };
 		9529CBBC214905770041D2F8 /* FakeEAAccessory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FakeEAAccessory.m; sourceTree = "<group>"; };
 		9529CBBE2149105F0041D2F8 /* YKFAccessoryDescriptionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFAccessoryDescriptionTests.m; sourceTree = "<group>"; };
@@ -1006,7 +1007,7 @@
 				95EF75BD213FE9F200059C79 /* YKFAccessoryConnectionControllerTests.m */,
 				9529CBBE2149105F0041D2F8 /* YKFAccessoryDescriptionTests.m */,
 				957D869821B825B4004ABF86 /* YKFKeyRawCommandServiceTests.m */,
-				9529CBB9214903FA0041D2F8 /* YKFAccessorySessionConfigurationTests.m */,
+				9529CBB9214903FA0041D2F8 /* YKFAccessoryConnectionConfigurationTests.m */,
 				9529CBC0214927D80041D2F8 /* YKFKeyU2FServiceTests.m */,
 				956884C020AAD98500E0F72C /* YKFNFCOTPServiceTests.m */,
 				95DD659021664B6800BA85C9 /* YKFOATHCredentialTests.m */,
@@ -1562,6 +1563,7 @@
 			files = (
 				9564333420A5B99F007621BD /* YKFOTPTextParserTests.m in Sources */,
 				953A5085213FCDA100929ABB /* FakeEASession.m in Sources */,
+				51323C2F251A3BE600579915 /* YKFAccessoryConnectionConfiguration.m in Sources */,
 				950C700C22980CFE00E48458 /* FakeUIDevice.m in Sources */,
 				9564333620A5C03C007621BD /* YKFOTPTokenParserTests.m in Sources */,
 				956884C120AAD98500E0F72C /* YKFNFCOTPServiceTests.m in Sources */,
@@ -1577,7 +1579,7 @@
 				95885B3120A31EFF00828D02 /* YKFOTPTokenValidatorTests.m in Sources */,
 				95D7364F21CA44EF0039141A /* YKFPCSCTests.m in Sources */,
 				951446A021873D43002BB3C5 /* YKFNSMutableDataAdditions.m in Sources */,
-				9529CBBA214903FA0041D2F8 /* YKFAccessorySessionConfigurationTests.m in Sources */,
+				9529CBBA214903FA0041D2F8 /* YKFAccessoryConnectionConfigurationTests.m in Sources */,
 				A51F7B1D23EFC6DB0046F6A3 /* YKFNSStringAdditions.m in Sources */,
 				95B8547E21E898F3000D6D7A /* YKFCBORDecoderTests.m in Sources */,
 				9564333220A58EDA007621BD /* YKFOTPURIParserTests.m in Sources */,

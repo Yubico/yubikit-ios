@@ -15,22 +15,22 @@
 #import <XCTest/XCTest.h>
 
 #import "YKFTestCase.h"
-#import "YKFAccessorySessionConfiguration.h"
+#import "YKFAccessoryConnectionConfiguration.h"
 #import "FakeEAAccessory.h"
 #import "EAAccessory+Testing.h"
 
-@interface YKFAccessorySessionConfigurationTests: YKFTestCase
+@interface YKFAccessoryConnectionConfigurationTests: YKFTestCase
 
-@property (nonatomic) YKFAccessorySessionConfiguration *sessionConfiguration;
+@property (nonatomic) YKFAccessoryConnectionConfiguration *sessionConfiguration;
 @property (nonatomic) FakeEAAccessory *accessory;
 
 @end
 
-@implementation YKFAccessorySessionConfigurationTests
+@implementation YKFAccessoryConnectionConfigurationTests
 
 - (void)setUp {
     [super setUp];
-    self.sessionConfiguration = [[YKFAccessorySessionConfiguration alloc] init];
+    self.sessionConfiguration = [[YKFAccessoryConnectionConfiguration alloc] init];
     self.accessory = [[FakeEAAccessory alloc] init];
 }
 
