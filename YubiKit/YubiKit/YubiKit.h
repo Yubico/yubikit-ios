@@ -24,7 +24,7 @@
 
 #import "YKFQRReaderSession.h"
 #import "YKFQRCodeScanError.h"
-#import "YKFNFCSession.h"
+#import "YKFNFCConnection.h"
 #import "YKFNFCOTPService.h"
 #import "YKFNFCError.h"
 #import "YKFNFCTagDescription.h"

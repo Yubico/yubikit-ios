@@ -57,7 +57,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
             guard #available(iOS 13.0, *) else {
                 fatalError()
             }
-            YubiKitManager.shared.nfcSession.startIso7816Session()
+            YubiKitManager.shared.nfcSession.start()
         } else {
             keyType = .accessory
 
@@ -265,11 +265,11 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
                 DispatchQueue.global(qos: .default).async { [weak self] in
                     // if NFC UI is visible we consider the button is pressed
                     // and we run demo as soon as 5ci connected
-                    if (YubiKitManager.shared.nfcSession.iso7816SessionState != .closed) {
+                    if (YubiKitManager.shared.nfcSession.nfcConnectionState != .closed) {
                         guard let self = self else {
                                 return
                         }
-                        YubiKitManager.shared.nfcSession.stopIso7816Session()
+                        YubiKitManager.shared.nfcSession.stop()
                         self.runPIVDemo(keyService: YubiKitManager.shared.accessorySession.rawCommandService)
                     }
                 }
@@ -282,7 +282,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
     @available(iOS 13.0, *)
     override func nfcSessionStateDidChange() {
         // Execute the request after the key(tag) is connected.
-        switch YubiKitManager.shared.nfcSession.iso7816SessionState {
+        switch YubiKitManager.shared.nfcSession.nfcConnectionState {
         case .open:
             DispatchQueue.global(qos: .default).async { [weak self] in
                 guard let self = self else {
@@ -293,7 +293,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
                 // so we need to make sure that we handle case when rawCommandService for nfcSession is nil
                 self.runPIVDemo(keyService: YubiKitManager.shared.nfcSession.rawCommandService)
                 // Stop the session to dismiss the Core NFC system UI.
-                YubiKitManager.shared.nfcSession.stopIso7816Session()
+                YubiKitManager.shared.nfcSession.stop()
             }
         default:
             break
