@@ -51,7 +51,7 @@ class FIDO2ServiceObserver: NSObject {
             isObservingServiceKeyStateUpdates = newValue
                                                 
             if isObservingServiceKeyStateUpdates {
-                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessorySession
+                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessoryConnection
                 fido2ServiceStateObservation = accessorySession.observe(\.fido2Service?.keyState, changeHandler: { [weak self] session, change in
                     self?.serviceKeyStateDidChange()
                 })

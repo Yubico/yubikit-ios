@@ -12,7 +12,7 @@
 @interface TestDataSource()<UITableViewDataSource>
 
 @property (nonatomic) UITableView *tableView;
-@property (nonatomic, readonly) YKFAccessorySession *accessorySession;
+@property (nonatomic, readonly) YKFAccessoryConnection *accessorySession;
 
 @end
 
@@ -53,8 +53,8 @@
     });
 }
 
-- (YKFAccessorySession *)accessorySession {
-    return (YKFAccessorySession *)YubiKitManager.shared.accessorySession;
+- (YKFAccessoryConnection *)accessorySession {
+    return (YKFAccessoryConnection *)YubiKitManager.shared.accessorySession;
 }
 
 #pragma mark - UITableViewDataSource

@@ -13,18 +13,22 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
+#import <ExternalAccessory/ExternalAccessory.h>
+#import "EAAccessory+Testing.h"
 
-#import "YKFAccessorySessionConfiguration.h"
-#import "EAAccessoryManager+Testing.h"
+NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^YKFAccessorySessionStateChangeBlock)(YKFAccessorySessionState, YKFAccessorySessionState);
+@protocol YKFAccessoryConnectionConfigurationProtocol <NSObject>
 
-@interface YKFAccessorySession()
+/// Returns YES if the accessory is a YubiKey.
+- (BOOL)allowsAccessory:(nonnull id<YKFEAAccessoryProtocol>)accessory;
 
-/*
- Hidden initializer to avoid the creation of multiple instances outside YubiKit.
- */
-- (nullable instancetype)initWithAccessoryManager:(nonnull id<YKFEAAccessoryManagerProtocol>)accessoryManager
-                                    configuration:(nonnull YKFAccessorySessionConfiguration *)configuration;
+/// Returns the known session protocol found in the protocols array received from an accessory.
+- (nullable NSString *)keyProtocolForAccessory:(nonnull id<YKFEAAccessoryProtocol>)accessory;
 
 @end
+
+@interface YKFAccessoryConnectionConfiguration : NSObject<YKFAccessoryConnectionConfigurationProtocol>
+@end
+
+NS_ASSUME_NONNULL_END

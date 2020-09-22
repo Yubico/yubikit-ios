@@ -415,7 +415,7 @@ class PCSCDemoViewController: OtherDemoRootViewController {
     // MARK: - Session State Updates
     
     override func accessorySessionStateDidChange() {
-        let sessionState = YubiKitManager.shared.accessorySession.sessionState        
+        let sessionState = YubiKitManager.shared.accessorySession.connectionState        
         if sessionState == .closed {
             logTextView.text = nil
             setDemoButton(enabled: true)

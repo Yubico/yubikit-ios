@@ -51,7 +51,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
         // but potentially it could be started when this controller is initialized
         // and stopped when it's being deallocated (or any custom logic when stop/start watching connection)
         YubiKitExternalLocalization.nfcScanAlertMessage = "Insert YubiKey or scan over the top edge of your iPhone";
-        let keyConnected = YubiKitManager.shared.accessorySession.sessionState == .open
+        let keyConnected = YubiKitManager.shared.accessorySession.connectionState == .open
 
         if YubiKitDeviceCapabilities.supportsISO7816NFCTags && !keyConnected {
             guard #available(iOS 13.0, *) else {
@@ -87,7 +87,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
     // MARK: - Raw Command Service Example
     
     private func runPIVDemo(keyService: YKFKeyRawCommandServiceProtocol?) {
-        let keyPluggedIn = YubiKitManager.shared.accessorySession.sessionState == .open
+        let keyPluggedIn = YubiKitManager.shared.accessorySession.connectionState == .open
         if keyPluggedIn {
             /*
                 Key is plugged in, we can use accessorySession: e.g. Show serial number.
@@ -252,7 +252,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
     // MARK: - Session State Updates
     
     override func accessorySessionStateDidChange() {
-        switch YubiKitManager.shared.accessorySession.sessionState {
+        switch YubiKitManager.shared.accessorySession.connectionState {
         case .closed:
             logTextView.text = nil
             setDemoButton(enabled: true)

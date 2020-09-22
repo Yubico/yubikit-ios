@@ -11,7 +11,7 @@
 
 @interface AutomationTest : XCTestCase
 
-@property (nonatomic, readonly) YKFAccessorySession *accessorySession;
+@property (nonatomic, readonly) YKFAccessoryConnection *accessorySession;
 
 // MoLY commands
 

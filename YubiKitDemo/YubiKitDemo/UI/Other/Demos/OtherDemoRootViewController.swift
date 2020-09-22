@@ -78,7 +78,7 @@ class OtherDemoRootViewController: RootViewController {
             isObservingSessionStateUpdates = newValue
             
             let accessorySession = YubiKitManager.shared.accessorySession as AnyObject
-            let sessionStateKeyPath = #keyPath(YKFAccessorySession.sessionState)
+            let sessionStateKeyPath = #keyPath(YKFAccessoryConnection.connectionState)
             
             if isObservingSessionStateUpdates {
                 accessorySession.addObserver(self, forKeyPath: sessionStateKeyPath, options: [], context: &OtherDemoRootViewController.observationContext)
@@ -119,7 +119,7 @@ class OtherDemoRootViewController: RootViewController {
         }
         
         switch keyPath {
-        case #keyPath(YKFAccessorySession.sessionState):
+        case #keyPath(YKFAccessoryConnection.connectionState):
             DispatchQueue.main.async { [weak self] in
                 self?.accessorySessionStateDidChange()
             }

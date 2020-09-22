@@ -29,7 +29,7 @@
 #import "YKFNFCError.h"
 #import "YKFNFCTagDescription.h"
 
-#import "YKFAccessorySession.h"
+#import "YKFAccessoryConnection.h"
 #import "YKFAccessoryDescription.h"
 
 #import "YKFKeySessionError.h"
