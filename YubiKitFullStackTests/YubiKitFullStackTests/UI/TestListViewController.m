@@ -44,12 +44,12 @@
     _observeKeyConnected = observeKeyConnected;
     
     void *context = (__bridge void * _Nullable)(self.class);
-    YKFAccessorySession *accessorySession = YubiKitManager.shared.accessorySession;
+    YKFAccessoryConnection *accessorySession = YubiKitManager.shared.accessorySession;
     
     if (_observeKeyConnected) {
-        [accessorySession addObserver:self forKeyPath:YKFAccessorySessionStatePropertyKey options:0 context:context];
+        [accessorySession addObserver:self forKeyPath:YKFAccessoryConnectionStatePropertyKey options:0 context:context];
     } else {
-        [accessorySession removeObserver:self forKeyPath:YKFAccessorySessionStatePropertyKey];
+        [accessorySession removeObserver:self forKeyPath:YKFAccessoryConnectionStatePropertyKey];
     }
 }
 
@@ -60,7 +60,7 @@
         return;
     }
     
-    if ([keyPath isEqualToString:YKFAccessorySessionStatePropertyKey]) {
+    if ([keyPath isEqualToString:YKFAccessoryConnectionStatePropertyKey]) {
         __weak typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(self) strongSelf = weakSelf;
@@ -70,8 +70,8 @@
 }
 
 - (void)updateKeyWarningViewVisibility {
-    YKFAccessorySession *accessorySession = YubiKitManager.shared.accessorySession;
-    self.insertKeyView.hidden = (accessorySession.sessionState == YKFAccessorySessionStateOpen);
+    YKFAccessoryConnection *accessorySession = YubiKitManager.shared.accessorySession;
+    self.insertKeyView.hidden = (accessorySession.connectionState == YKFAccessoryConnectionStateOpen);
 }
 
 #pragma mark - UITableViewDelegate

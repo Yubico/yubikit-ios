@@ -12,34 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFAccessorySessionConfiguration.h"
+#import "YKFAccessoryConnectionConfiguration.h"
 #import "YKFAssert.h"
 
 // Protocols
-static NSString* const YKFAccessorySessionConfigurationYLPProtocolName = @"com.yubico.ylp";
+static NSString* const YKFAccessoryConnectionConfigurationYLPProtocolName = @"com.yubico.ylp";
 
 // Manufactures
-static NSString* const YKFAccessorySessionConfigurationYubicoManufacturesName = @"Yubico";
+static NSString* const YKFAccessoryConnectionConfigurationYubicoManufacturesName = @"Yubico";
 
-@interface YKFAccessorySessionConfiguration()
+@interface YKFAccessoryConnectionConfiguration()
 
 @property (nonatomic) NSArray *allowedProtocols;
 @property (nonatomic) NSArray *allowedManufactures;
 
 @end
 
-@implementation YKFAccessorySessionConfiguration
+@implementation YKFAccessoryConnectionConfiguration
 
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.allowedProtocols = @[YKFAccessorySessionConfigurationYLPProtocolName];
-        self.allowedManufactures = @[YKFAccessorySessionConfigurationYubicoManufacturesName];
+        self.allowedProtocols = @[YKFAccessoryConnectionConfigurationYLPProtocolName];
+        self.allowedManufactures = @[YKFAccessoryConnectionConfigurationYubicoManufacturesName];
     }
     return self;
 }
 
-#pragma mark - YKFAccessorySessionConfigurationDelegate
+#pragma mark - YKFAccessoryConnectionConfigurationDelegate
 
 - (BOOL)allowsAccessory:(id<YKFEAAccessoryProtocol>)accessory {
     YKFParameterAssertReturnValue(accessory, NO);

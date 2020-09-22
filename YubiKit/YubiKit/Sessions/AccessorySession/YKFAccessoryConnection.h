@@ -29,21 +29,21 @@
 /*!
  Defines the states of the YKFAccessorySession.
  */
-typedef NS_ENUM(NSUInteger, YKFAccessorySessionState) {
+typedef NS_ENUM(NSUInteger, YKFAccessoryConnectionState) {
     
     /// The session is closed. No commands can be sent to the key.
-    YKFAccessorySessionStateClosed,
+    YKFAccessoryConnectionStateClosed,
     
     /// The session is opened and ready to use. The application can send immediately commands to the key.
-    YKFAccessorySessionStateOpen,
+    YKFAccessoryConnectionStateOpen,
     
     /// The session is in an intermediary state between opened and closed. The application should not send commands
     /// to the key when the session is in this state.
-    YKFAccessorySessionStateClosing,
+    YKFAccessoryConnectionStateClosing,
     
     /// The session is in an intermediary state between closed and opened. The application should not send commands
     /// to the key when the session is in this state.
-    YKFAccessorySessionStateOpening
+    YKFAccessoryConnectionStateOpening
 };
 
 /**
@@ -55,7 +55,7 @@ typedef NS_ENUM(NSUInteger, YKFAccessorySessionState) {
 /*!
  Defines the interface for YKFAccessorySession.
  */
-@protocol YKFAccessorySessionProtocol<NSObject>
+@protocol YKFAccessoryConnectionProtocol<NSObject>
 
 typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError* _Nullable);
 
@@ -70,7 +70,7 @@ typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError
  NOTE:
     This is a KVO compliant property. Observe it to get updates when the key is connected.
  */
-@property (nonatomic, assign, readonly) YKFAccessorySessionState sessionState;
+@property (nonatomic, assign, readonly) YKFAccessoryConnectionState connectionState;
 
 /*!
  @property accessoryDescription
@@ -221,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
  @abstract
     Provides a list of services for interacting with the YubiKey.
  */
-@interface YKFAccessorySession : NSObject<YKFAccessorySessionProtocol>
+@interface YKFAccessoryConnection : NSObject<YKFAccessoryConnectionProtocol>
 
 /*
  Not available: use the shared single instance from YubiKitManager.
@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
  @abstract
     Helper property name to setup KVO paths in ObjC. For Swift there is a better built-in language support for composing keypaths.
  */
-extern NSString* const YKFAccessorySessionStatePropertyKey;
+extern NSString* const YKFAccessoryConnectionStatePropertyKey;
 
 /*!
  @constant YKFAccessorySessionU2FServicePropertyKey
@@ -244,7 +244,7 @@ extern NSString* const YKFAccessorySessionStatePropertyKey;
  @abstract
     Helper property name to setup KVO paths in ObjC. For Swift there is a better built-in language support for composing keypaths.
  */
-extern NSString* const YKFAccessorySessionU2FServicePropertyKey;
+extern NSString* const YKFAccessoryConnectionU2FServicePropertyKey;
 
 /*!
  @constant YKFAccessorySessionFIDO2ServicePropertyKey
@@ -252,6 +252,6 @@ extern NSString* const YKFAccessorySessionU2FServicePropertyKey;
  @abstract
     Helper property name to setup KVO paths in ObjC. For Swift there is a better built-in language support for composing keypaths.
  */
-extern NSString* const YKFAccessorySessionFIDO2ServicePropertyKey;
+extern NSString* const YKFAccessoryConnectionFIDO2ServicePropertyKey;
 
 NS_ASSUME_NONNULL_END

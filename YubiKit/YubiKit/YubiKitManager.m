@@ -15,15 +15,15 @@
 #import <ExternalAccessory/ExternalAccessory.h>
 
 #import "YubiKitManager.h"
-#import "YKFAccessorySessionConfiguration.h"
+#import "YKFAccessoryConnectionConfiguration.h"
 
 #import "YKFNFCOTPService+Private.h"
-#import "YKFAccessorySession+Private.h"
+#import "YKFAccessoryConnection+Private.h"
 
 @interface YubiKitManager()
 
 @property (nonatomic, readwrite) id<YKFNFCSessionProtocol> nfcSession NS_AVAILABLE_IOS(11.0);
-@property (nonatomic, readwrite) id<YKFAccessorySessionProtocol> accessorySession;
+@property (nonatomic, readwrite) id<YKFAccessoryConnectionProtocol> accessorySession;
 
 @end
 
@@ -46,10 +46,10 @@ static id<YubiKitManagerProtocol> sharedInstance;
             self.nfcSession = [[YKFNFCSession alloc] init];
         }
        
-        YKFAccessorySessionConfiguration *configuration = [[YKFAccessorySessionConfiguration alloc] init];
+        YKFAccessoryConnectionConfiguration *configuration = [[YKFAccessoryConnectionConfiguration alloc] init];
         EAAccessoryManager *accessoryManager = [EAAccessoryManager sharedAccessoryManager];
         
-        self.accessorySession = [[YKFAccessorySession alloc] initWithAccessoryManager:accessoryManager configuration:configuration];
+        self.accessorySession = [[YKFAccessoryConnection alloc] initWithAccessoryManager:accessoryManager configuration:configuration];
     }
     return self;
 }

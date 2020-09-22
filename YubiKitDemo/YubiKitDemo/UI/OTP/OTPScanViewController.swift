@@ -203,7 +203,7 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
         otpUIResponder.isEnabled = true
         waitingForReadingOTP = true
         
-        if YubiKitManager.shared.accessorySession.sessionState == .open {
+        if YubiKitManager.shared.accessorySession.connectionState == .open {
             presentMFIKeyActionSheet(state: .touchKey, message: "Touch the key to read the OTP.")
         } else {
             presentMFIKeyActionSheet(state: .insertKey, message: "Insert the key to read the OTP.")
@@ -216,7 +216,7 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
         guard waitingForReadingOTP else {
             return // If the view controller is not actively waiting for an OTP discard the updates.
         }
-        let state = YubiKitManager.shared.accessorySession.sessionState
+        let state = YubiKitManager.shared.accessorySession.connectionState
         
         if state == .open {
             presentMFIKeyActionSheet(state: .touchKey, message: "Touch the key to read the OTP.")

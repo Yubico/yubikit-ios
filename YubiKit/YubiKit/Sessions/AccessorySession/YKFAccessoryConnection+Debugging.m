@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFAccessorySession+Debugging.h"
+#import "YKFAccessoryConnection+Debugging.h"
 #import "YKFLogger.h"
 
 #ifdef DEBUG
 
-@implementation YKFAccessorySession(Debugging)
+@implementation YKFAccessoryConnection(Debugging)
 
 - (void)checkApplicationConfiguration {
     // Search for the app bundle instead of using mainBundle to retrieve it when the library may be used inside frameworks.
