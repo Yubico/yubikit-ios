@@ -18,7 +18,7 @@
 #import "YubiKitExternalLocalization.h"
 
 #import "YKFNFCConnectionController.h"
-#import "YKFNFCSession.h"
+#import "YKFNFCConnection.h"
 #import "YKFBlockMacros.h"
 #import "YKFLogger.h"
 #import "YKFAssert.h"
@@ -33,10 +33,10 @@
 #import "YKFKeySessionError.h"
 #import "YKFKeySessionError+Private.h"
 
-@interface YKFNFCSession()<NFCTagReaderSessionDelegate>
+@interface YKFNFCConnection()<NFCTagReaderSessionDelegate>
 
-@property (nonatomic, readwrite) YKFNFCISO7816SessionState iso7816SessionState;
-@property (nonatomic, readwrite) NSError *iso7816SessionError;
+@property (nonatomic, readwrite) YKFNFCConnectionState nfcConnectionState;
+@property (nonatomic, readwrite) NSError *nfcConnectionError;
 
 @property (nonatomic, readwrite) YKFNFCTagDescription *tagDescription API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFNFCOTPService *otpService API_AVAILABLE(ios(11.0));
@@ -56,7 +56,7 @@
 
 @end
 
-@implementation YKFNFCSession
+@implementation YKFNFCConnection
 
 - (instancetype)init {
     self = [super init];
@@ -98,7 +98,7 @@
 
 #pragma mark - Session lifecycle
 
-- (void)startIso7816Session API_AVAILABLE(ios(13.0)) {
+- (void)start API_AVAILABLE(ios(13.0)) {
     YKFAssertReturn(YubiKitDeviceCapabilities.supportsISO7816NFCTags, @"Cannot start the NFC session on an unsupported device.");
     
     if (self.nfcTagReaderSession && self.nfcTagReaderSession.isReady) {
@@ -111,14 +111,14 @@
     [nfcTagReaderSession beginSession];
 }
 
-- (void)stopIso7816Session API_AVAILABLE(ios(13.0)) {
+- (void)stop API_AVAILABLE(ios(13.0)) {
     if (!self.nfcTagReaderSession) {
         YKFLogInfo(@"NFC session already stopped. Ignoring stop request.");
         return;
     }
     
     [self setAlertMessage:YubiKitExternalLocalization.nfcScanSuccessAlertMessage];
-    [self updateServicesForSession:self.nfcTagReaderSession tag:nil state:YKFNFCISO7816SessionStateClosed];
+    [self updateServicesForSession:self.nfcTagReaderSession tag:nil state:YKFNFCConnectionStateClosed];
 }
 
 - (void)cancelCommands API_AVAILABLE(ios(13.0)) {
@@ -160,7 +160,7 @@
 - (void)tagReaderSessionDidBecomeActive:(NFCTagReaderSession *)session API_AVAILABLE(ios(13.0)) {
     YKFLogInfo(@"NFC session did become active.");
     self.nfcTagReaderSession = session;
-    [self updateServicesForSession:session tag:nil state:YKFNFCISO7816SessionStatePooling];
+    [self updateServicesForSession:session tag:nil state:YKFNFCConnectionStatePooling];
 }
 
 - (void)tagReaderSession:(NFCTagReaderSession *)session didDetectTags:(NSArray<__kindof id<NFCTag>> *)tags API_AVAILABLE(ios(13.0)) {
@@ -196,14 +196,14 @@
         }
         
         YKFLogInfo(@"NFC session did connect to tag.");
-        [strongSelf updateServicesForSession:session tag:activeTag state:YKFNFCISO7816SessionStateOpen];
+        [strongSelf updateServicesForSession:session tag:activeTag state:YKFNFCConnectionStateOpen];
     }];
 }
 
 #pragma mark - Helpers
 - (void)updateServicesForSession:(NFCTagReaderSession *)session error:(NSError *)error API_AVAILABLE(ios(13.0)) {
     // if the session was already closed ignore the error
-    if (self.iso7816SessionState == YKFNFCISO7816SessionStateClosed) {
+    if (self.nfcConnectionState == YKFNFCConnectionStateClosed) {
         return;
     }
     
@@ -212,13 +212,13 @@
         return;
     }
 
-    self.iso7816SessionError = error;
+    self.nfcConnectionError = error;
     [self.nfcTagReaderSession invalidateSessionWithErrorMessage:error.localizedDescription];
-    [self updateServicesForSession:session tag:nil state:YKFNFCISO7816SessionStateClosed];
+    [self updateServicesForSession:session tag:nil state:YKFNFCConnectionStateClosed];
 }
 
-- (void)updateServicesForSession:(NFCTagReaderSession *)session tag:(id<NFCISO7816Tag>)tag state:(YKFNFCISO7816SessionState)state API_AVAILABLE(ios(13.0)) {
-    if (self.iso7816SessionState == state) {
+- (void)updateServicesForSession:(NFCTagReaderSession *)session tag:(id<NFCISO7816Tag>)tag state:(YKFNFCConnectionState)state API_AVAILABLE(ios(13.0)) {
+    if (self.nfcConnectionState == state) {
         return;
     }
     if (self.nfcTagReaderSession != session) {
@@ -226,7 +226,7 @@
     }
     
     switch (state) {
-        case YKFNFCISO7816SessionStateClosed:
+        case YKFNFCConnectionStateClosed:
             self.u2fService = nil;
             self.fido2Service = nil;
             self.rawCommandService = nil;
@@ -241,8 +241,8 @@
             self.nfcTagReaderSession = nil;
             break;
         
-        case YKFNFCISO7816SessionStatePooling:
-            self.iso7816SessionError = nil;
+        case YKFNFCConnectionStatePooling:
+            self.nfcConnectionError = nil;
 
             self.u2fService = nil;
             self.fido2Service = nil;
@@ -255,7 +255,7 @@
             [self.nfcTagReaderSession restartPolling];
             break;
             
-        case YKFNFCISO7816SessionStateOpen:
+        case YKFNFCConnectionStateOpen:
             [self observeIso7816TagAvailability];
             
             self.connectionController = [[YKFNFCConnectionController alloc] initWithNFCTag:tag operationQueue:self.communicationQueue];
@@ -267,7 +267,7 @@
             break;
     }
     
-    self.iso7816SessionState = state;
+    self.nfcConnectionState = state;
 }
 
 #pragma mark - Tag availability observation
@@ -284,7 +284,7 @@
         } else {
             YKFLogInfo(@"NFC tag is no longer available.");
             // moving from state of open back to polling/waiting for new tag
-            [strongSelf updateServicesForSession:strongSelf.nfcTagReaderSession tag:nil state:YKFNFCISO7816SessionStatePooling];
+            [strongSelf updateServicesForSession:strongSelf.nfcTagReaderSession tag:nil state:YKFNFCConnectionStatePooling];
         }
     }];
     [[NSRunLoop mainRunLoop] addTimer:self.iso7816NfcTagAvailabilityTimer forMode:NSDefaultRunLoopMode];

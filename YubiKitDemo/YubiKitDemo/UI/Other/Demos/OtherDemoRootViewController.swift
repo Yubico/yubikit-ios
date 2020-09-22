@@ -27,7 +27,7 @@ class OtherDemoRootViewController: RootViewController {
             observeNfcSessionStateUpdates = true
         }
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
-            YubiKitManager.shared.accessorySession.startSession()
+            YubiKitManager.shared.accessorySession.start()
             observeSessionStateUpdates = true
         } else {
             present(message: "This device or iOS version does not support operations with MFi accessory YubiKeys.")
@@ -99,9 +99,9 @@ class OtherDemoRootViewController: RootViewController {
             }
             isNfcObservingSessionStateUpdates = newValue
             
-            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
+            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCConnection
             if isNfcObservingSessionStateUpdates {
-                self.nfcSesionStateObservation = nfcSession.observe(\.iso7816SessionState, changeHandler: { [weak self] session, change in
+                self.nfcSesionStateObservation = nfcSession.observe(\.nfcConnectionState, changeHandler: { [weak self] session, change in
                     DispatchQueue.main.async { [weak self] in
                         self?.nfcSessionStateDidChange()
                     }

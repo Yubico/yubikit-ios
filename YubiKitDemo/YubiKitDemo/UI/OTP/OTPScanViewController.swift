@@ -47,7 +47,7 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
         
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             // Make sure the session is started (in case it was closed by another demo).
-            YubiKitManager.shared.accessorySession.startSession()
+            YubiKitManager.shared.accessorySession.start()
         
             // Enable state observation (see MFIKeyInteractionViewController)
             observeAccessorySessionStateUpdates = true

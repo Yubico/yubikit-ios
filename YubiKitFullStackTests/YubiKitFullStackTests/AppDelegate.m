@@ -23,7 +23,7 @@
     // Start YubiKit
     id<YubiKitManagerProtocol> sharedManager = YubiKitManager.shared;
     NSAssert(sharedManager, @"Error in starting YubiKit");
-    [sharedManager.accessorySession startSession];
+    [sharedManager.accessorySession start];
     
     // Shows the right UI for the target
     [AppStateController setupInitialState];

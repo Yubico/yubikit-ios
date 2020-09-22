@@ -15,7 +15,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "YKFNFCSession.h"
+#import "YKFNFCConnection.h"
 #import "YKFAccessoryConnection.h"
 
 /*!
@@ -32,7 +32,7 @@
  @abstract
     Returns the shared instance of YKFNFCSession to interact with the NFC reader.
  */
-@property (nonatomic, readonly, nonnull) id<YKFNFCSessionProtocol> nfcSession NS_AVAILABLE_IOS(11.0);
+@property (nonatomic, readonly, nonnull) id<YKFNFCConnectionProtocol> nfcSession NS_AVAILABLE_IOS(11.0);
 
 /*!
  @property accessorySession

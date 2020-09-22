@@ -145,7 +145,7 @@ typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError
     requires the user to use the key, the session should be stopped. After calling this method the session will be opened
     asynchronously and the application can monitor the state by observing the sessionState property.
  */
-- (void)startSession;
+- (void)start;
 
 /*!
  @method startSessionSync
@@ -164,7 +164,7 @@ typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError
  @returns
     YES if the session was started, otherwise NO.
  */
-- (BOOL)startSessionSync;
+- (BOOL)startSynchronous;
 
 /*!
  @method stopSession
@@ -174,7 +174,7 @@ typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError
     be closed asynchronously and the application will receive events on the sessionState when the session is closed. After the
     session is closed the u2fService will become unavaliable.
  */
-- (void)stopSession;
+- (void)stop;
 
 /*!
  @method stopSessionSync
@@ -193,7 +193,7 @@ typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError
  @returns
     YES if the session was stopped, otherwise NO.
  */
-- (BOOL)stopSessionSync;
+- (BOOL)stopSynchronous;
 
 /*!
  @method cancelCommands

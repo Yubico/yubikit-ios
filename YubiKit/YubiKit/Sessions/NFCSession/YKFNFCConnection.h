@@ -22,19 +22,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, YKFNFCISO7816SessionState) {
+typedef NS_ENUM(NSUInteger, YKFNFCConnectionState) {
     /// The session is closed. No commands can be sent to the key.
-    YKFNFCISO7816SessionStateClosed,
+    YKFNFCConnectionStateClosed,
     
     /// The session is in an intermediary state between closed and opened. Before the tag was discovered.
     /// The application should not send commands to the key when the session is in this state.
-    YKFNFCISO7816SessionStatePooling,
+    YKFNFCConnectionStatePooling,
 
     /// The session is opened and ready to use. The application can send immediately commands to the key.
-    YKFNFCISO7816SessionStateOpen
+    YKFNFCConnectionStateOpen
 };
 
-@protocol YKFNFCSessionProtocol<NSObject>
+@protocol YKFNFCConnectionProtocol<NSObject>
 
 typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError* _Nullable);
 
@@ -49,7 +49,7 @@ typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError
  NOTE:
     This is a KVO compliant property. Observe it to get updates when the key is connected.
  */
-@property (nonatomic, assign, readonly) YKFNFCISO7816SessionState iso7816SessionState;
+@property (nonatomic, assign, readonly) YKFNFCConnectionState nfcConnectionState;
 
 /*!
  @property sessionError
@@ -58,7 +58,7 @@ typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError
   NOTE:
     The property is available when key gets disconnected, state is closed and session is invalidated
  */
-@property (nonatomic, readonly, nullable) NSError *iso7816SessionError;
+@property (nonatomic, readonly, nullable) NSError *nfcConnectionError;
 
 /*!
  @property tagDescription
@@ -127,7 +127,7 @@ typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError
  @abstract
     To allow the session to connect and interract with the YubiKey, the session needs to be started.
  */
-- (void)startIso7816Session API_AVAILABLE(ios(13.0));
+- (void)start API_AVAILABLE(ios(13.0));
 
 /*!
  @method stopIso7816Session
@@ -135,7 +135,7 @@ typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError
  @abstract
     Closes the communication with the key and disables the key connection events.
  */
-- (void)stopIso7816Session API_AVAILABLE(ios(13.0));
+- (void)stop API_AVAILABLE(ios(13.0));
 
 /*!
  @method cancelCommands
@@ -150,7 +150,7 @@ typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError
 - (void)setAlertMessage:(NSString*) alertMessage API_AVAILABLE(ios(13.0));
 @end
 
-@interface YKFNFCSession: NSObject<YKFNFCSessionProtocol>
+@interface YKFNFCConnection: NSObject<YKFNFCConnectionProtocol>
 @end
 
 NS_ASSUME_NONNULL_END
