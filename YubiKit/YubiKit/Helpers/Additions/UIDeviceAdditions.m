@@ -146,6 +146,9 @@ static YKFDeviceModel ykf_deviceModelInternal = YKFDeviceModelUnknown;
     if ([self ykf_deviceName:deviceName isInList:@[@"iPad8,9", @"iPad8,10", @"iPad8,11", @"iPad8,12"]]) {
         return YKFDeviceModelIPadPro4;
     }
+    if ([self ykf_deviceName:deviceName isInList:@[@"iPad13,1", @"iPad13,2"]]) {
+        return YKFDeviceModelIPadAir4;
+    }
     
     
     
