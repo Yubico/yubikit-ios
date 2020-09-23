@@ -45,7 +45,7 @@ Add YubiKit to your [Podfile](https://guides.cocoapods.org/using/the-podfile.htm
 ```ruby
 use_frameworks!
 
-pod 'YubiKit', '~> 3.1.0'
+pod 'YubiKit', '~> 3.2.0'
 
 ```
 If you want to have latest changes, replace the last line with:
