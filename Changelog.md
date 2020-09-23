@@ -1,5 +1,16 @@
 # YubiKit Changelog
 
+#### 3.2.0 (3.1.0 -> 3.2.0)
+
+- Support for Swift Package Manager
+
+- Added support for renaming OATH credentials (supported by Yubikeys from version 5.3.1)
+
+- iPad Pro 4 and iPad Air with USB-C now correctly reports its capabilities in the SDK
+
+- Improved Base32 decoding
+---
+
 #### 3.1.0 (3.0.0 -> 3.1.0)
 
 - Raw commands service `YKFKeyRawCommandService` now allows to specify timeouts on each command using `YKFKeyCommandConfiguration` in case if user wants to speed up communication with YubiKey or getting timeouts on execution of specific command. 
