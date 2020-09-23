@@ -1,0 +1,1 @@
+..//Sessions/AccessorySession/YKFAccessorySessionConfiguration.h

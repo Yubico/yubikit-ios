@@ -1,0 +1,1 @@
+..//Sessions/QRReaderSession/YKFQRCodeScanError+Errors.h
