@@ -64,6 +64,7 @@ typedef NS_ENUM(NSUInteger, YKFDeviceModel) {
     YKFDeviceModelIPadMini5,
     YKFDeviceModelIPadAir3,
     YKFDeviceModelIPadPro4,
+    YKFDeviceModelIPadAir4,
     
     // iPod models
     
