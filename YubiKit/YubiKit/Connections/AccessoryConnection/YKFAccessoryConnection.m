@@ -31,7 +31,7 @@
 #import "YKFAssert.h"
 
 #import "YKFKeyRawCommandService+Private.h"
-#import "YKFKeyOATHService+Private.h"
+#import "YKFKeyOATHSession+Private.h"
 #import "YKFKeyU2FService+Private.h"
 #import "YKFKeyFIDO2Service+Private.h"
 #import "YKFKeyService+Private.h"
@@ -81,7 +81,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 @property (nonatomic, readwrite) id<YKFKeyU2FServiceProtocol, YKFKeyServiceDelegate> u2fService;
 @property (nonatomic, readwrite) id<YKFKeyFIDO2ServiceProtocol, YKFKeyServiceDelegate> fido2Service;
-@property (nonatomic, readwrite) id<YKFKeyOATHServiceProtocol, YKFKeyServiceDelegate> oathService;
+@property (nonatomic, readwrite) id<YKFKeyOATHSessionProtocol, YKFKeyServiceDelegate> oathService;
 @property (nonatomic, readwrite) id<YKFKeyRawCommandServiceProtocol, YKFKeyServiceDelegate> rawCommandService;
 
 // Observation
@@ -116,7 +116,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     return self;
 }
 
-- (void)oathApplication:(OATHApplication _Nonnull)callback {
+- (void)oathSession:(OATHSession _Nonnull)callback {
     if (!self.oathService) {
         callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
     }
@@ -462,7 +462,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
         fido2Service.delegate = self;
         self.fido2Service = fido2Service;
         
-        YKFKeyOATHService *oathService = [[YKFKeyOATHService alloc] initWithConnectionController:self.connectionController];
+        YKFKeyOATHSession *oathService = [[YKFKeyOATHSession alloc] initWithConnectionController:self.connectionController];
         oathService.delegate = self;
         self.oathService = oathService;
         

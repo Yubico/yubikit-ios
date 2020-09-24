@@ -17,7 +17,7 @@
 
 #import "YKFKeyU2FService.h"
 #import "YKFKeyFIDO2Service.h"
-#import "YKFKeyOATHService.h"
+#import "YKFKeyOATHSession.h"
 #import "YKFKeyRawCommandService.h"
 
 /**
@@ -57,9 +57,9 @@ typedef NS_ENUM(NSUInteger, YKFAccessoryConnectionState) {
  */
 @protocol YKFAccessoryConnectionProtocol<NSObject>
 
-typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError* _Nullable);
+typedef void (^OATHSession)(id<YKFKeyOATHSessionProtocol> _Nullable, NSError* _Nullable);
 
-- (void)oathApplication:(OATHApplication _Nonnull)callback;
+- (void)oathSession:(OATHSession _Nonnull)callback;
 
 /*!
  @property sessionState
@@ -119,7 +119,7 @@ typedef void (^OATHApplication)(id<YKFKeyOATHServiceProtocol> _Nullable, NSError
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
-@property (nonatomic, readonly, nullable) id<YKFKeyOATHServiceProtocol> oathService;
+@property (nonatomic, readonly, nullable) id<YKFKeyOATHSessionProtocol> oathService;
 
 /*!
  @property rawCommandService

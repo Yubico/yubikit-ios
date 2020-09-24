@@ -41,7 +41,7 @@
     In case of a failed request this parameter contains the error. If the request was successful
     this parameter is nil.
  */
-typedef void (^YKFKeyOATHServiceCompletionBlock)
+typedef void (^YKFKeyOATHSessionCompletionBlock)
     (NSError* _Nullable error);
 
 /*!
@@ -56,7 +56,7 @@ typedef void (^YKFKeyOATHServiceCompletionBlock)
     In case of a failed request this parameter contains the error. If the request was successful this
     parameter is nil.
  */
-typedef void (^YKFKeyOATHServiceCalculateCompletionBlock)
+typedef void (^YKFKeyOATHSessionCalculateCompletionBlock)
     (YKFKeyOATHCalculateResponse* _Nullable response, NSError* _Nullable error);
 
 /*!
@@ -71,7 +71,7 @@ typedef void (^YKFKeyOATHServiceCalculateCompletionBlock)
     In case of a failed request this parameter contains the error. If the request was successful this
     parameter is nil.
  */
-typedef void (^YKFKeyOATHServiceListCompletionBlock)
+typedef void (^YKFKeyOATHSessionListCompletionBlock)
     (YKFKeyOATHListResponse* _Nullable response, NSError* _Nullable error);
 
 /*!
@@ -86,7 +86,7 @@ typedef void (^YKFKeyOATHServiceListCompletionBlock)
     In case of a failed request this parameter contains the error. If the request was successful this
     parameter is nil.
  */
-typedef void (^YKFKeyOATHServiceCalculateAllCompletionBlock)
+typedef void (^YKFKeyOATHSessionCalculateAllCompletionBlock)
     (YKFKeyOATHCalculateAllResponse* _Nullable response, NSError* _Nullable error);
 
 /*!
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
  @abstract
     Defines the interface for YKFKeyOATHService.
  */
-@protocol YKFKeyOATHServiceProtocol<NSObject>
+@protocol YKFKeyOATHSessionProtocol<NSObject>
 
 @property (nonatomic, readonly) YKFKeyVersion* version;
 
@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
 - (void)executePutRequest:(YKFKeyOATHPutRequest *)request
-               completion:(YKFKeyOATHServiceCompletionBlock)completion;
+               completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
  @method executeDeleteRequest:completion:
@@ -160,7 +160,7 @@ NS_ASSUME_NONNULL_BEGIN
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
 - (void)executeDeleteRequest:(YKFKeyOATHDeleteRequest *)request
-                  completion:(YKFKeyOATHServiceCompletionBlock)completion;
+                  completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
  @method executeRenameRequest:completion:
@@ -181,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
 - (void)executeRenameRequest:(YKFKeyOATHRenameRequest *)request
-                  completion:(YKFKeyOATHServiceCompletionBlock)completion;
+                  completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
  @method executeCalculateRequest:completion:
@@ -202,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
 - (void)executeCalculateRequest:(YKFKeyOATHCalculateRequest *)request
-                     completion:(YKFKeyOATHServiceCalculateCompletionBlock)completion;
+                     completion:(YKFKeyOATHSessionCalculateCompletionBlock)completion;
 
 /*!
  @method executeCalculateAllRequestWithCompletion:
@@ -223,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
 - (void)executeCalculateAllRequest:(YKFKeyOATHCalculateAllRequest *)request
-                        completion:(YKFKeyOATHServiceCalculateAllCompletionBlock)completion;
+                        completion:(YKFKeyOATHSessionCalculateAllCompletionBlock)completion;
 
 /*!
  @method executeListRequestWithCompletion:
@@ -240,7 +240,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeListRequestWithCompletion:(YKFKeyOATHServiceListCompletionBlock)completion;
+- (void)executeListRequestWithCompletion:(YKFKeyOATHSessionListCompletionBlock)completion;
 
 /*!
  @method executeResetRequestWithCompletion:
@@ -258,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeResetRequestWithCompletion:(YKFKeyOATHServiceCompletionBlock)completion;
+- (void)executeResetRequestWithCompletion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
  @method executeSetCodeRequest:completion:
@@ -279,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
 - (void)executeSetCodeRequest:(YKFKeyOATHSetCodeRequest *)request
-                   completion:(YKFKeyOATHServiceCompletionBlock)completion;
+                   completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
  @method executeValidateRequest:completion:
@@ -302,7 +302,7 @@ NS_ASSUME_NONNULL_BEGIN
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
 - (void)executeValidateRequest:(YKFKeyOATHValidateRequest *)request
-                    completion:(YKFKeyOATHServiceCompletionBlock)completion;
+                    completion:(YKFKeyOATHSessionCompletionBlock)completion;
 /*!
  @method selectOATHApplicationWithCompletion:
  
@@ -342,7 +342,7 @@ NS_ASSUME_NONNULL_BEGIN
     create one. It has to use only the single shared instance from YKFAccessorySession and sync its usage with
     the session state.
  */
-@interface YKFKeyOATHService: YKFKeyService<YKFKeyOATHServiceProtocol>
+@interface YKFKeyOATHSession: YKFKeyService<YKFKeyOATHSessionProtocol>
 
 /*
  Not available: use only the instance from the YKFAccessorySession.
