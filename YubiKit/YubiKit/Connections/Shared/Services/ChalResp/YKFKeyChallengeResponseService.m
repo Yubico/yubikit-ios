@@ -38,7 +38,7 @@
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
-    id<YKFKeyRawCommandServiceProtocol> rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
+    id<YKFKeyRawCommandSessionProtocol> rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
     if (rawCommandService == nil) {
         if (@available(iOS 13.0, *)) {
             rawCommandService = YubiKitManager.shared.nfcSession.rawCommandService;
@@ -60,7 +60,7 @@
 
 }
 
-- (void)executeRequestWithoutApplicationSelection:(id<YKFKeyRawCommandServiceProtocol>)rawCommandService
+- (void)executeRequestWithoutApplicationSelection:(id<YKFKeyRawCommandSessionProtocol>)rawCommandService
                                           request: (YKFKeyChalRespRequest *)request
                                        completion:(YKFKeyChallengeResponseServiceResponseBlock)completion {
     YKFParameterAssertReturn(rawCommandService);
@@ -92,7 +92,7 @@
 
 #pragma mark - Application Selection
 
-- (void)selectYubiKeyApplication:(id<YKFKeyRawCommandServiceProtocol>)rawCommandService
+- (void)selectYubiKeyApplication:(id<YKFKeyRawCommandSessionProtocol>)rawCommandService
                                               completion:(void (^)(NSError *))completion {
     YKFAPDU *selectYubiKeyApplicationAPDU = [[YKFSelectYubiKeyApplicationAPDU alloc] init];
             

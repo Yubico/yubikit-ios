@@ -82,7 +82,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 @property (nonatomic, readwrite) id<YKFKeyU2FServiceProtocol, YKFKeyServiceDelegate> u2fService;
 @property (nonatomic, readwrite) id<YKFKeyFIDO2SessionProtocol, YKFKeyServiceDelegate> fido2Service;
 @property (nonatomic, readwrite) id<YKFKeyOATHSessionProtocol, YKFKeyServiceDelegate> oathService;
-@property (nonatomic, readwrite) id<YKFKeyRawCommandServiceProtocol, YKFKeyServiceDelegate> rawCommandService;
+@property (nonatomic, readwrite) id<YKFKeyRawCommandSessionProtocol, YKFKeyServiceDelegate> rawCommandService;
 
 // Observation
 
@@ -466,7 +466,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
         oathService.delegate = self;
         self.oathService = oathService;
         
-        YKFKeyRawCommandService *rawCommandService = [[YKFKeyRawCommandService alloc] initWithConnectionController:self.connectionController];
+        YKFKeyRawCommandSession *rawCommandService = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.connectionController];
         rawCommandService.delegate = self;
         self.rawCommandService = rawCommandService;
         

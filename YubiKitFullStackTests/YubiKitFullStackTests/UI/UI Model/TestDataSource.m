@@ -142,11 +142,11 @@
     }];
 }
 
-- (void)executeCommandWithAPDU:(YKFAPDU *)apdu completion:(YKFKeyRawCommandServiceResponseBlock)completion {
+- (void)executeCommandWithAPDU:(YKFAPDU *)apdu completion:(YKFKeyRawCommandSessionResponseBlock)completion {
     [self.accessorySession.rawCommandService executeCommand:apdu completion:completion];
 }
 
-- (void)executeCommandWithData:(NSData *)data completion:(YKFKeyRawCommandServiceResponseBlock)completion {
+- (void)executeCommandWithData:(NSData *)data completion:(YKFKeyRawCommandSessionResponseBlock)completion {
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithData:data];
     [self.accessorySession.rawCommandService executeCommand:apdu completion:completion];
 }

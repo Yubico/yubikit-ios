@@ -14,7 +14,7 @@
 
 #import <XCTest/XCTest.h>
 #import "YKFTestCase.h"
-#import "YKFKeyRawCommandService.h"
+#import "YKFKeyRawCommandSession.h"
 #import "YKFKeyRawCommandService+Private.h"
 #import "FakeYKFKeyConnectionController.h"
 #import "YKFAPDU+Private.h"
@@ -22,7 +22,7 @@
 @interface YKFKeyRawCommandServiceTests: YKFTestCase
 
 @property (nonatomic) FakeYKFKeyConnectionController *keyConnectionController;
-@property (nonatomic) YKFKeyRawCommandService *rawCommandService;
+@property (nonatomic) YKFKeyRawCommandSession *rawCommandService;
 
 
 @end
@@ -31,7 +31,7 @@
 
 - (void)setUp {
     self.keyConnectionController = [[FakeYKFKeyConnectionController alloc] init];
-    self.rawCommandService = [[YKFKeyRawCommandService alloc] initWithConnectionController:self.keyConnectionController];
+    self.rawCommandService = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.keyConnectionController];
 }
 
 #pragma mark - Sync commands
@@ -94,7 +94,7 @@
     
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
         YKFAPDU *commandAPDU = [[YKFAPDU alloc] initWithData:command];
-        YKFKeyRawCommandServiceResponseBlock completionBlock = ^(NSData *response, NSError *error) {
+        YKFKeyRawCommandSessionResponseBlock completionBlock = ^(NSData *response, NSError *error) {
             if (error) {
                 return;
             }            

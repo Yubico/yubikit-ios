@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFKeyRawCommandService.h"
+#import "YKFKeyRawCommandSession.h"
 #import "YKFKeyRawCommandService+Private.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFKeySessionError.h"
@@ -26,13 +26,13 @@
 // Make a long timeout. This should be double checked by WTX responses.
 static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
 
-@interface YKFKeyRawCommandService()
+@interface YKFKeyRawCommandSession()
 
 @property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
 
 @end
 
-@implementation YKFKeyRawCommandService
+@implementation YKFKeyRawCommandSession
 
 - (instancetype)initWithConnectionController:(id<YKFKeyConnectionControllerProtocol>)connectionController {
     YKFAssertAbortInit(connectionController);
@@ -46,7 +46,7 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
 
 #pragma mark - Command Execution
 
-- (void)executeCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandServiceResponseBlock)completion {
+- (void)executeCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandSessionResponseBlock)completion {
     YKFParameterAssertReturn(apdu);
     YKFParameterAssertReturn(completion);
     
@@ -63,11 +63,11 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
     }];
 }
 
-- (void)executeCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandServiceResponseBlock)completion {
+- (void)executeCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandSessionResponseBlock)completion {
     [self executeCommand:apdu configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:completion];
 }
 
-- (void)executeSyncCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandServiceResponseBlock)completion {
+- (void)executeSyncCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandSessionResponseBlock)completion {
     YKFParameterAssertReturn(apdu);
     YKFParameterAssertReturn(completion);
     
@@ -100,7 +100,7 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
     }
 }
 
-- (void)executeSyncCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandServiceResponseBlock)completion {
+- (void)executeSyncCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandSessionResponseBlock)completion {
     [self executeSyncCommand:apdu configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:completion];
 }
 @end
