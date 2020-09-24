@@ -1122,7 +1122,7 @@
 			path = FIDO2;
 			sourceTree = "<group>";
 		};
-		9581394E21590652008558F3 /* Services */ = {
+		9581394E21590652008558F3 /* Sessions */ = {
 			isa = PBXGroup;
 			children = (
 				814813E623EA38120003893B /* MGMT */,
@@ -1135,7 +1135,7 @@
 				95D5E2D6218711CB00AA1C11 /* RawCommand */,
 				958139552159280B008558F3 /* U2F */,
 			);
-			path = Services;
+			path = Sessions;
 			sourceTree = "<group>";
 		};
 		9581395021591D32008558F3 /* U2F */ = {
@@ -1226,7 +1226,7 @@
 				95DD407E2099A85700363FEE /* APDU */,
 				95DD408B2099A87600363FEE /* Errors */,
 				95DD408F2099A88A00363FEE /* Requests */,
-				9581394E21590652008558F3 /* Services */,
+				9581394E21590652008558F3 /* Sessions */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
