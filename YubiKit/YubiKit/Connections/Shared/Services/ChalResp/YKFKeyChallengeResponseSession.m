@@ -6,7 +6,7 @@
 //  Copyright © 2019 Yubico. All rights reserved.
 //
 
-#import "YKFKeyChallengeResponseService.h"
+#import "YKFKeyChallengeResponseSession.h"
 #import "YubiKitManager.h"
 #import "YKFSelectYubiKeyApplicationAPDU.h"
 #import "YKFKeyChalRespSendRequest.h"
@@ -21,20 +21,20 @@
 #import "YKFKeyService.h"
 #import "YKFBlockMacros.h"
 
-@interface YKFKeyChallengeResponseService()
+@interface YKFKeyChallengeResponseSession()
 
 @end
 
-@implementation YKFKeyChallengeResponseService
+@implementation YKFKeyChallengeResponseSession
 
-- (void)sendChallenge:(nonnull NSData *)challenge slot:(YKFSlot)slot completion:(nonnull YKFKeyChallengeResponseServiceResponseBlock)completion {
+- (void)sendChallenge:(nonnull NSData *)challenge slot:(YKFSlot)slot completion:(nonnull YKFKeyChallengeResponseSessionResponseBlock)completion {
     YKFKeyChalRespSendRequest *request = [[YKFKeyChalRespSendRequest alloc] initWithChallenge:challenge slot: slot];
     [self executeRequest:request completion:completion];
 }
 
 #pragma mark - execution of requests
 
-- (void)executeRequest:(YKFKeyChalRespRequest *)request completion:(nonnull YKFKeyChallengeResponseServiceResponseBlock)completion {
+- (void)executeRequest:(YKFKeyChalRespRequest *)request completion:(nonnull YKFKeyChallengeResponseSessionResponseBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
@@ -62,7 +62,7 @@
 
 - (void)executeRequestWithoutApplicationSelection:(id<YKFKeyRawCommandSessionProtocol>)rawCommandService
                                           request: (YKFKeyChalRespRequest *)request
-                                       completion:(YKFKeyChallengeResponseServiceResponseBlock)completion {
+                                       completion:(YKFKeyChallengeResponseSessionResponseBlock)completion {
     YKFParameterAssertReturn(rawCommandService);
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
