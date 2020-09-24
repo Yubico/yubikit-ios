@@ -1,12 +1,12 @@
 //
-//  YKFKeyMGMTService.m
+//  YKFKeyMGMTSession.m
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/4/20.
 //  Copyright © 2020 Yubico. All rights reserved.
 //
 
-#import "YKFKeyMGMTService.h"
+#import "YKFKeyMGMTSession.h"
 #import "YubiKitManager.h"
 #import "YKFKeyRawCommandSession.h"
 
@@ -30,13 +30,13 @@
 #import "YKFKeySessionError.h"
 #import "YKFKeySessionError+Private.h"
 
-typedef void (^YKFKeyMGMTServiceResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
-typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicationResponse* _Nullable  result, NSError* _Nullable error);
+typedef void (^YKFKeyMGMTSessionResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
+typedef void (^YKFKeyMGMTSessionSelectCompletionBlock)(YKFKeyMGMTSelectApplicationResponse* _Nullable  result, NSError* _Nullable error);
 
 
-@implementation YKFKeyMGMTService
+@implementation YKFKeyMGMTSession
 
-- (void)readConfigurationWithCompletion:(YKFKeyMGMTServiceReadCompletionBlock)completion {
+- (void)readConfigurationWithCompletion:(YKFKeyMGMTSessionReadCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
     id<YKFKeyRawCommandSessionProtocol> rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
@@ -82,7 +82,7 @@ typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
     }];
 }
 
-- (void) writeConfiguration:(YKFMGMTInterfaceConfiguration*) configuration reboot: (BOOL) reboot completion: (nonnull YKFKeyMGMTServiceWriteCompletionBlock) completion {
+- (void) writeConfiguration:(YKFMGMTInterfaceConfiguration*) configuration reboot: (BOOL) reboot completion: (nonnull YKFKeyMGMTSessionWriteCompletionBlock) completion {
     YKFParameterAssertReturn(configuration);
     YKFParameterAssertReturn(configuration);
     
@@ -97,7 +97,7 @@ typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
 
 #pragma mark - execution of requests
 
-- (void)executeRequest:(YKFKeyMGMTRequest *)request completion:(nonnull YKFKeyMGMTServiceResultCompletionBlock)completion {
+- (void)executeRequest:(YKFKeyMGMTRequest *)request completion:(nonnull YKFKeyMGMTSessionResultCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
@@ -125,7 +125,7 @@ typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
 
 - (void)executeRequestWithoutApplicationSelection:(id<YKFKeyRawCommandSessionProtocol>)rawCommandService
                                           request: (YKFKeyMGMTRequest *)request
-                                       completion:(YKFKeyMGMTServiceResultCompletionBlock)completion {
+                                       completion:(YKFKeyMGMTSessionResultCompletionBlock)completion {
     YKFParameterAssertReturn(rawCommandService);
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
@@ -152,7 +152,7 @@ typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
 #pragma mark - Application Selection
 
 - (void)selectManagementApplication:(id<YKFKeyRawCommandSessionProtocol>)rawCommandService
-                                              completion:(YKFKeyMGMTServiceSelectCompletionBlock)completion {
+                                              completion:(YKFKeyMGMTSessionSelectCompletionBlock)completion {
     YKFAPDU *selectApplicationAPDU = [[YKFSelectMGMTApplicationAPDU alloc] init];
             
     [rawCommandService executeCommand:selectApplicationAPDU completion:^(NSData *response, NSError *error) {

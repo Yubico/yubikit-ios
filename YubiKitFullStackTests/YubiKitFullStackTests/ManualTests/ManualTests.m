@@ -514,7 +514,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
 #pragma mark MGMT (management) Tests
 
 - (void) test_WhenDisablingOTPApplicationOverNFCandUSB {
-    YKFKeyMGMTService *service = [[YKFKeyMGMTService alloc] init];
+    YKFKeyMGMTSession *service = [[YKFKeyMGMTSession alloc] init];
     [service readConfigurationWithCompletion:^(YKFKeyMGMTReadConfigurationResponse *selectionResponse, NSError *error) {
         if (error) {
             [TestSharedLogger.shared logError: @"When reading configurations: %@", error.localizedDescription];
