@@ -40,7 +40,7 @@
 
 #import "YKFKeyU2FService.h"
 #import "YKFKeyFIDO2Service.h"
-#import "YKFKeyOATHService.h"
+#import "YKFKeyOATHSession.h"
 #import "YKFKeyRawCommandService.h"
 #import "YKFKeyChallengeResponseService.h"
 #import "YKFKeyMGMTService.h"
