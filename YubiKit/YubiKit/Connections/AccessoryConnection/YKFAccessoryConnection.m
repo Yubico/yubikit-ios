@@ -34,7 +34,7 @@
 #import "YKFKeyOATHSession+Private.h"
 #import "YKFKeyU2FSession+Private.h"
 #import "YKFKeyFIDO2Session+Private.h"
-#import "YKFKeyService+Private.h"
+#import "YKFKeySession+Private.h"
 #import "YKFAccessoryDescription+Private.h"
 
 #import "EAAccessory+Testing.h"
@@ -58,7 +58,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 #pragma mark - YKFAccessorySession
 
-@interface YKFAccessoryConnection()<NSStreamDelegate, YKFKeyServiceDelegate>
+@interface YKFAccessoryConnection()<NSStreamDelegate, YKFKeySessionDelegate>
 
 // Dispatching
 
@@ -79,10 +79,10 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 @property (nonatomic, assign, readwrite) YKFAccessoryConnectionState connectionState;
 
-@property (nonatomic, readwrite) id<YKFKeyU2FSessionProtocol, YKFKeyServiceDelegate> u2fService;
-@property (nonatomic, readwrite) id<YKFKeyFIDO2SessionProtocol, YKFKeyServiceDelegate> fido2Service;
-@property (nonatomic, readwrite) id<YKFKeyOATHSessionProtocol, YKFKeyServiceDelegate> oathService;
-@property (nonatomic, readwrite) id<YKFKeyRawCommandSessionProtocol, YKFKeyServiceDelegate> rawCommandService;
+@property (nonatomic, readwrite) id<YKFKeyU2FSessionProtocol, YKFKeySessionDelegate> u2fService;
+@property (nonatomic, readwrite) id<YKFKeyFIDO2SessionProtocol, YKFKeySessionDelegate> fido2Service;
+@property (nonatomic, readwrite) id<YKFKeyOATHSessionProtocol, YKFKeySessionDelegate> oathService;
+@property (nonatomic, readwrite) id<YKFKeyRawCommandSessionProtocol, YKFKeySessionDelegate> rawCommandService;
 
 // Observation
 
@@ -540,7 +540,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 #pragma mark - YKFKeyServiceDelegate
 
-- (void)keyService:(YKFKeyService *)service willExecuteRequest:(YKFKeyRequest *)request {
+- (void)keyService:(YKFKeySession *)service willExecuteRequest:(YKFKeyRequest *)request {
     [self.u2fService keyService:service willExecuteRequest:request];
     [self.fido2Service keyService:service willExecuteRequest:request];
     [self.oathService keyService:service willExecuteRequest:request];

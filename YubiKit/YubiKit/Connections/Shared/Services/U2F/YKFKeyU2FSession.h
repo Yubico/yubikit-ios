@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFKeyService.h"
+#import "YKFKeySession.h"
 #import "YKFKeyU2FSignRequest.h"
 #import "YKFKeyU2FSignResponse.h"
 #import "YKFKeyU2FRegisterRequest.h"
@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
     The U2F service is mantained by the key session which controls its lifecycle. The application must not create one.
     It has to use only the single shared instance from YKFAccessorySession and sync its usage with the session state.
  */
-@interface YKFKeyU2FSession: YKFKeyService<YKFKeyU2FSessionProtocol>
+@interface YKFKeyU2FSession: YKFKeySession<YKFKeyU2FSessionProtocol>
 
 /*
  Not available: use only the shared instance from the YKFAccessorySession.

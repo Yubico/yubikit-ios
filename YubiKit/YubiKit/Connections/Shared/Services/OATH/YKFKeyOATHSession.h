@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFKeyService.h"
+#import "YKFKeySession.h"
 #import "YKFKeyVersion.h"
 
 @class YKFKeyOATHCalculateAllRequest,
@@ -342,7 +342,7 @@ NS_ASSUME_NONNULL_BEGIN
     create one. It has to use only the single shared instance from YKFAccessorySession and sync its usage with
     the session state.
  */
-@interface YKFKeyOATHSession: YKFKeyService<YKFKeyOATHSessionProtocol>
+@interface YKFKeyOATHSession: YKFKeySession<YKFKeyOATHSessionProtocol>
 
 /*
  Not available: use only the instance from the YKFAccessorySession.

@@ -135,10 +135,10 @@ typedef void (^YKFKeyMGMTSessionSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
         if (error) {
             completion(nil, error);
         } else {
-            int statusCode = [YKFKeyService statusCodeFromKeyResponse:response];
+            int statusCode = [YKFKeySession statusCodeFromKeyResponse:response];
             switch (statusCode) {
                 case YKFKeyAPDUErrorCodeNoError:
-                    completion([YKFKeyService dataFromKeyResponse:response], nil);
+                    completion([YKFKeySession dataFromKeyResponse:response], nil);
                     break;
                     
                 default:
@@ -162,10 +162,10 @@ typedef void (^YKFKeyMGMTSessionSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
         if (error) {
             returnedError = error;
         } else {
-            int statusCode = [YKFKeyService statusCodeFromKeyResponse: response];
+            int statusCode = [YKFKeySession statusCodeFromKeyResponse: response];
             switch (statusCode) {
                 case YKFKeyAPDUErrorCodeNoError:
-                    completion([[YKFKeyMGMTSelectApplicationResponse alloc] initWithKeyResponseData:[YKFKeyService dataFromKeyResponse:response]], nil);
+                    completion([[YKFKeyMGMTSelectApplicationResponse alloc] initWithKeyResponseData:[YKFKeySession dataFromKeyResponse:response]], nil);
                     break;
                     
                 case YKFKeyAPDUErrorCodeInsNotSupported:

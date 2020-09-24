@@ -20,7 +20,7 @@
 #import "YKFAssert.h"
 
 #import "YKFAPDU+Private.h"
-#import "YKFKeyService+Private.h"
+#import "YKFKeySession+Private.h"
 #import "YKFKeySessionError+Private.h"
 
 // Make a long timeout. This should be double checked by WTX responses.

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFKeyService.h"
+#import "YKFKeySession.h"
 #import "YKFKeyRequest.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,15 +22,15 @@ NS_ASSUME_NONNULL_BEGIN
  Receives updates when the service performs a set of operations.
  The service can be its own delegate or it can receive forwarded updates from a central delegate.
  */
-@protocol YKFKeyServiceDelegate<NSObject>
+@protocol YKFKeySessionDelegate<NSObject>
 
-- (void)keyService:(YKFKeyService *)service willExecuteRequest:(nullable YKFKeyRequest *)request;
+- (void)keyService:(YKFKeySession *)service willExecuteRequest:(nullable YKFKeyRequest *)request;
 
 @end
 
-@interface YKFKeyService()<YKFKeyServiceDelegate>
+@interface YKFKeySession()<YKFKeySessionDelegate>
 
-@property (nonatomic, weak) id<YKFKeyServiceDelegate> delegate;
+@property (nonatomic, weak) id<YKFKeySessionDelegate> delegate;
 
 @end
 

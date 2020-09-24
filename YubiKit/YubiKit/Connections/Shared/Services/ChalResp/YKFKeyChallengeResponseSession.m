@@ -18,7 +18,7 @@
 #import "YKFKeySessionError+Private.h"
 #import "YKFKeyAPDUError.h"
 
-#import "YKFKeyService.h"
+#import "YKFKeySession.h"
 #import "YKFBlockMacros.h"
 
 @interface YKFKeyChallengeResponseSession()
@@ -72,11 +72,11 @@
         if (error) {
             completion(nil, error);
         } else {
-            int statusCode = [YKFKeyService statusCodeFromKeyResponse:response];
+            int statusCode = [YKFKeySession statusCodeFromKeyResponse:response];
             switch (statusCode) {
                 case YKFKeyAPDUErrorCodeNoError:
                     if (response.length > 2) {
-                        completion([YKFKeyService dataFromKeyResponse:response], nil);
+                        completion([YKFKeySession dataFromKeyResponse:response], nil);
                     } else {
                         completion(nil, [YKFKeyChallengeResponseError errorWithCode:YKFKeyChallengeResponseErrorCodeEmptyResponse]);
                     }
@@ -103,7 +103,7 @@
         if (error) {
             returnedError = error;
         } else {
-            int statusCode = [YKFKeyService statusCodeFromKeyResponse: response];
+            int statusCode = [YKFKeySession statusCodeFromKeyResponse: response];
             switch (statusCode) {
                 case YKFKeyAPDUErrorCodeNoError:
                     break;
