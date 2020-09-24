@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "YKFKeyRawCommandSession.h"
-#import "YKFKeyService.h"
+#import "YKFKeySession.h"
 #import "YKFSlot.h"
 
 /**

@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFKeyService.h"
-#import "YKFKeyService+Private.h"
+#import "YKFKeySession.h"
+#import "YKFKeySession+Private.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFNSDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFKeyAPDUError.h"
 #import "YKFAssert.h"
 
-@implementation YKFKeyService
+@implementation YKFKeySession
 
 #pragma mark - Key Response
 
@@ -49,9 +49,9 @@
     return (UInt8)(statusCode >> 8);
 }
 
-#pragma mark - YKFKeyServiceDelegate
+#pragma mark - YKFKeySessionDelegate
 
-- (void)keyService:(YKFKeyService *)service willExecuteRequest:(YKFKeyRequest *)request {
+- (void)keyService:(YKFKeySession *)service willExecuteRequest:(YKFKeyRequest *)request {
     // Does nothing: override this in the service subclasses when necessary.
 }
 

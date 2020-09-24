@@ -45,7 +45,7 @@
 
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFKeySessionError+Private.h"
-#import "YKFKeyService+Private.h"
+#import "YKFKeySession+Private.h"
 #import "YKFKeyFIDO2Request+Private.h"
 #import "YKFAPDU+Private.h"
 
@@ -542,7 +542,7 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
         if (error) {
             returnedError = error;
         } else {
-            int statusCode = [YKFKeyService statusCodeFromKeyResponse: result];
+            int statusCode = [YKFKeySession statusCodeFromKeyResponse: result];
             switch (statusCode) {
                 case YKFKeyAPDUErrorCodeNoError:
                     break;
@@ -603,7 +603,7 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
             return;
         }
         
-        UInt16 statusCode = [YKFKeyService statusCodeFromKeyResponse: result];
+        UInt16 statusCode = [YKFKeySession statusCodeFromKeyResponse: result];
         
         switch (statusCode) {
             case YKFKeyAPDUErrorCodeNoError: {
@@ -637,9 +637,9 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-#pragma mark - YKFKeyServiceProtocol
+#pragma mark - YKFKeySessionProtocol
 
-- (void)keyService:(YKFKeyService *)service willExecuteRequest:(YKFKeyRequest *)request {
+- (void)keyService:(YKFKeySession *)service willExecuteRequest:(YKFKeyRequest *)request {
     if (!service || (service == self)) {
         return;
     }
@@ -649,7 +649,7 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
 #pragma mark - Helpers
 
 - (UInt8)errorCodeFromKeyResponsePayloadData:(NSData *)response {
-    NSData *responsePayload = [YKFKeyService dataFromKeyResponse:response];
+    NSData *responsePayload = [YKFKeySession dataFromKeyResponse:response];
     YKFAssertReturnValue(responsePayload.length >= 1, @"Cannot extract FIDO2 error code from the key response.", YKFKeyFIDO2ErrorCodeOTHER);
     
     UInt8 *payloadBytes = (UInt8 *)responsePayload.bytes;
@@ -657,7 +657,7 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
 }
 
 - (NSData *)cborFromKeyResponsePayloadData:(NSData *)response {
-    NSData *responsePayload = [YKFKeyService dataFromKeyResponse:response];
+    NSData *responsePayload = [YKFKeySession dataFromKeyResponse:response];
     YKFAssertReturnValue(responsePayload.length >= 1, @"Cannot extract FIDO2 cbor from the key response.", nil);
     
     // discard the error byte

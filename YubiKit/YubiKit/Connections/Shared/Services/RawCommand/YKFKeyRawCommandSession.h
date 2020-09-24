@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFKeyService.h"
+#import "YKFKeySession.h"
 #import "YKFKeyCommandConfiguration.h"
 #import "YKFAPDU.h"
 
@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
     must not create one. It has to use only the single shared instance from YKFAccessorySession and sync its
     usage with the session state.
  */
-@interface YKFKeyRawCommandSession: YKFKeyService<YKFKeyRawCommandSessionProtocol>
+@interface YKFKeyRawCommandSession: YKFKeySession<YKFKeyRawCommandSessionProtocol>
 
 /*
  Not available: use only the instance from the YKFAccessorySession.
