@@ -39,7 +39,7 @@
 #import "YKFKeyAPDUError.h"
 
 #import "YKFKeyU2FService.h"
-#import "YKFKeyFIDO2Service.h"
+#import "YKFKeyFIDO2Session.h"
 #import "YKFKeyOATHSession.h"
 #import "YKFKeyRawCommandService.h"
 #import "YKFKeyChallengeResponseService.h"
