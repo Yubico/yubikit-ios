@@ -30,8 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)executePivApplicationSelection;
 
 
-- (void)executeCommandWithAPDU:(YKFAPDU *)apdu completion:(YKFKeyRawCommandServiceResponseBlock)completion;
-- (void)executeCommandWithData:(NSData *)data completion:(YKFKeyRawCommandServiceResponseBlock)completion;
+- (void)executeCommandWithAPDU:(YKFAPDU *)apdu completion:(YKFKeyRawCommandSessionResponseBlock)completion;
+- (void)executeCommandWithData:(NSData *)data completion:(YKFKeyRawCommandSessionResponseBlock)completion;
 
 @end
 

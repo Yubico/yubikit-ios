@@ -21,7 +21,7 @@
     
     [self connectKey];
     
-    id<YKFKeyRawCommandServiceProtocol> rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
+    id<YKFKeyRawCommandSessionProtocol> rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
     XCTAssertNotNil(rawCommandService, @"Raw command service not available.");
 
     // Select the management application to test the touch

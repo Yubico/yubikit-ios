@@ -18,7 +18,7 @@
 #import "YKFKeyU2FService.h"
 #import "YKFKeyFIDO2Session.h"
 #import "YKFKeyOATHSession.h"
-#import "YKFKeyRawCommandService.h"
+#import "YKFKeyRawCommandSession.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -119,7 +119,7 @@ typedef void (^OATHSession)(id<YKFKeyOATHSessionProtocol> _Nullable, NSError* _N
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
-@property (nonatomic, readonly, nullable) id<YKFKeyRawCommandServiceProtocol> rawCommandService API_AVAILABLE(ios(13.0));
+@property (nonatomic, readonly, nullable) id<YKFKeyRawCommandSessionProtocol> rawCommandService API_AVAILABLE(ios(13.0));
 
 /*!
  @method startIso7816Session

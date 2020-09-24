@@ -86,7 +86,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
 
     // MARK: - Raw Command Service Example
     
-    private func runPIVDemo(keyService: YKFKeyRawCommandServiceProtocol?) {
+    private func runPIVDemo(keyService: YKFKeyRawCommandSessionProtocol?) {
         let keyPluggedIn = YubiKitManager.shared.accessorySession.connectionState == .open
         if keyPluggedIn {
             /*

@@ -25,7 +25,7 @@
     
     [self connectKey];
     
-    YKFKeyRawCommandService *rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
+    YKFKeyRawCommandSession *rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
     XCTAssertNotNil(rawCommandService, @"Raw Command Service not available.");
 
     // Select the PIV Application
@@ -84,7 +84,7 @@
     
     [self connectKey];
 
-    YKFKeyRawCommandService *rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
+    YKFKeyRawCommandSession *rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
     XCTAssertNotNil(rawCommandService, @"Raw Command Service not available.");
 
     // Select the PIV Application
