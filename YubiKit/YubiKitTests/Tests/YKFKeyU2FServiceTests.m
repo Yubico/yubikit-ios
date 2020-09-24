@@ -15,8 +15,8 @@
 #import <XCTest/XCTest.h>
 
 #import "YKFTestCase.h"
-#import "YKFKeyU2FService.h"
-#import "YKFKeyU2FService+Private.h"
+#import "YKFKeyU2FSession.h"
+#import "YKFKeyU2FSession+Private.h"
 #import "FakeYKFKeyConnectionController.h"
 
 #import "YKFKeyU2FSignRequest.h"
@@ -28,7 +28,7 @@
 @interface YKFKeyU2FServiceTests: YKFTestCase
 
 @property (nonatomic) FakeYKFKeyConnectionController *keyConnectionController;
-@property (nonatomic) YKFKeyU2FService *u2fService;
+@property (nonatomic) YKFKeyU2FSession *u2fService;
 
 // Predefined U2F params
 @property (nonatomic) NSString *challenge;
@@ -47,7 +47,7 @@
     self.appId = @"https://demo.yubico.com";
     
     self.keyConnectionController = [[FakeYKFKeyConnectionController alloc] init];
-    self.u2fService = [[YKFKeyU2FService alloc] initWithConnectionController:self.keyConnectionController];
+    self.u2fService = [[YKFKeyU2FSession alloc] initWithConnectionController:self.keyConnectionController];
 }
 
 - (void)test_WhenExecutingRegisterRequest_RequestIsForwarededToTheKey {
@@ -59,7 +59,7 @@
     YKFKeyU2FRegisterRequest *registerRequest = [[YKFKeyU2FRegisterRequest alloc] initWithChallenge:self.challenge appId:self.appId];
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"U2F"];
     
-    YKFKeyU2FServiceRegisterCompletionBlock completionBlock = ^(YKFKeyU2FRegisterResponse *response, NSError *error) {
+    YKFKeyU2FSessionRegisterCompletionBlock completionBlock = ^(YKFKeyU2FRegisterResponse *response, NSError *error) {
         completionBlockExecuted = YES;
         [expectation fulfill];
     };
@@ -81,7 +81,7 @@
     YKFKeyU2FSignRequest *signRequest = [[YKFKeyU2FSignRequest alloc] initWithChallenge:self.challenge keyHandle:self.keyHandle appId:self.appId];
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"U2F"];
     
-    YKFKeyU2FServiceSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
+    YKFKeyU2FSessionSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
         completionBlockExecuted = YES;
         [expectation fulfill];
     };
@@ -107,7 +107,7 @@
     YKFKeyU2FRegisterRequest *registerRequest = [[YKFKeyU2FRegisterRequest alloc] initWithChallenge:self.challenge appId:self.appId];
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"U2F"];
     
-    YKFKeyU2FServiceRegisterCompletionBlock completionBlock = ^(YKFKeyU2FRegisterResponse *response, NSError *error) {
+    YKFKeyU2FSessionRegisterCompletionBlock completionBlock = ^(YKFKeyU2FRegisterResponse *response, NSError *error) {
         errorReceived = error.code == expectedErrorCode;
         [expectation fulfill];
     };
@@ -129,7 +129,7 @@
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"U2F"];
     
     YKFKeyU2FSignRequest *signRequest = [[YKFKeyU2FSignRequest alloc] initWithChallenge:self.challenge keyHandle:self.keyHandle appId:self.appId];
-    YKFKeyU2FServiceSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
+    YKFKeyU2FSessionSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
         errorReceived = error.code == expectedErrorCode;
         [expectation fulfill];
     };
@@ -161,7 +161,7 @@
         YKFKeyU2FSignRequest *signRequest = [[YKFKeyU2FSignRequest alloc] initWithChallenge:self.challenge keyHandle:self.keyHandle appId:self.appId];
         XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"U2F"];
         
-        YKFKeyU2FServiceSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
+        YKFKeyU2FSessionSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
             errorReceived = error.code == expectedErrorCode;
             [expectation fulfill];
         };
@@ -196,7 +196,7 @@
         YKFKeyU2FSignRequest *signRequest = [[YKFKeyU2FSignRequest alloc] initWithChallenge:self.challenge keyHandle:self.keyHandle appId:self.appId];
         XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"U2F"];
         
-        YKFKeyU2FServiceSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
+        YKFKeyU2FSessionSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
             errorReceived = error.code == expectedErrorCode;
             [expectation fulfill];
         };
@@ -223,7 +223,7 @@
     YKFKeyU2FSignRequest *signRequest = [[YKFKeyU2FSignRequest alloc] initWithChallenge:self.challenge keyHandle:self.keyHandle appId:self.appId];
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"U2F"];
     
-    YKFKeyU2FServiceSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
+    YKFKeyU2FSessionSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
         errorReceived = error.code == expectedErrorCode;
         [expectation fulfill];
     };
@@ -245,14 +245,14 @@
     self.keyConnectionController.commandExecutionResponseDataSequence = @[applicationSelectionResponse, errorResponse, successResponse];
     
     YKFKeyU2FRegisterRequest *registerRequest = [[YKFKeyU2FRegisterRequest alloc] initWithChallenge:self.challenge appId:self.appId];
-    YKFKeyU2FServiceRegisterCompletionBlock completionBlock = ^(YKFKeyU2FRegisterResponse *response, NSError *error) {};
+    YKFKeyU2FSessionRegisterCompletionBlock completionBlock = ^(YKFKeyU2FRegisterResponse *response, NSError *error) {};
     [self.u2fService executeRegisterRequest:registerRequest completion:completionBlock];
     
     [self waitForTimeInterval:0.3]; // give time to update the property
     
-    YKFKeyU2FServiceKeyState keyState = self.u2fService.keyState;
+    YKFKeyU2FSessionKeyState keyState = self.u2fService.keyState;
     
-    XCTAssertTrue(keyState == YKFKeyU2FServiceKeyStateTouchKey, @"The keys state did not update to touch key.");
+    XCTAssertTrue(keyState == YKFKeyU2FSessionKeyStateTouchKey, @"The keys state did not update to touch key.");
 }
 
 - (void)disabled_test_WhenExecutingSignRequestWithTouchRequired_KeyStateIsUpdatingToTouchKey {
@@ -264,7 +264,7 @@
     YKFKeyU2FSignRequest *signRequest = [[YKFKeyU2FSignRequest alloc] initWithChallenge:self.challenge keyHandle:self.keyHandle appId:self.appId];
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"U2F"];
     
-    YKFKeyU2FServiceSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
+    YKFKeyU2FSessionSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
         [expectation fulfill];
     };
     [self.u2fService executeSignRequest:signRequest completion:completionBlock];
@@ -272,14 +272,14 @@
     XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];
     XCTAssert(result == XCTWaiterResultCompleted, @"");
     
-    YKFKeyU2FServiceKeyState keyState = self.u2fService.keyState;
+    YKFKeyU2FSessionKeyState keyState = self.u2fService.keyState;
     
-    XCTAssertTrue(keyState == YKFKeyU2FServiceKeyStateTouchKey, @"The keys state did not update to touch key.");
+    XCTAssertTrue(keyState == YKFKeyU2FSessionKeyStateTouchKey, @"The keys state did not update to touch key.");
 }
 
 - (void)test_WhenNoRequestWasSentToTheKey_KeyStateIsIdle {
-    YKFKeyU2FServiceKeyState keyState = self.u2fService.keyState;
-    XCTAssertTrue(keyState == YYKFKeyU2FServiceKeyStateIdle, @"The keys state idle when the service does not execute a request.");
+    YKFKeyU2FSessionKeyState keyState = self.u2fService.keyState;
+    XCTAssertTrue(keyState == YYKFKeyU2FSessionKeyStateIdle, @"The keys state idle when the service does not execute a request.");
 }
 
 @end

@@ -38,7 +38,7 @@
 #import "YKFKeyOATHError.h"
 #import "YKFKeyAPDUError.h"
 
-#import "YKFKeyU2FService.h"
+#import "YKFKeyU2FSession.h"
 #import "YKFKeyFIDO2Session.h"
 #import "YKFKeyOATHSession.h"
 #import "YKFKeyRawCommandSession.h"

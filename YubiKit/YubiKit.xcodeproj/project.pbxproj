@@ -153,7 +153,7 @@
 		95885B1220A0992400828D02 /* YKFKeyU2FSignResponse.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD40942099A89600363FEE /* YKFKeyU2FSignResponse.h */; };
 		95885B1320A0992400828D02 /* YKFKeyU2FRequest.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD40952099A89600363FEE /* YKFKeyU2FRequest.h */; };
 		95885B1420A0994F00828D02 /* YKFAccessoryConnection.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD40A02099A8A300363FEE /* YKFAccessoryConnection.h */; };
-		95885B1520A0994F00828D02 /* YKFKeyU2FService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD40A22099A8A300363FEE /* YKFKeyU2FService.h */; };
+		95885B1520A0994F00828D02 /* YKFKeyU2FSession.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD40A22099A8A300363FEE /* YKFKeyU2FSession.h */; };
 		95885B1620A0994F00828D02 /* YKFNSDataAdditions.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD40762099A4EB00363FEE /* YKFNSDataAdditions.h */; };
 		95885B1720A2F92D00828D02 /* YKFSelectU2FApplicationAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40812099A86900363FEE /* YKFSelectU2FApplicationAPDU.m */; };
 		95885B1820A2F94700828D02 /* YKFAccessoryConnectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40A52099A8A400363FEE /* YKFAccessoryConnectionController.m */; };
@@ -230,7 +230,7 @@
 		95DD409C2099A89600363FEE /* YKFKeyU2FSignResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40962099A89600363FEE /* YKFKeyU2FSignResponse.m */; };
 		95DD409D2099A89600363FEE /* YKFKeyU2FRegisterResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40972099A89600363FEE /* YKFKeyU2FRegisterResponse.m */; };
 		95DD409E2099A89600363FEE /* YKFKeyU2FSignRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40992099A89600363FEE /* YKFKeyU2FSignRequest.m */; };
-		95DD40A62099A8A400363FEE /* YKFKeyU2FService.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40A12099A8A300363FEE /* YKFKeyU2FService.m */; };
+		95DD40A62099A8A400363FEE /* YKFKeyU2FSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40A12099A8A300363FEE /* YKFKeyU2FSession.m */; };
 		95DD40A72099A8A400363FEE /* YKFAccessoryConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40A32099A8A300363FEE /* YKFAccessoryConnection.m */; };
 		95DD6585216635CA00BA85C9 /* YKFOATHCredentialValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD6584216635CA00BA85C9 /* YKFOATHCredentialValidator.m */; };
 		95DD658B21663B0400BA85C9 /* YKFKeyOATHDeleteRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD658A21663B0400BA85C9 /* YKFKeyOATHDeleteRequest.m */; };
@@ -327,7 +327,7 @@
 				958D0B68215D10F200942CB9 /* YKFKeyService.h in CopyFiles */,
 				953A507D213EA16600929ABB /* YKFAccessoryDescription.h in CopyFiles */,
 				95885B1420A0994F00828D02 /* YKFAccessoryConnection.h in CopyFiles */,
-				95885B1520A0994F00828D02 /* YKFKeyU2FService.h in CopyFiles */,
+				95885B1520A0994F00828D02 /* YKFKeyU2FSession.h in CopyFiles */,
 				95885B1620A0994F00828D02 /* YKFNSDataAdditions.h in CopyFiles */,
 				95885B0F20A0992400828D02 /* YKFKeyU2FRegisterRequest.h in CopyFiles */,
 				95885B1020A0992400828D02 /* YKFKeyU2FRegisterResponse.h in CopyFiles */,
@@ -687,10 +687,10 @@
 		95DD40992099A89600363FEE /* YKFKeyU2FSignRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFKeyU2FSignRequest.m; sourceTree = "<group>"; };
 		95DD409F2099A8A300363FEE /* YKFAccessoryConnectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFAccessoryConnectionController.h; sourceTree = "<group>"; };
 		95DD40A02099A8A300363FEE /* YKFAccessoryConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFAccessoryConnection.h; sourceTree = "<group>"; };
-		95DD40A12099A8A300363FEE /* YKFKeyU2FService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFKeyU2FService.m; sourceTree = "<group>"; };
-		95DD40A22099A8A300363FEE /* YKFKeyU2FService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFKeyU2FService.h; sourceTree = "<group>"; };
+		95DD40A12099A8A300363FEE /* YKFKeyU2FSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFKeyU2FSession.m; sourceTree = "<group>"; };
+		95DD40A22099A8A300363FEE /* YKFKeyU2FSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFKeyU2FSession.h; sourceTree = "<group>"; };
 		95DD40A32099A8A300363FEE /* YKFAccessoryConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFAccessoryConnection.m; sourceTree = "<group>"; };
-		95DD40A42099A8A400363FEE /* YKFKeyU2FService+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "YKFKeyU2FService+Private.h"; sourceTree = "<group>"; };
+		95DD40A42099A8A400363FEE /* YKFKeyU2FSession+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "YKFKeyU2FSession+Private.h"; sourceTree = "<group>"; };
 		95DD40A52099A8A400363FEE /* YKFAccessoryConnectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFAccessoryConnectionController.m; sourceTree = "<group>"; };
 		95DD6583216635CA00BA85C9 /* YKFOATHCredentialValidator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHCredentialValidator.h; sourceTree = "<group>"; };
 		95DD6584216635CA00BA85C9 /* YKFOATHCredentialValidator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHCredentialValidator.m; sourceTree = "<group>"; };
@@ -1183,9 +1183,9 @@
 		958139552159280B008558F3 /* U2F */ = {
 			isa = PBXGroup;
 			children = (
-				95DD40A22099A8A300363FEE /* YKFKeyU2FService.h */,
-				95DD40A12099A8A300363FEE /* YKFKeyU2FService.m */,
-				95DD40A42099A8A400363FEE /* YKFKeyU2FService+Private.h */,
+				95DD40A22099A8A300363FEE /* YKFKeyU2FSession.h */,
+				95DD40A12099A8A300363FEE /* YKFKeyU2FSession.m */,
+				95DD40A42099A8A400363FEE /* YKFKeyU2FSession+Private.h */,
 			);
 			path = U2F;
 			sourceTree = "<group>";
@@ -1724,7 +1724,7 @@
 				95C2963D2062634C0091318B /* YKFViewController.m in Sources */,
 				956DB66F20639C2B006B1738 /* YKFQRCodeScanOverlayView.m in Sources */,
 				952CB9EC220D835F004A7624 /* YKFFIDO2PinAuthKey.m in Sources */,
-				95DD40A62099A8A400363FEE /* YKFKeyU2FService.m in Sources */,
+				95DD40A62099A8A400363FEE /* YKFKeyU2FSession.m in Sources */,
 				95C296412062653E0091318B /* YKFOTPTokenParser.m in Sources */,
 				95C29650206295A00091318B /* YubiKitExternalLocalization.m in Sources */,
 				9533068A2088CB9F00A625C8 /* UIWindowAdditions.m in Sources */,
