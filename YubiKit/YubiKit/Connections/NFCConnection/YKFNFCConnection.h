@@ -15,7 +15,7 @@
 #import <Foundation/Foundation.h>
 #import "YKFNFCTagDescription.h"
 #import "YKFNFCOTPService.h"
-#import "YKFKeyU2FService.h"
+#import "YKFKeyU2FSession.h"
 #import "YKFKeyFIDO2Session.h"
 #import "YKFKeyOATHSession.h"
 #import "YKFKeyRawCommandSession.h"
@@ -89,7 +89,7 @@ typedef void (^OATHSession)(id<YKFKeyOATHSessionProtocol> _Nullable, NSError* _N
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
-@property (nonatomic, readonly, nullable) id<YKFKeyU2FServiceProtocol> u2fService API_AVAILABLE(ios(13.0));
+@property (nonatomic, readonly, nullable) id<YKFKeyU2FSessionProtocol> u2fService API_AVAILABLE(ios(13.0));
 
 /*!
  @property fido2Service

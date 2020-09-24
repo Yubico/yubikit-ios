@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFKeyU2FService.h"
+#import "YKFKeyU2FSession.h"
 #import "YKFSelectU2FApplicationAPDU.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFKeyU2FError.h"
@@ -22,7 +22,7 @@
 #import "YKFAssert.h"
 
 #import "YKFKeySessionError+Private.h"
-#import "YKFKeyU2FService+Private.h"
+#import "YKFKeyU2FSession+Private.h"
 #import "YKFKeyU2FRequest+Private.h"
 #import "YKFKeyU2FRegisterResponse+Private.h"
 #import "YKFKeyU2FSignResponse+Private.h"
@@ -33,14 +33,14 @@ typedef void (^YKFKeyU2FServiceResultCompletionBlock)(NSData* _Nullable  result,
 
 NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 
-@interface YKFKeyU2FService()
+@interface YKFKeyU2FSession()
 
-@property (nonatomic, assign, readwrite) YKFKeyU2FServiceKeyState keyState;
+@property (nonatomic, assign, readwrite) YKFKeyU2FSessionKeyState keyState;
 @property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
 
 @end
 
-@implementation YKFKeyU2FService
+@implementation YKFKeyU2FSession
 
 - (instancetype)initWithConnectionController:(id<YKFKeyConnectionControllerProtocol>)connectionController {
     YKFAssertAbortInit(connectionController);
@@ -54,7 +54,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 
 #pragma mark - Key State
 
-- (void)updateKeyState:(YKFKeyU2FServiceKeyState)keyState {
+- (void)updateKeyState:(YKFKeyU2FSessionKeyState)keyState {
     if (self.keyState == keyState) {
         return;
     }
@@ -63,7 +63,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 
 #pragma mark - U2F Register
 
-- (void)executeRegisterRequest:(YKFKeyU2FRegisterRequest *)request completion:(YKFKeyU2FServiceRegisterCompletionBlock)completion {
+- (void)executeRegisterRequest:(YKFKeyU2FRegisterRequest *)request completion:(YKFKeyU2FSessionRegisterCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
     
@@ -81,7 +81,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 
 #pragma mark - U2F Sign
 
-- (void)executeSignRequest:(YKFKeyU2FSignRequest *)request completion:(YKFKeyU2FServiceSignCompletionBlock)completion {
+- (void)executeSignRequest:(YKFKeyU2FSignRequest *)request completion:(YKFKeyU2FSessionSignCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
@@ -138,13 +138,13 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
     
     [self.delegate keyService:self willExecuteRequest:request];
     
-    [self updateKeyState:YKFKeyU2FServiceKeyStateProcessingRequest];
+    [self updateKeyState:YKFKeyU2FSessionKeyStateProcessingRequest];
     
     ykf_weak_self();
     [self selectU2FApplicationWithCompletion:^(NSError *error) {
         ykf_safe_strong_self();
         if (error) {
-            [strongSelf updateKeyState:YYKFKeyU2FServiceKeyStateIdle];
+            [strongSelf updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
             completion(nil, error);
             return;
         }
@@ -160,7 +160,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
     YKFKeyConnectionControllerCommandResponseBlock block = ^(NSData *result, NSError *error, NSTimeInterval executionTime) {
         ykf_safe_strong_self();
         if (error) {
-            [strongSelf updateKeyState:YYKFKeyU2FServiceKeyStateIdle];
+            [strongSelf updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
             completion(nil, error);
             return;
         }
@@ -173,27 +173,27 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
             break;
                 
             case YKFKeyAPDUErrorCodeNoError: {
-                [strongSelf updateKeyState:YYKFKeyU2FServiceKeyStateIdle];
+                [strongSelf updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
                 completion(result, nil);
             }
             break;
                 
             case YKFKeyAPDUErrorCodeWrongData: {
-                [strongSelf updateKeyState:YYKFKeyU2FServiceKeyStateIdle];
+                [strongSelf updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
                 YKFKeySessionError *connectionError = [YKFKeyU2FError errorWithCode:YKFKeyU2FErrorCodeU2FSigningUnavailable];
                 completion(nil, connectionError);
             }
             break;
                 
             case YKFKeyAPDUErrorCodeInsNotSupported: {
-                [strongSelf updateKeyState:YYKFKeyU2FServiceKeyStateIdle];
+                [strongSelf updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
                 completion(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorMissingApplicationCode]);
             }
             break;
                 
             // Errors - The status code is the error. The key doesn't send any other information.
             default: {
-                [strongSelf updateKeyState:YYKFKeyU2FServiceKeyStateIdle];
+                [strongSelf updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
                 YKFKeySessionError *connectionError = [YKFKeySessionError errorWithCode:statusCode];
                 completion(nil, connectionError);
             }
@@ -212,11 +212,11 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
         YKFKeySessionError *timeoutError = [YKFKeySessionError errorWithCode:YKFKeySessionErrorTouchTimeoutCode];
         completion(nil, timeoutError);
         
-        [self updateKeyState:YYKFKeyU2FServiceKeyStateIdle];
+        [self updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
         return;
     }
     
-    [self updateKeyState:YKFKeyU2FServiceKeyStateTouchKey];    
+    [self updateKeyState:YKFKeyU2FSessionKeyStateTouchKey];    
     request.retries += 1;
     
     ykf_weak_self();
