@@ -469,7 +469,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
 
     [TestSharedLogger.shared logMessage:@"Using YKFKeyChallengeResponseService"];
 
-    YKFKeyChallengeResponseService *service = [[YKFKeyChallengeResponseService alloc] init];
+    YKFKeyChallengeResponseSession *service = [[YKFKeyChallengeResponseSession alloc] init];
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     

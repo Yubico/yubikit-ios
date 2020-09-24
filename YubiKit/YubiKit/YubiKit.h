@@ -42,7 +42,7 @@
 #import "YKFKeyFIDO2Session.h"
 #import "YKFKeyOATHSession.h"
 #import "YKFKeyRawCommandSession.h"
-#import "YKFKeyChallengeResponseService.h"
+#import "YKFKeyChallengeResponseSession.h"
 #import "YKFKeyMGMTSession.h"
 
 #import "YKFSlot.h"
