@@ -25,7 +25,7 @@ The `YKFKeyRawCommandService` provides a simple API for sending synchronous and 
   
  ...
 
-id<YKFKeyRawCommandServiceProtocol> rawCommandService =  YubiKitManager.shared.accessorySession.rawCommandService;
+id<YKFKeyRawCommandSessionProtocol> rawCommandService =  YubiKitManager.shared.accessorySession.rawCommandService;
 if (!rawCommandService) {
     // The key is not connected, nearby, or the key session is not started if the rawCommandService is nil.
     return;
@@ -136,7 +136,7 @@ let rawCommandService = YubiKitManager.shared.nfcSession.rawCommandService
 ```
 
 ```objective-c
-id<YKFKeyRawCommandServiceProtocol> rawCommandService =  YubiKitManager.shared.nfcSession.rawCommandService;
+id<YKFKeyRawCommandSessionProtocol> rawCommandService =  YubiKitManager.shared.nfcSession.rawCommandService;
 ```
 
 

@@ -43,7 +43,7 @@
 @property (nonatomic, readwrite) YKFKeyU2FService *u2fService API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFKeyFIDO2Session *fido2Service API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFKeyOATHSession *oathService API_AVAILABLE(ios(13.0));
-@property (nonatomic, readwrite) YKFKeyRawCommandService *rawCommandService API_AVAILABLE(ios(13.0));
+@property (nonatomic, readwrite) YKFKeyRawCommandSession *rawCommandService API_AVAILABLE(ios(13.0));
 
 @property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
 
@@ -262,7 +262,7 @@
             self.u2fService = [[YKFKeyU2FService alloc] initWithConnectionController:self.connectionController];
             self.fido2Service = [[YKFKeyFIDO2Session alloc] initWithConnectionController:self.connectionController];
             self.oathService = [[YKFKeyOATHSession alloc] initWithConnectionController:self.connectionController];
-            self.rawCommandService = [[YKFKeyRawCommandService alloc] initWithConnectionController:self.connectionController];
+            self.rawCommandService = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.connectionController];
             self.tagDescription = [[YKFNFCTagDescription alloc] initWithTag: tag];
             break;
     }

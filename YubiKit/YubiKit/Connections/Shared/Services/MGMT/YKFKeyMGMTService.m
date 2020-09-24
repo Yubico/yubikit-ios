@@ -8,7 +8,7 @@
 
 #import "YKFKeyMGMTService.h"
 #import "YubiKitManager.h"
-#import "YKFKeyRawCommandService.h"
+#import "YKFKeyRawCommandSession.h"
 
 #import "YKFKeyMGMTRequest.h"
 #import "YKFKeyMGMTRequest+Private.h"
@@ -39,7 +39,7 @@ typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
 - (void)readConfigurationWithCompletion:(YKFKeyMGMTServiceReadCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
-    id<YKFKeyRawCommandServiceProtocol> rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
+    id<YKFKeyRawCommandSessionProtocol> rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
     if (rawCommandService == nil) {
         if (@available(iOS 13.0, *)) {
             rawCommandService = YubiKitManager.shared.nfcSession.rawCommandService;
@@ -101,7 +101,7 @@ typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
-    id<YKFKeyRawCommandServiceProtocol> rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
+    id<YKFKeyRawCommandSessionProtocol> rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
     if (rawCommandService == nil) {
         if (@available(iOS 13.0, *)) {
             rawCommandService = YubiKitManager.shared.nfcSession.rawCommandService;
@@ -123,7 +123,7 @@ typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
 
 }
 
-- (void)executeRequestWithoutApplicationSelection:(id<YKFKeyRawCommandServiceProtocol>)rawCommandService
+- (void)executeRequestWithoutApplicationSelection:(id<YKFKeyRawCommandSessionProtocol>)rawCommandService
                                           request: (YKFKeyMGMTRequest *)request
                                        completion:(YKFKeyMGMTServiceResultCompletionBlock)completion {
     YKFParameterAssertReturn(rawCommandService);
@@ -151,7 +151,7 @@ typedef void (^YKFKeyMGMTServiceSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
 
 #pragma mark - Application Selection
 
-- (void)selectManagementApplication:(id<YKFKeyRawCommandServiceProtocol>)rawCommandService
+- (void)selectManagementApplication:(id<YKFKeyRawCommandSessionProtocol>)rawCommandService
                                               completion:(YKFKeyMGMTServiceSelectCompletionBlock)completion {
     YKFAPDU *selectApplicationAPDU = [[YKFSelectMGMTApplicationAPDU alloc] init];
             

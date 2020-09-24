@@ -41,7 +41,7 @@
 #import "YKFKeyU2FService.h"
 #import "YKFKeyFIDO2Session.h"
 #import "YKFKeyOATHSession.h"
-#import "YKFKeyRawCommandService.h"
+#import "YKFKeyRawCommandSession.h"
 #import "YKFKeyChallengeResponseService.h"
 #import "YKFKeyMGMTService.h"
 
