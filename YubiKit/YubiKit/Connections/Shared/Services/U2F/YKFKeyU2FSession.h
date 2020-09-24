@@ -36,7 +36,7 @@
     In case of a failed request this parameter contains the error. If the request was successful
     this parameter is nil.
  */
-typedef void (^YKFKeyU2FServiceSignCompletionBlock)
+typedef void (^YKFKeyU2FSessionSignCompletionBlock)
     (YKFKeyU2FSignResponse* _Nullable response, NSError* _Nullable error);
 
 /*!
@@ -50,7 +50,7 @@ typedef void (^YKFKeyU2FServiceSignCompletionBlock)
     In case of a failed request this parameter contains the error. If the request was successful this
     parameter is nil.
  */
-typedef void (^YKFKeyU2FServiceRegisterCompletionBlock)
+typedef void (^YKFKeyU2FSessionRegisterCompletionBlock)
     (YKFKeyU2FRegisterResponse* _Nullable response, NSError* _Nullable error);
 
 /**
@@ -63,17 +63,17 @@ typedef void (^YKFKeyU2FServiceRegisterCompletionBlock)
  @abstract
     Enumerates the contextual states of the key when performing U2F requests.
  */
-typedef NS_ENUM(NSUInteger, YKFKeyU2FServiceKeyState) {
+typedef NS_ENUM(NSUInteger, YKFKeyU2FSessionKeyState) {
     
     /// The key is not performing any U2F operation.
-    YYKFKeyU2FServiceKeyStateIdle,
+    YYKFKeyU2FSessionKeyStateIdle,
     
     /// The key is executing an U2F request.
-    YKFKeyU2FServiceKeyStateProcessingRequest,
+    YKFKeyU2FSessionKeyStateProcessingRequest,
     
     /// The user must touch the key to prove a human presence which allows the key to perform the current
     /// U2F operation.
-    YKFKeyU2FServiceKeyStateTouchKey
+    YKFKeyU2FSessionKeyStateTouchKey
 };
 
 /**
@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
  @abstract
     Defines the interface for YKFKeyU2FService.
  */
-@protocol YKFKeyU2FServiceProtocol<NSObject>
+@protocol YKFKeyU2FSessionProtocol<NSObject>
 
 /*!
  @property keyState
@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
     The default behaviour of YubiKit is to always ask for human presence when performing an U2F operation. To detect
     asynchronously the touch state check for YKFKeyU2FServiceKeyStateTouchKey.
  */
-@property (nonatomic, assign, readonly) YKFKeyU2FServiceKeyState keyState;
+@property (nonatomic, assign, readonly) YKFKeyU2FSessionKeyState keyState;
 
 /*!
  @method executeRegisterRequest:completion:
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
     queued in the order they are received and executed sequentially.
  */
 - (void)executeRegisterRequest:(YKFKeyU2FRegisterRequest *)request
-                    completion:(YKFKeyU2FServiceRegisterCompletionBlock)completion;
+                    completion:(YKFKeyU2FSessionRegisterCompletionBlock)completion;
 
 /*!
  @method executeRegisterRequest:completion:
@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
     queued in the order they are received and executed sequentially.
  */
 - (void)executeSignRequest:(YKFKeyU2FSignRequest *)request
-                completion:(YKFKeyU2FServiceSignCompletionBlock)completion;
+                completion:(YKFKeyU2FSessionSignCompletionBlock)completion;
 
 @end
 
@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
     The U2F service is mantained by the key session which controls its lifecycle. The application must not create one.
     It has to use only the single shared instance from YKFAccessorySession and sync its usage with the session state.
  */
-@interface YKFKeyU2FService: YKFKeyService<YKFKeyU2FServiceProtocol>
+@interface YKFKeyU2FSession: YKFKeyService<YKFKeyU2FSessionProtocol>
 
 /*
  Not available: use only the shared instance from the YKFAccessorySession.

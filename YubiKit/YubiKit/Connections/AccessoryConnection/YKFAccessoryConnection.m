@@ -32,7 +32,7 @@
 
 #import "YKFKeyRawCommandService+Private.h"
 #import "YKFKeyOATHSession+Private.h"
-#import "YKFKeyU2FService+Private.h"
+#import "YKFKeyU2FSession+Private.h"
 #import "YKFKeyFIDO2Session+Private.h"
 #import "YKFKeyService+Private.h"
 #import "YKFAccessoryDescription+Private.h"
@@ -79,7 +79,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 @property (nonatomic, assign, readwrite) YKFAccessoryConnectionState connectionState;
 
-@property (nonatomic, readwrite) id<YKFKeyU2FServiceProtocol, YKFKeyServiceDelegate> u2fService;
+@property (nonatomic, readwrite) id<YKFKeyU2FSessionProtocol, YKFKeyServiceDelegate> u2fService;
 @property (nonatomic, readwrite) id<YKFKeyFIDO2SessionProtocol, YKFKeyServiceDelegate> fido2Service;
 @property (nonatomic, readwrite) id<YKFKeyOATHSessionProtocol, YKFKeyServiceDelegate> oathService;
 @property (nonatomic, readwrite) id<YKFKeyRawCommandSessionProtocol, YKFKeyServiceDelegate> rawCommandService;
@@ -454,7 +454,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
          Setup services after the connection is created
          */
         
-        YKFKeyU2FService *u2fService = [[YKFKeyU2FService alloc] initWithConnectionController:self.connectionController];
+        YKFKeyU2FSession *u2fService = [[YKFKeyU2FSession alloc] initWithConnectionController:self.connectionController];
         u2fService.delegate = self;
         self.u2fService = u2fService;
         
