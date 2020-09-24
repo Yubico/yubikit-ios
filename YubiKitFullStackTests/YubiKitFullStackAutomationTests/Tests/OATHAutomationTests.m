@@ -130,7 +130,7 @@
 }
 
 - (void)addCredentialToKey:(YKFOATHCredential *)credential {
-    id<YKFKeyOATHServiceProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
+    id<YKFKeyOATHSessionProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
     XCTAssertNotNil(oathService, @"Oath service not available.");
     
     YKFKeyOATHPutRequest *putRequest = [[YKFKeyOATHPutRequest alloc] initWithCredential:credential];
@@ -149,7 +149,7 @@
 }
 
 - (void)deleteCredentialFromTheKey:(YKFOATHCredential *)credential {
-    id<YKFKeyOATHServiceProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
+    id<YKFKeyOATHSessionProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
     XCTAssertNotNil(oathService, @"Oath service not available.");
     
     YKFKeyOATHDeleteRequest *deleteRequest = [[YKFKeyOATHDeleteRequest alloc] initWithCredential:credential];
@@ -170,7 +170,7 @@
 - (YKFKeyOATHListResponse *)listCredentials {
     __block YKFKeyOATHListResponse *listResponse = nil;
     
-    id<YKFKeyOATHServiceProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
+    id<YKFKeyOATHSessionProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
     NSAssert(oathService, @"Oath service not available.");
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"List expectation."];
@@ -192,7 +192,7 @@
 - (YKFKeyOATHCalculateResponse *)calculateCredential:(YKFOATHCredential *)credential {
     __block YKFKeyOATHCalculateResponse *calculateResponse = nil;
     
-    id<YKFKeyOATHServiceProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
+    id<YKFKeyOATHSessionProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
     NSAssert(oathService, @"Oath service not available.");
     
     YKFKeyOATHCalculateRequest *calculateRequest = [[YKFKeyOATHCalculateRequest alloc] initWithCredential:credential];
@@ -216,7 +216,7 @@
 
 // Called before executing the tests
 + (BOOL)resetApplication {
-    id<YKFKeyOATHServiceProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
+    id<YKFKeyOATHSessionProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Reset expectation."];
     [oathService executeResetRequestWithCompletion:^(NSError * _Nullable error) {
