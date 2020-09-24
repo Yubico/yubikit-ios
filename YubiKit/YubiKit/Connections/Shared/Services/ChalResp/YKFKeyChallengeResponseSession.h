@@ -30,7 +30,7 @@
     In case of a failed request this parameter contains the error. If the request was successful
     this parameter is nil.
  */
-typedef void (^YKFKeyChallengeResponseServiceResponseBlock)
+typedef void (^YKFKeyChallengeResponseSessionResponseBlock)
     (NSData* _Nullable response, NSError* _Nullable error);
 
 /**
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 @abstract
    Defines the interface for YKFKeyChallengeResponseService.
 */
-@protocol YKFKeyChallengeResponseServiceProtocol<NSObject>
+@protocol YKFKeyChallengeResponseSessionProtocol<NSObject>
 
 /*!
 @method sendChallenge:slot:completion:
@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 @note:
    This method is thread safe and can be invoked from any thread (main or a background thread).
 */
-- (void)sendChallenge:(NSData *)challenge slot:(YKFSlot) slot completion:(YKFKeyChallengeResponseServiceResponseBlock)completion;
+- (void)sendChallenge:(NSData *)challenge slot:(YKFSlot) slot completion:(YKFKeyChallengeResponseSessionResponseBlock)completion;
 
 @end
 
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFKeyChallengeResponseService: NSObject<YKFKeyChallengeResponseServiceProtocol>
+@interface YKFKeyChallengeResponseSession: NSObject<YKFKeyChallengeResponseSessionProtocol>
 
 @end
 
