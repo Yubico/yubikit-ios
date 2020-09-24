@@ -326,7 +326,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         [TestSharedLogger.shared logError:@"Could not create OATH credential."];
         return;
     }
-    id<YKFKeyOATHServiceProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
+    id<YKFKeyOATHSessionProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
     
     /*
      1. Add the credential to the key
@@ -386,7 +386,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         [TestSharedLogger.shared logError:@"Could not create OATH credential."];
         return;
     }
-    id<YKFKeyOATHServiceProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
+    id<YKFKeyOATHSessionProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
     
     /*
      1. Add the credential to the key
