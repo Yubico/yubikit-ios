@@ -17,7 +17,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFKeyService: NSObject
+@interface YKFKeySession: NSObject
 
 /// Removes the YLP headers and status code from the response data received from a key command response.
 + (NSData *)dataFromKeyResponse:(NSData *)response;

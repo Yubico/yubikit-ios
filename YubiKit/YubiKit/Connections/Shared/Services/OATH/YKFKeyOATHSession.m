@@ -14,7 +14,7 @@
 
 #import "YKFKeyOATHSession.h"
 #import "YKFKeyOATHSession+Private.h"
-#import "YKFKeyService+Private.h"
+#import "YKFKeySession+Private.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFKeyOATHError.h"
 #import "YKFKeyAPDUError.h"
@@ -363,11 +363,11 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         }
         YKFAssertReturn(result != nil, @"Invalid OATH request execution result value on success.");
 
-        NSData *responseData = [YKFKeyService dataFromKeyResponse:result];
+        NSData *responseData = [YKFKeySession dataFromKeyResponse:result];
         [responseDataBuffer appendData:responseData];
         
-        int statusCode = [YKFKeyService statusCodeFromKeyResponse: result];
-        int shortStatusCode = [YKFKeyService shortStatusCodeFromStatusCode:statusCode];
+        int statusCode = [YKFKeySession statusCodeFromKeyResponse: result];
+        int shortStatusCode = [YKFKeySession shortStatusCodeFromStatusCode:statusCode];
         
         if (shortStatusCode == YKFKeyAPDUErrorCodeMoreData) {
             YKFLogInfo(@"Key has more data to send. Requesting for remaining data...");            
@@ -428,10 +428,10 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
             return;
         }
         
-        int statusCode = [YKFKeyService statusCodeFromKeyResponse: result];
+        int statusCode = [YKFKeySession statusCodeFromKeyResponse: result];
         switch (statusCode) {
             case YKFKeyAPDUErrorCodeNoError: {
-                    NSData *responseData = [YKFKeyService dataFromKeyResponse:result];
+                    NSData *responseData = [YKFKeySession dataFromKeyResponse:result];
                     YKFKeyOATHSelectApplicationResponse *response = [[YKFKeyOATHSelectApplicationResponse alloc] initWithResponseData:responseData];
                     if (response) {
                         // Cache the response.
@@ -453,9 +453,9 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     }];
 }
 
-#pragma mark - YKFKeyServiceProtocol
+#pragma mark - YKFKeySessionProtocol
 
-- (void)keyService:(YKFKeyService *)service willExecuteRequest:(YKFKeyRequest *)request {
+- (void)keyService:(YKFKeySession *)service willExecuteRequest:(YKFKeyRequest *)request {
     if (!service || (service == self)) {
         return;
     }

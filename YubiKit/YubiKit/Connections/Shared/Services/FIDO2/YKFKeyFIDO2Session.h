@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFKeyService.h"
+#import "YKFKeySession.h"
 
 #import "YKFKeyFIDO2Request.h"
 #import "YKFKeyFIDO2MakeCredentialRequest.h"
@@ -344,7 +344,7 @@ NS_ASSUME_NONNULL_BEGIN
     create one. It has to use only the single shared instance from YKFAccessorySession and sync its usage with
     the session state.
  */
-@interface YKFKeyFIDO2Session: YKFKeyService<YKFKeyFIDO2SessionProtocol>
+@interface YKFKeyFIDO2Session: YKFKeySession<YKFKeyFIDO2SessionProtocol>
 
 /*
  Not available: use only the shared instance from the YKFAccessorySession.

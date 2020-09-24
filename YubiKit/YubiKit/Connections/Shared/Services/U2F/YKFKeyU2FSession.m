@@ -26,7 +26,7 @@
 #import "YKFKeyU2FRequest+Private.h"
 #import "YKFKeyU2FRegisterResponse+Private.h"
 #import "YKFKeyU2FSignResponse+Private.h"
-#import "YKFKeyService+Private.h"
+#import "YKFKeySession+Private.h"
 #import "YKFAPDU+Private.h"
 
 typedef void (^YKFKeyU2FServiceResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
@@ -112,7 +112,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
         if (error) {
             returnedError = error;
         } else {
-            int statusCode = [YKFKeyService statusCodeFromKeyResponse: result];
+            int statusCode = [YKFKeySession statusCodeFromKeyResponse: result];
             switch (statusCode) {
                 case YKFKeyAPDUErrorCodeNoError:
                     break;
@@ -164,7 +164,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
             completion(nil, error);
             return;
         }
-        int statusCode = [YKFKeyService statusCodeFromKeyResponse: result];
+        int statusCode = [YKFKeySession statusCodeFromKeyResponse: result];
         
         switch (statusCode) {
             case YKFKeyAPDUErrorCodeConditionNotSatisfied: {
@@ -230,12 +230,12 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 #pragma mark - Key responses
 
 - (YKFKeyU2FSignResponse *)processSignData:(NSData *)data request:(YKFKeyU2FSignRequest *)request {
-    NSData *signature = [YKFKeyService dataFromKeyResponse:data];
+    NSData *signature = [YKFKeySession dataFromKeyResponse:data];
     return [[YKFKeyU2FSignResponse alloc] initWithKeyHandle:request.keyHandle clientData:request.clientData signature:signature];
 }
 
 - (YKFKeyU2FRegisterResponse *)processRegisterData:(NSData *)data request:(YKFKeyU2FRegisterRequest *)request {
-    NSData *registrationData = [YKFKeyService dataFromKeyResponse:data];
+    NSData *registrationData = [YKFKeySession dataFromKeyResponse:data];
     return [[YKFKeyU2FRegisterResponse alloc] initWithClientData:request.clientData registrationData:registrationData];
 }
 
