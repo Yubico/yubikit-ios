@@ -25,7 +25,7 @@
 
 #import "YKFNFCOTPService+Private.h"
 #import "YKFKeyU2FService+Private.h"
-#import "YKFKeyFIDO2Service+Private.h"
+#import "YKFKeyFIDO2Session+Private.h"
 #import "YKFKeyOATHSession+Private.h"
 #import "YKFKeyRawCommandService+Private.h"
 #import "YKFNFCTagDescription+Private.h"
@@ -41,7 +41,7 @@
 @property (nonatomic, readwrite) YKFNFCTagDescription *tagDescription API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFNFCOTPService *otpService API_AVAILABLE(ios(11.0));
 @property (nonatomic, readwrite) YKFKeyU2FService *u2fService API_AVAILABLE(ios(13.0));
-@property (nonatomic, readwrite) YKFKeyFIDO2Service *fido2Service API_AVAILABLE(ios(13.0));
+@property (nonatomic, readwrite) YKFKeyFIDO2Session *fido2Service API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFKeyOATHSession *oathService API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFKeyRawCommandService *rawCommandService API_AVAILABLE(ios(13.0));
 
@@ -260,7 +260,7 @@
             
             self.connectionController = [[YKFNFCConnectionController alloc] initWithNFCTag:tag operationQueue:self.communicationQueue];
             self.u2fService = [[YKFKeyU2FService alloc] initWithConnectionController:self.connectionController];
-            self.fido2Service = [[YKFKeyFIDO2Service alloc] initWithConnectionController:self.connectionController];
+            self.fido2Service = [[YKFKeyFIDO2Session alloc] initWithConnectionController:self.connectionController];
             self.oathService = [[YKFKeyOATHSession alloc] initWithConnectionController:self.connectionController];
             self.rawCommandService = [[YKFKeyRawCommandService alloc] initWithConnectionController:self.connectionController];
             self.tagDescription = [[YKFNFCTagDescription alloc] initWithTag: tag];

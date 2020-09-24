@@ -43,9 +43,9 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
     /**
      Returns the service associated with the desired session.
      */
-    private var keyFido2Service: YKFKeyFIDO2ServiceProtocol {
+    private var keyFido2Service: YKFKeyFIDO2SessionProtocol {
         get {
-            var fido2Service: YKFKeyFIDO2ServiceProtocol? = nil
+            var fido2Service: YKFKeyFIDO2SessionProtocol? = nil
             if keyType == .accessory {
                 fido2Service = YubiKitManager.shared.accessorySession.fido2Service
             } else {

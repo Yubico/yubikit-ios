@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFKeyFIDO2Service.h"
-#import "YKFKeyFIDO2Service+Private.h"
+#import "YKFKeyFIDO2Session.h"
+#import "YKFKeyFIDO2Session+Private.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFKeyFIDO2Error.h"
 #import "YKFKeyAPDUError.h"
@@ -51,20 +51,20 @@
 
 #pragma mark - Private Response Blocks
 
-typedef void (^YKFKeyFIDO2ServiceResultCompletionBlock)
+typedef void (^YKFKeyFIDO2SessionResultCompletionBlock)
     (NSData* _Nullable response, NSError* _Nullable error);
 
-typedef void (^YKFKeyFIDO2ServiceClientPinCompletionBlock)
+typedef void (^YKFKeyFIDO2SessionClientPinCompletionBlock)
     (YKFKeyFIDO2ClientPinResponse* _Nullable response, NSError* _Nullable error);
 
-typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
+typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     (NSData* _Nullable sharedSecret, YKFCBORMap* _Nullable cosePlatformPublicKey, NSError* _Nullable error);
 
-#pragma mark - YKFKeyFIDO2Service
+#pragma mark - YKFKeyFIDO2Session
 
-@interface YKFKeyFIDO2Service()
+@interface YKFKeyFIDO2Session()
 
-@property (nonatomic, assign, readwrite) YKFKeyFIDO2ServiceKeyState keyState;
+@property (nonatomic, assign, readwrite) YKFKeyFIDO2SessionKeyState keyState;
 @property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
 
 // The cached authenticator pinToken, assigned after a successful validation.
@@ -74,7 +74,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
 
 @end
 
-@implementation YKFKeyFIDO2Service
+@implementation YKFKeyFIDO2Session
 
 - (instancetype)initWithConnectionController:(id<YKFKeyConnectionControllerProtocol>)connectionController {
     YKFAssertAbortInit(connectionController);
@@ -88,7 +88,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
 
 #pragma mark - Key State
 
-- (void)updateKeyState:(YKFKeyFIDO2ServiceKeyState)keyState {
+- (void)updateKeyState:(YKFKeyFIDO2SessionKeyState)keyState {
     if (self.keyState == keyState) {
         return;
     }
@@ -97,7 +97,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
 
 #pragma mark - Public Requests
 
-- (void)executeGetInfoRequestWithCompletion:(YKFKeyFIDO2ServiceGetInfoCompletionBlock)completion {
+- (void)executeGetInfoRequestWithCompletion:(YKFKeyFIDO2SessionGetInfoCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
     YKFKeyFIDO2Request *fido2Request = [[YKFKeyFIDO2Request alloc] init];
@@ -122,7 +122,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeVerifyPinRequest:(YKFKeyFIDO2VerifyPinRequest *)request completion:(YKFKeyFIDO2ServiceCompletionBlock)completion {
+- (void)executeVerifyPinRequest:(YKFKeyFIDO2VerifyPinRequest *)request completion:(YKFKeyFIDO2SessionCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(request.pin);
     YKFParameterAssertReturn(completion);
@@ -177,7 +177,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
         return;
     }
     
-    YKFLogVerbose(@"Clearing FIDO2 Service user verification.");
+    YKFLogVerbose(@"Clearing FIDO2 Session user verification.");
     
     ykf_weak_self();
     [self.connectionController dispatchOnSequentialQueue:^{
@@ -187,7 +187,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeChangePinRequest:(nonnull YKFKeyFIDO2ChangePinRequest *)request completion:(nonnull YKFKeyFIDO2ServiceCompletionBlock)completion {
+- (void)executeChangePinRequest:(nonnull YKFKeyFIDO2ChangePinRequest *)request completion:(nonnull YKFKeyFIDO2SessionCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(request.pinOld);
     YKFParameterAssertReturn(request.pinNew);
@@ -239,7 +239,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeSetPinRequest:(nonnull YKFKeyFIDO2SetPinRequest *)request completion:(nonnull YKFKeyFIDO2ServiceCompletionBlock)completion {
+- (void)executeSetPinRequest:(nonnull YKFKeyFIDO2SetPinRequest *)request completion:(nonnull YKFKeyFIDO2SessionCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(request.pin);
     YKFParameterAssertReturn(completion);
@@ -280,7 +280,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeGetPinRetriesWithCompletion:(YKFKeyFIDO2ServiceGetPinRetriesCompletionBlock)completion {
+- (void)executeGetPinRetriesWithCompletion:(YKFKeyFIDO2SessionGetPinRetriesCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
     YKFKeyFIDO2ClientPinRequest *pinRetriesRequest = [[YKFKeyFIDO2ClientPinRequest alloc] init];
@@ -296,7 +296,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeMakeCredentialRequest:(YKFKeyFIDO2MakeCredentialRequest *)request completion:(YKFKeyFIDO2ServiceMakeCredentialCompletionBlock)completion {
+- (void)executeMakeCredentialRequest:(YKFKeyFIDO2MakeCredentialRequest *)request completion:(YKFKeyFIDO2SessionMakeCredentialCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
     
@@ -338,7 +338,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeGetAssertionRequest:(YKFKeyFIDO2GetAssertionRequest *)request completion:(YKFKeyFIDO2ServiceGetAssertionCompletionBlock)completion {
+- (void)executeGetAssertionRequest:(YKFKeyFIDO2GetAssertionRequest *)request completion:(YKFKeyFIDO2SessionGetAssertionCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
     
@@ -380,7 +380,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeGetNextAssertionWithCompletion:(YKFKeyFIDO2ServiceGetAssertionCompletionBlock)completion {
+- (void)executeGetNextAssertionWithCompletion:(YKFKeyFIDO2SessionGetAssertionCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
     YKFKeyFIDO2Request *fido2Request = [[YKFKeyFIDO2Request alloc] init];
@@ -405,7 +405,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeResetRequestWithCompletion:(YKFKeyFIDO2ServiceCompletionBlock)completion {
+- (void)executeResetRequestWithCompletion:(YKFKeyFIDO2SessionCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
     YKFKeyFIDO2Request *fido2Request = [[YKFKeyFIDO2Request alloc] init];
@@ -423,7 +423,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
 
 #pragma mark - Private Requests
 
-- (void)executeClientPinRequest:(YKFKeyFIDO2ClientPinRequest *)request completion:(YKFKeyFIDO2ServiceClientPinCompletionBlock)completion {
+- (void)executeClientPinRequest:(YKFKeyFIDO2ClientPinRequest *)request completion:(YKFKeyFIDO2SessionClientPinCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
@@ -463,7 +463,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeGetSharedSecretWithCompletion:(YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)completion {
+- (void)executeGetSharedSecretWithCompletion:(YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
     // If there is a cached user verification?
@@ -565,19 +565,19 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
 
 #pragma mark - Request Execution
 
-- (void)executeFIDO2Request:(YKFKeyFIDO2Request *)request completion:(YKFKeyFIDO2ServiceResultCompletionBlock)completion {
+- (void)executeFIDO2Request:(YKFKeyFIDO2Request *)request completion:(YKFKeyFIDO2SessionResultCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
     
     [self.delegate keyService:self willExecuteRequest:request];
     
-    [self updateKeyState:YKFKeyFIDO2ServiceKeyStateProcessingRequest];
+    [self updateKeyState:YKFKeyFIDO2SessionKeyStateProcessingRequest];
     
     ykf_weak_self();
     [self selectFIDO2ApplicationWithCompletion:^(NSError *error) {
         ykf_safe_strong_self();
         if (error) {
-            [strongSelf updateKeyState:YKFKeyFIDO2ServiceKeyStateIdle];
+            [strongSelf updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
             completion(nil, error);
             return;
         }
@@ -585,7 +585,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeFIDO2RequestWithoutApplicationSelection:(YKFKeyFIDO2Request *)request completion:(YKFKeyFIDO2ServiceResultCompletionBlock)completion {
+- (void)executeFIDO2RequestWithoutApplicationSelection:(YKFKeyFIDO2Request *)request completion:(YKFKeyFIDO2SessionResultCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
     
@@ -598,7 +598,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
                 strongSelf.applicationSelected = NO;
             }
             
-            [strongSelf updateKeyState:YKFKeyFIDO2ServiceKeyStateIdle];
+            [strongSelf updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
             completion(nil, error);
             return;
         }
@@ -614,7 +614,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
                 } else {
                     completion(result, nil);
                 }
-                [strongSelf updateKeyState:YKFKeyFIDO2ServiceKeyStateIdle];
+                [strongSelf updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
             }
             break;
                 
@@ -624,13 +624,13 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
             break;
                 
             case YKFKeyAPDUErrorCodeInsNotSupported: {
-                [strongSelf updateKeyState:YKFKeyFIDO2ServiceKeyStateIdle];
+                [strongSelf updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
                 completion(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorMissingApplicationCode]);
             }
             break;
                 
             default: {
-                [strongSelf updateKeyState:YKFKeyFIDO2ServiceKeyStateIdle];
+                [strongSelf updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
                 completion(nil, [YKFKeyFIDO2Error errorWithCode:statusCode]);
             }
         }
@@ -664,7 +664,7 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
     return [responsePayload subdataWithRange:NSMakeRange(1, responsePayload.length - 1)];
 }
 
-- (void)handleTouchRequired:(YKFKeyFIDO2Request *)request completion:(YKFKeyFIDO2ServiceResultCompletionBlock)completion {
+- (void)handleTouchRequired:(YKFKeyFIDO2Request *)request completion:(YKFKeyFIDO2SessionResultCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
     
@@ -672,11 +672,11 @@ typedef void (^YKFKeyFIDO2ServiceClientPinSharedSecretCompletionBlock)
         YKFKeySessionError *timeoutError = [YKFKeySessionError errorWithCode:YKFKeySessionErrorTouchTimeoutCode];
         completion(nil, timeoutError);
 
-        [self updateKeyState:YKFKeyFIDO2ServiceKeyStateIdle];
+        [self updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
         return;
     }
     
-    [self updateKeyState:YKFKeyFIDO2ServiceKeyStateTouchKey];
+    [self updateKeyState:YKFKeyFIDO2SessionKeyStateTouchKey];
     request.retries += 1;
 
     ykf_weak_self();
