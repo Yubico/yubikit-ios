@@ -13,7 +13,7 @@
 // limitations under the License.
 
 protocol FIDO2ServiceObserverDelegate: NSObjectProtocol {
-    func fido2ServiceObserver(_ observer: FIDO2ServiceObserver, keyStateChangedTo state: YKFKeyFIDO2ServiceKeyState)
+    func fido2ServiceObserver(_ observer: FIDO2ServiceObserver, keyStateChangedTo state: YKFKeyFIDO2SessionKeyState)
 }
 
 /*
@@ -71,7 +71,7 @@ class FIDO2ServiceObserver: NSObject {
                 return
             }
             
-            var state: YKFKeyFIDO2ServiceKeyState = .idle
+            var state: YKFKeyFIDO2SessionKeyState = .idle
             if let fido2Service = YubiKitManager.shared.accessorySession.fido2Service {
                 state = fido2Service.keyState
             }

@@ -118,11 +118,11 @@
 		956DB67F2063E073006B1738 /* YKFNFCError.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95C2964820627F2F0091318B /* YKFNFCError.h */; };
 		956DB6892068EE9D006B1738 /* YKFOTPURIParserProtocol.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 956DB6872068EE02006B1738 /* YKFOTPURIParserProtocol.h */; };
 		956DB68A2068EE9D006B1738 /* YKFOTPTextParserProtocol.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 956DB6882068EE64006B1738 /* YKFOTPTextParserProtocol.h */; };
-		956DBB8421EDEA1D004D6EE3 /* YKFKeyFIDO2Service.m in Sources */ = {isa = PBXBuildFile; fileRef = 956DBB8321EDEA1D004D6EE3 /* YKFKeyFIDO2Service.m */; };
+		956DBB8421EDEA1D004D6EE3 /* YKFKeyFIDO2Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 956DBB8321EDEA1D004D6EE3 /* YKFKeyFIDO2Session.m */; };
 		956DBB8921EDFE50004D6EE3 /* YKFSelectFIDO2ApplicationAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 956DBB8821EDFE50004D6EE3 /* YKFSelectFIDO2ApplicationAPDU.m */; };
 		956DBB8D21EE0A0B004D6EE3 /* YKFFIDO2CommandAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 956DBB8C21EE0A0B004D6EE3 /* YKFFIDO2CommandAPDU.m */; };
 		956DBB9021EE1E5E004D6EE3 /* YKFFIDO2GetInfoAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 956DBB8F21EE1E5E004D6EE3 /* YKFFIDO2GetInfoAPDU.m */; };
-		956DBB9121EE22F5004D6EE3 /* YKFKeyFIDO2Service.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 956DBB8221EDEA1D004D6EE3 /* YKFKeyFIDO2Service.h */; };
+		956DBB9121EE22F5004D6EE3 /* YKFKeyFIDO2Session.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 956DBB8221EDEA1D004D6EE3 /* YKFKeyFIDO2Session.h */; };
 		956DBB9421EE2B29004D6EE3 /* YKFFIDO2ResetAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 956DBB9321EE2B29004D6EE3 /* YKFFIDO2ResetAPDU.m */; };
 		956DBB9721EE32E5004D6EE3 /* YKFKeyFIDO2Request.m in Sources */ = {isa = PBXBuildFile; fileRef = 956DBB9621EE32E5004D6EE3 /* YKFKeyFIDO2Request.m */; };
 		9578A60A21F0BFAB00349DCF /* YKFKeyFIDO2GetInfoResponse.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95B0CAAE21F098C6009C6A34 /* YKFKeyFIDO2GetInfoResponse.h */; };
@@ -305,7 +305,7 @@
 				9578A61121F1FF0800349DCF /* YKFFIDO2Type.h in CopyFiles */,
 				9578A60A21F0BFAB00349DCF /* YKFKeyFIDO2GetInfoResponse.h in CopyFiles */,
 				95B0CAAA21EF397F009C6A34 /* YKFKeyFIDO2Request.h in CopyFiles */,
-				956DBB9121EE22F5004D6EE3 /* YKFKeyFIDO2Service.h in CopyFiles */,
+				956DBB9121EE22F5004D6EE3 /* YKFKeyFIDO2Session.h in CopyFiles */,
 				9541143521908A8C00D39C7B /* YKFPCSC.h in CopyFiles */,
 				9541143621908A8C00D39C7B /* YKFPCSCErrors.h in CopyFiles */,
 				9541143721908A8C00D39C7B /* YKFPCSCTypes.h in CopyFiles */,
@@ -516,9 +516,9 @@
 		956DB6872068EE02006B1738 /* YKFOTPURIParserProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOTPURIParserProtocol.h; sourceTree = "<group>"; };
 		956DB6882068EE64006B1738 /* YKFOTPTextParserProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOTPTextParserProtocol.h; sourceTree = "<group>"; };
 		956DB691206A89A4006B1738 /* YKFNFCError+Errors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFNFCError+Errors.h"; sourceTree = "<group>"; };
-		956DBB8221EDEA1D004D6EE3 /* YKFKeyFIDO2Service.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyFIDO2Service.h; sourceTree = "<group>"; };
-		956DBB8321EDEA1D004D6EE3 /* YKFKeyFIDO2Service.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyFIDO2Service.m; sourceTree = "<group>"; };
-		956DBB8521EDF841004D6EE3 /* YKFKeyFIDO2Service+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyFIDO2Service+Private.h"; sourceTree = "<group>"; };
+		956DBB8221EDEA1D004D6EE3 /* YKFKeyFIDO2Session.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyFIDO2Session.h; sourceTree = "<group>"; };
+		956DBB8321EDEA1D004D6EE3 /* YKFKeyFIDO2Session.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyFIDO2Session.m; sourceTree = "<group>"; };
+		956DBB8521EDF841004D6EE3 /* YKFKeyFIDO2Session+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyFIDO2Session+Private.h"; sourceTree = "<group>"; };
 		956DBB8721EDFE50004D6EE3 /* YKFSelectFIDO2ApplicationAPDU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSelectFIDO2ApplicationAPDU.h; sourceTree = "<group>"; };
 		956DBB8821EDFE50004D6EE3 /* YKFSelectFIDO2ApplicationAPDU.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFSelectFIDO2ApplicationAPDU.m; sourceTree = "<group>"; };
 		956DBB8B21EE0A0B004D6EE3 /* YKFFIDO2CommandAPDU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFFIDO2CommandAPDU.h; sourceTree = "<group>"; };
@@ -1367,9 +1367,9 @@
 				95D9D3DA21D510CB00473888 /* CBOR */,
 				952CB9E9220D82C4004A7624 /* Crypto */,
 				956991F122C2248F00C5EB02 /* WebAuthN */,
-				956DBB8221EDEA1D004D6EE3 /* YKFKeyFIDO2Service.h */,
-				956DBB8321EDEA1D004D6EE3 /* YKFKeyFIDO2Service.m */,
-				956DBB8521EDF841004D6EE3 /* YKFKeyFIDO2Service+Private.h */,
+				956DBB8221EDEA1D004D6EE3 /* YKFKeyFIDO2Session.h */,
+				956DBB8321EDEA1D004D6EE3 /* YKFKeyFIDO2Session.m */,
+				956DBB8521EDF841004D6EE3 /* YKFKeyFIDO2Session+Private.h */,
 			);
 			path = FIDO2;
 			sourceTree = "<group>";
@@ -1663,7 +1663,7 @@
 				95C2965A2062A5970091318B /* YubiKitManager.m in Sources */,
 				958491732130286900D7E2A3 /* YKFAccessoryConnectionConfiguration.m in Sources */,
 				95C2962C206250D90091318B /* YKFPermissions.m in Sources */,
-				956DBB8421EDEA1D004D6EE3 /* YKFKeyFIDO2Service.m in Sources */,
+				956DBB8421EDEA1D004D6EE3 /* YKFKeyFIDO2Session.m in Sources */,
 				81311F3A23AAFA4A00765522 /* YKFKeyChallengeResponseService.m in Sources */,
 				958793E7216CE35F001A0406 /* YKFOATHListAPDU.m in Sources */,
 				95D5E2DC2187159700AA1C11 /* YKFNSMutableDataAdditions.m in Sources */,

@@ -33,7 +33,7 @@
 #import "YKFKeyRawCommandService+Private.h"
 #import "YKFKeyOATHSession+Private.h"
 #import "YKFKeyU2FService+Private.h"
-#import "YKFKeyFIDO2Service+Private.h"
+#import "YKFKeyFIDO2Session+Private.h"
 #import "YKFKeyService+Private.h"
 #import "YKFAccessoryDescription+Private.h"
 
@@ -80,7 +80,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 @property (nonatomic, assign, readwrite) YKFAccessoryConnectionState connectionState;
 
 @property (nonatomic, readwrite) id<YKFKeyU2FServiceProtocol, YKFKeyServiceDelegate> u2fService;
-@property (nonatomic, readwrite) id<YKFKeyFIDO2ServiceProtocol, YKFKeyServiceDelegate> fido2Service;
+@property (nonatomic, readwrite) id<YKFKeyFIDO2SessionProtocol, YKFKeyServiceDelegate> fido2Service;
 @property (nonatomic, readwrite) id<YKFKeyOATHSessionProtocol, YKFKeyServiceDelegate> oathService;
 @property (nonatomic, readwrite) id<YKFKeyRawCommandServiceProtocol, YKFKeyServiceDelegate> rawCommandService;
 
@@ -458,7 +458,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
         u2fService.delegate = self;
         self.u2fService = u2fService;
         
-        YKFKeyFIDO2Service *fido2Service = [[YKFKeyFIDO2Service alloc] initWithConnectionController:self.connectionController];
+        YKFKeyFIDO2Session *fido2Service = [[YKFKeyFIDO2Session alloc] initWithConnectionController:self.connectionController];
         fido2Service.delegate = self;
         self.fido2Service = fido2Service;
         

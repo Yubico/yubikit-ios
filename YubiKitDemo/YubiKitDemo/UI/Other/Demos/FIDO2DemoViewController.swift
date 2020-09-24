@@ -41,7 +41,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     
     private func runDemo() {
         let keyPluggedIn = YubiKitManager.shared.accessorySession.connectionState == .open
-        let fido2Service: YKFKeyFIDO2ServiceProtocol
+        let fido2Service: YKFKeyFIDO2SessionProtocol
         if YubiKitDeviceCapabilities.supportsISO7816NFCTags && !keyPluggedIn {
             guard #available(iOS 13.0, *) else {
                 fatalError()
@@ -198,7 +198,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func verify(fido2Service: YKFKeyFIDO2ServiceProtocol, pin: String) {
+    private func verify(fido2Service: YKFKeyFIDO2SessionProtocol, pin: String) {
         fido2Service.executeGetPinRetries { [weak self] (retries, error) in
             guard let self = self else {
                 return
@@ -258,7 +258,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func set(fido2Service: YKFKeyFIDO2ServiceProtocol, pin: String) {
+    private func set(fido2Service: YKFKeyFIDO2SessionProtocol, pin: String) {
         guard let setPinRequest = YKFKeyFIDO2SetPinRequest(pin: pin) else {
             return
         }
@@ -304,7 +304,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func change(fido2Service: YKFKeyFIDO2ServiceProtocol, to newPin: String, oldPin: String) {
+    private func change(fido2Service: YKFKeyFIDO2SessionProtocol, to newPin: String, oldPin: String) {
         setDemoButtons(enabled: false)
         
         guard let changePinRequest = YKFKeyFIDO2ChangePinRequest(newPin: newPin, oldPin: oldPin) else {
@@ -328,7 +328,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     
     // MARK: - GetInfo Demo
     
-    private func runGetInfoDemo(fido2Service: YKFKeyFIDO2ServiceProtocol) {
+    private func runGetInfoDemo(fido2Service: YKFKeyFIDO2SessionProtocol) {
         setDemoButtons(enabled: false)
                 
         log(message: "Executing Get Info request...")
@@ -351,7 +351,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     
     // MARK: - ES256, EdDSA Demos
     
-    private func runECCDemo(fido2Service: YKFKeyFIDO2ServiceProtocol) {
+    private func runECCDemo(fido2Service: YKFKeyFIDO2SessionProtocol) {
         setDemoButtons(enabled: false)
         
         log(message: "Executing ECC Demo...")
@@ -366,7 +366,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         makeFIDO2CredentialWith(fido2Service: fido2Service, algorithm:YKFFIDO2PublicKeyAlgorithmES256, makeOptions: makeOptions, assertionOptions: assertionOptions)
     }
     
-    private func runEdDSADemo(fido2Service: YKFKeyFIDO2ServiceProtocol) {
+    private func runEdDSADemo(fido2Service: YKFKeyFIDO2SessionProtocol) {
         setDemoButtons(enabled: false)
         
         log(message: "Executing EdDSA (Ed25519) Demo...")
@@ -381,7 +381,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         makeFIDO2CredentialWith(fido2Service: fido2Service, algorithm:YKFFIDO2PublicKeyAlgorithmEdDSA, makeOptions: makeOptions, assertionOptions: assertionOptions)
     }
     
-    private func makeFIDO2CredentialWith(fido2Service: YKFKeyFIDO2ServiceProtocol, algorithm: NSInteger, makeOptions: [String: Bool], assertionOptions: [String: Bool]) {
+    private func makeFIDO2CredentialWith(fido2Service: YKFKeyFIDO2SessionProtocol, algorithm: NSInteger, makeOptions: [String: Bool], assertionOptions: [String: Bool]) {
         /*
          1. Setup the Make Credential request.
          */
@@ -455,7 +455,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func getAssertionWith(fido2Service: YKFKeyFIDO2ServiceProtocol, request: YKFKeyFIDO2GetAssertionRequest) {
+    private func getAssertionWith(fido2Service: YKFKeyFIDO2SessionProtocol, request: YKFKeyFIDO2GetAssertionRequest) {
 
         fido2Service.execute(request) { [weak self] (response, error) in
             guard let self = self else {
@@ -477,7 +477,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     
     // MARK: - FIDO2 Application Reset
     
-    private func runApplicationReset(fido2Service: YKFKeyFIDO2ServiceProtocol) {
+    private func runApplicationReset(fido2Service: YKFKeyFIDO2SessionProtocol) {
         setDemoButtons(enabled: false)
         
         log(message: "(!) The Reset operation must be executed within 5 seconds after the key was powered up. Otherwise the key will return an error.")
