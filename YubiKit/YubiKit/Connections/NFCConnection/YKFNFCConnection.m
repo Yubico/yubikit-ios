@@ -26,7 +26,7 @@
 #import "YKFNFCOTPService+Private.h"
 #import "YKFKeyU2FService+Private.h"
 #import "YKFKeyFIDO2Service+Private.h"
-#import "YKFKeyOATHService+Private.h"
+#import "YKFKeyOATHSession+Private.h"
 #import "YKFKeyRawCommandService+Private.h"
 #import "YKFNFCTagDescription+Private.h"
 
@@ -42,7 +42,7 @@
 @property (nonatomic, readwrite) YKFNFCOTPService *otpService API_AVAILABLE(ios(11.0));
 @property (nonatomic, readwrite) YKFKeyU2FService *u2fService API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFKeyFIDO2Service *fido2Service API_AVAILABLE(ios(13.0));
-@property (nonatomic, readwrite) YKFKeyOATHService *oathService API_AVAILABLE(ios(13.0));
+@property (nonatomic, readwrite) YKFKeyOATHSession *oathService API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFKeyRawCommandService *rawCommandService API_AVAILABLE(ios(13.0));
 
 @property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
@@ -70,7 +70,7 @@
     return self;
 }
 
-- (void)oathApplication:(OATHApplication _Nonnull)callback {
+- (void)oathSession:(OATHSession _Nonnull)callback {
     if (@available(iOS 13.0, *)) {
         if (!self.oathService) {
             callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
@@ -261,7 +261,7 @@
             self.connectionController = [[YKFNFCConnectionController alloc] initWithNFCTag:tag operationQueue:self.communicationQueue];
             self.u2fService = [[YKFKeyU2FService alloc] initWithConnectionController:self.connectionController];
             self.fido2Service = [[YKFKeyFIDO2Service alloc] initWithConnectionController:self.connectionController];
-            self.oathService = [[YKFKeyOATHService alloc] initWithConnectionController:self.connectionController];
+            self.oathService = [[YKFKeyOATHSession alloc] initWithConnectionController:self.connectionController];
             self.rawCommandService = [[YKFKeyRawCommandService alloc] initWithConnectionController:self.connectionController];
             self.tagDescription = [[YKFNFCTagDescription alloc] initWithTag: tag];
             break;

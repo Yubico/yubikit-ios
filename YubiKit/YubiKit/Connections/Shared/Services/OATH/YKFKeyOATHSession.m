@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFKeyOATHService.h"
-#import "YKFKeyOATHService+Private.h"
+#import "YKFKeyOATHSession.h"
+#import "YKFKeyOATHSession+Private.h"
 #import "YKFKeyService+Private.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFKeyOATHError.h"
@@ -64,7 +64,7 @@ static const NSTimeInterval YKFKeyOATHServiceTimeoutThreshold = 10; // seconds
 
 typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
 
-@interface YKFKeyOATHService()
+@interface YKFKeyOATHSession()
 
 @property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
 
@@ -77,7 +77,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 @end
 
-@implementation YKFKeyOATHService
+@implementation YKFKeyOATHSession
 
 - (instancetype)initWithConnectionController:(id<YKFKeyConnectionControllerProtocol>)connectionController {
     YKFAssertAbortInit(connectionController);
@@ -95,7 +95,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 #pragma mark - Credential Add/Delete
 
-- (void)executePutRequest:(YKFKeyOATHPutRequest *)request completion:(YKFKeyOATHServiceCompletionBlock)completion {
+- (void)executePutRequest:(YKFKeyOATHPutRequest *)request completion:(YKFKeyOATHSessionCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
     
@@ -110,7 +110,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     }];
 }
 
-- (void)executeDeleteRequest:(YKFKeyOATHDeleteRequest *)request completion:(YKFKeyOATHServiceCompletionBlock)completion {
+- (void)executeDeleteRequest:(YKFKeyOATHDeleteRequest *)request completion:(YKFKeyOATHSessionCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
@@ -125,7 +125,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     }];
 }
 
-- (void)executeRenameRequest:(YKFKeyOATHRenameRequest *)request completion:(YKFKeyOATHServiceCompletionBlock)completion {
+- (void)executeRenameRequest:(YKFKeyOATHRenameRequest *)request completion:(YKFKeyOATHSessionCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
     
@@ -146,7 +146,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 #pragma mark - Credential Calculation
 
-- (void)executeCalculateRequest:(YKFKeyOATHCalculateRequest *)request completion:(YKFKeyOATHServiceCalculateCompletionBlock)completion {
+- (void)executeCalculateRequest:(YKFKeyOATHCalculateRequest *)request completion:(YKFKeyOATHSessionCalculateCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
     
@@ -174,7 +174,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 }
 
 - (void)executeCalculateAllRequest:(YKFKeyOATHCalculateAllRequest *)request
-                        completion:(YKFKeyOATHServiceCalculateAllCompletionBlock)completion {
+                        completion:(YKFKeyOATHSessionCalculateAllCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
     [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
@@ -195,7 +195,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 #pragma mark - Credential Listing
 
-- (void)executeListRequestWithCompletion:(YKFKeyOATHServiceListCompletionBlock)completion {
+- (void)executeListRequestWithCompletion:(YKFKeyOATHSessionListCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
     YKFKeyOATHListRequest *request = [[YKFKeyOATHListRequest alloc] init];
@@ -218,7 +218,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 #pragma mark - Reset
 
-- (void)executeResetRequestWithCompletion:(YKFKeyOATHServiceCompletionBlock)completion {
+- (void)executeResetRequestWithCompletion:(YKFKeyOATHSessionCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
     YKFKeyOATHResetRequest *request = [[YKFKeyOATHResetRequest alloc] init];
@@ -237,7 +237,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 #pragma mark - OATH Authentication
 
-- (void)executeSetCodeRequest:(YKFKeyOATHSetCodeRequest *)request completion:(YKFKeyOATHServiceCompletionBlock)completion {
+- (void)executeSetCodeRequest:(YKFKeyOATHSetCodeRequest *)request completion:(YKFKeyOATHSessionCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
@@ -269,7 +269,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     }];
 }
 
-- (void)executeValidateRequest:(YKFKeyOATHValidateRequest *)request completion:(YKFKeyOATHServiceCompletionBlock)completion {
+- (void)executeValidateRequest:(YKFKeyOATHValidateRequest *)request completion:(YKFKeyOATHSessionCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
