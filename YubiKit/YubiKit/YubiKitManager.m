@@ -17,7 +17,7 @@
 #import "YubiKitManager.h"
 #import "YKFAccessoryConnectionConfiguration.h"
 
-#import "YKFNFCOTPService+Private.h"
+#import "YKFNFCOTPSession+Private.h"
 #import "YKFAccessoryConnection+Private.h"
 
 @interface YubiKitManager()

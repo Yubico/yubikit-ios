@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFNFCOTPService.h"
+#import "YKFNFCOTPSession.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol YKFOTPTokenParserProtocol;
 @protocol YKFNFCNDEFReaderSessionProtocol;
 
-@interface YKFNFCOTPService()
+@interface YKFNFCOTPSession()
 
 - (instancetype)initWithTokenParser:(nullable id<YKFOTPTokenParserProtocol>)tokenParser session:(nullable id<YKFNFCNDEFReaderSessionProtocol>)session;
 

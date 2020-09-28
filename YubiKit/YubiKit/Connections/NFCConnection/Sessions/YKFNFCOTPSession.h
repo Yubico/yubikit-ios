@@ -24,7 +24,7 @@ typedef void (^YKFOTPResponseBlock)(id<YKFOTPTokenProtocol> _Nullable, NSError* 
 
 
 API_AVAILABLE(ios(11.0))
-@protocol YKFNFCOTPServiceProtocol<NSObject>
+@protocol YKFNFCOTPSessionProtocol<NSObject>
 
 /*!
  @method requestOTPToken:
@@ -49,7 +49,7 @@ API_AVAILABLE(ios(11.0))
 @end
 
 API_AVAILABLE(ios(11.0))
-@interface YKFNFCOTPService : NSObject<YKFNFCOTPServiceProtocol>
+@interface YKFNFCOTPSession : NSObject<YKFNFCOTPSessionProtocol>
 
 /*
  Not available: use the shared single instance from YubiKitManager.

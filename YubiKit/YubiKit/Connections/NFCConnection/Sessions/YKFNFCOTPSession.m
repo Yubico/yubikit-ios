@@ -14,8 +14,8 @@
 
 #import <CoreNFC/CoreNFC.h>
 
-#import "YKFNFCOTPService.h"
-#import "YKFNFCOTPService+Private.h"
+#import "YKFNFCOTPSession.h"
+#import "YKFNFCOTPSession+Private.h"
 
 #import "YKFNFCError.h"
 #import "YKFNFCError+Errors.h"
@@ -30,7 +30,7 @@
 
 #import "NFCNDEFReaderSession+Testing.h"
 
-@interface YKFNFCOTPService()<NFCNDEFReaderSessionDelegate>
+@interface YKFNFCOTPSession()<NFCNDEFReaderSessionDelegate>
 
 @property (nonatomic, strong) id<YKFNFCNDEFReaderSessionProtocol> nfcSession;
 @property (nonatomic, strong) id<YKFOTPTokenParserProtocol> otpTokenParser;
@@ -39,7 +39,7 @@
 
 @end
 
-@implementation YKFNFCOTPService
+@implementation YKFNFCOTPSession
 
 - (instancetype)initWithTokenParser:(id<YKFOTPTokenParserProtocol>)tokenParser session:(id<YKFNFCNDEFReaderSessionProtocol>)session {
     self = [super init];
