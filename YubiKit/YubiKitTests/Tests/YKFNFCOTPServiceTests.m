@@ -16,7 +16,7 @@
 
 #import "YKFTestCase.h"
 #import "YKFNFCOTPSession.h"
-#import "YKFNFCOTPService+Private.h"
+#import "YKFNFCOTPSession+Private.h"
 #import "YKFOTPTokenParser.h"
 #import "YubiKitDeviceCapabilities+Testing.h"
 #import "FakeNFCNDEFReaderSession.h"
