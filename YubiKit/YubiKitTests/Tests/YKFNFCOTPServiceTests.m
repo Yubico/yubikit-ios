@@ -15,7 +15,7 @@
 #import <XCTest/XCTest.h>
 
 #import "YKFTestCase.h"
-#import "YKFNFCOTPService.h"
+#import "YKFNFCOTPSession.h"
 #import "YKFNFCOTPService+Private.h"
 #import "YKFOTPTokenParser.h"
 #import "YubiKitDeviceCapabilities+Testing.h"
@@ -24,7 +24,7 @@
 
 @interface YKFNFCOTPServiceTests: YKFTestCase
 
-@property (nonatomic) YKFNFCOTPService *nfcOtpService;
+@property (nonatomic) YKFNFCOTPSession *nfcOtpService;
 @property (nonatomic) FakeNFCNDEFReaderSession *fakeReaderSession;
 @property (nonatomic) YKFOTPTokenParser *tokenParser;
 
@@ -39,7 +39,7 @@
     
     self.tokenParser = [[YKFOTPTokenParser alloc] init];
     self.fakeReaderSession = [[FakeNFCNDEFReaderSession alloc] init];
-    self.nfcOtpService = [[YKFNFCOTPService alloc] initWithTokenParser:self.tokenParser session:self.fakeReaderSession];
+    self.nfcOtpService = [[YKFNFCOTPSession alloc] initWithTokenParser:self.tokenParser session:self.fakeReaderSession];
     
     self.fakeReaderSession.delegate = (id<NFCNDEFReaderSessionDelegate>)self.nfcOtpService;
 }

@@ -14,7 +14,7 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFNFCTagDescription.h"
-#import "YKFNFCOTPService.h"
+#import "YKFNFCOTPSession.h"
 #import "YKFKeyU2FSession.h"
 #import "YKFKeyFIDO2Session.h"
 #import "YKFKeyOATHSession.h"
@@ -79,7 +79,7 @@ typedef void (^OATHSession)(id<YKFKeyOATHSessionProtocol> _Nullable, NSError* _N
     The shared object to interact with the OTP application from the YubiKey. This property is
     always available and handles its own NFC NDEF session.
  */
-@property (nonatomic, readonly) id<YKFNFCOTPServiceProtocol> otpService API_AVAILABLE(ios(11.0));
+@property (nonatomic, readonly) id<YKFNFCOTPSessionProtocol> otpService API_AVAILABLE(ios(11.0));
 
 /*!
  @property u2fService
