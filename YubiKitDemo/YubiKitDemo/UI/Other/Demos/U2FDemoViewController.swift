@@ -62,7 +62,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func runDemo(keyService: YKFKeyU2FServiceProtocol?) {
+    private func runDemo(keyService: YKFKeyU2FSessionProtocol?) {
         let challenge = "D2pzTPZa7bq69ABuiGQILo9zcsTURP26RLifTyCkilc"
         let appId = "https://demo.yubico.com"
 
@@ -163,7 +163,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
 
     // MARK: - Helpers
 
-    private func executeRegisterRequestWith(keyService: YKFKeyU2FServiceProtocol?, challenge: String, appId: String, completion: @escaping (String?) -> Void) {
+    private func executeRegisterRequestWith(keyService: YKFKeyU2FSessionProtocol?, challenge: String, appId: String, completion: @escaping (String?) -> Void) {
         guard let registerRequest = YKFKeyU2FRegisterRequest(challenge: challenge, appId: appId) else {
             log(message: "Could not create the Register request.")
             completion(nil)
@@ -192,7 +192,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func executeSignRequestWith(keyService: YKFKeyU2FServiceProtocol?, keyHandle: String, challenge: String, appId: String, completion: @escaping (Bool) -> Void) {
+    private func executeSignRequestWith(keyService: YKFKeyU2FSessionProtocol?, keyHandle: String, challenge: String, appId: String, completion: @escaping (Bool) -> Void) {
         guard let signRequest = YKFKeyU2FSignRequest(challenge: challenge, keyHandle: keyHandle, appId: appId) else {
             log(message: "Could not create the Sign request.")
             completion(false)

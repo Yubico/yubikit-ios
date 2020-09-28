@@ -23,7 +23,7 @@
 #import "YKFLogger.h"
 #import "YKFAssert.h"
 
-#import "YKFNFCOTPService+Private.h"
+#import "YKFNFCOTPSession+Private.h"
 #import "YKFKeyU2FSession+Private.h"
 #import "YKFKeyFIDO2Session+Private.h"
 #import "YKFKeyOATHSession+Private.h"
@@ -39,7 +39,7 @@
 @property (nonatomic, readwrite) NSError *nfcConnectionError;
 
 @property (nonatomic, readwrite) YKFNFCTagDescription *tagDescription API_AVAILABLE(ios(13.0));
-@property (nonatomic, readwrite) YKFNFCOTPService *otpService API_AVAILABLE(ios(11.0));
+@property (nonatomic, readwrite) YKFNFCOTPSession *otpService API_AVAILABLE(ios(11.0));
 @property (nonatomic, readwrite) YKFKeyU2FSession *u2fService API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFKeyFIDO2Session *fido2Service API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFKeyOATHSession *oathService API_AVAILABLE(ios(13.0));
@@ -63,7 +63,7 @@
     if (self) {
         if (@available(iOS 11, *)) {
             // Init with defaults
-            self.otpService = [[YKFNFCOTPService alloc] initWithTokenParser:nil session:nil];
+            self.otpService = [[YKFNFCOTPSession alloc] initWithTokenParser:nil session:nil];
         }
         [self setupCommunicationQueue];
     }
