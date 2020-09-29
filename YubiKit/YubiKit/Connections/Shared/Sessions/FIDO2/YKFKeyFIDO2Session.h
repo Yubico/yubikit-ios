@@ -138,6 +138,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol YKFKeyFIDO2SessionProtocol<NSObject>
 
+- (void)selectFIDO2ApplicationWithCompletion:(void (^)(NSError *))completion;
+
 /*!
  @abstract
     This property provides the contextual state of the key when performing FIDO2 requests.
