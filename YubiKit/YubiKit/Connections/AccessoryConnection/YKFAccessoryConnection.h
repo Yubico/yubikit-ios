@@ -112,16 +112,6 @@ typedef void (^OATHSession)(id<YKFKeyOATHSessionProtocol> _Nullable, NSError* _N
 @property (nonatomic, readonly, nullable) id<YKFKeyFIDO2SessionProtocol> fido2Service;
 
 /*!
- @property oathService
- 
- @abstract
-    The shared object to interact with the OATH application from the YubiKey.
-    This property becomes available when the key is connected and the session opened and is nil when
-    the session is closed. This property should be accessed based on the session state.
- */
-@property (nonatomic, readonly, nullable) id<YKFKeyOATHSessionProtocol> oathService;
-
-/*!
  @property rawCommandService
  
  @abstract
