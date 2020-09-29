@@ -1,5 +1,5 @@
 //
-//  YKFKeyMGMTReadConfigurationRequest.h
+//  YKFKeyManagementReadConfigurationRequest.h
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/3/20.
@@ -7,11 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "YKFKeyMGMTRequest.h"
+#import "YKFKeyManagementRequest.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFKeyMGMTReadConfigurationRequest : YKFKeyMGMTRequest
+@interface YKFKeyManagementReadConfigurationRequest : YKFKeyManagementRequest
 
 @end
 

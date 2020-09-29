@@ -1,10 +1,10 @@
 ## Using YubiKey Management Service 
 
-This `YKFKeyMGMTService`  is using  `YKFKeyRawCommandService`  to communicate with YubiKey. How to implement such service yourself using  `YKFKeyRawCommandService`  read [here](../docs/raw.md)
+This `YKFKeyManagementService`  is using  `YKFKeyRawCommandService`  to communicate with YubiKey. How to implement such service yourself using  `YKFKeyRawCommandService`  read [here](../docs/raw.md)
 
-The `YKFKeyMGMTService` provides 2 methods:
-1) reading request that provides you `YKFMGMTInterfaceConfiguration` YubiKey within reading response. 
-2) writing request that accepts the same  `YKFMGMTInterfaceConfiguration` with updated flags on properties that needs to be tweaked (enabled/disabled)
+The `YKFKeyManagementService` provides 2 methods:
+1) reading request that provides you `YKFManagementInterfaceConfiguration` YubiKey within reading response. 
+2) writing request that accepts the same  `YKFManagementInterfaceConfiguration` with updated flags on properties that needs to be tweaked (enabled/disabled)
 
 ##### Objective-C
 
@@ -12,19 +12,19 @@ The `YKFKeyMGMTService` provides 2 methods:
  #import <YubiKit/YubiKit.h>
   
  ...
- YKFKeyMGMTService *service = [[YKFKeyMGMTService alloc] init];
- [service readConfigurationWithCompletion:^(YKFKeyMGMTReadConfigurationResponse *selectionResponse, NSError *error) {
+ YKFKeyManagementService *service = [[YKFKeyManagementService alloc] init];
+ [service readConfigurationWithCompletion:^(YKFKeyManagementReadConfigurationResponse *selectionResponse, NSError *error) {
      if (error) {
          // Handle the error
          return;
      }
-     YKFMGMTInterfaceConfiguration *configuration = selectionResponse.configuration;
+     YKFManagementInterfaceConfiguration *configuration = selectionResponse.configuration;
      
-     if([configuration isSupported:YKFMGMTApplicationTypeOTP overTransport:YKFMGMTTransportTypeNFC]) {
+     if([configuration isSupported:YKFManagementApplicationTypeOTP overTransport:YKFManagementTransportTypeNFC]) {
         //if OTP/YubiKey/Challenge-response application is supported on the app
      }
      
-     if ([configuration isEnabled:YKFMGMTApplicationTypeOTP overTransport:YKFMGMTTransportTypeNFC]) {
+     if ([configuration isEnabled:YKFManagementApplicationTypeOTP overTransport:YKFManagementTransportTypeNFC]) {
          //if OTP/YubiKey/Challenge-response application is enabled on the app
      }
      
@@ -34,7 +34,7 @@ The `YKFKeyMGMTService` provides 2 methods:
 ##### Swift
 
 ```swift
-let service = YKFKeyMGMTService()
+let service = YKFKeyManagementService()
 mgtmService.readConfiguration { [weak self] (response, error) in
     guard let self = self else {
         return

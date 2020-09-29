@@ -1,24 +1,24 @@
 //
-//  YKFKeyMGMTError.m
+//  YKFKeyManagementError.m
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/10/20.
 //  Copyright © 2020 Yubico. All rights reserved.
 //
 
-#import "YKFKeyMGMTError.h"
+#import "YKFKeyManagementError.h"
 #import "YKFKeySessionError+Private.h"
 
-static NSString* const YKFKeyMGMTErrorCodeUnexpectedResponseDescription = @"Invalid response returned";
+static NSString* const YKFKeyManagementErrorCodeUnexpectedResponseDescription = @"Invalid response returned";
 
-@implementation YKFKeyMGMTError
+@implementation YKFKeyManagementError
 
 static NSDictionary *errorMap = nil;
 
 + (YKFKeySessionError *)errorWithCode:(NSUInteger)code {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        [YKFKeyMGMTError buildErrorMap];
+        [YKFKeyManagementError buildErrorMap];
     });
     
     NSString *errorDescription = errorMap[@(code)];
@@ -29,7 +29,7 @@ static NSDictionary *errorMap = nil;
 }
 
 + (void)buildErrorMap {
-    errorMap = @{@(YKFKeyMGMTErrorCodeUnexpectedResponse): YKFKeyMGMTErrorCodeUnexpectedResponseDescription };
+    errorMap = @{@(YKFKeyManagementErrorCodeUnexpectedResponse): YKFKeyManagementErrorCodeUnexpectedResponseDescription };
 }
 
 @end

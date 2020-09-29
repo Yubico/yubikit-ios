@@ -1,19 +1,19 @@
 //
-//  YKFKeyMGMTReadConfigurationResponse.m
+//  YKFKeyManagementReadConfigurationResponse.m
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/3/20.
 //  Copyright © 2020 Yubico. All rights reserved.
 //
 
-#import "YKFKeyMGMTReadConfigurationResponse.h"
-#import "YKFKeyMGMTReadConfigurationResponse+Private.h"
+#import "YKFKeyManagementReadConfigurationResponse.h"
+#import "YKFKeyManagementReadConfigurationResponse+Private.h"
 #import "YKFAssert.h"
 #import "YKFNSDataAdditions+Private.h"
-#import "YKFMGMTReadConfigurationTags.h"
-#import "YKFMGMTInterfaceConfiguration+Private.h"
+#import "YKFManagementReadConfigurationTags.h"
+#import "YKFManagementInterfaceConfiguration+Private.h"
 
-@interface YKFKeyMGMTReadConfigurationResponse()
+@interface YKFKeyManagementReadConfigurationResponse()
 
 @property (nonatomic, readwrite, nonnull) YKFKeyVersion *version;
 @property (nonatomic, readwrite) NSUInteger serialNumber;
@@ -21,7 +21,7 @@
 
 @end
 
-@implementation YKFKeyMGMTReadConfigurationResponse
+@implementation YKFKeyManagementReadConfigurationResponse
 
 - (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData version:(YKFKeyVersion *)version {
     YKFAssertAbortInit(responseData.length);
@@ -55,36 +55,36 @@
             UInt8* valueBytes = (UInt8*)value.bytes;
 
             switch (responseTag) {
-                case YKFMGMTReadConfigurationTagsUsbEnabled:
+                case YKFManagementReadConfigurationTagsUsbEnabled:
                     self.usbEnabledMask = [value ykf_integerValue];
                     break;
 
-                case YKFMGMTReadConfigurationTagsUsbSupported:
+                case YKFManagementReadConfigurationTagsUsbSupported:
                     self.usbSupportedMask = [value ykf_integerValue];
                     break;
 
-                case YKFMGMTReadConfigurationTagsSerialNumber:
+                case YKFManagementReadConfigurationTagsSerialNumber:
                     self.serialNumber = [value ykf_integerValue];
                     break;
 
-                case YKFMGMTReadConfigurationTagsFormFactor:
+                case YKFManagementReadConfigurationTagsFormFactor:
                     self.formFactor = [value ykf_integerValue];
                     break;
 
-                case YKFMGMTReadConfigurationTagsFirmwareVersion:
+                case YKFManagementReadConfigurationTagsFirmwareVersion:
                     YKFAssertAbortInit(tagLength == 3);
                     self.version = [[YKFKeyVersion alloc] initWithBytes:valueBytes[0] minor:valueBytes[1] micro:valueBytes[2]];
                     break;
 
-                case YKFMGMTReadConfigurationTagsConfigLocked:
+                case YKFManagementReadConfigurationTagsConfigLocked:
                     self.configurationLocked = value;
                     break;
 
-                case YKFMGMTReadConfigurationTagsNfcEnabled:
+                case YKFManagementReadConfigurationTagsNfcEnabled:
                     self.nfcEnabledMask = [value ykf_integerValue];
                     break;
 
-                case YKFMGMTReadConfigurationTagsNfcSupported:
+                case YKFManagementReadConfigurationTagsNfcSupported:
                     self.nfcSupportedMask = [value ykf_integerValue];
                     break;
 
@@ -98,8 +98,8 @@
     return self;
 }
 
-- (nullable YKFMGMTInterfaceConfiguration*)configuration {   
-    return [[YKFMGMTInterfaceConfiguration alloc] initWithResponse:self];
+- (nullable YKFManagementInterfaceConfiguration*)configuration {   
+    return [[YKFManagementInterfaceConfiguration alloc] initWithResponse:self];
 }
 
 @end

@@ -1,5 +1,5 @@
 //
-//  YKFKeyMGMTReadConfigurationResponse.h
+//  YKFKeyManagementReadConfigurationResponse.h
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/3/20.
@@ -8,13 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFKeyVersion.h"
-#import "YKFMGMTInterfaceConfiguration.h"
+#import "YKFManagementInterfaceConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFKeyMGMTReadConfigurationResponse : NSObject
+@interface YKFKeyManagementReadConfigurationResponse : NSObject
 
-@property (nonatomic, readonly, nullable) YKFMGMTInterfaceConfiguration* configuration;
+@property (nonatomic, readonly, nullable) YKFManagementInterfaceConfiguration* configuration;
 @property (nonatomic, readonly, nonnull) YKFKeyVersion* version;
 
 @property (nonatomic, readonly) NSUInteger serialNumber;

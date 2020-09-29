@@ -1,42 +1,42 @@
 //
-//  YKFKeyMGMTSession.m
+//  YKFKeyManagementSession.m
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/4/20.
 //  Copyright © 2020 Yubico. All rights reserved.
 //
 
-#import "YKFKeyMGMTSession.h"
+#import "YKFKeyManagementSession.h"
 #import "YubiKitManager.h"
 #import "YKFKeyRawCommandSession.h"
 
-#import "YKFKeyMGMTRequest.h"
-#import "YKFKeyMGMTRequest+Private.h"
+#import "YKFKeyManagementRequest.h"
+#import "YKFKeyManagementRequest+Private.h"
 
-#import "YKFKeyMGMTReadConfigurationRequest.h"
-#import "YKFKeyMGMTReadConfigurationResponse.h"
-#import "YKFKeyMGMTReadConfigurationResponse+Private.h"
+#import "YKFKeyManagementReadConfigurationRequest.h"
+#import "YKFKeyManagementReadConfigurationResponse.h"
+#import "YKFKeyManagementReadConfigurationResponse+Private.h"
 
-#import "YKFSelectMGMTApplicationAPDU.h"
-#import "YKFKeyMGMTSelectApplicationResponse.h"
-#import "YKFKeyMGMTSelectApplicationResponse+Private.h"
+#import "YKFSelectManagementApplicationAPDU.h"
+#import "YKFKeyManagementSelectApplicationResponse.h"
+#import "YKFKeyManagementSelectApplicationResponse+Private.h"
 
-#import "YKFKeyMGMTWriteConfigurationRequest.h"
+#import "YKFKeyManagementWriteConfigurationRequest.h"
 
 
 #import "YKFAssert.h"
 #import "YKFKeyAPDUError.h"
-#import "YKFKeyMGMTError.h"
+#import "YKFKeyManagementError.h"
 #import "YKFKeySessionError.h"
 #import "YKFKeySessionError+Private.h"
 
-typedef void (^YKFKeyMGMTSessionResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
-typedef void (^YKFKeyMGMTSessionSelectCompletionBlock)(YKFKeyMGMTSelectApplicationResponse* _Nullable  result, NSError* _Nullable error);
+typedef void (^YKFKeyManagementSessionResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
+typedef void (^YKFKeyManagementSessionSelectCompletionBlock)(YKFKeyManagementSelectApplicationResponse* _Nullable  result, NSError* _Nullable error);
 
 
-@implementation YKFKeyMGMTSession
+@implementation YKFKeyManagementSession
 
-- (void)readConfigurationWithCompletion:(YKFKeyMGMTSessionReadCompletionBlock)completion {
+- (void)readConfigurationWithCompletion:(YKFKeyManagementSessionReadCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
     id<YKFKeyRawCommandSessionProtocol> rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
@@ -51,16 +51,16 @@ typedef void (^YKFKeyMGMTSessionSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
         return;
     }
     
-    YKFKeyMGMTReadConfigurationRequest* request = [[YKFKeyMGMTReadConfigurationRequest alloc] init];
+    YKFKeyManagementReadConfigurationRequest* request = [[YKFKeyManagementReadConfigurationRequest alloc] init];
     
-    [self selectManagementApplication:rawCommandService completion:^(YKFKeyMGMTSelectApplicationResponse *selectionResponse, NSError *error) {
+    [self selectManagementApplication:rawCommandService completion:^(YKFKeyManagementSelectApplicationResponse *selectionResponse, NSError *error) {
         if (error) {
            completion(nil, error);
            return;
         }
         
         if (selectionResponse == nil) {
-            completion(nil, [YKFKeyMGMTError errorWithCode:YKFKeyMGMTErrorCodeUnexpectedResponse]);
+            completion(nil, [YKFKeyManagementError errorWithCode:YKFKeyManagementErrorCodeUnexpectedResponse]);
             return;
         }
                 
@@ -69,11 +69,11 @@ typedef void (^YKFKeyMGMTSessionSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
                 completion(nil, error);
                 return;
             }
-            YKFKeyMGMTReadConfigurationResponse *response =
-                [[YKFKeyMGMTReadConfigurationResponse alloc] initWithKeyResponseData:result version:selectionResponse.version];
+            YKFKeyManagementReadConfigurationResponse *response =
+                [[YKFKeyManagementReadConfigurationResponse alloc] initWithKeyResponseData:result version:selectionResponse.version];
            
            if (!response) {
-                completion(nil, [YKFKeyMGMTError errorWithCode:YKFKeyMGMTErrorCodeUnexpectedResponse]);
+                completion(nil, [YKFKeyManagementError errorWithCode:YKFKeyManagementErrorCodeUnexpectedResponse]);
                 return;
             }
             
@@ -82,11 +82,11 @@ typedef void (^YKFKeyMGMTSessionSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
     }];
 }
 
-- (void) writeConfiguration:(YKFMGMTInterfaceConfiguration*) configuration reboot: (BOOL) reboot completion: (nonnull YKFKeyMGMTSessionWriteCompletionBlock) completion {
+- (void) writeConfiguration:(YKFManagementInterfaceConfiguration*) configuration reboot: (BOOL) reboot completion: (nonnull YKFKeyManagementSessionWriteCompletionBlock) completion {
     YKFParameterAssertReturn(configuration);
     YKFParameterAssertReturn(configuration);
     
-    YKFKeyMGMTWriteConfigurationRequest* request = [[YKFKeyMGMTWriteConfigurationRequest alloc]
+    YKFKeyManagementWriteConfigurationRequest* request = [[YKFKeyManagementWriteConfigurationRequest alloc]
                                                     initWithConfiguration: configuration
                                                     reboot: reboot];
 
@@ -97,7 +97,7 @@ typedef void (^YKFKeyMGMTSessionSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
 
 #pragma mark - execution of requests
 
-- (void)executeRequest:(YKFKeyMGMTRequest *)request completion:(nonnull YKFKeyMGMTSessionResultCompletionBlock)completion {
+- (void)executeRequest:(YKFKeyManagementRequest *)request completion:(nonnull YKFKeyManagementSessionResultCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
@@ -113,7 +113,7 @@ typedef void (^YKFKeyMGMTSessionSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
         return;
     }
     
-    [self selectManagementApplication:rawCommandService completion:^(YKFKeyMGMTSelectApplicationResponse *response, NSError *error) {
+    [self selectManagementApplication:rawCommandService completion:^(YKFKeyManagementSelectApplicationResponse *response, NSError *error) {
         if (error) {
             completion(nil, error);
             return;
@@ -124,8 +124,8 @@ typedef void (^YKFKeyMGMTSessionSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
 }
 
 - (void)executeRequestWithoutApplicationSelection:(id<YKFKeyRawCommandSessionProtocol>)rawCommandService
-                                          request: (YKFKeyMGMTRequest *)request
-                                       completion:(YKFKeyMGMTSessionResultCompletionBlock)completion {
+                                          request: (YKFKeyManagementRequest *)request
+                                       completion:(YKFKeyManagementSessionResultCompletionBlock)completion {
     YKFParameterAssertReturn(rawCommandService);
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
@@ -152,8 +152,8 @@ typedef void (^YKFKeyMGMTSessionSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
 #pragma mark - Application Selection
 
 - (void)selectManagementApplication:(id<YKFKeyRawCommandSessionProtocol>)rawCommandService
-                                              completion:(YKFKeyMGMTSessionSelectCompletionBlock)completion {
-    YKFAPDU *selectApplicationAPDU = [[YKFSelectMGMTApplicationAPDU alloc] init];
+                                              completion:(YKFKeyManagementSessionSelectCompletionBlock)completion {
+    YKFAPDU *selectApplicationAPDU = [[YKFSelectManagementApplicationAPDU alloc] init];
             
     [rawCommandService executeCommand:selectApplicationAPDU completion:^(NSData *response, NSError *error) {
 
@@ -165,7 +165,7 @@ typedef void (^YKFKeyMGMTSessionSelectCompletionBlock)(YKFKeyMGMTSelectApplicati
             int statusCode = [YKFKeySession statusCodeFromKeyResponse: response];
             switch (statusCode) {
                 case YKFKeyAPDUErrorCodeNoError:
-                    completion([[YKFKeyMGMTSelectApplicationResponse alloc] initWithKeyResponseData:[YKFKeySession dataFromKeyResponse:response]], nil);
+                    completion([[YKFKeyManagementSelectApplicationResponse alloc] initWithKeyResponseData:[YKFKeySession dataFromKeyResponse:response]], nil);
                     break;
                     
                 case YKFKeyAPDUErrorCodeInsNotSupported:

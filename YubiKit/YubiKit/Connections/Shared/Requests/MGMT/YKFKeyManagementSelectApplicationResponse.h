@@ -1,5 +1,5 @@
 //
-//  YKFKeyMGMTSelectApplicationResponse.h
+//  YKFKeyManagementSelectApplicationResponse.h
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/3/20.
@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFKeyMGMTSelectApplicationResponse : NSObject
+@interface YKFKeyManagementSelectApplicationResponse : NSObject
 
 @property (nonatomic, readonly, nonnull) YKFKeyVersion* version;
 

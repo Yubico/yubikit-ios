@@ -1,16 +1,20 @@
 //
-//  YKFSelectMGMTApplicationAPDU.h
+//  YKFKeyManagementRequest.h
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/3/20.
 //  Copyright © 2020 Yubico. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
+#import "YKFKeyManagementRequest.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFSelectMGMTApplicationAPDU : YKFAPDU
+@interface YKFKeyManagementRequest()
+
+@property (nonatomic) YKFAPDU *apdu;
 
 @end
 

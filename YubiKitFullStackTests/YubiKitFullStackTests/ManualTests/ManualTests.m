@@ -103,7 +103,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     NSMutableArray *mgmtTests = [[NSMutableArray alloc] init];
 
     NSValue *selector = [NSValue valueWithPointer:@selector(test_WhenDisablingOTPApplicationOverNFCandUSB)];
-    NSArray *testEntry = @[@"MGMT read and write", @"Enables/disables YubiKey interfaces", selector];
+    NSArray *testEntry = @[@"Management read and write", @"Enables/disables YubiKey interfaces", selector];
     [mgmtTests addObject:testEntry];
 
     //// -------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -511,31 +511,31 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     }];
 }
 
-#pragma mark MGMT (management) Tests
+#pragma mark Management (management) Tests
 
 - (void) test_WhenDisablingOTPApplicationOverNFCandUSB {
-    YKFKeyMGMTSession *service = [[YKFKeyMGMTSession alloc] init];
-    [service readConfigurationWithCompletion:^(YKFKeyMGMTReadConfigurationResponse *selectionResponse, NSError *error) {
+    YKFKeyManagementSession *service = [[YKFKeyManagementSession alloc] init];
+    [service readConfigurationWithCompletion:^(YKFKeyManagementReadConfigurationResponse *selectionResponse, NSError *error) {
         if (error) {
             [TestSharedLogger.shared logError: @"When reading configurations: %@", error.localizedDescription];
             return;
         }
-        YKFMGMTInterfaceConfiguration *configuration = selectionResponse.configuration;
+        YKFManagementInterfaceConfiguration *configuration = selectionResponse.configuration;
         
-        YKFMGMTTransportType transport = YKFMGMTTransportTypeNFC;
-        if(![configuration isSupported:YKFMGMTApplicationTypeOTP overTransport:transport]) {
+        YKFManagementTransportType transport = YKFManagementTransportTypeNFC;
+        if(![configuration isSupported:YKFManagementApplicationTypeOTP overTransport:transport]) {
             [TestSharedLogger.shared logMessage:@"OTP over NFC is not supported"];
-            transport = YKFMGMTTransportTypeUSB;
+            transport = YKFManagementTransportTypeUSB;
         }
         
-        BOOL isOTPenabled = [configuration isEnabled:YKFMGMTApplicationTypeOTP overTransport:transport];
+        BOOL isOTPenabled = [configuration isEnabled:YKFManagementApplicationTypeOTP overTransport:transport];
         if (isOTPenabled) {
             [TestSharedLogger.shared logMessage:@"OTP is enabled"];
         } else {
             [TestSharedLogger.shared logMessage:@"OTP is disabled"];
         }
 
-        [configuration setEnabled:!isOTPenabled application:YKFMGMTApplicationTypeOTP overTransport:transport];
+        [configuration setEnabled:!isOTPenabled application:YKFManagementApplicationTypeOTP overTransport:transport];
         
         [TestSharedLogger.shared logMessage:@"Updating configuration"];
         [service writeConfiguration:configuration reboot:NO completion:^(NSError * _Nullable error) {
@@ -546,14 +546,14 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
             
             [TestSharedLogger.shared logMessage:@"Configuration has been updated."];
 
-            [service readConfigurationWithCompletion:^(YKFKeyMGMTReadConfigurationResponse *selectionResponse, NSError *error) {
+            [service readConfigurationWithCompletion:^(YKFKeyManagementReadConfigurationResponse *selectionResponse, NSError *error) {
                 if (error) {
                     [TestSharedLogger.shared logError: @"When reading configurations: %@", error.localizedDescription];
                     return;
                 }
-                YKFMGMTInterfaceConfiguration *configuration = selectionResponse.configuration;
+                YKFManagementInterfaceConfiguration *configuration = selectionResponse.configuration;
 
-                BOOL isOTPenabled = [configuration isEnabled:YKFMGMTApplicationTypeOTP overTransport:transport];
+                BOOL isOTPenabled = [configuration isEnabled:YKFManagementApplicationTypeOTP overTransport:transport];
                 if (isOTPenabled) {
                     [TestSharedLogger.shared logMessage:@"OTP is enabled"];
                 } else {

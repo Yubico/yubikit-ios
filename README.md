@@ -214,7 +214,7 @@ List of services is documented below with it's own specifics and samples:
 
 - [Challenge-response](./docs/chr.md) - Provides a method to use HMAC-SHA1 challenge-response.
 
-- [MGMT](./docs/mgmt.md) - Provides ability to enable or disable available application on YubiKey
+- [Management](./docs/mgmt.md) - Provides ability to enable or disable available application on YubiKey
 
 
 ## Customize the Library
