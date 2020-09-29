@@ -1,5 +1,5 @@
 //
-//  YKFKeyMGMTService.h
+//  YKFKeyManagementService.h
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/4/20.
@@ -7,11 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "YKFKeyMGMTReadConfigurationResponse.h"
+#import "YKFKeyManagementReadConfigurationResponse.h"
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
- * @name MGMT Service Response Blocks
+ * @name Management Service Response Blocks
  * ---------------------------------------------------------------------------------------------------------------------
  */
 /*!
@@ -26,21 +26,21 @@
     In case of a failed request this parameter contains the error. If the request was successful this
     parameter is nil.
  */
-typedef void (^YKFKeyMGMTSessionReadCompletionBlock)
-    (YKFKeyMGMTReadConfigurationResponse* _Nullable response, NSError* _Nullable error);
+typedef void (^YKFKeyManagementSessionReadCompletionBlock)
+    (YKFKeyManagementReadConfigurationResponse* _Nullable response, NSError* _Nullable error);
 
 
 
-typedef void (^YKFKeyMGMTSessionWriteCompletionBlock) (NSError* _Nullable error);
+typedef void (^YKFKeyManagementSessionWriteCompletionBlock) (NSError* _Nullable error);
 
 
 NS_ASSUME_NONNULL_BEGIN
 
 /*!
 @abstract
-   Defines the interface for YKFKeyMGMTSessionProtocol.
+   Defines the interface for YKFKeyManagementSessionProtocol.
 */
-@protocol YKFKeyMGMTSessionProtocol<NSObject>
+@protocol YKFKeyManagementSessionProtocol<NSObject>
 
 /*!
 @method readConfigurationWithCompletion:
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 @note:
    This method is thread safe and can be invoked from any thread (main or a background thread).
 */
-- (void)readConfigurationWithCompletion:(YKFKeyMGMTSessionReadCompletionBlock)completion;
+- (void)readConfigurationWithCompletion:(YKFKeyManagementSessionReadCompletionBlock)completion;
 
 /*!
 @method writeConfiguration:completion
@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 @note:
    This method is thread safe and can be invoked from any thread (main or a background thread).
 */
-- (void)writeConfiguration:(YKFMGMTInterfaceConfiguration*) configuration reboot: (BOOL) reboot completion: (nonnull YKFKeyMGMTSessionWriteCompletionBlock) completion;
+- (void)writeConfiguration:(YKFManagementInterfaceConfiguration*) configuration reboot: (BOOL) reboot completion: (nonnull YKFKeyManagementSessionWriteCompletionBlock) completion;
 
 @end
 
@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFKeyMGMTSession : NSObject<YKFKeyMGMTSessionProtocol>
+@interface YKFKeyManagementSession : NSObject<YKFKeyManagementSessionProtocol>
 
 @end
 

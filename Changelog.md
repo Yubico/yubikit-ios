@@ -19,7 +19,7 @@
 
 - This SDK version now provides  `YKFKeyChallengeResponseService` which allows to calculate HMAC-SHA1 on pre-programmed YubiKey. Read more about usage of [Challenge-response](./docs/chr.md)
 
-- Added `YKFKeyMGMTService` which allows to check whether application is available on YubiKey. And can enable or disable interfaces/application on YubiKey (if they are available). Read more about usage of [management service](./docs/mgmt.md)
+- Added `YKFKeyManagementService` which allows to check whether application is available on YubiKey. And can enable or disable interfaces/application on YubiKey (if they are available). Read more about usage of [management service](./docs/mgmt.md)
 
 - Fixes OATH credential parser for credentials that contain "\" or ":". 
 

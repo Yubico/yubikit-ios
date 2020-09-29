@@ -1,17 +1,17 @@
 //
-//  YKFMGMTConfiguration.m
+//  YKFManagementConfiguration.m
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/4/20.
 //  Copyright © 2020 Yubico. All rights reserved.
 //
 
-#import "YKFMGMTInterfaceConfiguration.h"
-#import "YKFKeyMGMTReadConfigurationResponse.h"
-#import "YKFKeyMGMTReadConfigurationResponse+Private.h"
+#import "YKFManagementInterfaceConfiguration.h"
+#import "YKFKeyManagementReadConfigurationResponse.h"
+#import "YKFKeyManagementReadConfigurationResponse+Private.h"
 #import "YKFAssert.h"
 
-@interface YKFMGMTInterfaceConfiguration()
+@interface YKFManagementInterfaceConfiguration()
 
 @property (nonatomic, readwrite) BOOL isConfigurationLocked;
 
@@ -26,9 +26,9 @@
 
 @end
 
-@implementation YKFMGMTInterfaceConfiguration
+@implementation YKFManagementInterfaceConfiguration
 
-- (nullable instancetype)initWithResponse:(nonnull YKFKeyMGMTReadConfigurationResponse *)response {
+- (nullable instancetype)initWithResponse:(nonnull YKFKeyManagementReadConfigurationResponse *)response {
     YKFAssertAbortInit(response);
     self = [super init];
     if (self) {
@@ -52,11 +52,11 @@
     return self;
 }
 
-- (BOOL) isSupported: (YKFMGMTApplicationType)application overTransport:(YKFMGMTTransportType)transport {
+- (BOOL) isSupported: (YKFManagementApplicationType)application overTransport:(YKFManagementTransportType)transport {
     switch (transport) {
-        case YKFMGMTTransportTypeNFC:
+        case YKFManagementTransportTypeNFC:
             return (self.nfcSupportedMask & application) == application;
-        case YKFMGMTTransportTypeUSB:
+        case YKFManagementTransportTypeUSB:
             return (self.usbSupportedMask & application) == application;
         default:
             YKFAssertReturnValue(true, @"Not supperted transport type", false);
@@ -64,11 +64,11 @@
     }
 }
 
-- (BOOL) isEnabled: (YKFMGMTApplicationType)application overTransport:(YKFMGMTTransportType)transport {
+- (BOOL) isEnabled: (YKFManagementApplicationType)application overTransport:(YKFManagementTransportType)transport {
     switch (transport) {
-        case YKFMGMTTransportTypeNFC:
+        case YKFManagementTransportTypeNFC:
             return (self.nfcEnabledMask & application) == application;
-        case YKFMGMTTransportTypeUSB:
+        case YKFManagementTransportTypeUSB:
             return (self.usbEnabledMask & application) == application;
         default:
             YKFAssertReturnValue(true, @"Not supperted transport type", false);
@@ -76,8 +76,8 @@
     }
 }
 
-- (void) setEnabled: (BOOL)newValue application:(YKFMGMTApplicationType)application overTransport:(YKFMGMTTransportType)transport {
-    NSUInteger oldEnabledMask = transport == YKFMGMTTransportTypeUSB ? self.usbEnabledMask : self.nfcEnabledMask;
+- (void) setEnabled: (BOOL)newValue application:(YKFManagementApplicationType)application overTransport:(YKFManagementTransportType)transport {
+    NSUInteger oldEnabledMask = transport == YKFManagementTransportTypeUSB ? self.usbEnabledMask : self.nfcEnabledMask;
     NSUInteger newEnabledMask = newValue ? (oldEnabledMask | application) : (oldEnabledMask & ~application);
 
     if (oldEnabledMask == newEnabledMask) {
@@ -89,11 +89,11 @@
     YKFAssertReturn([self isSupported: application overTransport:transport], @"This YubiKey interface is not supported.")
 
     switch (transport) {
-        case YKFMGMTTransportTypeNFC:
+        case YKFManagementTransportTypeNFC:
             self.nfcEnabledMask = newEnabledMask;
             self.nfcMaskChanged = true;
             break;
-        case YKFMGMTTransportTypeUSB:
+        case YKFManagementTransportTypeUSB:
             self.usbEnabledMask = newEnabledMask;
             self.usbMaskChanged = true;
             break;
