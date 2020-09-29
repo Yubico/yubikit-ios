@@ -146,6 +146,21 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     }];
 }
 
+- (void)fido2Session:(FIDO2Session _Nonnull)callback {
+    if (!self.fido2Service) {
+        callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
+    }
+    ykf_weak_self();
+    [self.fido2Service selectFIDO2ApplicationWithCompletion:^(NSError * _Nullable error) {
+        ykf_safe_strong_self();
+        if (error != nil) {
+            callback(nil, error);
+        } else {
+            callback(strongSelf.fido2Service, nil);
+        }
+    }];
+}
+
 - (void)dealloc {
     self.observeAccessoryConnection = NO;
     self.observeApplicationState = NO;
