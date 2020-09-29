@@ -326,48 +326,52 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         [TestSharedLogger.shared logError:@"Could not create OATH credential."];
         return;
     }
-    id<YKFKeyOATHSessionProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
     
-    /*
-     1. Add the credential to the key
-     */
-    
-    YKFKeyOATHPutRequest *putRequest = [[YKFKeyOATHPutRequest alloc] initWithCredential:credential];
-    
-    [oathService executePutRequest:putRequest completion:^(NSError * _Nullable error) {
-        if (error) {
-            [TestSharedLogger.shared logError:@"Could not add the credential to the key."];
+    YKFAccessoryConnection *connection = YubiKitManager.shared.accessorySession;
+    [connection oathSession:^(id<YKFKeyOATHSessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
+        if (sessionError) {
+            [TestSharedLogger.shared logError:@"Could not create OATH session."];
             return;
         }
-        [TestSharedLogger.shared logSuccess:@"The credential was added to the key."];
-    }];
-    
-    
-    /*
-     2. Calculate the credential.
-     */
-    YKFKeyOATHCalculateRequest *calculateRequest = [[YKFKeyOATHCalculateRequest alloc] initWithCredential:credential];
-    
-    [oathService executeCalculateRequest:calculateRequest completion:^(YKFKeyOATHCalculateResponse * _Nullable response, NSError * _Nullable error) {
-        if (error) {
-            [TestSharedLogger.shared logError:@"Could not calculate the credential."];
-            return;
-        }
-        NSString *successLog = [NSString stringWithFormat:@"OTP value for the credential %@ is %@", credential.label, response.otp];
-        [TestSharedLogger.shared logSuccess:successLog];
-    }];
-    
-    /*
-     3. Remove the credential.
-     */
-    YKFKeyOATHDeleteRequest *deleteRequest = [[YKFKeyOATHDeleteRequest alloc] initWithCredential:credential];
-    
-    [oathService executeDeleteRequest:deleteRequest completion:^(NSError * _Nullable error) {
-        if (error) {
-            [TestSharedLogger.shared logError:@"Could not delete the credential."];
-            return;
-        }
-        [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
+        /*
+         1. Add the credential to the key
+         */
+        YKFKeyOATHPutRequest *putRequest = [[YKFKeyOATHPutRequest alloc] initWithCredential:credential];
+        
+        [session executePutRequest:putRequest completion:^(NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logError:@"Could not add the credential to the key."];
+                return;
+            }
+            [TestSharedLogger.shared logSuccess:@"The credential was added to the key."];
+        }];
+        
+        /*
+         2. Calculate the credential.
+         */
+        YKFKeyOATHCalculateRequest *calculateRequest = [[YKFKeyOATHCalculateRequest alloc] initWithCredential:credential];
+        
+        [session executeCalculateRequest:calculateRequest completion:^(YKFKeyOATHCalculateResponse * _Nullable response, NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logError:@"Could not calculate the credential."];
+                return;
+            }
+            NSString *successLog = [NSString stringWithFormat:@"OTP value for the credential %@ is %@", credential.label, response.otp];
+            [TestSharedLogger.shared logSuccess:successLog];
+        }];
+        
+        /*
+         3. Remove the credential.
+         */
+        YKFKeyOATHDeleteRequest *deleteRequest = [[YKFKeyOATHDeleteRequest alloc] initWithCredential:credential];
+        
+        [session executeDeleteRequest:deleteRequest completion:^(NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logError:@"Could not delete the credential."];
+                return;
+            }
+            [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
+        }];
     }];
 }
 
@@ -386,74 +390,80 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         [TestSharedLogger.shared logError:@"Could not create OATH credential."];
         return;
     }
-    id<YKFKeyOATHSessionProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
     
-    /*
-     1. Add the credential to the key
-     */
-    YKFKeyOATHPutRequest *putRequest = [[YKFKeyOATHPutRequest alloc] initWithCredential:credential];
-    
-    [oathService executePutRequest:putRequest completion:^(NSError * _Nullable error) {
-        if (error) {
-            [TestSharedLogger.shared logError:@"Could not add the credential to the key."];
+    YKFAccessoryConnection *connection = YubiKitManager.shared.accessorySession;
+    [connection oathSession:^(id<YKFKeyOATHSessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
+        if (sessionError) {
+            [TestSharedLogger.shared logError:@"Could not create OATH session."];
             return;
         }
-        [TestSharedLogger.shared logSuccess:@"The credential was added to the key."];
-    }];
-    
-    /*
-     2. Rename the credential.
-     */
-    YKFKeyOATHRenameRequest *renameRequest = [[YKFKeyOATHRenameRequest alloc] initWithCredential:credential issuer:@"Transnomino Inc" account:@"renamed-account@yubico.com"];
-
-    [oathService executeRenameRequest:renameRequest completion:^(NSError * _Nullable error) {
-        if (error) {
-            [TestSharedLogger.shared logError:@"Could not rename the credential. %@", error];
-            return;
-        }
-        [TestSharedLogger.shared logSuccess:@"Credential renamed"];
-    }];
-    
-    /*
-     3. List credentials and verify that the credential has been renamed
-     */
-    [oathService executeListRequestWithCompletion:^(YKFKeyOATHListResponse * _Nullable response, NSError * _Nullable error) {
-        if (error) {
-            [TestSharedLogger.shared logError:@"Could not list credentials. %@", error];
-        }
+        /*
+         1. Add the credential to the key
+         */
+        YKFKeyOATHPutRequest *putRequest = [[YKFKeyOATHPutRequest alloc] initWithCredential:credential];
         
-        YKFOATHCredential* renamedCredential;
-        for (YKFOATHCredential* credential in response.credentials) {
-            if ([credential.issuer isEqual:@"Transnomino Inc"] && [credential.account isEqual:@"renamed-account@yubico.com"]) {
-                renamedCredential = credential;
-                break;
+        [session executePutRequest:putRequest completion:^(NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logError:@"Could not add the credential to the key."];
+                return;
             }
-        }
+            [TestSharedLogger.shared logSuccess:@"The credential was added to the key."];
+        }];
         
-        if (renamedCredential) {
-            [TestSharedLogger.shared logSuccess:@"Retrieved and verified renamed credential from key"];
+        /*
+         2. Rename the credential.
+         */
+        YKFKeyOATHRenameRequest *renameRequest = [[YKFKeyOATHRenameRequest alloc] initWithCredential:credential issuer:@"Transnomino Inc" account:@"renamed-account@yubico.com"];
+        
+        [session executeRenameRequest:renameRequest completion:^(NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logError:@"Could not rename the credential. %@", error];
+                return;
+            }
+            [TestSharedLogger.shared logSuccess:@"Credential renamed"];
+        }];
+        
+        /*
+         3. List credentials and verify that the credential has been renamed
+         */
+        [session executeListRequestWithCompletion:^(YKFKeyOATHListResponse * _Nullable response, NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logError:@"Could not list credentials. %@", error];
+            }
             
-            YKFKeyOATHDeleteRequest *deleteRequest = [[YKFKeyOATHDeleteRequest alloc] initWithCredential:renamedCredential];
-            
-            [oathService executeDeleteRequest:deleteRequest completion:^(NSError * _Nullable error) {
-                if (error) {
-                    [TestSharedLogger.shared logError:@"Could not delete the credential. %@", error];
-                    return;
+            YKFOATHCredential* renamedCredential;
+            for (YKFOATHCredential* credential in response.credentials) {
+                if ([credential.issuer isEqual:@"Transnomino Inc"] && [credential.account isEqual:@"renamed-account@yubico.com"]) {
+                    renamedCredential = credential;
+                    break;
                 }
-                [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
-            }];
+            }
             
-        } else {
-            YKFKeyOATHDeleteRequest *deleteRequest = [[YKFKeyOATHDeleteRequest alloc] initWithCredential:credential];
-            [oathService executeDeleteRequest:deleteRequest completion:^(NSError * _Nullable error) {
-                if (error) {
-                    [TestSharedLogger.shared logError:@"Could not delete the credential. %@", error];
-                    return;
-                }
-                [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
-            }];
-            [TestSharedLogger.shared logError:@"Failed retrieving renamed credential"];
-        }
+            if (renamedCredential) {
+                [TestSharedLogger.shared logSuccess:@"Retrieved and verified renamed credential from key"];
+                
+                YKFKeyOATHDeleteRequest *deleteRequest = [[YKFKeyOATHDeleteRequest alloc] initWithCredential:renamedCredential];
+                
+                [session executeDeleteRequest:deleteRequest completion:^(NSError * _Nullable error) {
+                    if (error) {
+                        [TestSharedLogger.shared logError:@"Could not delete the credential. %@", error];
+                        return;
+                    }
+                    [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
+                }];
+                
+            } else {
+                YKFKeyOATHDeleteRequest *deleteRequest = [[YKFKeyOATHDeleteRequest alloc] initWithCredential:credential];
+                [session executeDeleteRequest:deleteRequest completion:^(NSError * _Nullable error) {
+                    if (error) {
+                        [TestSharedLogger.shared logError:@"Could not delete the credential. %@", error];
+                        return;
+                    }
+                    [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
+                }];
+                [TestSharedLogger.shared logError:@"Failed retrieving renamed credential"];
+            }
+        }];
     }];
 }
 
