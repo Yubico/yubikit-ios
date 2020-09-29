@@ -1,16 +1,17 @@
 //
-//  YKFMGMTReadAPDU.h
+//  YKFKeyManagementRequest.h
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/3/20.
 //  Copyright © 2020 Yubico. All rights reserved.
 //
 
-#import "YKFAPDU.h"
+#import <Foundation/Foundation.h>
+#import "YKFKeyRequest.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFMGMTReadAPDU : YKFAPDU
+@interface YKFKeyManagementRequest : YKFKeyRequest
 
 @end
 

@@ -1,5 +1,5 @@
 //
-//  YKFKeyMGMTError.h
+//  YKFKeyManagementError.h
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/10/20.
@@ -10,13 +10,13 @@
 #import "YKFKeySessionError.h"
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, YKFKeyMGMTErrorCode) {
+typedef NS_ENUM(NSUInteger, YKFKeyManagementErrorCode) {
     /*! Key returned malformed response
      */
-    YKFKeyMGMTErrorCodeUnexpectedResponse = 0x300,
+    YKFKeyManagementErrorCodeUnexpectedResponse = 0x300,
 };
 
-@interface YKFKeyMGMTError : YKFKeySessionError
+@interface YKFKeyManagementError : YKFKeySessionError
 
 @end
 

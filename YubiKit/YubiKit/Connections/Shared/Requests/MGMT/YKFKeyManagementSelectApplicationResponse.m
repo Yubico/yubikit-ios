@@ -1,23 +1,23 @@
 //
-//  YKFKeyMGMTSelectApplicationResponse.m
+//  YKFKeyManagementSelectApplicationResponse.m
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/3/20.
 //  Copyright © 2020 Yubico. All rights reserved.
 //
 
-#import "YKFKeyMGMTSelectApplicationResponse.h"
-#import "YKFKeyMGMTSelectApplicationResponse+Private.h"
+#import "YKFKeyManagementSelectApplicationResponse.h"
+#import "YKFKeyManagementSelectApplicationResponse+Private.h"
 #import "YKFKeyVersion.h"
 #import "YKFAssert.h"
 
-@interface YKFKeyMGMTSelectApplicationResponse()
+@interface YKFKeyManagementSelectApplicationResponse()
 
 @property (nonatomic, readwrite, nonnull) YKFKeyVersion *version;
 
 @end
 
-@implementation YKFKeyMGMTSelectApplicationResponse
+@implementation YKFKeyManagementSelectApplicationResponse
 
 static NSUInteger const MinFirmwareVersionStringSize = 5; // e.g. "5.2.3"
 

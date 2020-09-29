@@ -1,5 +1,5 @@
 //
-//  YKFKeyMGMTWriteConfigurationRequest.h
+//  YKFKeyManagementWriteConfigurationRequest.h
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/3/20.
@@ -7,24 +7,24 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "YKFKeyMGMTRequest.h"
-#import "YKFMGMTInterfaceConfiguration.h"
+#import "YKFKeyManagementRequest.h"
+#import "YKFManagementInterfaceConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 /*!
-@class YKFKeyMGMTWriteConfigurationRequest
+@class YKFKeyManagementWriteConfigurationRequest
 
 @abstract
    Request for setting up interfaces on YubiKey.
 */
-@interface YKFKeyMGMTWriteConfigurationRequest : YKFKeyMGMTRequest
+@interface YKFKeyManagementWriteConfigurationRequest : YKFKeyManagementRequest
 
 
 /*!
  The configuration for the request. The configuration contains list of interfaces that needs to be on and off
  */
-@property (nonatomic, readonly, nonnull) YKFMGMTInterfaceConfiguration *configuration;
+@property (nonatomic, readonly, nonnull) YKFManagementInterfaceConfiguration *configuration;
 
 /*!
  Whether require reboot after updating of configurations
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param reboot
     The device reboots after setting configuration.
  */
-- (nullable instancetype)initWithConfiguration:(nonnull YKFMGMTInterfaceConfiguration*) configuration reboot: (BOOL) reboot;
+- (nullable instancetype)initWithConfiguration:(nonnull YKFManagementInterfaceConfiguration*) configuration reboot: (BOOL) reboot;
 
 @end
 

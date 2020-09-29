@@ -1,14 +1,14 @@
 //
-//  YKFKeyMGMTReadConfigurationResponse.h
+//  YKFKeyManagementReadConfigurationResponse.h
 //  YubiKit
 //
 //  Created by Irina Makhalova on 2/10/20.
 //  Copyright © 2020 Yubico. All rights reserved.
 //
 
-#import "YKFKeyMGMTReadConfigurationResponse.h"
+#import "YKFKeyManagementReadConfigurationResponse.h"
 
-@interface YKFKeyMGMTReadConfigurationResponse()
+@interface YKFKeyManagementReadConfigurationResponse()
 
 @property (nonatomic, readwrite) NSUInteger usbSupportedMask;
 @property (nonatomic, readwrite) NSUInteger nfcSupportedMask;
