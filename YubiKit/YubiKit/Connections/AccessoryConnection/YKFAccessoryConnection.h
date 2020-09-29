@@ -58,8 +58,10 @@ typedef NS_ENUM(NSUInteger, YKFAccessoryConnectionState) {
 @protocol YKFAccessoryConnectionProtocol<NSObject>
 
 typedef void (^OATHSession)(id<YKFKeyOATHSessionProtocol> _Nullable, NSError* _Nullable);
-
 - (void)oathSession:(OATHSession _Nonnull)callback;
+
+typedef void (^U2FSession)(id<YKFKeyU2FSessionProtocol> _Nullable, NSError* _Nullable);
+- (void)u2fSession:(U2FSession _Nonnull)callback;
 
 /*!
  @property sessionState
@@ -90,16 +92,6 @@ typedef void (^OATHSession)(id<YKFKeyOATHSessionProtocol> _Nullable, NSError* _N
     YES if the key is connected to the device.
  */
 @property (nonatomic, assign, readonly, getter=isKeyConnected) BOOL keyConnected;
-
-/*!
- @property u2fService
- 
- @abstract
-    The shared object to interact with the U2F application from the YubiKey.
-    This property becomes available when the key is connected and the session opened and is nil when
-    the session is closed. This property should be accessed based on the session state.
- */
-@property (nonatomic, readonly, nullable) id<YKFKeyU2FSessionProtocol> u2fService;
 
 /*!
  @property fido2Service
