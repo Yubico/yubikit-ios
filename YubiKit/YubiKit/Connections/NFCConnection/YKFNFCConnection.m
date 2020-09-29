@@ -90,6 +90,26 @@
     }
 }
 
+- (void)u2fSession:(U2FSession _Nonnull)callback {
+    if (@available(iOS 13.0, *)) {
+        if (!self.u2fService) {
+            callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
+        }
+        ykf_weak_self();
+        [self.u2fService selectU2FApplicationWithCompletion:^(NSError * _Nullable error) {
+            ykf_safe_strong_self();
+            if (error != nil) {
+                callback(nil, error);
+            } else {
+                callback(strongSelf.u2fService, nil);
+            }
+        }];
+    } else {
+        // exit with fatal error here?
+        callback(nil, nil);
+    }
+}
+
 - (void)dealloc {
     if (@available(iOS 13.0, *)) {
         [self unobserveIso7816TagAvailability];

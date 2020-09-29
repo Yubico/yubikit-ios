@@ -108,6 +108,23 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) YKFKeyU2FSessionKeyState keyState;
 
 /*!
+ @method selectU2FApplicationWithCompletion:
+ 
+ @abstract
+    Sends to the key an U2F select request. This is the first request that is executed before sending any other request be defualt.
+    This method can be executed to receive response on selection.
+ 
+ @param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread. If the intention is to update the UI, dispatch the results
+    on the main thread to avoid an UIKit assertion.
+ 
+ @note
+    This method is thread safe and can be invoked from any thread (main or a background thread).
+ */
+- (void)selectU2FApplicationWithCompletion:(void (^)(NSError *))completion;
+
+/*!
  @method executeRegisterRequest:completion:
  
  @abstract

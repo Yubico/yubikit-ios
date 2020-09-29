@@ -131,6 +131,21 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     }];
 }
 
+- (void)u2fSession:(U2FSession _Nonnull)callback {
+    if (!self.u2fService) {
+        callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
+    }
+    ykf_weak_self();
+    [self.u2fService selectU2FApplicationWithCompletion:^(NSError * _Nullable error) {
+        ykf_safe_strong_self();
+        if (error != nil) {
+            callback(nil, error);
+        } else {
+            callback(strongSelf.u2fService, nil);
+        }
+    }];
+}
+
 - (void)dealloc {
     self.observeAccessoryConnection = NO;
     self.observeApplicationState = NO;
