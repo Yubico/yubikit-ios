@@ -654,29 +654,45 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
 #pragma mark - FIDO2 Tests
 
 - (void)test_WhenCallingFIDO2Reset_KeyApplicationResets {
-    [YubiKitManager.shared.accessorySession.fido2Service executeResetRequestWithCompletion:^(NSError * _Nullable error) {
-        if (error) {
-            [TestSharedLogger.shared logMessage:@"Reset request ended in error: %ld - %@.", error.code, error.localizedDescription];
+    YKFAccessoryConnection *connection = YubiKitManager.shared.accessorySession;
+    [connection fido2Session:^(id<YKFKeyFIDO2SessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
+        if (sessionError) {
+            [TestSharedLogger.shared logMessage:@"Failed to create FIDO2 session: %ld - %@", sessionError.code, sessionError.localizedDescription];
             return;
         }
-        [TestSharedLogger.shared logMessage:@"Reset request successful."];
+        
+        [session executeResetRequestWithCompletion:^(NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logMessage:@"Reset request ended in error: %ld - %@.", error.code, error.localizedDescription];
+                return;
+            }
+            [TestSharedLogger.shared logMessage:@"Reset request successful."];
+        }];
     }];
 }
 
 - (void)test_WhenCallingFIDO2GetInfo_TheKeyReturnsAutheticatorProperties {
     __weak typeof(self) weakSelf = self;
-    [YubiKitManager.shared.accessorySession.fido2Service executeGetInfoRequestWithCompletion:^(YKFKeyFIDO2GetInfoResponse *response, NSError *error) {
-        __strong typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        if (error) {
-            [TestSharedLogger.shared logMessage:@"Get Info request ended in error: %ld - %@.", error.code, error.localizedDescription];
+    YKFAccessoryConnection *session = YubiKitManager.shared.accessorySession;
+    [session fido2Session:^(id<YKFKeyFIDO2SessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
+        if (sessionError) {
+            [TestSharedLogger.shared logMessage:@"Failed to create FIDO2 session: %ld - %@", sessionError.code, sessionError.localizedDescription];
             return;
         }
         
-        [TestSharedLogger.shared logMessage:@"Get Info request successful."];
-        [strongSelf logFIDO2GetInfoResponse:response];
+        [session executeGetInfoRequestWithCompletion:^(YKFKeyFIDO2GetInfoResponse *response, NSError *error) {
+            __strong typeof(self) strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
+            if (error) {
+                [TestSharedLogger.shared logMessage:@"Get Info request ended in error: %ld - %@.", error.code, error.localizedDescription];
+                return;
+            }
+            
+            [TestSharedLogger.shared logMessage:@"Get Info request successful."];
+            [strongSelf logFIDO2GetInfoResponse:response];
+        }];
     }];
 }
 
@@ -786,40 +802,50 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     getAssertionRequest.options = assertionOptions;
     
     __weak typeof(self) weakSelf = self;
-    [YubiKitManager.shared.accessorySession.fido2Service executeMakeCredentialRequest:makeCredentialRequest completion:^(YKFKeyFIDO2MakeCredentialResponse *response, NSError *error) {
-        __strong typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        if (error) {
-            [TestSharedLogger.shared logMessage:@"Make Credential request ended in error: %ld - %@.", error.code, error.localizedDescription];
+    
+    YKFAccessoryConnection *connection = YubiKitManager.shared.accessorySession;
+    
+    [connection fido2Session:^(id<YKFKeyFIDO2SessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
+        if (sessionError) {
+            [TestSharedLogger.shared logMessage:@"Failed to create FIDO2 session: %ld - %@", sessionError.code, sessionError.localizedDescription];
             return;
         }
         
-        [TestSharedLogger.shared logMessage:@"Make Credential request successful."];
-        [strongSelf logFIDO2MakeCredentialResponse:response];
-        
-        YKFFIDO2AuthenticatorData *authenticatorData = response.authenticatorData;
-        if (authenticatorData) {
-            YKFFIDO2PublicKeyCredentialDescriptor *credentialDescriptor = [[YKFFIDO2PublicKeyCredentialDescriptor alloc] init];
-            credentialDescriptor.credentialId = authenticatorData.credentialId;
+        [session executeMakeCredentialRequest:makeCredentialRequest completion:^(YKFKeyFIDO2MakeCredentialResponse *response, NSError *error) {
+            __strong typeof(self) strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
+            if (error) {
+                [TestSharedLogger.shared logMessage:@"Make Credential request ended in error: %ld - %@.", error.code, error.localizedDescription];
+                return;
+            }
             
-            YKFFIDO2PublicKeyCredentialType *credType = [[YKFFIDO2PublicKeyCredentialType alloc] init];
-            credType.name = @"public-key";
-            credentialDescriptor.credentialType = credType;
+            [TestSharedLogger.shared logMessage:@"Make Credential request successful."];
+            [strongSelf logFIDO2MakeCredentialResponse:response];
             
-            getAssertionRequest.allowList = @[credentialDescriptor];
-            
-            [YubiKitManager.shared.accessorySession.fido2Service executeGetAssertionRequest:getAssertionRequest completion:^(YKFKeyFIDO2GetAssertionResponse * response, NSError *error) {
-                if (error) {
-                    [TestSharedLogger.shared logMessage:@"Get Assertion request ended in error: %ld - %@.", error.code, error.localizedDescription];
-                    return;
-                }
+            YKFFIDO2AuthenticatorData *authenticatorData = response.authenticatorData;
+            if (authenticatorData) {
+                YKFFIDO2PublicKeyCredentialDescriptor *credentialDescriptor = [[YKFFIDO2PublicKeyCredentialDescriptor alloc] init];
+                credentialDescriptor.credentialId = authenticatorData.credentialId;
                 
-                [TestSharedLogger.shared logMessage:@"Get Assertion request successful."];
-                [strongSelf logFIDO2GetAssertionResponse:response];
-            }];
-        }
+                YKFFIDO2PublicKeyCredentialType *credType = [[YKFFIDO2PublicKeyCredentialType alloc] init];
+                credType.name = @"public-key";
+                credentialDescriptor.credentialType = credType;
+                
+                getAssertionRequest.allowList = @[credentialDescriptor];
+                
+                [session executeGetAssertionRequest:getAssertionRequest completion:^(YKFKeyFIDO2GetAssertionResponse * response, NSError *error) {
+                    if (error) {
+                        [TestSharedLogger.shared logMessage:@"Get Assertion request ended in error: %ld - %@.", error.code, error.localizedDescription];
+                        return;
+                    }
+                    
+                    [TestSharedLogger.shared logMessage:@"Get Assertion request successful."];
+                    [strongSelf logFIDO2GetAssertionResponse:response];
+                }];
+            }
+        }];
     }];
 }
 
@@ -861,18 +887,26 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     [TestSharedLogger.shared logMessage:@"Requesting FIDO2 authenticatorMakeCredential."];
     
     __weak typeof(self) weakSelf = self;
-    [YubiKitManager.shared.accessorySession.fido2Service executeMakeCredentialRequest:makeCredentialRequest completion:^(YKFKeyFIDO2MakeCredentialResponse *response, NSError *error) {
-        __strong typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
+    YKFAccessoryConnection *connection = YubiKitManager.shared.accessorySession;
+    
+    [connection fido2Session:^(id<YKFKeyFIDO2SessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
+        if (sessionError) {
+            [TestSharedLogger.shared logMessage:@"Failed to create FIDO2 session: %ld - %@", sessionError.code, sessionError.localizedDescription];
             return;
         }
-        if (error) {
-            [TestSharedLogger.shared logMessage:@"Make Credential request ended in error: %ld - %@.", error.code, error.localizedDescription];
-            return;
-        }
-        
-        [TestSharedLogger.shared logMessage:@"Make Credential request successful."];
-        [strongSelf logFIDO2MakeCredentialResponse:response];
+        [session executeMakeCredentialRequest:makeCredentialRequest completion:^(YKFKeyFIDO2MakeCredentialResponse *response, NSError *error) {
+            __strong typeof(self) strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
+            if (error) {
+                [TestSharedLogger.shared logMessage:@"Make Credential request ended in error: %ld - %@.", error.code, error.localizedDescription];
+                return;
+            }
+            
+            [TestSharedLogger.shared logMessage:@"Make Credential request successful."];
+            [strongSelf logFIDO2MakeCredentialResponse:response];
+        }];
     }];
 }
 
