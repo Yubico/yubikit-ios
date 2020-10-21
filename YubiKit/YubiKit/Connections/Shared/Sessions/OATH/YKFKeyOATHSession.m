@@ -79,14 +79,17 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 @implementation YKFKeyOATHSession
 
-- (instancetype)initWithConnectionController:(id<YKFKeyConnectionControllerProtocol>)connectionController {
-    YKFAssertAbortInit(connectionController);
-    
-    self = [super init];
-    if (self) {
-        self.connectionController = connectionController;
-    }
-    return self;
++ (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
+                               completion:(YKFKeyOATHSessionCompletion _Nonnull)completion {
+    YKFKeyOATHSession *session = [YKFKeyOATHSession new];
+    session.connectionController = connectionController;
+    [session selectOATHApplicationWithCompletion:^(YKFKeyOATHSelectApplicationResponse * _Nullable response, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+        } else {
+            completion(session, nil);
+        }
+    }];
 }
 
 -(YKFKeyVersion *)version {

@@ -17,9 +17,19 @@
 #import "YKFAccessoryConnectionConfiguration.h"
 #import "EAAccessoryManager+Testing.h"
 
+
+@protocol YKFAccessoryConnectionDelegate <NSObject>
+
+- (void)didConnectAccessory:(id<YKFAccessoryConnectionProtocol>_Nonnull)connection;
+- (void)didDisconnectAccessory:(id<YKFAccessoryConnectionProtocol>_Nonnull)connection error:(NSError *_Nullable)error;
+
+@end
+
 typedef void (^YKFAccessoryConnectionStateChangeBlock)(YKFAccessoryConnectionState, YKFAccessoryConnectionState);
 
 @interface YKFAccessoryConnection()
+
+@property(nonatomic, weak) id<YKFAccessoryConnectionDelegate> _Nullable delegate;
 
 /*
  Hidden initializer to avoid the creation of multiple instances outside YubiKit.

@@ -24,7 +24,27 @@
  @abstract
     Provides the main access point interface for YubiKit.
  */
+
+@protocol YKFManagerDelegate <NSObject>
+
+- (void)didConnectNFC:(id<YKFNFCConnectionProtocol>_Nonnull)connection;
+- (void)didDisconnectNFC:(id<YKFNFCConnectionProtocol>_Nonnull)connection error:(NSError *_Nullable)error;
+
+- (void)didConnectAccessory:(id<YKFAccessoryConnectionProtocol>_Nonnull)connection;
+- (void)didDisconnectAccessory:(id<YKFAccessoryConnectionProtocol>_Nonnull)connection error:(NSError *_Nullable)error;
+
+@end
+
+
 @protocol YubiKitManagerProtocol
+
+@property(nonatomic, weak) id<YKFManagerDelegate> _Nullable delegate;
+
+- (void)startNFCConnection API_AVAILABLE(ios(13.0));
+- (void)stopNFCConnection API_AVAILABLE(ios(13.0));
+
+- (void)startAccessoryConnection;
+- (void)stopAccessoryConnection;
 
 /*!
  @property nfcReaderSession

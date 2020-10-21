@@ -20,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFKeyFIDO2Session()
 
+typedef void (^YKFKeyFIDO2SessionCompletion)(id<YKFKeyFIDO2SessionProtocol> _Nullable, NSError* _Nullable);
++ (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
+                               completion:(YKFKeyFIDO2SessionCompletion _Nonnull)completion;
+
 - (nullable instancetype)initWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -39,7 +39,8 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     private var newPin: String?
     // MARK: - Actions
     
-    private func runDemo() {
+    private func runDemo() {}
+        /*
         let keyPluggedIn = YubiKitManager.shared.accessorySession.connectionState == .open
         let fido2Service: YKFKeyFIDO2SessionProtocol
         if YubiKitDeviceCapabilities.supportsISO7816NFCTags && !keyPluggedIn {
@@ -646,4 +647,5 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     private func log(tag: String, value: String) {
         log(message: "\n* \(tag):\n\(value)")
     }
+ */
 }

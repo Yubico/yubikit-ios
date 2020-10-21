@@ -102,6 +102,8 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 @implementation YKFAccessoryConnection
 
+@synthesize delegate;
+
 - (instancetype)initWithAccessoryManager:(id<YKFEAAccessoryManagerProtocol>)accessoryManager configuration:(YKFAccessoryConnectionConfiguration *)configuration {
     YKFAssertAbortInit(accessoryManager);
     YKFAssertAbortInit(configuration);
@@ -117,17 +119,9 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 }
 
 - (void)oathSession:(OATHSession _Nonnull)callback {
-    if (!self.oathService) {
-        callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
-    }
-    ykf_weak_self();
-    [self.oathService selectOATHApplicationWithCompletion:^(YKFKeyOATHSelectApplicationResponse * _Nullable response, NSError * _Nullable error) {
-        ykf_safe_strong_self();
-        if (error != nil) {
-            callback(nil, error);
-        } else {
-            callback(strongSelf.oathService, nil);
-        }
+    [YKFKeyOATHSession sessionWithConnectionController:self.connectionController
+                                            completion:^(id<YKFKeyOATHSessionProtocol> _Nullable session, NSError * _Nullable error) {
+        callback(session, error);
     }];
 }
 
@@ -147,6 +141,15 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 }
 
 - (void)fido2Session:(FIDO2Session _Nonnull)callback {
+//    NSLog(@"get fido2Session");
+//    [YKFKeyFIDO2Session sessionWithConnectionController:self.connectionController
+//                                            completion:^(id<YKFKeyFIDO2SessionProtocol> _Nullable session, NSError * _Nullable error) {
+//        session.delegate = self;
+//        self.fido2Service = session;
+//        callback(session, error);
+//    }];
+//
+
     if (!self.fido2Service) {
         callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
     }
@@ -159,6 +162,13 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
             callback(strongSelf.fido2Service, nil);
         }
     }];
+}
+
+- (void)rawCommandSession:(RawCommandSession _Nonnull)callback {
+    if (!self.rawCommandService) {
+        callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
+    }
+    callback(self.rawCommandService, nil);
 }
 
 - (void)dealloc {
@@ -337,11 +347,23 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 #pragma mark - Session state
 
 - (void)setConnectionState:(YKFAccessoryConnectionState)sessionState {
-    // Avoid updating the state if the same to not trigger unnecessary KVO notifications.
+    NSLog(@"setConnectionState: %lu", sessionState);
     if (sessionState == _connectionState) {
         return;
     }
     _connectionState = sessionState;
+    
+    switch (_connectionState) {
+        case YKFAccessoryConnectionStateOpen:
+            [self.delegate didConnectAccessory:self];
+            break;
+        case YKFAccessoryConnectionStateClosed:
+            [self.delegate didDisconnectAccessory:self error:nil];
+            break;
+        default:
+            break;
+    }
+
 }
 
 #pragma mark - Shared communication queue
@@ -492,9 +514,9 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
         fido2Service.delegate = self;
         self.fido2Service = fido2Service;
         
-        YKFKeyOATHSession *oathService = [[YKFKeyOATHSession alloc] initWithConnectionController:self.connectionController];
-        oathService.delegate = self;
-        self.oathService = oathService;
+//        YKFKeyOATHSession *oathService = [[YKFKeyOATHSession alloc] initWithConnectionController:self.connectionController];
+//        oathService.delegate = self;
+//        self.oathService = oathService;
         
         YKFKeyRawCommandSession *rawCommandService = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.connectionController];
         rawCommandService.delegate = self;
@@ -524,7 +546,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
         // Clean services first
         strongSelf.u2fService = nil;
         strongSelf.fido2Service = nil;
-        strongSelf.oathService = nil;
+//        strongSelf.oathService = nil;
         strongSelf.rawCommandService = nil;
         
         strongSelf.connectionController = nil;

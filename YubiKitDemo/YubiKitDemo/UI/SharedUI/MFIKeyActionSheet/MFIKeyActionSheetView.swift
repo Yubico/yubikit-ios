@@ -19,7 +19,7 @@ import UIKit
 //
 
 class MFIKeyActionSheetViewConfiguration {
-    
+
     let presentAnimationDuration = 0.3
     let dismissAnimationDuration = 0.2
     
@@ -57,6 +57,8 @@ protocol MFIKeyActionSheetViewDelegate: NSObjectProtocol {
 
 class MFIKeyActionSheetView: UIView {
     
+    let contentView = Bundle.main.loadNibNamed("MFIKeyActionSheetView", owner: nil, options: nil)!.first as! MFIKeyActionSheetContentView
+    
     weak var delegate: MFIKeyActionSheetViewDelegate?
 
     private let configuration = MFIKeyActionSheetViewConfiguration()    
@@ -67,52 +69,35 @@ class MFIKeyActionSheetView: UIView {
     
     // MARK: - Outlets
     
-    @IBOutlet var actionSheetBottomConstraint: NSLayoutConstraint!
-    @IBOutlet var actionSheetView: UIView!
-    
-    @IBOutlet var keyImageView: UIImageView!
-    @IBOutlet var keyImageViewTopConstraint: NSLayoutConstraint!
-    
-    @IBOutlet var deviceImageView: UIImageView!
-    
-    @IBOutlet var keyActionContainerView: UIView!
-    @IBOutlet var backgroundFadeView: UIView!
-    @IBOutlet var borderView: UIView!
-    
-    @IBOutlet var cancelButton: UIButton!
-    @IBOutlet var messageLabel: UILabel!
+
     
     // MARK: - Lifecycle
     
-    class func loadViewFromNib() -> MFIKeyActionSheetView? {
-        guard let nibs = Bundle.main.loadNibNamed(viewNibName, owner: nil, options: nil) else {
-            return nil
-        }
-        guard let view = nibs.first as? MFIKeyActionSheetView else {
-            return nil
-        }
-        return view
-    }
+//    class func loadViewFromNib() -> MFIKeyActionSheetView? {
+//        guard let nibs = Bundle.main.loadNibNamed(viewNibName, owner: nil, options: nil) else {
+//            return nil
+//        }
+//        guard let view = nibs.first as? MFIKeyActionSheetView else {
+//            return nil
+//        }
+//        return view
+//    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        embed(contentView)
         setupView()
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        setupView()
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func setupView() {
         if UIDevice.current.ykd_hasHomeButton() {
-            deviceImageView.image = UIImage(named: "LASPhone")
+            contentView.deviceImageView.image = UIImage(named: "LASPhone")
         } else {
-            deviceImageView.image = UIImage(named: "LASPhoneNew")
+            contentView.deviceImageView.image = UIImage(named: "LASPhoneNew")
         }        
         resetState()
     }
@@ -120,18 +105,18 @@ class MFIKeyActionSheetView: UIView {
     // MARK: - Animation States
     
     private func resetState() {
-        borderView.backgroundColor = NamedColor.mfiKeyActionSheetIdleColor
-        messageLabel.text = nil
+        contentView.borderView.backgroundColor = NamedColor.mfiKeyActionSheetIdleColor
+        contentView.messageLabel.text = nil
         
-        layer.removeAllAnimations()
-        keyImageView.layer.removeAllAnimations()
+        contentView.layer.removeAllAnimations()
+        contentView.keyImageView.layer.removeAllAnimations()
     }
     
     func animateProcessing(message: String) {
         resetState()
         
-        borderView.backgroundColor = NamedColor.mfiKeyActionSheetProcessingColor
-        messageLabel.text = message
+        contentView.borderView.backgroundColor = NamedColor.mfiKeyActionSheetProcessingColor
+        contentView.messageLabel.text = message
         
         animateKeyConnected()
         pulsateBorderView(duration: 1.5)
@@ -140,8 +125,8 @@ class MFIKeyActionSheetView: UIView {
     func animateInsertKey(message: String) {
         resetState()
         
-        borderView.backgroundColor = NamedColor.mfiKeyActionSheetIdleColor
-        messageLabel.text = message
+        contentView.borderView.backgroundColor = NamedColor.mfiKeyActionSheetIdleColor
+        contentView.messageLabel.text = message
         
         animateConnectKey()
     }
@@ -149,8 +134,8 @@ class MFIKeyActionSheetView: UIView {
     func animateKeyInserted(message: String) {
         resetState()
         
-        borderView.backgroundColor = NamedColor.mfiKeyActionSheetIdleColor
-        messageLabel.text = message
+        contentView.borderView.backgroundColor = NamedColor.mfiKeyActionSheetIdleColor
+        contentView.messageLabel.text = message
         
         animateConnectKey()
     }
@@ -158,8 +143,8 @@ class MFIKeyActionSheetView: UIView {
     func animateTouchKey(message: String) {
         resetState()
         
-        borderView.backgroundColor = NamedColor.mfiKeyActionSheetTouchColor
-        messageLabel.text = message
+        contentView.borderView.backgroundColor = NamedColor.mfiKeyActionSheetTouchColor
+        contentView.messageLabel.text = message
         
         animateKeyConnected()
         pulsateBorderView(duration: 1)
@@ -173,12 +158,12 @@ class MFIKeyActionSheetView: UIView {
         }
         isPresenting = true
         
-        actionSheetBottomConstraint.constant = -(actionSheetBottomConstraint.constant + actionSheetView.frame.size.height)
-        backgroundFadeView.alpha = 0
+        contentView.actionSheetBottomConstraint.constant = -(contentView.actionSheetBottomConstraint.constant + contentView.actionSheetView.frame.size.height)
+        contentView.backgroundFadeView.alpha = 0
         
         layoutIfNeeded()
         
-        actionSheetBottomConstraint.constant = configuration.actionSheetViewBottomConstraintConstant
+        contentView.actionSheetBottomConstraint.constant = configuration.actionSheetViewBottomConstraintConstant
 
         let options: UIView.AnimationOptions = [.beginFromCurrentState, .curveEaseOut]
         
@@ -187,7 +172,7 @@ class MFIKeyActionSheetView: UIView {
                 return
             }
             self.layoutIfNeeded()
-            self.backgroundFadeView.alpha = self.configuration.actionSheetViewFadeViewAlpha
+            self.contentView.backgroundFadeView.alpha = self.configuration.actionSheetViewFadeViewAlpha
         }) { [weak self](_) in
             completion()
             self?.isPresenting = false
@@ -200,10 +185,10 @@ class MFIKeyActionSheetView: UIView {
         }
         isDismissing = true
         
-        actionSheetBottomConstraint.constant = configuration.actionSheetViewBottomConstraintConstant
+        contentView.actionSheetBottomConstraint.constant = configuration.actionSheetViewBottomConstraintConstant
         layoutIfNeeded()
         
-        actionSheetBottomConstraint.constant = -(actionSheetBottomConstraint.constant + actionSheetView.frame.size.height)
+        contentView.actionSheetBottomConstraint.constant = -(contentView.actionSheetBottomConstraint.constant + contentView.actionSheetView.frame.size.height)
         
         // Small delay to avoid UI flickering when the state is changing very fast.
         let delay = delayed ? 1.0 : 0
@@ -214,7 +199,7 @@ class MFIKeyActionSheetView: UIView {
                 return
             }
             self.layoutIfNeeded()
-            self.backgroundFadeView.alpha = 0
+            self.contentView.backgroundFadeView.alpha = 0
         }) { [weak self](_) in
             completion()
             self?.isDismissing = false
@@ -231,14 +216,14 @@ class MFIKeyActionSheetView: UIView {
                 return
             }
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.2, animations: {
-                self.keyImageViewTopConstraint.constant = self.configuration.keyImageViewTopConstraintConnectedConstant
+                self.contentView.keyImageViewTopConstraint.constant = self.configuration.keyImageViewTopConstraintConnectedConstant
                 self.layoutIfNeeded()
             })
             UIView.addKeyframe(withRelativeStartTime: 0.2, relativeDuration: 0.4, animations: {
                 // Pause
             })
             UIView.addKeyframe(withRelativeStartTime: 0.6, relativeDuration: 0.2, animations: {
-                self.keyImageViewTopConstraint.constant = self.configuration.keyImageViewTopConstraintDisconnectedConstant
+                self.contentView.keyImageViewTopConstraint.constant = self.configuration.keyImageViewTopConstraintDisconnectedConstant
                 self.layoutIfNeeded()
             })
             UIView.addKeyframe(withRelativeStartTime: 0.8, relativeDuration: 0.2, animations: {
@@ -253,27 +238,27 @@ class MFIKeyActionSheetView: UIView {
                 return
             }
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1, animations: {
-                self.keyImageViewTopConstraint.constant = self.configuration.keyImageViewTopConstraintConnectedConstant
+                self.contentView.keyImageViewTopConstraint.constant = self.configuration.keyImageViewTopConstraintConnectedConstant
                 self.layoutIfNeeded()
             })
         }, completion: nil)
     }
     
     private func pulsateBorderView(duration: TimeInterval) {
-        borderView.alpha = 0
+        contentView.borderView.alpha = 0
         
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: .repeat, animations: { [weak self] in
             guard let self = self else {
                 return
             }
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1, animations: {
-                self.borderView.alpha = 1
+                self.contentView.borderView.alpha = 1
             })
             UIView.addKeyframe(withRelativeStartTime: 0.1, relativeDuration: 0.8, animations: {
                 // Pause
             })
             UIView.addKeyframe(withRelativeStartTime: 0.9, relativeDuration: 0.1, animations: {
-                self.borderView.alpha = 0
+                self.contentView.borderView.alpha = 0
             })
         }, completion: nil)
     }
@@ -296,7 +281,7 @@ class MFIKeyActionSheetView: UIView {
         @unknown default:
             fatalError()
         }
-        keyActionContainerView.transform = CGAffineTransform(rotationAngle: rotationAngle)
+        contentView.keyActionContainerView.transform = CGAffineTransform(rotationAngle: rotationAngle)
     }
     
     // MARK: - Actions
@@ -336,4 +321,22 @@ extension NamedColor /* MFI Key Action Sheet */ {
     
     /// The border color of the action sheet action view when the action sheet is set on a processing state.
     static var mfiKeyActionSheetProcessingColor = UIColorFrom(hex: 0x76D6FF)
+}
+
+
+class MFIKeyActionSheetContentView: UIView {
+    @IBOutlet var actionSheetBottomConstraint: NSLayoutConstraint!
+    @IBOutlet var actionSheetView: UIView!
+    
+    @IBOutlet var keyImageView: UIImageView!
+    @IBOutlet var keyImageViewTopConstraint: NSLayoutConstraint!
+    
+    @IBOutlet var deviceImageView: UIImageView!
+    
+    @IBOutlet var keyActionContainerView: UIView!
+    @IBOutlet var backgroundFadeView: UIView!
+    @IBOutlet var borderView: UIView!
+    
+    @IBOutlet var cancelButton: UIButton!
+    @IBOutlet var messageLabel: UILabel!
 }

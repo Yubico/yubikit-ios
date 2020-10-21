@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		516BCE13253444AE0022F455 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516BCE12253444AD0022F455 /* StatusView.swift */; };
 		81DF8FD6237B530000737268 /* docassets in Resources */ = {isa = PBXBuildFile; fileRef = 81DF8FD4237B530000737268 /* docassets */; };
 		81DF8FD7237B530000737268 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 81DF8FD5237B530000737268 /* README.md */; };
 		81FA3C42231D52CB009C22AB /* CustomLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FA3C41231D52CB009C22AB /* CustomLogger.swift */; };
@@ -18,7 +19,7 @@
 		9519A50823279FF00087EE8F /* ProgressHudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9519A50623279FF00087EE8F /* ProgressHudView.swift */; };
 		9519A50923279FF00087EE8F /* ProgressHudView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9519A50723279FF00087EE8F /* ProgressHudView.xib */; };
 		9526E3CC21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9526E3CB21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift */; };
-		9528AC9420B5685E00513302 /* UIViewAdditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9528AC9320B5685E00513302 /* UIViewAdditions.swift */; };
+		9528AC9420B5685E00513302 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9528AC9320B5685E00513302 /* UIView+Extensions.swift */; };
 		952AF236203ACD1E004C2FDB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952AF235203ACD1E004C2FDB /* RootViewController.swift */; };
 		952C3BFE203C73FB0000A115 /* QRCodeScanWaitingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952C3BFD203C73FB0000A115 /* QRCodeScanWaitingView.swift */; };
 		952C3C00203C74150000A115 /* QRCodeScanWaitingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 952C3BFF203C74150000A115 /* QRCodeScanWaitingView.xib */; };
@@ -79,6 +80,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		516BCE12253444AD0022F455 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		81DF8FD4237B530000737268 /* docassets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = docassets; sourceTree = "<group>"; };
 		81DF8FD5237B530000737268 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		81FA3C41231D52CB009C22AB /* CustomLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLogger.swift; sourceTree = "<group>"; };
@@ -90,7 +92,7 @@
 		9519A50623279FF00087EE8F /* ProgressHudView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressHudView.swift; sourceTree = "<group>"; };
 		9519A50723279FF00087EE8F /* ProgressHudView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProgressHudView.xib; sourceTree = "<group>"; };
 		9526E3CB21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MFIKeyInteractionViewController.swift; sourceTree = "<group>"; };
-		9528AC9320B5685E00513302 /* UIViewAdditions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewAdditions.swift; sourceTree = "<group>"; };
+		9528AC9320B5685E00513302 /* UIView+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		952AF235203ACD1E004C2FDB /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		952C3BFD203C73FB0000A115 /* QRCodeScanWaitingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanWaitingView.swift; sourceTree = "<group>"; };
 		952C3BFF203C74150000A115 /* QRCodeScanWaitingView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = QRCodeScanWaitingView.xib; sourceTree = "<group>"; };
@@ -192,7 +194,7 @@
 				95AD1AAE232A336F00FC3313 /* SceneObserver */,
 				9526E3CA21AFEE030003DAB8 /* MFIKeyActionSheet */,
 				951208FB2243C44B0037475A /* FIDO2PinInputController.swift */,
-				9528AC9320B5685E00513302 /* UIViewAdditions.swift */,
+				9528AC9320B5685E00513302 /* UIView+Extensions.swift */,
 				951459AF20BED84B00E6757A /* ApplicationUIAppearance.swift */,
 				95DF4A962199B5D10025A152 /* DemoCustomTabBar.swift */,
 				952AF235203ACD1E004C2FDB /* RootViewController.swift */,
@@ -380,6 +382,7 @@
 			children = (
 				95885AF1209B1EB300828D02 /* FIDO2Demo.storyboard */,
 				95885AF8209B266D00828D02 /* FIDO2ViewController.swift */,
+				516BCE12253444AD0022F455 /* StatusView.swift */,
 			);
 			path = FIDO2;
 			sourceTree = "<group>";
@@ -540,9 +543,10 @@
 				957DE0EC2031B52D00B53569 /* OTPScanContainerView.swift in Sources */,
 				95885AF9209B266D00828D02 /* FIDO2ViewController.swift in Sources */,
 				951208FC2243C44B0037475A /* FIDO2PinInputController.swift in Sources */,
-				9528AC9420B5685E00513302 /* UIViewAdditions.swift in Sources */,
+				9528AC9420B5685E00513302 /* UIView+Extensions.swift in Sources */,
 				950A340F203EBA1B005C9754 /* AboutViewController.swift in Sources */,
 				95FAFACB202C483E00121DD5 /* OTPScanViewController.swift in Sources */,
+				516BCE13253444AE0022F455 /* StatusView.swift in Sources */,
 				95F767E2203455FC00208B88 /* OTPDetailsViewController.swift in Sources */,
 				81FA3C42231D52CB009C22AB /* CustomLogger.swift in Sources */,
 				952C3BFE203C73FB0000A115 /* QRCodeScanWaitingView.swift in Sources */,
@@ -655,7 +659,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
@@ -709,7 +713,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
@@ -736,7 +740,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "YubiKitDemo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -757,7 +761,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "YubiKitDemo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

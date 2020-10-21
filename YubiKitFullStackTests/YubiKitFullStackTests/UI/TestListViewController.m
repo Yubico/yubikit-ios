@@ -10,68 +10,32 @@
 #import "TestListViewController.h"
 #import "ManualTests.h"
 
-@interface TestListViewController()<UITableViewDelegate>
+@interface TestListViewController()<UITableViewDelegate, YKFManagerDelegate>
 
 @property (strong, nonatomic) IBOutlet UIView *insertKeyView;
 @property (nonatomic, assign) BOOL observeKeyConnected;
+@property (strong, nonatomic) YKFAccessoryConnection *connection;
 
 @end
 
 @implementation TestListViewController
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-        
-    self.observeKeyConnected = YES;
-    [self updateKeyWarningViewVisibility];
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    YubiKitManager.shared.delegate = self;
+    self.insertKeyView.hidden = FALSE;
+    [YubiKitManager.shared startAccessoryConnection];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    self.observeKeyConnected = NO;
+    NSLog(@"🦠 viewWillDisappear: %@", self);
+    [YubiKitManager.shared stopAccessoryConnection];
 }
 
 - (void)dealloc {
-    self.observeKeyConnected = NO;
-}
-
-#pragma mark - KVO
-
-- (void)setObserveKeyConnected:(BOOL)observeKeyConnected {
-    if (_observeKeyConnected == observeKeyConnected) {
-        return;
-    }
-    _observeKeyConnected = observeKeyConnected;
-    
-    void *context = (__bridge void * _Nullable)(self.class);
-    YKFAccessoryConnection *accessorySession = YubiKitManager.shared.accessorySession;
-    
-    if (_observeKeyConnected) {
-        [accessorySession addObserver:self forKeyPath:YKFAccessoryConnectionStatePropertyKey options:0 context:context];
-    } else {
-        [accessorySession removeObserver:self forKeyPath:YKFAccessoryConnectionStatePropertyKey];
-    }
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    void *currentContext = (__bridge void * _Nullable)(self.class);
-    if (context != currentContext) {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-        return;
-    }
-    
-    if ([keyPath isEqualToString:YKFAccessoryConnectionStatePropertyKey]) {
-        __weak typeof(self) weakSelf = self;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(self) strongSelf = weakSelf;
-            [strongSelf updateKeyWarningViewVisibility];
-        });
-    }
-}
-
-- (void)updateKeyWarningViewVisibility {
-    YKFAccessoryConnection *accessorySession = YubiKitManager.shared.accessorySession;
-    self.insertKeyView.hidden = (accessorySession.connectionState == YKFAccessoryConnectionStateOpen);
+    [YubiKitManager.shared stopAccessoryConnection];
+    YubiKitManager.shared.delegate = nil;
 }
 
 #pragma mark - UITableViewDelegate
@@ -80,11 +44,34 @@
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     [self performSegueWithIdentifier:@"ManualTestLogsPresentation" sender:self];
+    self.tableDataSource.connection = self.connection;
     [self.tableDataSource executeTestEntryAtIndexPath:indexPath];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     return 60;
+}
+
+#pragma mark - YubiKitManagerDelegate
+
+- (void)didConnectAccessory:(id<YKFAccessoryConnectionProtocol> _Nonnull)connection {
+    self.connection = connection;
+    self.insertKeyView.hidden = TRUE;
+    NSLog(@"didConnectAccessory: %@", connection);
+}
+
+- (void)didConnectNFC:(id<YKFNFCConnectionProtocol> _Nonnull)connection {
+    NSLog(@"didConnectNFC: %@", connection);
+}
+
+- (void)didDisconnectAccessory:(id<YKFAccessoryConnectionProtocol> _Nonnull)connection error:(NSError * _Nullable)error {
+    self.connection = nil;
+    self.insertKeyView.hidden = FALSE;
+    NSLog(@"didDisconnectAccessory");
+}
+
+- (void)didDisconnectNFC:(id<YKFNFCConnectionProtocol> _Nonnull)connection error:(NSError * _Nullable)error {
+    NSLog(@"didDisconnectNFC");
 }
 
 @end
