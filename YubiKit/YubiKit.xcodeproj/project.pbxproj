@@ -354,6 +354,7 @@
 
 /* Begin PBXFileReference section */
 		516BCE0E252C77EE0022F455 /* YKFNFCConnection+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFNFCConnection+Private.h"; sourceTree = "<group>"; };
+		5176559925405FE400819857 /* YKFConnectionProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFConnectionProtocol.h; sourceTree = "<group>"; };
 		51A5D2572451D7CD00C7161E /* YKFOATHRenameAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFOATHRenameAPDU.m; sourceTree = "<group>"; };
 		51A5D2582451D7CD00C7161E /* YKFOATHRenameAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFOATHRenameAPDU.h; sourceTree = "<group>"; };
 		51A5D25A2451D81600C7161E /* YKFKeyOATHRenameRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFKeyOATHRenameRequest.m; sourceTree = "<group>"; };
@@ -895,6 +896,7 @@
 		953A507F213EECED00929ABB /* Connections */ = {
 			isa = PBXGroup;
 			children = (
+				5176559925405FE400819857 /* YKFConnectionProtocol.h */,
 				95DD407D2099A84700363FEE /* AccessoryConnection */,
 				95C2963E206264FB0091318B /* NFCConnection */,
 				956DB6682063919D006B1738 /* QRReaderSession */,

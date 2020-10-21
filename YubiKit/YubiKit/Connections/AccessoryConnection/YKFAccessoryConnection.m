@@ -596,7 +596,8 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     [self.u2fService keyService:service willExecuteRequest:request];
     [self.fido2Service keyService:service willExecuteRequest:request];
     [self.oathService keyService:service willExecuteRequest:request];
-    [self.rawCommandService keyService:service willExecuteRequest:request];
+//     This caused a compilation error but we're simply commenting out this line for now.
+//    [self.rawCommandService keyService:service willExecuteRequest:request];
 }
 
 #pragma mark - Helpers

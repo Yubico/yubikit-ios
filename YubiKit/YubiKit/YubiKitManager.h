@@ -30,8 +30,8 @@
 - (void)didConnectNFC:(id<YKFNFCConnectionProtocol>_Nonnull)connection;
 - (void)didDisconnectNFC:(id<YKFNFCConnectionProtocol>_Nonnull)connection error:(NSError *_Nullable)error;
 
-- (void)didConnectAccessory:(id<YKFAccessoryConnectionProtocol>_Nonnull)connection;
-- (void)didDisconnectAccessory:(id<YKFAccessoryConnectionProtocol>_Nonnull)connection error:(NSError *_Nullable)error;
+- (void)didConnectAccessory:(YKFAccessoryConnection *_Nonnull)connection;
+- (void)didDisconnectAccessory:(YKFAccessoryConnection *_Nonnull)connection error:(NSError *_Nullable)error;
 
 @end
 
@@ -60,7 +60,7 @@
  @abstract
     Returns the shared instance of YKFAccessorySession to interact with a MFi accessory YubiKey.
  */
-@property (nonatomic, readonly, nonnull) id<YKFAccessoryConnectionProtocol> accessorySession;
+@property (nonatomic, readonly, nonnull) YKFAccessoryConnection *accessorySession;
 
 @end
 
