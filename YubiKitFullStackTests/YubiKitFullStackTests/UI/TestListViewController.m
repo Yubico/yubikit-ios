@@ -54,7 +54,7 @@
 
 #pragma mark - YubiKitManagerDelegate
 
-- (void)didConnectAccessory:(id<YKFAccessoryConnectionProtocol> _Nonnull)connection {
+- (void)didConnectAccessory:(YKFAccessoryConnection *_Nonnull)connection {
     self.connection = connection;
     self.insertKeyView.hidden = TRUE;
     NSLog(@"didConnectAccessory: %@", connection);
@@ -64,7 +64,7 @@
     NSLog(@"didConnectNFC: %@", connection);
 }
 
-- (void)didDisconnectAccessory:(id<YKFAccessoryConnectionProtocol> _Nonnull)connection error:(NSError * _Nullable)error {
+- (void)didDisconnectAccessory:(YKFAccessoryConnection *_Nonnull)connection error:(NSError * _Nullable)error {
     self.connection = nil;
     self.insertKeyView.hidden = FALSE;
     NSLog(@"didDisconnectAccessory");

@@ -39,7 +39,7 @@ static const NSUInteger YKFPCSCLayerCardLimitPerContext = 10;
 
 @interface YKFPCSCLayer()
 
-@property (nonatomic) id<YKFAccessoryConnectionProtocol> accessorySession;
+@property (nonatomic) YKFAccessoryConnection *accessorySession;
 @property (nonatomic) YKFPCSCErrorMap *errorMap;
 
 // Maps a context value to a list of card values
@@ -78,7 +78,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
     return sharedInstance;
 }
 
-- (instancetype)initWithAccessorySession:(id<YKFAccessoryConnectionProtocol>)session {
+- (instancetype)initWithAccessorySession:(YKFAccessoryConnection *)session {
     YKFAssertAbortInit(session);
     
     self = [super init];

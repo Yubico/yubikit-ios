@@ -20,8 +20,8 @@
 
 @protocol YKFAccessoryConnectionDelegate <NSObject>
 
-- (void)didConnectAccessory:(id<YKFAccessoryConnectionProtocol>_Nonnull)connection;
-- (void)didDisconnectAccessory:(id<YKFAccessoryConnectionProtocol>_Nonnull)connection error:(NSError *_Nullable)error;
+- (void)didConnectAccessory:(YKFAccessoryConnection *_Nonnull)connection;
+- (void)didDisconnectAccessory:(YKFAccessoryConnection *_Nonnull)connection error:(NSError *_Nullable)error;
 
 @end
 
