@@ -14,16 +14,6 @@
 
 import UIKit
 
-extension YKFConnectionProtocol {
-    func fido2Session(_ completion: @escaping ((_ result: Result<YKFKeyFIDO2SessionProtocol, Error>) -> Void)) {
-        self.fido2Session { session, error in
-            guard error == nil else { completion(.failure(error!)); return }
-            guard let session = session else { fatalError() }
-            completion(.success(session))
-        }
-    }
-}
-
 class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDelegate {
     
     enum ConnectionType {
@@ -90,11 +80,11 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
     
     // MARK: - YKFManagerDelegate
     
-    func didConnectNFC(_ connection: YKFNFCConnectionProtocol) {
+    func didConnectNFC(_ connection: YKFNFCConnection) {
         print("didConnectNFC")
     }
     
-    func didDisconnectNFC(_ connection: YKFNFCConnectionProtocol, error: Error?) {
+    func didDisconnectNFC(_ connection: YKFNFCConnection, error: Error?) {
         print("didDisconnectNFC")
     }
     
@@ -523,5 +513,16 @@ extension UIAlertController {
         addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
             pinInputCompletion(nil)
         }))
+    }
+}
+
+// Wrap the fido2Session() Objective-C method in a more easy to use Swift version
+extension YKFConnectionProtocol {
+    func fido2Session(_ completion: @escaping ((_ result: Result<YKFKeyFIDO2SessionProtocol, Error>) -> Void)) {
+        self.fido2Session { session, error in
+            guard error == nil else { completion(.failure(error!)); return }
+            guard let session = session else { fatalError() }
+            completion(.success(session))
+        }
     }
 }

@@ -34,7 +34,7 @@ typedef NS_ENUM(NSUInteger, YKFNFCConnectionState) {
     YKFNFCConnectionStateOpen
 };
 
-@protocol YKFNFCConnectionProtocol<NSObject>
+@interface YKFNFCConnection: NSObject
 
 typedef void (^OATHSession)(id<YKFKeyOATHSessionProtocol> _Nullable, NSError* _Nullable);
 - (void)oathSession:(OATHSession _Nonnull)callback API_AVAILABLE(ios(13.0));
@@ -130,9 +130,7 @@ typedef void (^U2FSession)(id<YKFKeyU2FSessionProtocol> _Nullable, NSError* _Nul
 - (void)cancelCommands API_AVAILABLE(ios(13.0));
 
 - (void)setAlertMessage:(NSString*) alertMessage API_AVAILABLE(ios(13.0));
-@end
 
-@interface YKFNFCConnection: NSObject<YKFNFCConnectionProtocol>
 @end
 
 NS_ASSUME_NONNULL_END

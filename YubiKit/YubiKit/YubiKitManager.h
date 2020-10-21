@@ -27,8 +27,8 @@
 
 @protocol YKFManagerDelegate <NSObject>
 
-- (void)didConnectNFC:(id<YKFNFCConnectionProtocol>_Nonnull)connection;
-- (void)didDisconnectNFC:(id<YKFNFCConnectionProtocol>_Nonnull)connection error:(NSError *_Nullable)error;
+- (void)didConnectNFC:(YKFNFCConnection *_Nonnull)connection;
+- (void)didDisconnectNFC:(YKFNFCConnection *_Nonnull)connection error:(NSError *_Nullable)error;
 
 - (void)didConnectAccessory:(YKFAccessoryConnection *_Nonnull)connection;
 - (void)didDisconnectAccessory:(YKFAccessoryConnection *_Nonnull)connection error:(NSError *_Nullable)error;
@@ -52,7 +52,7 @@
  @abstract
     Returns the shared instance of YKFNFCSession to interact with the NFC reader.
  */
-@property (nonatomic, readonly, nonnull) id<YKFNFCConnectionProtocol> nfcSession NS_AVAILABLE_IOS(11.0);
+@property (nonatomic, readonly, nonnull) YKFNFCConnection *nfcSession NS_AVAILABLE_IOS(11.0);
 
 /*!
  @property accessorySession
