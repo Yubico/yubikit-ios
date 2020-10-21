@@ -14,6 +14,16 @@
 
 import UIKit
 
+extension YKFConnectionProtocol {
+    func fido2Session(_ completion: @escaping ((_ result: Result<YKFKeyFIDO2SessionProtocol, Error>) -> Void)) {
+        self.fido2Session { session, error in
+            guard error == nil else { completion(.failure(error!)); return }
+            guard let session = session else { fatalError() }
+            completion(.success(session))
+        }
+    }
+}
+
 class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDelegate {
     
     enum ConnectionType {
@@ -37,28 +47,10 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
     @IBOutlet var actionButton: UIButton!
     @IBOutlet var keyInfoLabel: UILabel!
     
-    enum Connection {
-        case accessory(YKFAccessoryConnectionProtocol)
-        case nfc(YKFNFCConnectionProtocol)
-        
-        func fido2Session(_ completion: @escaping ((_ result: Result<YKFKeyFIDO2SessionProtocol, Error>) -> Void)) {
-            switch self {
-            case .accessory(let connection):
-                connection.fido2Session() { session, error in
-                    guard error == nil else { completion(.failure(error!)); return }
-                    guard let session = session else { fatalError() }
-                    completion(.success(session))
-                }
-            case .nfc(let connection):
-                print("not implemented yet")
-            }
-        }
-    }
-    
-    var connection: Connection?
-    var connectionCallback: ((_ connection: Connection) -> Void)?
+    var connection: YKFConnectionProtocol?
+    var connectionCallback: ((_ connection: YKFConnectionProtocol) -> Void)?
 
-    func connection(_ type: ConnectionType, completion: @escaping (_ connection: Connection) -> Void) {
+    func connection(_ type: ConnectionType, completion: @escaping (_ connection: YKFConnectionProtocol) -> Void) {
         if let connection = connection {
             completion(connection)
         } else {
@@ -106,14 +98,13 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
         print("didDisconnectNFC")
     }
     
-    func didConnectAccessory(_ accessoryConnection: YKFAccessoryConnectionProtocol) {
-        let connection = Connection.accessory(accessoryConnection)
-        self.connection = connection
+    func didConnectAccessory(_ accessoryConnection: YKFAccessoryConnection) {
+        connection = accessoryConnection
         guard let connectionCallback = connectionCallback else { return }
-        connectionCallback(connection)
+        connectionCallback(accessoryConnection)
     }
     
-    func didDisconnectAccessory(_ accessoryConnection: YKFAccessoryConnectionProtocol, error: Error?) {
+    func didDisconnectAccessory(_ accessoryConnection: YKFAccessoryConnection, error: Error?) {
         connection = nil
         connectionCallback = nil
     }

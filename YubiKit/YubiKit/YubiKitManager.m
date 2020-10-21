@@ -24,7 +24,7 @@
 @interface YubiKitManager()<YKFAccessoryConnectionDelegate, YKFNFCConnectionDelegate>
 
 @property (nonatomic, readwrite) id<YKFNFCConnectionProtocol> nfcSession NS_AVAILABLE_IOS(11.0);
-@property (nonatomic, readwrite) id<YKFAccessoryConnectionProtocol> accessorySession;
+@property (nonatomic, readwrite) YKFAccessoryConnection *accessorySession;
 
 @end
 
@@ -76,13 +76,13 @@ static id<YubiKitManagerProtocol> sharedInstance;
     [self.nfcSession stop];
 }
 
-- (void)didConnectAccessory:(id<YKFAccessoryConnectionProtocol> _Nonnull)connection {
+- (void)didConnectAccessory:(YKFAccessoryConnection *_Nonnull)connection {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.delegate didConnectAccessory:connection];
     });
 }
 
-- (void)didDisconnectAccessory:(id<YKFAccessoryConnectionProtocol> _Nonnull)connection error:(NSError * _Nullable)error {
+- (void)didDisconnectAccessory:(YKFAccessoryConnection *_Nonnull)connection error:(NSError * _Nullable)error {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.delegate didDisconnectAccessory:connection error:error];
     });

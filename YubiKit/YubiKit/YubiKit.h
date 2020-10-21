@@ -29,6 +29,8 @@
 #import "YKFNFCError.h"
 #import "YKFNFCTagDescription.h"
 
+#import "YKFConnectionProtocol.h"
+
 #import "YKFAccessoryConnection.h"
 #import "YKFAccessoryDescription.h"
 
