@@ -21,8 +21,8 @@
 
 @protocol YKFNFCConnectionDelegate <NSObject>
 
-- (void)didConnectNFC:(id<YKFNFCConnectionProtocol>_Nonnull)connection;
-- (void)didDisconnectNFC:(id<YKFNFCConnectionProtocol>_Nonnull)connection error:(NSError *_Nullable)error;
+- (void)didConnectNFC:(YKFNFCConnection *_Nonnull)connection;
+- (void)didDisconnectNFC:(YKFNFCConnection *_Nonnull)connection error:(NSError *_Nullable)error;
 
 @end
 
