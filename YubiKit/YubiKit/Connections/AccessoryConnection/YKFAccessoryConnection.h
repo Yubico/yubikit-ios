@@ -20,7 +20,7 @@
 #import "YKFKeyFIDO2Session.h"
 #import "YKFKeyOATHSession.h"
 #import "YKFKeyRawCommandSession.h"
-//@protocol YKFKeySessionDelegate;
+
 /**
  * ---------------------------------------------------------------------------------------------------------------------
  * @name YKFAccessorySession Types

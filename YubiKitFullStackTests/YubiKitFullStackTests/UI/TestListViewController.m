@@ -60,7 +60,7 @@
     NSLog(@"didConnectAccessory: %@", connection);
 }
 
-- (void)didConnectNFC:(id<YKFNFCConnectionProtocol> _Nonnull)connection {
+- (void)didConnectNFC:(YKFNFCConnection *_Nonnull)connection {
     NSLog(@"didConnectNFC: %@", connection);
 }
 
@@ -70,7 +70,7 @@
     NSLog(@"didDisconnectAccessory");
 }
 
-- (void)didDisconnectNFC:(id<YKFNFCConnectionProtocol> _Nonnull)connection error:(NSError * _Nullable)error {
+- (void)didDisconnectNFC:(YKFNFCConnection *_Nonnull)connection error:(NSError * _Nullable)error {
     NSLog(@"didDisconnectNFC");
 }
 
