@@ -14,53 +14,21 @@
 
 import UIKit
 
-class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate {
+class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDelegate {
     
-    private enum FIDO2ViewControllerNextAction {
-        case none
+    enum ConnectionType {
+        case nfc
+        case accessory
+    }
+    
+    enum Action {
         case register
         case authenticate
     }
-    private var nextAction: FIDO2ViewControllerNextAction = .none
     
-    private enum FIDO2ViewControllerKeyType {
-        case unknown
-        case accessory
-        case nfc
-    }
-    private var keyType: FIDO2ViewControllerKeyType = .unknown
 
-    private var nfcSesionStateObservation: NSKeyValueObservation?
     private var sceneObserver: SceneObserver?
-    
-    // MARK: - Services
-    
-    /**
-     The WS interface to communicate with the Yubico Demo website.
-     */
-    private let webauthnService = WebAuthnService()
-    
-    /**
-     Returns the service associated with the desired session.
-     */
-    private var keyFido2Service: YKFKeyFIDO2SessionProtocol {
-        get {
-            var fido2Service: YKFKeyFIDO2SessionProtocol? = nil
-            if keyType == .accessory {
-                fido2Service = YubiKitManager.shared.accessorySession.fido2Service
-            } else {
-                guard #available(iOS 13.0, *) else {
-                    fatalError()
-                }
-                fido2Service = YubiKitManager.shared.nfcSession.fido2Service
-            }
-            guard fido2Service != nil else {
-                fatalError()
-            }
-            return fido2Service!
-        }
-    }
-    
+
     // MARK: - Outlets
     
     @IBOutlet var segmentedControl: UISegmentedControl!
@@ -69,22 +37,54 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
     @IBOutlet var actionButton: UIButton!
     @IBOutlet var keyInfoLabel: UILabel!
     
+    enum Connection {
+        case accessory(YKFAccessoryConnectionProtocol)
+        case nfc(YKFNFCConnectionProtocol)
+        
+        func fido2Session(_ completion: @escaping ((_ result: Result<YKFKeyFIDO2SessionProtocol, Error>) -> Void)) {
+            switch self {
+            case .accessory(let connection):
+                connection.fido2Session() { session, error in
+                    guard error == nil else { completion(.failure(error!)); return }
+                    guard let session = session else { fatalError() }
+                    completion(.success(session))
+                }
+            case .nfc(let connection):
+                print("not implemented yet")
+            }
+        }
+    }
+    
+    var connection: Connection?
+    var connectionCallback: ((_ connection: Connection) -> Void)?
+
+    func connection(_ type: ConnectionType, completion: @escaping (_ connection: Connection) -> Void) {
+        if let connection = connection {
+            completion(connection)
+        } else {
+            self.connectionCallback = { connection in
+                completion(connection)
+            }
+            switch type {
+            case .nfc:
+                if #available(iOS 13.0, *) {
+                    YubiKitManager.shared.startNFCConnection()
+                } else {
+                    // Fallback on earlier versions
+                }
+            case .accessory:
+                YubiKitManager.shared.startAccessoryConnection()
+            }
+        }
+    }
+    
     // MARK: - View lifecycle
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        YubiKitManager.shared.delegate = self
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
-            // Make sure the session is started (in case it was closed by another demo).
-            YubiKitManager.shared.accessorySession.start()
-        
-            updateKeyInfo()
-        
-            // Enable state observation (see MFIKeyInteractionViewController)
-            observeAccessorySessionStateUpdates = true
-            observeFIDO2ServiceStateUpdates = true
-        } else {
-            present(message: "This device or iOS version does not support operations with MFi accessory YubiKeys.")
+            YubiKitManager.shared.startAccessoryConnection()
         }
     }
     
@@ -92,12 +92,30 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
         super.viewWillDisappear(animated)
 
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
-            // Disable state observation (see MFIKeyInteractionViewController)
-            observeAccessorySessionStateUpdates = false
-            observeFIDO2ServiceStateUpdates = false
-        
-            YubiKitManager.shared.accessorySession.cancelCommands()
+            YubiKitManager.shared.stopAccessoryConnection()
         }
+    }
+    
+    // MARK: - YKFManagerDelegate
+    
+    func didConnectNFC(_ connection: YKFNFCConnectionProtocol) {
+        print("didConnectNFC")
+    }
+    
+    func didDisconnectNFC(_ connection: YKFNFCConnectionProtocol, error: Error?) {
+        print("didDisconnectNFC")
+    }
+    
+    func didConnectAccessory(_ accessoryConnection: YKFAccessoryConnectionProtocol) {
+        let connection = Connection.accessory(accessoryConnection)
+        self.connection = connection
+        guard let connectionCallback = connectionCallback else { return }
+        connectionCallback(connection)
+    }
+    
+    func didDisconnectAccessory(_ accessoryConnection: YKFAccessoryConnectionProtocol, error: Error?) {
+        connection = nil
+        connectionCallback = nil
     }
 
     // MARK: - Actions
@@ -105,56 +123,364 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
     @IBAction func actionButtonPressed(_ sender: Any) {
         view.endEditing(true)
         
-        guard !usernameTextField.text!.isEmpty && !passwordTextField.text!.isEmpty else {
-            present(message: "Enter the username and the password to register or authenticate.")
-            return
-        }
-        
-        let title = segmentedControl.selectedSegmentIndex == 0 ? "Register" : "Authenticate"
-        let message = "How do you want to \(title)?"
-        let actionSheet = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
-        
-        if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
-            actionSheet.addAction(UIAlertAction(title: "Scan my key - Over NFC", style: .default, handler: { [weak self]  (action) in
-                guard let self = self else {
-                    return
-                }
-                self.keyType = .nfc
-                self.executeFIDOAction()
+        let title = segmentedControl.action == .register ? "Register" : "Authenticate"
+        if YubiKitDeviceCapabilities.supportsISO7816NFCTags && YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
+            let alert = UIAlertController(title: title, message: "How do you want to \(title)?", preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: "NFC Yubikey", style: .default, handler: { [weak self]  (action) in
+                // NFC, Register || Authenticate
+                self?.handleAction(connectionType: .nfc)
+           }))
+            alert.addAction(UIAlertAction(title: "Accessory Yubikey", style: .default, handler: { [weak self] (action) in
+                // Accessory, Register || Authenticate
+                self?.handleAction(connectionType: .accessory)
             }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { [weak self] (action) in
+                self?.dismiss(animated: true, completion: nil)
+            }))
+            present(alert, animated: true, completion: nil)
+        } else if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
+            // Accessory, Register || Authenticate
+            handleAction(connectionType: .accessory)
+        } else if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
+            // NFC, Register || Authenticate
+            handleAction(connectionType: .nfc)
+        } else {
+            // This device does not work at all
         }
-        
-        actionSheet.addAction(UIAlertAction(title: "Plug my key - From MFi key", style: .default, handler: { [weak self] (action) in
-            guard let self = self else {
-                return
-            }
-            self.keyType = .accessory
-            self.executeFIDOAction()
-        }))
-        
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { [weak self] (action) in
-            self?.dismiss(animated: true, completion: nil)
-        }))
-        
-        // The action sheet requires a presentation popover on iPad.
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            actionSheet.modalPresentationStyle = .popover
-            if let presentationController = actionSheet.popoverPresentationController {
-                presentationController.sourceView = actionButton
-                presentationController.sourceRect = actionButton.bounds
-            }
-        }
-        
-        present(actionSheet, animated: true, completion: nil)
     }
     
-    private func executeFIDOAction() {
-        if segmentedControl.selectedSegmentIndex == 0 {
-            requestRegistration()
-        } else {
-            requestAuthentication()
+    func handleAction(connectionType: ConnectionType) {
+        switch segmentedControl.action {
+        case .register:
+            register(connectionType: connectionType)
+        case .authenticate:
+            authenticate(connectionType: connectionType)
         }
     }
+    
+    // MARK: - Register user
+    
+    func register(connectionType: ConnectionType) {
+        let username = usernameTextField.text!
+        let password = passwordTextField.text!
+        
+        let statusView = view.presentStatusView()
+        statusView.state = .message("Creating user...")
+        // 1. Begin WebAuthn registration
+        beginWebAuthnRegistration(username: username, password: password) { [self] result in
+            switch result {
+            case .success(let response):
+                // 2. Get Yubikey connection
+                statusView.state = .insertKey
+                makeCredentialOnKey(connectionType: connectionType, response: response, statusView: statusView) { result in
+                    switch result {
+                    case .success(let response):
+                        statusView.state = .message("Finalising registration...")
+                        // 4. Finalize WebAuthn registration
+                        finalizeWebAuthnRegistration(response: response) { result in
+                            switch result {
+                            case .success:
+                                statusView.dismiss(message: "User successfully registrered", accessory: .checkmark, delay: 5.0)
+                            case .failure(let error):
+                                statusView.dismiss(message: "Error: \(error.localizedDescription)", accessory: .error, delay: 5.0)
+                            }
+                        }
+                    case .failure(let error):
+                        statusView.dismiss(message: "Error: \(error.localizedDescription)", accessory: .error, delay: 5.0)
+                    }
+                }
+            case .failure(let error):
+                statusView.dismiss(message: "Error: \(error.localizedDescription)", accessory: .error, delay: 5.0)
+            }
+        }
+    }
+    
+    func beginWebAuthnRegistration(username: String, password: String, completion: @escaping (Result<(BeginWebAuthnRegistrationResponse), Error>) -> Void) {
+        let webauthnService = WebAuthnService()
+        let createRequest = WebAuthnUserRequest(username: username, password: password, type: .create)
+        webauthnService.createUserWith(request: createRequest) { (createUserResponse, error) in
+            guard error == nil else { completion(.failure(error!)); return }
+            guard let createUserResponse = createUserResponse else { fatalError() }
+            let uuid = createUserResponse.uuid
+            let registerBeginRequest = WebAuthnRegisterBeginRequest(uuid: uuid)
+            webauthnService.registerBeginWith(request: registerBeginRequest) { (registerBeginResponse, error) in
+                guard error == nil else { completion(.failure(error!)); return }
+                guard let registerBeginResponse = registerBeginResponse else { fatalError() }
+                let result = BeginWebAuthnRegistrationResponse(uuid: uuid,
+                                                               requestId: registerBeginResponse.requestId,
+                                                               challenge: registerBeginResponse.challenge,
+                                                               rpId: registerBeginResponse.rpId,
+                                                               rpName: registerBeginResponse.rpName,
+                                                               userId: registerBeginResponse.userId,
+                                                               userName: registerBeginResponse.username,
+                                                               pubKeyAlg: registerBeginResponse.pubKeyAlg,
+                                                               residentKey: registerBeginResponse.residentKey)
+                completion(.success(result))
+            }
+        }
+    }
+
+    struct BeginWebAuthnRegistrationResponse {
+        let uuid: String
+        let requestId: String
+        let challenge: String
+        let rpId: String
+        let rpName: String
+        let userId: String
+        let userName: String
+        let pubKeyAlg: Int
+        let residentKey: Bool
+    }
+        
+    func makeCredentialOnKey(connectionType: ConnectionType, response: BeginWebAuthnRegistrationResponse, statusView: StatusView,  completion: @escaping (Result<MakeCredentialOnKeyRegistrationResponse, Error>) -> Void) {
+        self.connection(connectionType) { connection in
+            let challengeData = Data(base64Encoded: response.challenge)!
+            let clientData = YKFWebAuthnClientData(type: .create, challenge: challengeData, origin: WebAuthnService.origin)!
+            
+            let makeCredentialRequest = YKFKeyFIDO2MakeCredentialRequest()
+            makeCredentialRequest.clientDataHash = clientData.clientDataHash!
+            
+            let rp = YKFFIDO2PublicKeyCredentialRpEntity()
+            rp.rpId = response.rpId
+            rp.rpName = response.rpName
+            makeCredentialRequest.rp = rp
+            
+            let user = YKFFIDO2PublicKeyCredentialUserEntity()
+            user.userId = Data(base64Encoded: response.userId)!
+            user.userName = response.userName
+            makeCredentialRequest.user = user
+            
+            let param = YKFFIDO2PublicKeyCredentialParam()
+            param.alg = response.pubKeyAlg
+            makeCredentialRequest.pubKeyCredParams = [param]
+            
+            let makeOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: response.residentKey]
+            makeCredentialRequest.options = makeOptions
+            
+            statusView.state = .touchKey
+            connection.fido2Session() { result in
+                switch result {
+                case .success(let session):
+                    session.execute(makeCredentialRequest) { [self] keyResponse, error in
+                        guard error == nil else {
+                            if let error = error as NSError?, error.code == YKFKeyFIDO2ErrorCode.PIN_REQUIRED.rawValue {
+                                handlePINCode(connectionType: connectionType, statusView: statusView) {
+                                    makeCredentialOnKey(connectionType: connectionType, response: response, statusView: statusView, completion: completion)
+                                }
+                                return
+                            }
+                            completion(.failure(error!))
+                            return
+                        }
+                        
+                        guard let keyResponse = keyResponse else { fatalError() }
+                        let result = MakeCredentialOnKeyRegistrationResponse(uuid: response.uuid,
+                                                                             requestId: response.requestId,
+                                                                             clientDataJSON: clientData.jsonData!,
+                                                                             attestationObject: keyResponse.webauthnAttestationObject)
+                        completion(.success(result))
+                    }
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
+    struct MakeCredentialOnKeyRegistrationResponse {
+        let uuid: String
+        let requestId: String
+        let clientDataJSON: Data
+        let attestationObject: Data
+    }
+    
+    func finalizeWebAuthnRegistration(response: MakeCredentialOnKeyRegistrationResponse, completion: @escaping (Result<WebAuthnRegisterFinishResponse, Error>) -> Void) {
+        let webauthnService = WebAuthnService()
+        // Send back the response to the server.
+        let registerFinishRequest = WebAuthnRegisterFinishRequest(uuid: response.uuid,
+                                                                  requestId: response.requestId,
+                                                                  clientDataJSON: response.clientDataJSON,
+                                                                  attestationObject: response.attestationObject)
+        webauthnService.registerFinishWith(request: registerFinishRequest) { (response, error) in
+            guard error == nil else { completion(.failure(error!)); return }
+            guard let response = response else { fatalError() }
+            DispatchQueue.main.async {
+                completion(.success(response))
+            }
+        }
+    }
+
+    func handlePINCode(connectionType: ConnectionType, statusView: StatusView, completion: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            statusView.state = .hidden
+            let alert = UIAlertController(pinInputCompletion: { pin in
+                guard let pin = pin else {
+                    statusView.dismiss(message: "No pin, exiting...", accessory: .error, delay: 5.0)
+                    return
+                }
+                self.connection(connectionType) { connection in
+                    connection.fido2Session { result in
+                        switch result {
+                        case .success(let session):
+                            let pinRequest = YKFKeyFIDO2VerifyPinRequest(pin: pin)!
+                            session.execute(pinRequest) { error in
+                                guard error == nil else {
+                                    statusView.dismiss(message: "Wrong PIN", accessory: .error, delay: 5.0)
+                                    return
+                                }
+                                completion()
+                            }
+                        case .failure(let error):
+                            statusView.dismiss(message: error.localizedDescription, accessory: .error, delay: 5.0)
+                        }
+                    }
+                }
+            })
+            self.present(alert, animated: true)
+        }
+    }
+
+    // MARK: - Authenticate User
+    func authenticate(connectionType: ConnectionType) {
+        let username = usernameTextField.text!
+        let password = passwordTextField.text!
+        
+        let statusView = view.presentStatusView()
+        statusView.state = .message("Requesting authenticator challenge...")
+        
+        // 1. Begin WebAuthn authentication
+        beginWebAuthnAuthentication(username: username, password: password) { [self] result in
+            switch result {
+            case .success(let response):
+                statusView.state = .insertKey
+                // 2. Assert on Yubikey
+                assertOnKey(connectionType: connectionType, response: response, statusView: statusView) { result in
+                    switch result {
+                    case .success(let response):
+                        statusView.state = .message("Authenticating...")
+                        // 3. Finalize WebAuthn authentication
+                        finalizeWebAuthnAuthentication(response: response) { result in
+                            switch result {
+                            case .success:
+                                statusView.dismiss(message: "User successfully authenticated", accessory: .checkmark, delay: 7.0)
+                            case .failure(let error):
+                                statusView.dismiss(message: "Error: \(error.localizedDescription)", accessory: .error, delay: 7.0)
+                            }
+                        }
+                    case .failure(let error):
+                        statusView.dismiss(message: "Error: \(error.localizedDescription)", accessory: .error, delay: 7.0)
+                    }
+                }
+            case .failure(let error):
+                statusView.dismiss(message: "Error: \(error.localizedDescription)", accessory: .error, delay: 7.0)
+            }
+        }
+    }
+    
+    func beginWebAuthnAuthentication(username: String, password: String, completion: @escaping (Result<(BeginWebAuthnAuthenticationResponse), Error>) -> Void) {
+        let webauthnService = WebAuthnService()
+        let authenticationRequest = WebAuthnUserRequest(username: username, password: password, type: .login)
+        webauthnService.loginUserWith(request: authenticationRequest) { (authenticationUserResponse, error) in
+            guard error == nil else { completion(.failure(error!)); return }
+            guard let authenticationUserResponse = authenticationUserResponse else { fatalError() }
+            let uuid = authenticationUserResponse.uuid
+            let authenticationBeginRequest = WebAuthnAuthenticateBeginRequest(uuid: uuid)
+            webauthnService.authenticateBeginWith(request: authenticationBeginRequest) { (authenticationBeginResponse, error) in
+                guard error == nil else { completion(.failure(error!)); return }
+                guard let authenticationBeginResponse = authenticationBeginResponse else { fatalError() }
+                let result = BeginWebAuthnAuthenticationResponse(uuid: uuid,
+                                                                 requestId: authenticationBeginResponse.requestId,
+                                                                 challenge: authenticationBeginResponse.challenge,
+                                                                 rpId: authenticationBeginResponse.rpID,
+                                                                 allowCredentials: authenticationBeginResponse.allowCredentials)
+                completion(.success(result))
+            }
+        }
+    }
+    
+    struct BeginWebAuthnAuthenticationResponse {
+        let uuid: String
+        let requestId: String
+        let challenge: String
+        let rpId: String
+        let allowCredentials: [String]
+    }
+    
+    func assertOnKey(connectionType: ConnectionType, response: BeginWebAuthnAuthenticationResponse, statusView: StatusView, completion: @escaping (Result<AssertOnKeyAuthenticationResponse, Error>) -> Void) {
+        self.connection(connectionType) { connection in
+            let challengeData = Data(base64Encoded: response.challenge)!
+            let clientData = YKFWebAuthnClientData(type: .get, challenge: challengeData, origin: WebAuthnService.origin)!
+            
+            let getAssertionRequest = YKFKeyFIDO2GetAssertionRequest()
+            getAssertionRequest.clientDataHash = clientData.clientDataHash!
+            
+            getAssertionRequest.rpId = response.rpId
+            getAssertionRequest.options = [YKFKeyFIDO2GetAssertionRequestOptionUP: true]
+            
+            statusView.state = .touchKey
+            
+            var allowList = [YKFFIDO2PublicKeyCredentialDescriptor]()
+            for credentialId in response.allowCredentials {
+                let credentialDescriptor = YKFFIDO2PublicKeyCredentialDescriptor()
+                credentialDescriptor.credentialId = Data(base64Encoded: credentialId)!
+                let credType = YKFFIDO2PublicKeyCredentialType()
+                credType.name = "public-key"
+                credentialDescriptor.credentialType = credType
+                allowList.append(credentialDescriptor)
+            }
+            getAssertionRequest.allowList = allowList
+            
+            connection.fido2Session() { result in
+                switch result {
+                case .success(let session):
+                    session.execute(getAssertionRequest) { assertionResponse, error in
+                        guard error == nil else {
+                            completion(.failure(error!))
+                            return
+                        }
+                        guard let assertionResponse = assertionResponse else { fatalError() }
+                        let result = AssertOnKeyAuthenticationResponse(uuid: response.uuid,
+                                                                       requestId: response.requestId,
+                                                                       credentialId: assertionResponse.credential!.credentialId,
+                                                                       authenticatorData: assertionResponse.authData,
+                                                                       clientDataJSON: clientData.jsonData!,
+                                                                       signature: assertionResponse.signature)
+                        completion(.success(result))
+                    }
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
+    struct AssertOnKeyAuthenticationResponse {
+        let uuid: String
+        let requestId: String
+        let credentialId: Data
+        let authenticatorData: Data
+        let clientDataJSON: Data
+        let signature: Data
+    }
+    
+    func finalizeWebAuthnAuthentication(response: AssertOnKeyAuthenticationResponse, completion: @escaping (Result<WebAuthnAuthenticateFinishResponse, Error>) -> Void) {
+        
+        let webauthnService = WebAuthnService()
+        let authenticateFinishRequest = WebAuthnAuthenticateFinishRequest(uuid: response.uuid,
+                                                                          requestId: response.requestId,
+                                                                          credentialId: response.credentialId,
+                                                                          authenticatorData: response.authenticatorData,
+                                                                          clientDataJSON: response.clientDataJSON,
+                                                                          signature: response.signature)
+
+        webauthnService.authenticateFinishWith(request: authenticateFinishRequest) { (response, error) in
+            guard error == nil else { completion(.failure(error!)); return }
+            guard let response = response else { fatalError() }
+            completion(.success(response))
+        }
+    }
+    
+    // MARK: -
     
     @IBAction func segmentedControlValueChanged(_ sender: Any) {
         if segmentedControl.selectedSegmentIndex == 0 {
@@ -167,19 +493,8 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
     @IBAction func didTapBackground(_ sender: Any) {
         view.endEditing(true)
     }
-        
-    // MARK: - MFIKeyActionSheetViewDelegate
-    
-    override func mfiKeyActionSheetDidDismiss(_ actionSheet: MFIKeyActionSheetView) {
-        super.mfiKeyActionSheetDidDismiss(actionSheet)
-        nextAction = .none
-        
-        webauthnService.cancelAllRequests()
-        YubiKitManager.shared.accessorySession.cancelCommands()
-    }
     
     // MARK: - UITextFieldDelegate
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == usernameTextField {
             passwordTextField.becomeFirstResponder()
@@ -189,560 +504,33 @@ class FIDO2ViewController: MFIKeyInteractionViewController, UITextFieldDelegate 
         }
         return false
     }
-    
-    // MARK: - State Observation
-    
-    override func accessorySessionStateDidChange() {
-        let state = YubiKitManager.shared.accessorySession.connectionState
-        if state == .open {
-            // The key session is ready to be used.
-            switch nextAction {
-            case .register:
-                requestRegistration()
-                nextAction = .none
-            case .authenticate:
-                requestAuthentication()
-                nextAction = .none
-            case .none:
-                break
-            }
-            updateKeyInfo()
-        }
-        else if state == .closing {
-            // The key session will close soon.
-            webauthnService.cancelAllRequests()
-            dismissMFIKeyActionSheet()
-            updateKeyInfo()
-        }
-    }
-    
-    override func fido2ServiceStateDidChange() {
-        guard let fido2Service = YubiKitManager.shared.accessorySession.fido2Service else {
-            return
-        }
-        if fido2Service.keyState == .touchKey {
-            presentAuthenticationProgress(message: "Touch the key to complete the operation.", state: .touchKey)
-        }
-    }
+}
 
-    // MARK: - Registration
-    
-    private func requestRegistration() {
-        if keyType == .accessory {
-            guard YubiKitManager.shared.accessorySession.connectionState == .open else {
-                nextAction = .register
-                presentAuthenticationProgress(message: "Insert the key to register a new account.", state: .insertKey)
-                return
-            }
-        }
-        
-        let username = usernameTextField.text!
-        let password = passwordTextField.text!
-        let createRequest = WebAuthnUserRequest(username: username, password: password, type: .create)
-        
-        presentAuthenticationProgress(message: "Creating account...", state: .processing)
-        
-        webauthnService.createUserWith(request: createRequest) { [weak self] (response, error) in
-            guard let self = self else {
-                return
-            }
-            guard error == nil else {
-                self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
-                return
-            }
-            guard let response = response else {
-                fatalError()
-            }
-            
-            let uuid = response.uuid
-            let registerBeginRequest = WebAuthnRegisterBeginRequest(uuid: uuid)
-            
-            self.presentAuthenticationProgress(message: "Requesting to add a new authenticator...", state: .processing)
-            
-            self.webauthnService.registerBeginWith(request: registerBeginRequest) { [weak self] (response, error) in
-                guard let self = self else {
-                    return
-                }
-                guard error == nil else {
-                    self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
-                    return
-                }
-                guard let response = response else {
-                    fatalError()
-                }
-                
-                self.handleRegistration(response: response, uuid: uuid)
-            }
-        }
-    }
-
-    /*
-     This is an important code snippet for building and executing a FIDO2 Make Credential request.
-     */
-    private func handleRegistration(response: WebAuthnRegisterBeginResponse, uuid: String){
-        /*
-         Build the Make Credential request from the server response.
-         */
-        let makeCredentialRequest = YKFKeyFIDO2MakeCredentialRequest()
-        
-        guard let challengeData = Data(base64Encoded: response.challenge) else {
-            return
-        }
-        guard let clientData = YKFWebAuthnClientData(type: .create, challenge:challengeData, origin: WebAuthnService.origin) else {
-            return
-        }
-        let clientDataJSON = clientData.jsonData!
-        let requestId = response.requestId
-        let registerBeginResponse = response
-        
-        makeCredentialRequest.clientDataHash = clientData.clientDataHash!
-        
-        let rp = YKFFIDO2PublicKeyCredentialRpEntity()
-        rp.rpId = response.rpId
-        rp.rpName = response.rpName
-        makeCredentialRequest.rp = rp
-        
-        let user = YKFFIDO2PublicKeyCredentialUserEntity()
-        user.userId = Data(base64Encoded: response.userId)!
-        user.userName = response.username
-        makeCredentialRequest.user = user
-        
-        let param = YKFFIDO2PublicKeyCredentialParam()
-        param.alg = response.pubKeyAlg
-        makeCredentialRequest.pubKeyCredParams = [param]
-        
-        let makeOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: response.residentKey]
-        makeCredentialRequest.options = makeOptions
-          
-        executeKeyRequestWith { [weak self] in
-            guard let self = self else {
-                return
-            }
-            self.keyFido2Service.execute(makeCredentialRequest) { [weak self] (response, error) in
-                guard let self = self else {
-                    return
-                }
-                guard error == nil else {
-                    self.handleMakeCredential(error: error!, response: registerBeginResponse, uuid: uuid)
-                    return
-                }
-                
-                // The reponse from the key must not be empty at this point.
-                guard let response = response else {
-                    fatalError()
-                }
-                                
-                if self.keyType == .accessory {
-                    self.finalizeRegistration(response: response, uuid: uuid, requestId: requestId, clientDataJSON: clientDataJSON)
-                } else {
-                    guard #available(iOS 13.0, *) else {
-                        fatalError()
-                    }
-
-                    // Observe the scene activation to detect when the Core NFC system UI goes away.
-                    // For more details about this solution check the comments on SceneObserver.
-                    self.sceneObserver = SceneObserver(sceneActivationClosure: {  [weak self] in
-                        guard let self = self else {
-                            return
-                        }
-                        self.finalizeRegistration(response: response, uuid: uuid, requestId: requestId, clientDataJSON: clientDataJSON)
-                        self.sceneObserver = nil
-                    })
-
-                    // Stop the session to dismiss the Core NFC system UI.
-                    YubiKitManager.shared.nfcSession.stop()
-                }
-            }
-        }
-    }
-
-    private func finalizeRegistration(response: YKFKeyFIDO2MakeCredentialResponse, uuid: String, requestId: String, clientDataJSON: Data) {
-        presentAuthenticationProgress(message: "Adding authenticator to the account...", state: .processing)
-        
-        let attestationObject = response.webauthnAttestationObject
-        
-        // Send back the response to the server.
-        let registerFinishRequest = WebAuthnRegisterFinishRequest(uuid: uuid,
-                                                                  requestId: requestId,
-                                                                  clientDataJSON: clientDataJSON,
-                                                                  attestationObject: attestationObject)
-        
-        webauthnService.registerFinishWith(request: registerFinishRequest) { [weak self] (response, error) in
-            guard let self = self else {
-                return
-            }
-            guard error == nil else {
-                self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
-                return
-            }
-            
-            self.dismissAuthenticationProgressAndPresent(message: "The registration was successful. The account will be valid for 24h.")
-        }
-    }
-    
-    // MARK: - Authentication
-
-    private func requestAuthentication() {
-        if keyType == .accessory {
-            guard YubiKitManager.shared.accessorySession.connectionState == .open else {
-                nextAction = .authenticate
-                presentAuthenticationProgress(message: "Insert the key to authenticate.", state: .insertKey)
-                return
-            }
-        }
-        
-        let username = usernameTextField.text!
-        let password = passwordTextField.text!
-        let loginRequest = WebAuthnUserRequest(username: username, password: password, type: .login)
-        
-        presentAuthenticationProgress(message: "Authenticating...", state: .processing)
-        
-        webauthnService.loginUserWith(request: loginRequest) { [weak self] (response, error) in
-            guard let self = self else {
-                return
-            }
-            guard error == nil else {
-                self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
-                return
-            }
-            guard let response = response else {
-                fatalError()
-            }
-            
-            let uuid = response.uuid
-            let authenticateBeginRequest = WebAuthnAuthenticateBeginRequest(uuid: uuid)
-            
-            self.presentAuthenticationProgress(message: "Requesting for authenticator challenge..." , state: .processing)
-            
-            self.webauthnService.authenticateBeginWith(request: authenticateBeginRequest) { [weak self] (response, error) in
-                guard let self = self else {
-                    return
-                }
-                guard error == nil else {
-                    self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
-                    return
-                }
-                guard let response = response else {
-                    fatalError()
-                }
-                
-                self.handleAuthentication(response: response, uuid: uuid)
-            }
-        }
-    }
-    
-    /*
-     This is an important code snippet for building and executing a FIDO2 Get Assertion request.
-     */
-    private func handleAuthentication(response: WebAuthnAuthenticateBeginResponse, uuid: String){
-        /*
-         Build the Get Assertion request from the server response.
-         */
-        let getAssertionRequest = YKFKeyFIDO2GetAssertionRequest()
-
-        guard let challengeData = Data(base64Encoded: response.challenge) else {
-            return
-        }
-        guard let clientData = YKFWebAuthnClientData(type: .get, challenge:challengeData, origin: WebAuthnService.origin) else {
-            return
-        }
-        let clientDataJSON = clientData.jsonData!
-        let requestId = response.requestId
-        let authenticateBeginResponse = response
-        
-        getAssertionRequest.rpId = response.rpID
-        getAssertionRequest.clientDataHash = clientData.clientDataHash!
-        getAssertionRequest.options = [YKFKeyFIDO2GetAssertionRequestOptionUP: true]
-        
-        var allowList = [YKFFIDO2PublicKeyCredentialDescriptor]()
-        for credentialId in response.allowCredentials {
-            let credentialDescriptor = YKFFIDO2PublicKeyCredentialDescriptor()
-            credentialDescriptor.credentialId = Data(base64Encoded: credentialId)!
-            let credType = YKFFIDO2PublicKeyCredentialType()
-            credType.name = "public-key"
-            credentialDescriptor.credentialType = credType
-            allowList.append(credentialDescriptor)
-        }
-        getAssertionRequest.allowList = allowList
-        
-        executeKeyRequestWith { [weak self] in
-            guard let self = self else {
-                return
-            }
-            self.keyFido2Service.execute(getAssertionRequest) { [weak self] (response, error) in
-                guard let self = self else {
-                    return
-                }
-                guard error == nil else {
-                    self.handleGetAssertion(error: error!, response: authenticateBeginResponse, uuid: uuid)
-                    return
-                }
-                
-                // The reponse from the key must not be empty at this point.
-                guard let response = response else {
-                    fatalError()
-                }
-                
-                if self.keyType == .accessory {
-                    self.finalizeAuthentication(response: response, uuid: uuid, requestId: requestId, clientDataJSON: clientDataJSON)
-                } else {
-                    guard #available(iOS 13.0, *) else {
-                        fatalError()
-                    }
-
-                    // Observe the scene activation to detect when the Core NFC system UI goes away.
-                    // For more details about this solution check the comments on SceneObserver.
-                    self.sceneObserver = SceneObserver(sceneActivationClosure: {  [weak self] in
-                        guard let self = self else {
-                            return
-                        }
-                        self.finalizeAuthentication(response: response, uuid: uuid, requestId: requestId, clientDataJSON: clientDataJSON)
-                        self.sceneObserver = nil
-                    })
-
-                    // Stop the session to dismiss the Core NFC system UI.
-                    YubiKitManager.shared.nfcSession.stop()
-                }
-            }
-        }
-    }
-
-    private func finalizeAuthentication(response: YKFKeyFIDO2GetAssertionResponse, uuid: String, requestId: String, clientDataJSON: Data) {
-        presentAuthenticationProgress(message:"Authenticating..." , state: .processing)
-        
-        let authenticateFinishRequest = WebAuthnAuthenticateFinishRequest(uuid: uuid,
-                                                                          requestId: requestId,
-                                                                          credentialId: response.credential!.credentialId,
-                                                                          authenticatorData: response.authData,
-                                                                          clientDataJSON: clientDataJSON,
-                                                                          signature: response.signature)
-        
-        webauthnService.authenticateFinishWith(request: authenticateFinishRequest) { [weak self] (response, error) in
-            guard let self = self else {
-                return
-            }
-            guard error == nil else {
-                self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
-                return
-            }
-            
-            self.dismissAuthenticationProgressAndPresent(message: "The authentication was successful.")
-        }
-    }
-    
-    // MARK: - PIN Verification
-    
-    /*
-     1. To set a PIN on the key, the FIDO2 demo on the Other demos tab provides the ability to perform PIN Management.
-     2. To remove the PIN, the FIDO2 application must be reset. Once set, the PIN can only be changed.
-     */
-    private func handlePinVerificationRequired(completion: @escaping (Error?) -> Void ) {
-        dispatchMain {
-            let pinInputController = FIDO2PinInputController()
-            pinInputController.showPinInputController(presenter: self, type: .pin) { [weak self] (pin, _, _, verify) in
-                guard let self = self else {
-                    return
-                }
-                guard verify else {
-                    self.dismissMFIKeyActionSheet()
-                    return
-                }
-                guard let pin = pin else {
-                    self.dismissAuthenticationProgressAndPresent(message: "The PIN is empty.")
-                    return
-                }
-                guard let verifyPinRequest = YKFKeyFIDO2VerifyPinRequest(pin: pin) else {
-                    self.dismissAuthenticationProgressAndPresent(message: "Could not create the request to verify the PIN.")
-                    return
-                }
-                
-                self.presentAuthenticationProgress(message: "Verifying PIN...", state: .processing)
-                                                
-                self.executeKeyRequestWith { [weak self] in
-                    guard let self = self else {
-                        return
-                    }
-                    self.keyFido2Service.execute(verifyPinRequest) { (error) in
-                        completion(error)
-                    }
-                }
-            }
-        }
-    }
-    
-    private func handleMakeCredential(error: Error, response: WebAuthnRegisterBeginResponse, uuid: String) {
-        let makeCredentialError = error as NSError
-        
-        guard makeCredentialError.code == YKFKeyFIDO2ErrorCode.PIN_REQUIRED.rawValue else {
-            dismissAuthenticationProgressAndPresent(message: makeCredentialError.localizedDescription)
-            return
-        }
-                
-        let requestExecutionClosure = { [weak self] in
-            guard let self = self else {
-                return
-            }
-            self.handlePinVerificationRequired { [weak self] (error) in
-                guard let self = self else {
-                    return
-                }
-                guard error == nil else {
-                    self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
-                    return
-                }
-                self.handleRegistration(response: response, uuid: uuid)
-            }
-        }
-        
-        // PIN verification is required for the Make Credential request.
-        if keyType == .accessory {
-            dismissMFIKeyActionSheet()
-            requestExecutionClosure()
-        } else {
-            guard #available(iOS 13.0, *) else {
-                fatalError()
-            }
-            
-            // In case of NFC stop the session to allow the user to input the PIN (the NFC system action sheet blocks any interaction).
-            YubiKitManager.shared.nfcSession.stop()
-            
-            // Observe the scene activation to detect when the Core NFC system UI goes away.
-            // For more details about this solution check the comments on SceneObserver.
-            self.sceneObserver = SceneObserver(sceneActivationClosure: {  [weak self] in
-                guard let self = self else {
-                    return
-                }
-                requestExecutionClosure()
-                self.sceneObserver = nil
-            })
-        }
-    }
-    
-    private func handleGetAssertion(error: Error, response: WebAuthnAuthenticateBeginResponse, uuid: String) {
-        let getAssertionError = error as NSError
-        
-        guard getAssertionError.code == YKFKeyFIDO2ErrorCode.PIN_REQUIRED.rawValue else {
-            dismissAuthenticationProgressAndPresent(message: getAssertionError.localizedDescription)
-            return
-        }
-        
-        // PIN verification is required for the Get Assertion request.
-        if keyType == .accessory {
-            dismissMFIKeyActionSheet()
-        } else {
-            guard #available(iOS 13.0, *) else {
-                fatalError()
-            }
-            // In case of NFC stop the session to allow the user to input the PIN (the NFC system action sheet blocks any interaction).
-            YubiKitManager.shared.nfcSession.stop()
-        }
-        
-        self.handlePinVerificationRequired { [weak self] (error) in
-            guard let self = self else {
-                return
-            }
-            guard error == nil else {
-                self.dismissAuthenticationProgressAndPresent(message: error!.localizedDescription)
-                return
-            }
-            self.handleAuthentication(response: response, uuid: uuid)
-        }
-    }
-    
-    private func executeKeyRequestWith(execution: @escaping () -> Void) {
-        if keyType == .accessory {
-            // Execute the request right away.
-            execution()
-        } else {
-            guard #available(iOS 13.0, *) else {
-                fatalError()
-            }
-            
-            dismissProgressHud()
-            
-            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCConnection
-            if nfcSession.nfcConnectionState == .open {
-                execution()
-                return
-            }
-            
-            // The ISO7816 session is started only when required since it's blocking the application UI with the NFC system action sheet.
-            YubiKitManager.shared.nfcSession.start()
-            
-            // Execute the request after the key(tag) is connected.
-            nfcSesionStateObservation = nfcSession.observe(\.nfcConnectionState, changeHandler: { [weak self] session, change in
-                if session.nfcConnectionState == .open {
-                    execution()
-                    self?.nfcSesionStateObservation = nil // remove the observation
-                }
-            })
-        }
-    }
-    
-    // MARK: - Key Info
-    
-    private func updateKeyInfo() {
-        guard YubiKitManager.shared.accessorySession.connectionState == .open else {
-            keyInfoLabel.text = nil
-            return
-        }        
-        guard let accessoryDescription = YubiKitManager.shared.accessorySession.accessoryDescription else {
-            keyInfoLabel.text = nil
-            return
-        }
-        
-        var keyInfoText = ""
-        if accessoryDescription.serialNumber.isEmpty {
-            keyInfoText = "- Key info -\nFirmware: \(accessoryDescription.firmwareRevision)"
-        } else {
-            keyInfoText = "- Key info -\nSerial: \(accessoryDescription.serialNumber), Firmware: \(accessoryDescription.firmwareRevision)"
-        }
-        keyInfoLabel.text = keyInfoText
-    }
-    
-    // MARK: - Authentication Progress
-
-    private func presentAuthenticationProgress(message: String, state: MFIKeyInteractionViewControllerState) {
-        switch state {
-        case .processing:
-            if keyType == .accessory {
-                presentMFIKeyActionSheet(state: state, message: message)
+extension UISegmentedControl {
+    var action: FIDO2ViewController.Action {
+        get {
+            if self.selectedSegmentIndex == 0 {
+                return .register
             } else {
-                presentProgressHud(message: message)
+                return .authenticate
             }
-            
-        case .insertKey:
-            fallthrough
-        case .touchKey:
-            presentMFIKeyActionSheet(state: state, message: message)
         }
     }
-    
-    private func dismissAuthenticationProgressAndPresent(message: String) {
-        if keyType == .accessory {
-            dismissMFIKeyActionSheetAndPresent(message: message)
-        } else {
-            guard #available(iOS 13.0, *) else {
-                fatalError()
-            }
-            guard YubiKitManager.shared.nfcSession.nfcConnectionState != .closed else {
-                dismissProgressHudAndPresent(message: message)
-                return
-            }
-            
-            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCConnection
-            nfcSession.stop()
-            
-            // Observe the scene activation to detect when the Core NFC system UI goes away.
-            // For more details about this solution check the comments on SceneObserver.
-            self.sceneObserver = SceneObserver(sceneActivationClosure: {  [weak self] in
-                guard let self = self else {
-                    return
-                }
-                self.dismissProgressHudAndPresent(message: message)
-                self.sceneObserver = nil
-            })
+}
+
+extension UIAlertController {
+    convenience init(pinInputCompletion:  @escaping (String?) -> Void) {
+        self.init(title: "PIN verification required", message: "Enter the key PIN", preferredStyle: UIAlertController.Style.alert)
+        addTextField { (textField) in
+            textField.placeholder = "PIN"
+            textField.isSecureTextEntry = true
         }
-        return
+        addAction(UIAlertAction(title: "Verify", style: .default, handler: { (action) in
+            let pin = self.textFields![0].text
+            pinInputCompletion(pin)
+        }))
+        addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
+            pinInputCompletion(nil)
+        }))
     }
 }

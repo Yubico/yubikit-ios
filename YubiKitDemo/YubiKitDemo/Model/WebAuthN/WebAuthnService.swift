@@ -94,7 +94,9 @@ class WebAuthnService: NSObject {
     private func execute(request: URLRequest, completion: @escaping (Data?, Error?) -> Void) {
         let task = urlSession.dataTask(with: request) { (data, response, error) in
             guard error == nil else {
-                completion(nil, error)
+                DispatchQueue.main.async {
+                    completion(nil, error)
+                }
                 return
             }
             guard let httpResponse = response as? HTTPURLResponse else {
@@ -102,15 +104,20 @@ class WebAuthnService: NSObject {
             }
             
             guard !(300...399).contains(httpResponse.statusCode) && !(500...599).contains(httpResponse.statusCode) else {
-                completion(nil, WebServiceError.serverError())
+                DispatchQueue.main.async {
+                    completion(nil, WebServiceError.serverError())
+                }
                 return
             }
             guard !(400...499).contains(httpResponse.statusCode) else {
-                completion(nil, WebServiceError(data: data))
+                DispatchQueue.main.async {
+                    completion(nil, WebServiceError(data: data))
+                }
                 return
             }
-            
-            completion(data, nil)
+            DispatchQueue.main.async {
+                completion(data, nil)
+            }
         }
         task.resume()
     }

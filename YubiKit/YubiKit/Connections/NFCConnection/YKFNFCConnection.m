@@ -19,6 +19,7 @@
 
 #import "YKFNFCConnectionController.h"
 #import "YKFNFCConnection.h"
+#import "YKFNFCConnection+Private.h"
 #import "YKFBlockMacros.h"
 #import "YKFLogger.h"
 #import "YKFAssert.h"
@@ -247,10 +248,11 @@
     
     switch (state) {
         case YKFNFCConnectionStateClosed:
+            [self.delegate didDisconnectNFC:self error:self.nfcConnectionError];
             self.u2fService = nil;
             self.fido2Service = nil;
             self.rawCommandService = nil;
-            self.oathService = nil;
+//            self.oathService = nil;
             self.connectionController = nil;
             self.tagDescription = nil;
 
@@ -279,9 +281,11 @@
             [self observeIso7816TagAvailability];
             
             self.connectionController = [[YKFNFCConnectionController alloc] initWithNFCTag:tag operationQueue:self.communicationQueue];
+            [self.delegate didConnectNFC:self];
+            
             self.u2fService = [[YKFKeyU2FSession alloc] initWithConnectionController:self.connectionController];
-            self.fido2Service = [[YKFKeyFIDO2Session alloc] initWithConnectionController:self.connectionController];
-            self.oathService = [[YKFKeyOATHSession alloc] initWithConnectionController:self.connectionController];
+//            self.fido2Service = [[YKFKeyFIDO2Session alloc] initWithConnectionController:self.connectionController];
+//            self.oathService = [[YKFKeyOATHSession alloc] initWithConnectionController:self.connectionController];
             self.rawCommandService = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.connectionController];
             self.tagDescription = [[YKFNFCTagDescription alloc] initWithTag: tag];
             break;

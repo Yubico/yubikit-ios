@@ -76,6 +76,19 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
 
 @implementation YKFKeyFIDO2Session
 
++ (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
+                               completion:(YKFKeyFIDO2SessionCompletion _Nonnull)completion {
+    YKFKeyFIDO2Session *session = [YKFKeyFIDO2Session new];
+    session.connectionController = connectionController;
+    [session selectFIDO2ApplicationWithCompletion:^(NSError *error) {
+        if (error) {
+            completion(nil, error);
+        } else {
+            completion(session, nil);
+        }
+    }];
+}
+
 - (instancetype)initWithConnectionController:(id<YKFKeyConnectionControllerProtocol>)connectionController {
     YKFAssertAbortInit(connectionController);
     

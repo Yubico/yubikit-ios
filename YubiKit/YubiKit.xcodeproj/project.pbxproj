@@ -353,6 +353,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		516BCE0E252C77EE0022F455 /* YKFNFCConnection+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFNFCConnection+Private.h"; sourceTree = "<group>"; };
 		51A5D2572451D7CD00C7161E /* YKFOATHRenameAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFOATHRenameAPDU.m; sourceTree = "<group>"; };
 		51A5D2582451D7CD00C7161E /* YKFOATHRenameAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFOATHRenameAPDU.h; sourceTree = "<group>"; };
 		51A5D25A2451D81600C7161E /* YKFKeyOATHRenameRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFKeyOATHRenameRequest.m; sourceTree = "<group>"; };
@@ -1342,6 +1343,7 @@
 				956DB691206A89A4006B1738 /* YKFNFCError+Errors.h */,
 				95E152A52315257600C4B7E7 /* YKFNFCConnection.h */,
 				95E152A62315257600C4B7E7 /* YKFNFCConnection.m */,
+				516BCE0E252C77EE0022F455 /* YKFNFCConnection+Private.h */,
 				95E3934220C137770027E7B4 /* YKFURIIdentifierCode.h */,
 				95E3934320C137770027E7B4 /* YKFURIIdentifierCode.m */,
 				816C68492343126100209342 /* YKFNFCTagDescription.h */,

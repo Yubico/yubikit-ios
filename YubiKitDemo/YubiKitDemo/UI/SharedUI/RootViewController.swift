@@ -26,12 +26,12 @@ class RootViewController: UIViewController {
                 return
             }
             guard self.progressHud == nil else {
-                self.progressHud!.messageLabel.text = message
+//                self.progressHud!.messageLabel.text = message
                 return
             }
             
             self.progressHud = Bundle.main.loadNibNamed("ProgressHudView", owner: nil, options: nil)?.first as? ProgressHudView
-            self.progressHud!.messageLabel.text = message
+//            self.progressHud!.messageLabel.text = message
             
             var targetController: UIViewController = self
             if self.navigationController != nil {

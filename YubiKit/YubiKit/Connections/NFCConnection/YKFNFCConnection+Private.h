@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import <Foundation/Foundation.h>
+#ifndef YKFNFCConnection_Private_h
+#define YKFNFCConnection_Private_h
 
-@protocol YKFKeyConnectionControllerProtocol;
 
-NS_ASSUME_NONNULL_BEGIN
+#endif /* YKFNFCConnection_Private_h */
 
-@interface YKFKeyOATHSession()
 
-typedef void (^YKFKeyOATHSessionCompletion)(id<YKFKeyOATHSessionProtocol> _Nullable, NSError* _Nullable);
-+ (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
-                               completion:(YKFKeyOATHSessionCompletion _Nonnull)completion;
+@protocol YKFNFCConnectionDelegate <NSObject>
 
-/*
- Call this to force an applet selection on the next OATH operation.
- */
-- (void)invalidateApplicationSelectionCache;
+- (void)didConnectNFC:(id<YKFNFCConnectionProtocol>_Nonnull)connection;
+- (void)didDisconnectNFC:(id<YKFNFCConnectionProtocol>_Nonnull)connection error:(NSError *_Nullable)error;
 
 @end
 
-NS_ASSUME_NONNULL_END
+@interface YKFNFCConnection()
+
+@property(nonatomic, weak) id<YKFNFCConnectionDelegate> _Nullable delegate;
+
+@end

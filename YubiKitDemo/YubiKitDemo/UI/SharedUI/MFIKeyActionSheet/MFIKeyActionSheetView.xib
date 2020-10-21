@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15400" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15404"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -11,7 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="MFIKeyActionSheetView" customModule="YubiKitDemo" customModuleProvider="target">
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="MFIKeyActionSheetContentView" customModule="YubiKitDemo" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -74,7 +74,7 @@
                                 </userDefinedRuntimeAttribute>
                             </userDefinedRuntimeAttributes>
                         </view>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UFd-r4-xxF">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UFd-r4-xxF">
                             <rect key="frame" x="30" y="336.5" width="306" height="50"/>
                             <color key="backgroundColor" red="0.83144223690032959" green="0.82701969146728516" blue="0.85098379850387573" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             <constraints>
@@ -130,6 +130,7 @@
                     </userDefinedRuntimeAttributes>
                 </view>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="Blx-Qx-z2M" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="Evr-Af-4wH"/>
@@ -142,7 +143,6 @@
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Vtr-rq-4Vf" secondAttribute="trailing" priority="750" constant="5" id="xgR-Ja-XnK"/>
                 <constraint firstItem="Blx-Qx-z2M" firstAttribute="trailing" secondItem="iN0-l3-epB" secondAttribute="trailing" id="xqb-fj-5ZN"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
                 <outlet property="actionSheetBottomConstraint" destination="ci4-iS-7GK" id="9kI-HT-YgO"/>
                 <outlet property="actionSheetView" destination="Vtr-rq-4Vf" id="yNi-aZ-DId"/>
@@ -162,7 +162,7 @@
         <image name="LASKey" width="166" height="435"/>
         <image name="LASPhoneNew" width="336" height="677"/>
         <namedColor name="KeyActionContainerViewColor">
-            <color red="0.0" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>
