@@ -91,7 +91,7 @@ class MFIKeyInteractionViewController: RootViewController, MFIKeyActionSheetView
                 return
             }
             
-            self.mfiKeyActionSheetView = MFIKeyActionSheetView.loadViewFromNib()
+//            self.mfiKeyActionSheetView = MFIKeyActionSheetView.loadViewFromNib()
             
             if let actionSheet = self.mfiKeyActionSheetView, let parentView = UIApplication.shared.keyWindow {
                 actionSheet.delegate = self
@@ -178,21 +178,21 @@ class MFIKeyInteractionViewController: RootViewController, MFIKeyActionSheetView
             return isObservingFIDO2ServiceStateUpdates
         }
         set {
-            guard newValue != isObservingFIDO2ServiceStateUpdates else {
-                return
-            }
-            isObservingFIDO2ServiceStateUpdates = newValue
-                                    
-            if isObservingFIDO2ServiceStateUpdates {
-                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessoryConnection
-                fido2ServiceStateObservation = accessorySession.observe(\.fido2Service?.keyState, changeHandler: { [weak self] session, change in
-                    DispatchQueue.main.async {
-                        self?.fido2ServiceStateDidChange()
-                    }
-                })
-            } else {
-                fido2ServiceStateObservation = nil
-            }
+//            guard newValue != isObservingFIDO2ServiceStateUpdates else {
+//                return
+//            }
+//            isObservingFIDO2ServiceStateUpdates = newValue
+//                                    
+//            if isObservingFIDO2ServiceStateUpdates {
+//                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessoryConnection
+//                fido2ServiceStateObservation = accessorySession.observe(\.fido2Service?.keyState, changeHandler: { [weak self] session, change in
+//                    DispatchQueue.main.async {
+//                        self?.fido2ServiceStateDidChange()
+//                    }
+//                })
+//            } else {
+//                fido2ServiceStateObservation = nil
+//            }
         }
     }      
     
@@ -204,3 +204,5 @@ class MFIKeyInteractionViewController: RootViewController, MFIKeyActionSheetView
         fatalError("Override the fido2ServiceStateDidChange() to get FIDO2 Service state updates.")
     }
 }
+
+

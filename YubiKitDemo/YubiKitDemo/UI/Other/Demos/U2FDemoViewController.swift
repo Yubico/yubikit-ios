@@ -56,7 +56,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
                guard let self = self else {
                    return
                }
-               self.runDemo(keyService: YubiKitManager.shared.accessorySession.u2fService)
+//               self.runDemo(keyService: YubiKitManager.shared.accessorySession.u2fService)
                self.setDemoButton(enabled: true)
            }
         }
@@ -133,7 +133,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
                                 return
                         }
                         YubiKitManager.shared.nfcSession.stop()
-                        self.runDemo(keyService: YubiKitManager.shared.accessorySession.u2fService)
+//                        self.runDemo(keyService: YubiKitManager.shared.accessorySession.u2fService)
                     }
                 }
             }
@@ -152,7 +152,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
                 
                 // NOTE: session can be closed during the execution of demo on background thread,
                 // so we need to make sure that we handle case when service for nfcSession is nil
-                self.runDemo(keyService: YubiKitManager.shared.nfcSession.u2fService)
+//                self.runDemo(keyService: YubiKitManager.shared.nfcSession.u2fService)
             }
         case .closed:
             self.setDemoButton(enabled: true)

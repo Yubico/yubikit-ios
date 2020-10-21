@@ -66,6 +66,8 @@ typedef void (^U2FSession)(id<YKFKeyU2FSessionProtocol> _Nullable, NSError* _Nul
 typedef void (^FIDO2Session)(id<YKFKeyFIDO2SessionProtocol> _Nullable, NSError* _Nullable);
 - (void)fido2Session:(FIDO2Session _Nonnull)callback;
 
+typedef void (^RawCommandSession)(id<YKFKeyRawCommandSessionProtocol> _Nullable, NSError* _Nullable);
+- (void)rawCommandSession:(RawCommandSession _Nonnull)callback;
 /*!
  @property sessionState
  

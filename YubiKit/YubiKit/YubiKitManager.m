@@ -19,8 +19,9 @@
 
 #import "YKFNFCOTPSession+Private.h"
 #import "YKFAccessoryConnection+Private.h"
+#import "YKFNFCConnection+Private.h"
 
-@interface YubiKitManager()
+@interface YubiKitManager()<YKFAccessoryConnectionDelegate, YKFNFCConnectionDelegate>
 
 @property (nonatomic, readwrite) id<YKFNFCConnectionProtocol> nfcSession NS_AVAILABLE_IOS(11.0);
 @property (nonatomic, readwrite) id<YKFAccessoryConnectionProtocol> accessorySession;
@@ -28,6 +29,8 @@
 @end
 
 @implementation YubiKitManager
+
+@synthesize delegate;
 
 static id<YubiKitManagerProtocol> sharedInstance;
 
@@ -43,15 +46,59 @@ static id<YubiKitManagerProtocol> sharedInstance;
     self = [super init];
     if (self) {
         if (@available(iOS 11, *)) {
-            self.nfcSession = [[YKFNFCConnection alloc] init];
+            YKFNFCConnection *nfcConnection = [[YKFNFCConnection alloc] init];
+            nfcConnection.delegate = self;
+            self.nfcSession = nfcConnection;
         }
        
         YKFAccessoryConnectionConfiguration *configuration = [[YKFAccessoryConnectionConfiguration alloc] init];
         EAAccessoryManager *accessoryManager = [EAAccessoryManager sharedAccessoryManager];
-        
-        self.accessorySession = [[YKFAccessoryConnection alloc] initWithAccessoryManager:accessoryManager configuration:configuration];
+        YKFAccessoryConnection *accessoryConnection = [[YKFAccessoryConnection alloc] initWithAccessoryManager:accessoryManager configuration:configuration];
+        accessoryConnection.delegate = self;
+        self.accessorySession = accessoryConnection;
     }
     return self;
+}
+
+- (void)startAccessoryConnection {
+    [self.accessorySession start];
+}
+
+- (void)stopAccessoryConnection {
+    [self.accessorySession stop];
+}
+
+- (void)startNFCConnection API_AVAILABLE(ios(13.0)) {
+    [self.nfcSession start];
+}
+
+- (void)stopNFCConnection API_AVAILABLE(ios(13.0)) {
+    [self.nfcSession stop];
+}
+
+- (void)didConnectAccessory:(id<YKFAccessoryConnectionProtocol> _Nonnull)connection {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.delegate didConnectAccessory:connection];
+    });
+}
+
+- (void)didDisconnectAccessory:(id<YKFAccessoryConnectionProtocol> _Nonnull)connection error:(NSError * _Nullable)error {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.delegate didDisconnectAccessory:connection error:error];
+    });
+}
+
+
+- (void)didConnectNFC:(id<YKFNFCConnectionProtocol> _Nonnull)connection {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.delegate didConnectNFC:connection];
+    });
+}
+
+- (void)didDisconnectNFC:(id<YKFNFCConnectionProtocol> _Nonnull)connection error:(NSError * _Nullable)error {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.delegate didDisconnectNFC:connection error:error];
+    });
 }
 
 @end

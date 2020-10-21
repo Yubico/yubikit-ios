@@ -327,8 +327,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         return;
     }
     
-    YKFAccessoryConnection *connection = YubiKitManager.shared.accessorySession;
-    [connection oathSession:^(id<YKFKeyOATHSessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
+    [self.connection oathSession:^(id<YKFKeyOATHSessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
         if (sessionError) {
             [TestSharedLogger.shared logError:@"Could not create OATH session."];
             return;
@@ -391,8 +390,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         return;
     }
     
-    YKFAccessoryConnection *connection = YubiKitManager.shared.accessorySession;
-    [connection oathSession:^(id<YKFKeyOATHSessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
+    [self.connection oathSession:^(id<YKFKeyOATHSessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
         if (sessionError) {
             [TestSharedLogger.shared logError:@"Could not create OATH session."];
             return;

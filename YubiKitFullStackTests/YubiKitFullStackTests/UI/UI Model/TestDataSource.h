@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TestDataSource: NSObject
 
+@property (nonatomic) YKFAccessoryConnection *connection;
 @property (nonatomic) TestDataGenerator *testDataGenerator;
 @property (nonatomic) NSArray *testList;
 
