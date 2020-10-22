@@ -91,7 +91,7 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
 
 - (instancetype)initWithConnectionController:(id<YKFKeyConnectionControllerProtocol>)connectionController {
     YKFAssertAbortInit(connectionController);
-    
+
     self = [super init];
     if (self) {
         self.connectionController = connectionController;
