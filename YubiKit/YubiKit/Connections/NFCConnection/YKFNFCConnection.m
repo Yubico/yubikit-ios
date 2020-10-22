@@ -111,6 +111,29 @@
     }
 }
 
+- (void)fido2Session:(FIDO2Session _Nonnull)callback {
+    NSLog(@"get fido2Session with %@", self.connectionController);
+    [YKFKeyFIDO2Session sessionWithConnectionController:self.connectionController
+                                            completion:^(id<YKFKeyFIDO2SessionProtocol> _Nullable session, NSError * _Nullable error) {
+        self.fido2Service = session;
+        callback(session, error);
+    }];
+
+
+//    if (!self.fido2Service) {
+//        callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
+//    }
+//    ykf_weak_self();
+//    [self.fido2Service selectFIDO2ApplicationWithCompletion:^(NSError * _Nullable error) {
+//        ykf_safe_strong_self();
+//        if (error != nil) {
+//            callback(nil, error);
+//        } else {
+//            callback(strongSelf.fido2Service, nil);
+//        }
+//    }];
+}
+
 - (void)dealloc {
     if (@available(iOS 13.0, *)) {
         [self unobserveIso7816TagAvailability];
@@ -181,7 +204,7 @@
 - (void)tagReaderSessionDidBecomeActive:(NFCTagReaderSession *)session API_AVAILABLE(ios(13.0)) {
     YKFLogInfo(@"NFC session did become active.");
     self.nfcTagReaderSession = session;
-    [self updateServicesForSession:session tag:nil state:YKFNFCConnectionStatePooling];
+    [self updateServicesForSession:session tag:nil state:YKFNFCConnectionStatePolling];
 }
 
 - (void)tagReaderSession:(NFCTagReaderSession *)session didDetectTags:(NSArray<__kindof id<NFCTag>> *)tags API_AVAILABLE(ios(13.0)) {
@@ -263,7 +286,7 @@
             self.nfcTagReaderSession = nil;
             break;
         
-        case YKFNFCConnectionStatePooling:
+        case YKFNFCConnectionStatePolling:
             self.nfcConnectionError = nil;
 
             self.u2fService = nil;
@@ -308,7 +331,7 @@
         } else {
             YKFLogInfo(@"NFC tag is no longer available.");
             // moving from state of open back to polling/waiting for new tag
-            [strongSelf updateServicesForSession:strongSelf.nfcTagReaderSession tag:nil state:YKFNFCConnectionStatePooling];
+            [strongSelf updateServicesForSession:strongSelf.nfcTagReaderSession tag:nil state:YKFNFCConnectionStatePolling];
         }
     }];
     [[NSRunLoop mainRunLoop] addTimer:self.iso7816NfcTagAvailabilityTimer forMode:NSDefaultRunLoopMode];

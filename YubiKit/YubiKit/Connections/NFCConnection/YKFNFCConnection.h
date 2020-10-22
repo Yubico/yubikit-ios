@@ -19,6 +19,7 @@
 #import "YKFKeyFIDO2Session.h"
 #import "YKFKeyOATHSession.h"
 #import "YKFKeyRawCommandSession.h"
+#import "YKFConnectionProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,13 +29,13 @@ typedef NS_ENUM(NSUInteger, YKFNFCConnectionState) {
     
     /// The session is in an intermediary state between closed and opened. Before the tag was discovered.
     /// The application should not send commands to the key when the session is in this state.
-    YKFNFCConnectionStatePooling,
+    YKFNFCConnectionStatePolling,
 
     /// The session is opened and ready to use. The application can send immediately commands to the key.
     YKFNFCConnectionStateOpen
 };
 
-@interface YKFNFCConnection: NSObject
+@interface YKFNFCConnection: NSObject<YKFConnectionProtocol>
 
 typedef void (^OATHSession)(id<YKFKeyOATHSessionProtocol> _Nullable, NSError* _Nullable);
 - (void)oathSession:(OATHSession _Nonnull)callback API_AVAILABLE(ios(13.0));
