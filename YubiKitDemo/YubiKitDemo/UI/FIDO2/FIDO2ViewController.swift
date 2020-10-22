@@ -25,7 +25,6 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
         case register
         case authenticate
     }
-    
 
     private var sceneObserver: SceneObserver?
 
@@ -64,6 +63,14 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        if true {
+            usernameTextField.text = "user42"
+            passwordTextField.text = "password123"
+        } else {
+            usernameTextField.text = "user\(arc4random() % 1000)"
+            passwordTextField.text = "password123"
+        }
         YubiKitManager.shared.delegate = self
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             YubiKitManager.shared.startAccessoryConnection()
@@ -80,8 +87,10 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
     
     // MARK: - YKFManagerDelegate
     
-    func didConnectNFC(_ connection: YKFNFCConnection) {
-        print("didConnectNFC")
+    func didConnectNFC(_ nfcConnection: YKFNFCConnection) {
+        connection = nfcConnection
+        guard let connectionCallback = connectionCallback else { return }
+        connectionCallback(nfcConnection)
     }
     
     func didDisconnectNFC(_ connection: YKFNFCConnection, error: Error?) {
@@ -151,13 +160,18 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
         beginWebAuthnRegistration(username: username, password: password) { [self] result in
             switch result {
             case .success(let response):
-                // 2. Get Yubikey connection
-                statusView.state = .insertKey
+                if connectionType == .accessory {
+                    statusView.state = .insertKey
+                }
+                // 2. Create credential on Yubikey
                 makeCredentialOnKey(connectionType: connectionType, response: response, statusView: statusView) { result in
+                    if connectionType == .nfc, #available(iOS 13.0, *) {
+                        YubiKitManager.shared.stopNFCConnection()
+                    }
                     switch result {
                     case .success(let response):
                         statusView.state = .message("Finalising registration...")
-                        // 4. Finalize WebAuthn registration
+                        // 3. Finalize WebAuthn registration
                         finalizeWebAuthnRegistration(response: response) { result in
                             switch result {
                             case .success:
@@ -238,8 +252,13 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
             let makeOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: response.residentKey]
             makeCredentialRequest.options = makeOptions
             
-            statusView.state = .touchKey
+            if connectionType == .accessory {
+                statusView.state = .insertKey
+            }
             connection.fido2Session() { result in
+                if connectionType == .accessory {
+                    statusView.state = .touchKey
+                }
                 switch result {
                 case .success(let session):
                     session.execute(makeCredentialRequest) { [self] keyResponse, error in
@@ -333,7 +352,9 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
         beginWebAuthnAuthentication(username: username, password: password) { [self] result in
             switch result {
             case .success(let response):
-                statusView.state = .insertKey
+                if connectionType == .accessory {
+                    statusView.state = .insertKey
+                }
                 // 2. Assert on Yubikey
                 assertOnKey(connectionType: connectionType, response: response, statusView: statusView) { result in
                     switch result {
@@ -398,7 +419,9 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
             getAssertionRequest.rpId = response.rpId
             getAssertionRequest.options = [YKFKeyFIDO2GetAssertionRequestOptionUP: true]
             
-            statusView.state = .touchKey
+            if connectionType == .accessory {
+                statusView.state = .touchKey
+            }
             
             var allowList = [YKFFIDO2PublicKeyCredentialDescriptor]()
             for credentialId in response.allowCredentials {
@@ -415,6 +438,9 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
                 switch result {
                 case .success(let session):
                     session.execute(getAssertionRequest) { assertionResponse, error in
+                        if connectionType == .nfc, #available(iOS 13.0, *) {
+                            YubiKitManager.shared.stopNFCConnection()
+                        }
                         guard error == nil else {
                             completion(.failure(error!))
                             return
