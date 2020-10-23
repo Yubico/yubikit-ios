@@ -63,14 +63,6 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        if true {
-            usernameTextField.text = "user42"
-            passwordTextField.text = "password123"
-        } else {
-            usernameTextField.text = "user\(arc4random() % 1000)"
-            passwordTextField.text = "password123"
-        }
         YubiKitManager.shared.delegate = self
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             YubiKitManager.shared.startAccessoryConnection()
@@ -93,8 +85,9 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
         connectionCallback(nfcConnection)
     }
     
-    func didDisconnectNFC(_ connection: YKFNFCConnection, error: Error?) {
-        print("didDisconnectNFC")
+    func didDisconnectNFC(_ nfcConnection: YKFNFCConnection, error: Error?) {
+        connection = nil
+        connectionCallback = nil
     }
     
     func didConnectAccessory(_ accessoryConnection: YKFAccessoryConnection) {
