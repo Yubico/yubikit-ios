@@ -14,7 +14,6 @@
 
 #import "YKFKeyOATHSession.h"
 #import "YKFKeyOATHSession+Private.h"
-#import "YKFKeySession+Private.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFKeyOATHError.h"
 #import "YKFKeyAPDUError.h"
@@ -325,8 +324,6 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 - (void)executeOATHRequest:(YKFKeyOATHRequest *)request completion:(YKFKeyOATHServiceResultCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
-
-    [self.delegate keyService:self willExecuteRequest:request];
     
     ykf_weak_self();
     [self selectOATHApplicationWithCompletion:^(YKFKeyOATHSelectApplicationResponse * _Nullable response, NSError * _Nullable error) {
@@ -456,18 +453,9 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     }];
 }
 
-#pragma mark - YKFKeySessionProtocol
+#pragma mark - YKFSessionProtocol
 
-- (void)keyService:(YKFKeySession *)service willExecuteRequest:(YKFKeyRequest *)request {
-    if (!service || (service == self)) {
-        return;
-    }
-    if (!self.cachedSelectApplicationResponse) {
-        return;
-    }
-    
-    YKFLogVerbose(@"Clearing OATH Service application selection.");
-    
+- (void)clearSessionState {
     self.cachedSelectApplicationResponse = nil;
 }
 

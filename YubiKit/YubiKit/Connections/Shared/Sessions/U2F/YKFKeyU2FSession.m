@@ -26,7 +26,6 @@
 #import "YKFKeyU2FRequest+Private.h"
 #import "YKFKeyU2FRegisterResponse+Private.h"
 #import "YKFKeyU2FSignResponse+Private.h"
-#import "YKFKeySession+Private.h"
 #import "YKFAPDU+Private.h"
 
 typedef void (^YKFKeyU2FServiceResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
@@ -42,15 +41,20 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 
 @implementation YKFKeyU2FSession
 
-- (instancetype)initWithConnectionController:(id<YKFKeyConnectionControllerProtocol>)connectionController {
-    YKFAssertAbortInit(connectionController);
-    
-    self = [super init];
-    if (self) {
-        self.connectionController = connectionController;
-    }
-    return self;
++ (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
+                               completion:(YKFKeyU2FSessionCompletion _Nonnull)completion {
+    YKFKeyU2FSession *session = [YKFKeyU2FSession new];
+    session.connectionController = connectionController;
+    [session selectU2FApplicationWithCompletion:^(NSError *error) {
+        if (error) {
+            completion(nil, error);
+        } else {
+            completion(session, nil);
+        }
+    }];
 }
+
+- (void)clearSessionState {}
 
 #pragma mark - Key State
 
@@ -135,9 +139,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 - (void)executeU2FRequest:(YKFKeyU2FRequest *)request completion:(YKFKeyU2FServiceResultCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
-    
-    [self.delegate keyService:self willExecuteRequest:request];
-    
+
     [self updateKeyState:YKFKeyU2FSessionKeyStateProcessingRequest];
     
     ykf_weak_self();

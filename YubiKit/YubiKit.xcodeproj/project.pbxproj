@@ -353,6 +353,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		51202093255150FF00B0384D /* YKFSessionProtocol+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFSessionProtocol+Private.h"; sourceTree = "<group>"; };
 		516BCE0E252C77EE0022F455 /* YKFNFCConnection+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFNFCConnection+Private.h"; sourceTree = "<group>"; };
 		5176559925405FE400819857 /* YKFConnectionProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFConnectionProtocol.h; sourceTree = "<group>"; };
 		51A5D2572451D7CD00C7161E /* YKFOATHRenameAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFOATHRenameAPDU.m; sourceTree = "<group>"; };
@@ -570,7 +571,6 @@
 		95885B3020A31EFF00828D02 /* YKFOTPTokenValidatorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOTPTokenValidatorTests.m; sourceTree = "<group>"; };
 		958D0B62215D106F00942CB9 /* YKFKeySession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeySession.h; sourceTree = "<group>"; };
 		958D0B63215D106F00942CB9 /* YKFKeySession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeySession.m; sourceTree = "<group>"; };
-		958D0B65215D10AD00942CB9 /* YKFKeySession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeySession+Private.h"; sourceTree = "<group>"; };
 		95A04D1C2253920B008E3036 /* YKFFIDO2GetNextAssertionAPDU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFFIDO2GetNextAssertionAPDU.h; sourceTree = "<group>"; };
 		95A04D1D2253920B008E3036 /* YKFFIDO2GetNextAssertionAPDU.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFFIDO2GetNextAssertionAPDU.m; sourceTree = "<group>"; };
 		95A456672177639C00AD5A94 /* YKFOATHCalculateAllAPDU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHCalculateAllAPDU.h; sourceTree = "<group>"; };
@@ -1132,7 +1132,7 @@
 				81311F3723AAF9F400765522 /* ChalResp */,
 				958D0B62215D106F00942CB9 /* YKFKeySession.h */,
 				958D0B63215D106F00942CB9 /* YKFKeySession.m */,
-				958D0B65215D10AD00942CB9 /* YKFKeySession+Private.h */,
+				51202093255150FF00B0384D /* YKFSessionProtocol+Private.h */,
 				95D9D3D921D510A700473888 /* FIDO2 */,
 				958139562159281D008558F3 /* OATH */,
 				95D5E2D6218711CB00AA1C11 /* RawCommand */,
