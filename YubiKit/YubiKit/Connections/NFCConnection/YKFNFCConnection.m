@@ -306,9 +306,6 @@
             self.connectionController = [[YKFNFCConnectionController alloc] initWithNFCTag:tag operationQueue:self.communicationQueue];
             [self.delegate didConnectNFC:self];
             
-            self.u2fService = [[YKFKeyU2FSession alloc] initWithConnectionController:self.connectionController];
-//            self.fido2Service = [[YKFKeyFIDO2Session alloc] initWithConnectionController:self.connectionController];
-//            self.oathService = [[YKFKeyOATHSession alloc] initWithConnectionController:self.connectionController];
             self.rawCommandService = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.connectionController];
             self.tagDescription = [[YKFNFCTagDescription alloc] initWithTag: tag];
             break;

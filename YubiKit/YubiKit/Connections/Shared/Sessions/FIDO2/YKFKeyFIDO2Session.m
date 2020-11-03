@@ -45,7 +45,6 @@
 
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFKeySessionError+Private.h"
-#import "YKFKeySession+Private.h"
 #import "YKFKeyFIDO2Request+Private.h"
 #import "YKFAPDU+Private.h"
 
@@ -89,14 +88,8 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (instancetype)initWithConnectionController:(id<YKFKeyConnectionControllerProtocol>)connectionController {
-    YKFAssertAbortInit(connectionController);
-
-    self = [super init];
-    if (self) {
-        self.connectionController = connectionController;
-    }
-    return self;
+- (void)clearSessionState {
+    [self clearUserVerification];
 }
 
 #pragma mark - Key State
@@ -582,8 +575,6 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
     
-    [self.delegate keyService:self willExecuteRequest:request];
-    
     [self updateKeyState:YKFKeyFIDO2SessionKeyStateProcessingRequest];
     
     ykf_weak_self();
@@ -648,15 +639,6 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
             }
         }
     }];
-}
-
-#pragma mark - YKFKeySessionProtocol
-
-- (void)keyService:(YKFKeySession *)service willExecuteRequest:(YKFKeyRequest *)request {
-    if (!service || (service == self)) {
-        return;
-    }
-    [self clearUserVerification];
 }
 
 #pragma mark - Helpers

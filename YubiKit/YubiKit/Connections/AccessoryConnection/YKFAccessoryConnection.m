@@ -34,7 +34,6 @@
 #import "YKFKeyOATHSession+Private.h"
 #import "YKFKeyU2FSession+Private.h"
 #import "YKFKeyFIDO2Session+Private.h"
-#import "YKFKeySession+Private.h"
 #import "YKFAccessoryDescription+Private.h"
 
 #import "EAAccessory+Testing.h"
@@ -58,7 +57,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 #pragma mark - YKFAccessorySession
 
-@interface YKFAccessoryConnection()<NSStreamDelegate, YKFKeySessionDelegate>
+@interface YKFAccessoryConnection()<NSStreamDelegate>
 
 // Dispatching
 
@@ -79,10 +78,10 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 @property (nonatomic, assign, readwrite) YKFAccessoryConnectionState connectionState;
 
-@property (nonatomic, readwrite) id<YKFKeyU2FSessionProtocol, YKFKeySessionDelegate> u2fService;
-@property (nonatomic, readwrite) id<YKFKeyFIDO2SessionProtocol, YKFKeySessionDelegate> fido2Service;
-@property (nonatomic, readwrite) id<YKFKeyOATHSessionProtocol, YKFKeySessionDelegate> oathService;
-@property (nonatomic, readwrite) id<YKFKeyRawCommandSessionProtocol, YKFKeySessionDelegate> rawCommandService;
+@property (nonatomic, readwrite) id<YKFKeyU2FSessionProtocol> u2fService;
+@property (nonatomic, readwrite) id<YKFKeyFIDO2SessionProtocol> fido2Service;
+@property (nonatomic, readwrite) id<YKFKeyOATHSessionProtocol> oathService;
+@property (nonatomic, readwrite) id<YKFKeyRawCommandSessionProtocol> rawCommandService;
 
 // Observation
 
@@ -97,6 +96,9 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 // Flags
 
 @property (nonatomic, assign) BOOL reconnectOnApplicationActive;
+
+
+@property (nonatomic, readwrite) id<YKFSessionProtocol> currentSession;
 
 @end
 
@@ -119,48 +121,29 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 }
 
 - (void)oathSession:(OATHSession _Nonnull)callback {
+    [self.currentSession clearSessionState];
     [YKFKeyOATHSession sessionWithConnectionController:self.connectionController
-                                            completion:^(id<YKFKeyOATHSessionProtocol> _Nullable session, NSError * _Nullable error) {
+                                            completion:^(YKFKeyOATHSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
         callback(session, error);
     }];
 }
 
 - (void)u2fSession:(U2FSession _Nonnull)callback {
-    if (!self.u2fService) {
-        callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
-    }
-    ykf_weak_self();
-    [self.u2fService selectU2FApplicationWithCompletion:^(NSError * _Nullable error) {
-        ykf_safe_strong_self();
-        if (error != nil) {
-            callback(nil, error);
-        } else {
-            callback(strongSelf.u2fService, nil);
-        }
+    [self.currentSession clearSessionState];
+    [YKFKeyU2FSession sessionWithConnectionController:self.connectionController
+                                            completion:^(YKFKeyU2FSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        callback(session, error);
     }];
 }
 
 - (void)fido2Session:(FIDO2Session _Nonnull)callback {
-//    NSLog(@"get fido2Session");
-//    [YKFKeyFIDO2Session sessionWithConnectionController:self.connectionController
-//                                            completion:^(id<YKFKeyFIDO2SessionProtocol> _Nullable session, NSError * _Nullable error) {
-//        session.delegate = self;
-//        self.fido2Service = session;
-//        callback(session, error);
-//    }];
-//
-
-    if (!self.fido2Service) {
-        callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
-    }
-    ykf_weak_self();
-    [self.fido2Service selectFIDO2ApplicationWithCompletion:^(NSError * _Nullable error) {
-        ykf_safe_strong_self();
-        if (error != nil) {
-            callback(nil, error);
-        } else {
-            callback(strongSelf.fido2Service, nil);
-        }
+    [self.currentSession clearSessionState];
+    [YKFKeyFIDO2Session sessionWithConnectionController:self.connectionController
+                                            completion:^(YKFKeyFIDO2Session *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        callback(session, error);
     }];
 }
 
@@ -506,20 +489,10 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
          Setup services after the connection is created
          */
         
-        YKFKeyU2FSession *u2fService = [[YKFKeyU2FSession alloc] initWithConnectionController:self.connectionController];
-        u2fService.delegate = self;
-        self.u2fService = u2fService;
-        
-        YKFKeyFIDO2Session *fido2Service = [[YKFKeyFIDO2Session alloc] initWithConnectionController:self.connectionController];
-        fido2Service.delegate = self;
-        self.fido2Service = fido2Service;
-        
-//        YKFKeyOATHSession *oathService = [[YKFKeyOATHSession alloc] initWithConnectionController:self.connectionController];
-//        oathService.delegate = self;
-//        self.oathService = oathService;
+//        YKFKeyU2FSession *u2fService = [[YKFKeyU2FSession alloc] initWithConnectionController:self.connectionController];
+//        self.u2fService = u2fService;
         
         YKFKeyRawCommandSession *rawCommandService = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.connectionController];
-        rawCommandService.delegate = self;
         self.rawCommandService = rawCommandService;
         
         YKFLogInfo(@"Session opened.");
@@ -545,12 +518,12 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
         
         // Clean services first
         strongSelf.u2fService = nil;
-        strongSelf.fido2Service = nil;
-//        strongSelf.oathService = nil;
         strongSelf.rawCommandService = nil;
         
         strongSelf.connectionController = nil;
         strongSelf.session = nil;
+        [strongSelf.currentSession clearSessionState];
+        strongSelf.currentSession = nil;
         
         strongSelf.connectionState = YKFAccessoryConnectionStateClosed;
         YKFLogInfo(@"Session closed.");
@@ -588,16 +561,6 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     if (applicationState != UIApplicationStateActive) {
         self.reconnectOnApplicationActive = YES;
     }
-}
-
-#pragma mark - YKFKeyServiceDelegate
-
-- (void)keyService:(YKFKeySession *)service willExecuteRequest:(YKFKeyRequest *)request {
-    [self.u2fService keyService:service willExecuteRequest:request];
-    [self.fido2Service keyService:service willExecuteRequest:request];
-    [self.oathService keyService:service willExecuteRequest:request];
-//     This caused a compilation error but we're simply commenting out this line for now.
-//    [self.rawCommandService keyService:service willExecuteRequest:request];
 }
 
 #pragma mark - Helpers

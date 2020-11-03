@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #import "YKFKeySession.h"
-#import "YKFKeySession+Private.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFNSDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
@@ -47,12 +46,6 @@
 
 + (UInt8)shortStatusCodeFromStatusCode:(UInt16)statusCode {
     return (UInt8)(statusCode >> 8);
-}
-
-#pragma mark - YKFKeySessionDelegate
-
-- (void)keyService:(YKFKeySession *)service willExecuteRequest:(YKFKeyRequest *)request {
-    // Does nothing: override this in the service subclasses when necessary.
 }
 
 @end
