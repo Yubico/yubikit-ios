@@ -20,7 +20,6 @@
 #import "YKFAssert.h"
 
 #import "YKFAPDU+Private.h"
-#import "YKFKeySession+Private.h"
 #import "YKFKeySessionError+Private.h"
 
 // Make a long timeout. This should be double checked by WTX responses.
@@ -49,9 +48,7 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
 - (void)executeCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandSessionResponseBlock)completion {
     YKFParameterAssertReturn(apdu);
     YKFParameterAssertReturn(completion);
-    
-    [self.delegate keyService:self willExecuteRequest:nil];
-    
+
     [self.connectionController execute:apdu
                          configuration:configuration
                             completion:^(NSData *response, NSError * error, NSTimeInterval executionTime) {
@@ -72,8 +69,6 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
     YKFParameterAssertReturn(completion);
     
     YKFAssertOffMainThread();
-    
-    [self.delegate keyService:self willExecuteRequest:nil];
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     

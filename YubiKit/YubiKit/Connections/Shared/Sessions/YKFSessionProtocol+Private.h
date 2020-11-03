@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2020 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import <Foundation/Foundation.h>
-#import "YKFSessionProtocol+Private.h"
+@protocol YKFSessionProtocol
 
-@protocol YKFKeyConnectionControllerProtocol;
-
-NS_ASSUME_NONNULL_BEGIN
-
-@interface YKFKeyFIDO2Session()<YKFSessionProtocol>
-
-typedef void (^YKFKeyFIDO2SessionCompletion)(YKFKeyFIDO2Session *_Nullable, NSError* _Nullable);
-+ (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
-                               completion:(YKFKeyFIDO2SessionCompletion _Nonnull)completion;
+- (void)clearSessionState;
 
 @end
-
-NS_ASSUME_NONNULL_END
