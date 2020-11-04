@@ -37,12 +37,6 @@ typedef NS_ENUM(NSUInteger, YKFNFCConnectionState) {
 
 @interface YKFNFCConnection: NSObject<YKFConnectionProtocol>
 
-typedef void (^OATHSession)(id<YKFKeyOATHSessionProtocol> _Nullable, NSError* _Nullable);
-- (void)oathSession:(OATHSession _Nonnull)callback API_AVAILABLE(ios(13.0));
-
-typedef void (^U2FSession)(id<YKFKeyU2FSessionProtocol> _Nullable, NSError* _Nullable);
-- (void)u2fSession:(U2FSession _Nonnull)callback API_AVAILABLE(ios(13.0));
-
 /*!
  @property sessionState
  
@@ -82,7 +76,7 @@ typedef void (^U2FSession)(id<YKFKeyU2FSessionProtocol> _Nullable, NSError* _Nul
     The shared object to interact with the OTP application from the YubiKey. This property is
     always available and handles its own NFC NDEF session.
  */
-@property (nonatomic, readonly) id<YKFNFCOTPSessionProtocol> otpService API_AVAILABLE(ios(11.0));
+//@property (nonatomic, readonly) id<YKFNFCOTPSessionProtocol> otpService API_AVAILABLE(ios(11.0));
 
 /*!
  @property fido2Service
@@ -92,7 +86,7 @@ typedef void (^U2FSession)(id<YKFKeyU2FSessionProtocol> _Nullable, NSError* _Nul
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
-@property (nonatomic, readonly, nullable) id<YKFKeyFIDO2SessionProtocol> fido2Service API_AVAILABLE(ios(13.0));
+//@property (nonatomic, readonly, nullable) id<YKFKeyFIDO2SessionProtocol> fido2Service API_AVAILABLE(ios(13.0));
 
 /*!
  @property rawCommandService
@@ -102,7 +96,7 @@ typedef void (^U2FSession)(id<YKFKeyU2FSessionProtocol> _Nullable, NSError* _Nul
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
-@property (nonatomic, readonly, nullable) id<YKFKeyRawCommandSessionProtocol> rawCommandService API_AVAILABLE(ios(13.0));
+//@property (nonatomic, readonly, nullable) id<YKFKeyRawCommandSessionProtocol> rawCommandService API_AVAILABLE(ios(13.0));
 
 /*!
  @method startIso7816Session
