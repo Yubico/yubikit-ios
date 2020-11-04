@@ -41,9 +41,6 @@
 
 @property (nonatomic, readwrite) YKFNFCTagDescription *tagDescription API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFNFCOTPSession *otpService API_AVAILABLE(ios(11.0));
-@property (nonatomic, readwrite) YKFKeyU2FSession *u2fService API_AVAILABLE(ios(13.0));
-@property (nonatomic, readwrite) YKFKeyFIDO2Session *fido2Service API_AVAILABLE(ios(13.0));
-@property (nonatomic, readwrite) YKFKeyOATHSession *oathService API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFKeyRawCommandSession *rawCommandService API_AVAILABLE(ios(13.0));
 
 @property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
@@ -54,6 +51,8 @@
 @property (nonatomic) NFCTagReaderSession *nfcTagReaderSession API_AVAILABLE(ios(13.0));
 
 @property (nonatomic) NSTimer *iso7816NfcTagAvailabilityTimer;
+
+@property (nonatomic, readwrite) id<YKFSessionProtocol> currentSession;
 
 @end
 
@@ -73,65 +72,42 @@
 
 - (void)oathSession:(OATHSession _Nonnull)callback {
     if (@available(iOS 13.0, *)) {
-        if (!self.oathService) {
-            callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
-        }
-        ykf_weak_self();
-        [self.oathService selectOATHApplicationWithCompletion:^(YKFKeyOATHSelectApplicationResponse * _Nullable response, NSError * _Nullable error) {
-            ykf_safe_strong_self();
-            if (error != nil) {
-                callback(nil, error);
-            } else {
-                callback(strongSelf.oathService, nil);
-            }
+        [self.currentSession clearSessionState];
+        [YKFKeyOATHSession sessionWithConnectionController:self.connectionController
+                                                completion:^(YKFKeyOATHSession *_Nullable session, NSError * _Nullable error) {
+            self.currentSession = session;
+            callback(session, error);
         }];
-    } else {
-        // exit with fatal error here?
-        callback(nil, nil);
     }
 }
 
 - (void)u2fSession:(U2FSession _Nonnull)callback {
     if (@available(iOS 13.0, *)) {
-        if (!self.u2fService) {
-            callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
-        }
-        ykf_weak_self();
-        [self.u2fService selectU2FApplicationWithCompletion:^(NSError * _Nullable error) {
-            ykf_safe_strong_self();
-            if (error != nil) {
-                callback(nil, error);
-            } else {
-                callback(strongSelf.u2fService, nil);
-            }
+        [self.currentSession clearSessionState];
+        [YKFKeyU2FSession sessionWithConnectionController:self.connectionController
+                                                completion:^(YKFKeyU2FSession *_Nullable session, NSError * _Nullable error) {
+            self.currentSession = session;
+            callback(session, error);
         }];
-    } else {
-        // exit with fatal error here?
-        callback(nil, nil);
     }
 }
 
 - (void)fido2Session:(FIDO2Session _Nonnull)callback {
-    NSLog(@"get fido2Session with %@", self.connectionController);
+    [self.currentSession clearSessionState];
     [YKFKeyFIDO2Session sessionWithConnectionController:self.connectionController
-                                            completion:^(id<YKFKeyFIDO2SessionProtocol> _Nullable session, NSError * _Nullable error) {
-        self.fido2Service = session;
+                                            completion:^(YKFKeyFIDO2Session *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
         callback(session, error);
     }];
+}
 
-
-//    if (!self.fido2Service) {
-//        callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
-//    }
-//    ykf_weak_self();
-//    [self.fido2Service selectFIDO2ApplicationWithCompletion:^(NSError * _Nullable error) {
-//        ykf_safe_strong_self();
-//        if (error != nil) {
-//            callback(nil, error);
-//        } else {
-//            callback(strongSelf.fido2Service, nil);
-//        }
-//    }];
+- (void)rawCommandSession:(RawCommandSession _Nonnull)callback {
+    if (@available(iOS 13.0, *)) {
+        if (!self.rawCommandService) {
+            callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
+        }
+        callback(self.rawCommandService, nil);
+    }
 }
 
 - (void)dealloc {
@@ -272,8 +248,8 @@
     switch (state) {
         case YKFNFCConnectionStateClosed:
             [self.delegate didDisconnectNFC:self error:self.nfcConnectionError];
-            self.u2fService = nil;
-            self.fido2Service = nil;
+//            self.u2fService = nil;
+//            self.fido2Service = nil;
             self.rawCommandService = nil;
 //            self.oathService = nil;
             self.connectionController = nil;
@@ -289,10 +265,7 @@
         case YKFNFCConnectionStatePolling:
             self.nfcConnectionError = nil;
 
-            self.u2fService = nil;
-            self.fido2Service = nil;
             self.rawCommandService = nil;
-            self.oathService = nil;
             self.connectionController = nil;
             self.tagDescription = nil;
             [self unobserveIso7816TagAvailability];
