@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@protocol YKFKeyOATHSessionProtocol, YKFKeyU2FSessionProtocol, YKFKeyFIDO2SessionProtocol, YKFKeyRawCommandSessionProtocol;
+@class YKFKeyOATHSession, YKFKeyU2FSession, YKFKeyFIDO2Session, YKFKeyRawCommandSession;
 
 @protocol YKFConnectionProtocol<NSObject>
 
-typedef void (^OATHSession)(id<YKFKeyOATHSessionProtocol> _Nullable, NSError* _Nullable);
+typedef void (^OATHSession)(YKFKeyOATHSession *_Nullable, NSError* _Nullable);
 - (void)oathSession:(OATHSession _Nonnull)callback;
 
-typedef void (^U2FSession)(id<YKFKeyU2FSessionProtocol> _Nullable, NSError* _Nullable);
+typedef void (^U2FSession)(YKFKeyU2FSession *_Nullable, NSError* _Nullable);
 - (void)u2fSession:(U2FSession _Nonnull)callback;
 
-typedef void (^FIDO2Session)(id<YKFKeyFIDO2SessionProtocol> _Nullable, NSError* _Nullable);
+typedef void (^FIDO2Session)(YKFKeyFIDO2Session *_Nullable, NSError* _Nullable);
 - (void)fido2Session:(FIDO2Session _Nonnull)callback;
 
-typedef void (^RawCommandSession)(id<YKFKeyRawCommandSessionProtocol> _Nullable, NSError* _Nullable);
+typedef void (^RawCommandSession)(YKFKeyRawCommandSession *_Nullable, NSError* _Nullable);
 - (void)rawCommandSession:(RawCommandSession _Nonnull)callback;
 
 @end
