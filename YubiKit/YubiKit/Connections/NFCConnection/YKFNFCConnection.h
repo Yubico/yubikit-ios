@@ -76,7 +76,7 @@ typedef NS_ENUM(NSUInteger, YKFNFCConnectionState) {
     The shared object to interact with the OTP application from the YubiKey. This property is
     always available and handles its own NFC NDEF session.
  */
-//@property (nonatomic, readonly) id<YKFNFCOTPSessionProtocol> otpService API_AVAILABLE(ios(11.0));
+@property (nonatomic, readonly) id<YKFNFCOTPSessionProtocol> otpService API_AVAILABLE(ios(11.0));
 
 /*!
  @property fido2Service

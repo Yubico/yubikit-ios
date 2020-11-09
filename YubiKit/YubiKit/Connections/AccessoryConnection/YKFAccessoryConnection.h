@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
-@property (nonatomic, readonly, nullable) id<YKFKeyRawCommandSessionProtocol> rawCommandService;
+//@property (nonatomic, readonly, nullable) id<YKFKeyRawCommandSessionProtocol> rawCommandService;
 
 /*!
  @method startSession

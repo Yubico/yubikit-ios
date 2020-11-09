@@ -13,15 +13,19 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
+#import "YKFSessionProtocol+Private.h"
 
 @protocol YKFKeyConnectionControllerProtocol;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFKeyRawCommandSession()
+@interface YKFKeyChallengeResponseSession()<YKFSessionProtocol>
 
-- (nullable instancetype)initWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController NS_DESIGNATED_INITIALIZER;
+typedef void (^YKFKeyChallengeResponseSessionCompletion)(YKFKeyChallengeResponseSession *_Nullable, NSError* _Nullable);
++ (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
+                               completion:(YKFKeyChallengeResponseSessionCompletion _Nonnull)completion;
 
 @end
 
 NS_ASSUME_NONNULL_END
+

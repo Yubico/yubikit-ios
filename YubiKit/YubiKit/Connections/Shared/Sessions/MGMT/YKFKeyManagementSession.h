@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "YKFKeyRawCommandSession.h"
 #import "YKFKeyManagementReadConfigurationResponse.h"
 
 /**
@@ -84,7 +85,7 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFKeyManagementSession : NSObject<YKFKeyManagementSessionProtocol>
+@interface YKFKeyManagementSession : YKFKeyRawCommandSession<YKFKeyManagementSessionProtocol>
 
 @end
 

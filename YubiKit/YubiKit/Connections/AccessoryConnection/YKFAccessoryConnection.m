@@ -30,11 +30,15 @@
 #import "YKFDispatch.h"
 #import "YKFAssert.h"
 
-#import "YKFKeyRawCommandService+Private.h"
+#import "YKFKeyRawCommandSession+Private.h"
 #import "YKFKeyOATHSession+Private.h"
 #import "YKFKeyU2FSession+Private.h"
 #import "YKFKeyFIDO2Session+Private.h"
+#import "YKFKeyChallengeResponseSession.h"
+#import "YKFKeyChallengeResponseSession+Private.h"
 #import "YKFAccessoryDescription+Private.h"
+#import "YKFKeyManagementSession+Private.h"
+#import "YKFKeyManagementSession.h"
 
 #import "EAAccessory+Testing.h"
 #import "EASession+Testing.h"
@@ -77,11 +81,6 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 // Services
 
 @property (nonatomic, assign, readwrite) YKFAccessoryConnectionState connectionState;
-
-@property (nonatomic, readwrite) id<YKFKeyU2FSessionProtocol> u2fService;
-@property (nonatomic, readwrite) id<YKFKeyFIDO2SessionProtocol> fido2Service;
-@property (nonatomic, readwrite) id<YKFKeyOATHSessionProtocol> oathService;
-@property (nonatomic, readwrite) id<YKFKeyRawCommandSessionProtocol> rawCommandService;
 
 // Observation
 
@@ -148,10 +147,28 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 }
 
 - (void)rawCommandSession:(RawCommandSession _Nonnull)callback {
-    if (!self.rawCommandService) {
-        callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
-    }
-    callback(self.rawCommandService, nil);
+    [self.currentSession clearSessionState];
+    YKFKeyRawCommandSession *session = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.connectionController];
+    self.currentSession = session;
+    callback(session, nil);
+}
+
+- (void)challengeResponseSession:(ChallengeResponseSession _Nonnull)callback {
+    [self.currentSession clearSessionState];
+    [YKFKeyChallengeResponseSession sessionWithConnectionController:self.connectionController
+                                                         completion:^(YKFKeyChallengeResponseSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        callback(session, error);
+    }];
+}
+
+- (void)managementSession:(ManagementSession _Nonnull)callback {
+    [self.currentSession clearSessionState];
+    [YKFKeyManagementSession sessionWithConnectionController:self.connectionController
+                                                  completion:^(YKFKeyManagementSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        callback(session, error);
+    }];
 }
 
 - (void)dealloc {
@@ -485,16 +502,6 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
         self.connectionController = [[YKFAccessoryConnectionController alloc] initWithSession:self.session operationQueue:self.communicationQueue];
         self.session.outputStream.delegate = self;
         
-        /*
-         Setup services after the connection is created
-         */
-        
-//        YKFKeyU2FSession *u2fService = [[YKFKeyU2FSession alloc] initWithConnectionController:self.connectionController];
-//        self.u2fService = u2fService;
-        
-        YKFKeyRawCommandSession *rawCommandService = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.connectionController];
-        self.rawCommandService = rawCommandService;
-        
         YKFLogInfo(@"Session opened.");
     } else {
         YKFLogInfo(@"Session opening failed.");
@@ -515,10 +522,6 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     ykf_weak_self();
     [self.connectionController closeConnectionWithCompletion:^{
         ykf_safe_strong_self();
-        
-        // Clean services first
-        strongSelf.u2fService = nil;
-        strongSelf.rawCommandService = nil;
         
         strongSelf.connectionController = nil;
         strongSelf.session = nil;
