@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import "YKFKeyRawCommandSession.h"
-#import "YKFKeyRawCommandService+Private.h"
+#import "YKFKeyRawCommandSession+Private.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFKeySessionError.h"
 #import "YKFBlockMacros.h"
@@ -42,6 +42,8 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
     }
     return self;
 }
+
+- (void)clearSessionState {}
 
 #pragma mark - Command Execution
 

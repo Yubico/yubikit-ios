@@ -46,6 +46,11 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
     
     // MARK: - Actions
     @IBAction func runDemoButtonPressed(_ sender: Any) {
+        
+        
+        
+        
+        
         // NOTE: session for accessories has been started for app delegate,
         // because we're watching YubiKey connection in every UI controller,
         // but potentially it could be started when this controller is initialized
@@ -68,7 +73,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
                guard let self = self else {
                    return
                }
-               self.runPIVDemo(keyService: YubiKitManager.shared.accessorySession.rawCommandService)
+//               self.runPIVDemo(keyService: YubiKitManager.shared.accessorySession.rawCommandService)
                self.setDemoButton(enabled: true)
            }
         }
@@ -270,7 +275,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
                                 return
                         }
                         YubiKitManager.shared.nfcSession.stop()
-                        self.runPIVDemo(keyService: YubiKitManager.shared.accessorySession.rawCommandService)
+//                        self.runPIVDemo(keyService: YubiKitManager.shared.accessorySession.rawCommandService)
                     }
                 }
             }
@@ -291,7 +296,7 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
                 
                 // NOTE: session can be closed during the execution of demo on background thread,
                 // so we need to make sure that we handle case when rawCommandService for nfcSession is nil
-                self.runPIVDemo(keyService: YubiKitManager.shared.nfcSession.rawCommandService)
+//                self.runPIVDemo(keyService: YubiKitManager.shared.nfcSession.rawCommandService)
                 // Stop the session to dismiss the Core NFC system UI.
                 YubiKitManager.shared.nfcSession.stop()
             }

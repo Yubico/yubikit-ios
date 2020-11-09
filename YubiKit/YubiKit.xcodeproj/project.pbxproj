@@ -355,11 +355,13 @@
 /* Begin PBXFileReference section */
 		51202093255150FF00B0384D /* YKFSessionProtocol+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFSessionProtocol+Private.h"; sourceTree = "<group>"; };
 		516BCE0E252C77EE0022F455 /* YKFNFCConnection+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFNFCConnection+Private.h"; sourceTree = "<group>"; };
+		5172679D2552F7E90007FEA0 /* YKFKeyManagementSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyManagementSession+Private.h"; sourceTree = "<group>"; };
 		5176559925405FE400819857 /* YKFConnectionProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFConnectionProtocol.h; sourceTree = "<group>"; };
 		51A5D2572451D7CD00C7161E /* YKFOATHRenameAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFOATHRenameAPDU.m; sourceTree = "<group>"; };
 		51A5D2582451D7CD00C7161E /* YKFOATHRenameAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFOATHRenameAPDU.h; sourceTree = "<group>"; };
 		51A5D25A2451D81600C7161E /* YKFKeyOATHRenameRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFKeyOATHRenameRequest.m; sourceTree = "<group>"; };
 		51A5D25B2451D81600C7161E /* YKFKeyOATHRenameRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFKeyOATHRenameRequest.h; sourceTree = "<group>"; };
+		51B48A0B2552D60B00D4C7E8 /* YKFKeyChallengeResponseSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyChallengeResponseSession+Private.h"; sourceTree = "<group>"; };
 		811F91EF2383C57B002158ED /* Changelog.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = Changelog.md; path = ../Changelog.md; sourceTree = "<group>"; };
 		81311F3823AAFA4A00765522 /* YKFKeyChallengeResponseSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyChallengeResponseSession.h; sourceTree = "<group>"; };
 		81311F3923AAFA4A00765522 /* YKFKeyChallengeResponseSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyChallengeResponseSession.m; sourceTree = "<group>"; };
@@ -419,7 +421,7 @@
 		950C700B22980CFE00E48458 /* FakeUIDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FakeUIDevice.m; sourceTree = "<group>"; };
 		950FB9302179D8F6003F712E /* YKFKeyOATHCalculateRequest+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyOATHCalculateRequest+Private.h"; sourceTree = "<group>"; };
 		9513760921512824006C843F /* EAAccessoryManager+Testing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EAAccessoryManager+Testing.h"; sourceTree = "<group>"; };
-		951446A121874013002BB3C5 /* YKFKeyRawCommandService+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyRawCommandService+Private.h"; sourceTree = "<group>"; };
+		951446A121874013002BB3C5 /* YKFKeyRawCommandSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyRawCommandSession+Private.h"; sourceTree = "<group>"; };
 		951446A221874CC2002BB3C5 /* YKFKeyCommandConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyCommandConfiguration.h; sourceTree = "<group>"; };
 		951446A321874CC2002BB3C5 /* YKFKeyCommandConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyCommandConfiguration.m; sourceTree = "<group>"; };
 		951446A82188592C002BB3C5 /* YKFPCSCLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPCSCLayer.h; sourceTree = "<group>"; };
@@ -756,6 +758,7 @@
 			children = (
 				81311F3823AAFA4A00765522 /* YKFKeyChallengeResponseSession.h */,
 				81311F3923AAFA4A00765522 /* YKFKeyChallengeResponseSession.m */,
+				51B48A0B2552D60B00D4C7E8 /* YKFKeyChallengeResponseSession+Private.h */,
 			);
 			path = ChalResp;
 			sourceTree = "<group>";
@@ -799,6 +802,7 @@
 			children = (
 				814813E923EA381F0003893B /* YKFKeyManagementSession.h */,
 				814813E823EA381F0003893B /* YKFKeyManagementSession.m */,
+				5172679D2552F7E90007FEA0 /* YKFKeyManagementSession+Private.h */,
 				81F94D8523EE246C00475A70 /* YKFManagementInterfaceConfiguration.h */,
 				814813EA23EA381F0003893B /* YKFManagementInterfaceConfiguration.m */,
 				81F94D8C23F26F7B00475A70 /* YKFManagementInterfaceConfiguration+Private.h */,
@@ -1360,7 +1364,7 @@
 			children = (
 				95D5E2D7218712BF00AA1C11 /* YKFKeyRawCommandSession.h */,
 				95D5E2D8218712BF00AA1C11 /* YKFKeyRawCommandSession.m */,
-				951446A121874013002BB3C5 /* YKFKeyRawCommandService+Private.h */,
+				951446A121874013002BB3C5 /* YKFKeyRawCommandSession+Private.h */,
 			);
 			path = RawCommand;
 			sourceTree = "<group>";

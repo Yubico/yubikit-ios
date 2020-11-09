@@ -25,6 +25,7 @@
 #import "YKFNSDataAdditions+Private.h"
 
 static NSString* const YKFPCSCLayerReaderName = @"YubiKey";
+static const NSTimeInterval YKFPCSCCommandTimeout = 600;
 
 // YK5 ATR
 static const UInt8 YKFPCSCAtrSize = 23;
@@ -179,11 +180,23 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 
     __block NSData *responseData = nil;
     
-    [self.accessorySession.rawCommandService executeSyncCommand:command completion:^(NSData *resp, NSError *error) {
-        if (!error && resp) {
-            responseData = resp;
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    
+    ykf_weak_self();
+    [YubiKitManager.shared.accessorySession rawCommandSession:^(YKFKeyRawCommandSession * _Nullable session, NSError * _Nullable error) {
+        ykf_safe_strong_self();
+        if (error) {
+            dispatch_semaphore_signal(semaphore);
+            return;
         }
+        [session executeCommand:command completion:^(NSData * _Nullable response, NSError * _Nullable error) {
+            responseData = response;
+            dispatch_semaphore_signal(semaphore);
+        }];
     }];
+    
+    dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(YKFPCSCCommandTimeout * NSEC_PER_SEC));
+    dispatch_semaphore_wait(semaphore, timeout);
     
     if (responseData) {
         *response = responseData;

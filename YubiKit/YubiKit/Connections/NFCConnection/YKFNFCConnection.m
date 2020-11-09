@@ -28,7 +28,11 @@
 #import "YKFKeyU2FSession+Private.h"
 #import "YKFKeyFIDO2Session+Private.h"
 #import "YKFKeyOATHSession+Private.h"
-#import "YKFKeyRawCommandService+Private.h"
+#import "YKFKeyRawCommandSession+Private.h"
+#import "YKFKeyChallengeResponseSession.h"
+#import "YKFKeyChallengeResponseSession+Private.h"
+#import "YKFKeyManagementSession.h"
+#import "YKFKeyManagementSession+Private.h"
 #import "YKFNFCTagDescription+Private.h"
 
 #import "YKFKeySessionError.h"
@@ -102,12 +106,28 @@
 }
 
 - (void)rawCommandSession:(RawCommandSession _Nonnull)callback {
-    if (@available(iOS 13.0, *)) {
-        if (!self.rawCommandService) {
-            callback(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorNoConnection]);
-        }
-        callback(self.rawCommandService, nil);
-    }
+    [self.currentSession clearSessionState];
+    YKFKeyRawCommandSession *session = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.connectionController];
+    self.currentSession = session;
+    callback(session, nil);
+}
+
+- (void)challengeResponseSession:(ChallengeResponseSession _Nonnull)callback {
+    [self.currentSession clearSessionState];
+    [YKFKeyChallengeResponseSession sessionWithConnectionController:self.connectionController
+                                                         completion:^(YKFKeyChallengeResponseSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        callback(session, error);
+    }];
+}
+
+- (void)managementSession:(ManagementSession _Nonnull)callback {
+    [self.currentSession clearSessionState];
+    [YKFKeyManagementSession sessionWithConnectionController:self.connectionController
+                                                  completion:^(YKFKeyManagementSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        callback(session, error);
+    }];
 }
 
 - (void)dealloc {
