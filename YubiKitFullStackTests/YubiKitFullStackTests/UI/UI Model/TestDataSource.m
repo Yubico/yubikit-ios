@@ -130,25 +130,29 @@
 
 - (void)executeApplicationSelection:(YKFAPDU *)apdu {
     __weak typeof(self) weakSelf = self;
-    [self.accessorySession.rawCommandService executeCommand:apdu completion:^(NSData *response, NSError *error) {
-        __strong typeof(self) strongSelf = weakSelf;
-        
-        if (error) {
-            [TestSharedLogger.shared logError: @"U2F application selection failed with error: %@", error.localizedDescription];
-            
-            // Cancel all queued commands
-            [strongSelf.accessorySession cancelCommands];
-        }
+    
+    [self.accessorySession rawCommandSession:^(YKFKeyRawCommandSession * _Nullable session, NSError * _Nullable error) {
+            [session executeCommand:apdu completion:^(NSData * _Nullable response, NSError * _Nullable error) {
+                __strong typeof(self) strongSelf = weakSelf;
+                if (error) {
+                    [TestSharedLogger.shared logError: @"U2F application selection failed with error: %@", error.localizedDescription];
+                    
+                    // Cancel all queued commands
+                    [strongSelf.accessorySession cancelCommands];
+                }
+            }];
     }];
 }
 
 - (void)executeCommandWithAPDU:(YKFAPDU *)apdu completion:(YKFKeyRawCommandSessionResponseBlock)completion {
-    [self.accessorySession.rawCommandService executeCommand:apdu completion:completion];
+    [self.accessorySession rawCommandSession:^(YKFKeyRawCommandSession * _Nullable session, NSError * _Nullable error) {
+        [session executeCommand:apdu completion:completion];
+    }];
 }
 
 - (void)executeCommandWithData:(NSData *)data completion:(YKFKeyRawCommandSessionResponseBlock)completion {
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithData:data];
-    [self.accessorySession.rawCommandService executeCommand:apdu completion:completion];
+    [self executeCommandWithAPDU:apdu completion:completion];
 }
 
 #pragma mark - Test setup

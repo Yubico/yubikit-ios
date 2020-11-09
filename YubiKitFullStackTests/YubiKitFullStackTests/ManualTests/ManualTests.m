@@ -476,97 +476,99 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     [TestSharedLogger.shared logMessage:@"Challenge data:\n%@", data];
 
     [TestSharedLogger.shared logMessage:@"Using YKFKeyChallengeResponseService"];
-
-    YKFKeyChallengeResponseSession *service = [[YKFKeyChallengeResponseSession alloc] init];
-
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
-    [service sendChallenge:data slot:YKFSlotOne completion:^(NSData *result, NSError *error) {
-        if (error) {
-            [TestSharedLogger.shared logError: @"When requesting challenge: %@", error.localizedDescription];
+    [self.connection challengeResponseSession:^(YKFKeyChallengeResponseSession * _Nullable session, NSError * _Nullable error) {
+
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        
+        [session sendChallenge:data slot:YKFSlotOne completion:^(NSData *result, NSError *error) {
+            if (error) {
+                [TestSharedLogger.shared logError: @"When requesting challenge: %@", error.localizedDescription];
+                dispatch_semaphore_signal(semaphore);
+                return;
+            }
+            [TestSharedLogger.shared logMessage:@"Received data length: %d", result.length];
+
+            [TestSharedLogger.shared logMessage:@"Response data:\n%@", result];
             dispatch_semaphore_signal(semaphore);
-            return;
+        }];
+        
+        // waiting until completed before starting another test
+        long timeout = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC));
+        if (timeout) {
+            [TestSharedLogger.shared logMessage:@"Failed with timeout"];
         }
-        [TestSharedLogger.shared logMessage:@"Received data length: %d", result.length];
 
-        [TestSharedLogger.shared logMessage:@"Response data:\n%@", result];
-        dispatch_semaphore_signal(semaphore);
-    }];
-    
-    // waiting until completed before starting another test
-    long timeout = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC));
-    if (timeout) {
-        [TestSharedLogger.shared logMessage:@"Failed with timeout"];
-    }
+        [self executeYubiKeyApplicationSelection];
 
-    [self executeYubiKeyApplicationSelection];
+        // another method of doing challenge response without YKFKeyChallengeResponseService
+        YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0x01 p1:0x30 p2:0 data:data type:YKFAPDUTypeShort];
 
-    // another method of doing challenge response without YKFKeyChallengeResponseService
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0x01 p1:0x30 p2:0 data:data type:YKFAPDUTypeShort];
+        [TestSharedLogger.shared logSepparator];
+        [TestSharedLogger.shared logMessage:@"Using YKFKeyRawCommandService"];
 
-    [TestSharedLogger.shared logSepparator];
-    [TestSharedLogger.shared logMessage:@"Using YKFKeyRawCommandService"];
+        [self executeCommandWithAPDU:apdu completion:^(NSData *result, NSError *error) {
+            if (error) {
+                [TestSharedLogger.shared logError: @"When requesting challenge: %@", error.localizedDescription];
+                return;
+            }
+            [TestSharedLogger.shared logMessage:@"Received data length: %d", result.length];
 
-    [self executeCommandWithAPDU:apdu completion:^(NSData *result, NSError *error) {
-        if (error) {
-            [TestSharedLogger.shared logError: @"When requesting challenge: %@", error.localizedDescription];
-            return;
-        }
-        [TestSharedLogger.shared logMessage:@"Received data length: %d", result.length];
-
-        NSData *respData = [result subdataWithRange:NSMakeRange(0, result.length - 2)];
-        [TestSharedLogger.shared logMessage:@"Response data:\n%@", respData];
+            NSData *respData = [result subdataWithRange:NSMakeRange(0, result.length - 2)];
+            [TestSharedLogger.shared logMessage:@"Response data:\n%@", respData];
+        }];
     }];
 }
 
 #pragma mark Management (management) Tests
 
 - (void) test_WhenDisablingOTPApplicationOverNFCandUSB {
-    YKFKeyManagementSession *service = [[YKFKeyManagementSession alloc] init];
-    [service readConfigurationWithCompletion:^(YKFKeyManagementReadConfigurationResponse *selectionResponse, NSError *error) {
-        if (error) {
-            [TestSharedLogger.shared logError: @"When reading configurations: %@", error.localizedDescription];
-            return;
-        }
-        YKFManagementInterfaceConfiguration *configuration = selectionResponse.configuration;
-        
-        YKFManagementTransportType transport = YKFManagementTransportTypeNFC;
-        if(![configuration isSupported:YKFManagementApplicationTypeOTP overTransport:transport]) {
-            [TestSharedLogger.shared logMessage:@"OTP over NFC is not supported"];
-            transport = YKFManagementTransportTypeUSB;
-        }
-        
-        BOOL isOTPenabled = [configuration isEnabled:YKFManagementApplicationTypeOTP overTransport:transport];
-        if (isOTPenabled) {
-            [TestSharedLogger.shared logMessage:@"OTP is enabled"];
-        } else {
-            [TestSharedLogger.shared logMessage:@"OTP is disabled"];
-        }
-
-        [configuration setEnabled:!isOTPenabled application:YKFManagementApplicationTypeOTP overTransport:transport];
-        
-        [TestSharedLogger.shared logMessage:@"Updating configuration"];
-        [service writeConfiguration:configuration reboot:NO completion:^(NSError * _Nullable error) {
+    [self.connection managementSession:^(YKFKeyManagementSession * _Nullable session, NSError * _Nullable error) {
+        [session readConfigurationWithCompletion:^(YKFKeyManagementReadConfigurationResponse *selectionResponse, NSError *error) {
             if (error) {
-                [TestSharedLogger.shared logError: @"When writing configurations: %@", error.localizedDescription];
+                [TestSharedLogger.shared logError: @"When reading configurations: %@", error.localizedDescription];
                 return;
             }
+            YKFManagementInterfaceConfiguration *configuration = selectionResponse.configuration;
             
-            [TestSharedLogger.shared logMessage:@"Configuration has been updated."];
+            YKFManagementTransportType transport = YKFManagementTransportTypeNFC;
+            if(![configuration isSupported:YKFManagementApplicationTypeOTP overTransport:transport]) {
+                [TestSharedLogger.shared logMessage:@"OTP over NFC is not supported"];
+                transport = YKFManagementTransportTypeUSB;
+            }
+            
+            BOOL isOTPenabled = [configuration isEnabled:YKFManagementApplicationTypeOTP overTransport:transport];
+            if (isOTPenabled) {
+                [TestSharedLogger.shared logMessage:@"OTP is enabled"];
+            } else {
+                [TestSharedLogger.shared logMessage:@"OTP is disabled"];
+            }
 
-            [service readConfigurationWithCompletion:^(YKFKeyManagementReadConfigurationResponse *selectionResponse, NSError *error) {
+            [configuration setEnabled:!isOTPenabled application:YKFManagementApplicationTypeOTP overTransport:transport];
+            
+            [TestSharedLogger.shared logMessage:@"Updating configuration"];
+            [session writeConfiguration:configuration reboot:NO completion:^(NSError * _Nullable error) {
                 if (error) {
-                    [TestSharedLogger.shared logError: @"When reading configurations: %@", error.localizedDescription];
+                    [TestSharedLogger.shared logError: @"When writing configurations: %@", error.localizedDescription];
                     return;
                 }
-                YKFManagementInterfaceConfiguration *configuration = selectionResponse.configuration;
+                
+                [TestSharedLogger.shared logMessage:@"Configuration has been updated."];
 
-                BOOL isOTPenabled = [configuration isEnabled:YKFManagementApplicationTypeOTP overTransport:transport];
-                if (isOTPenabled) {
-                    [TestSharedLogger.shared logMessage:@"OTP is enabled"];
-                } else {
-                    [TestSharedLogger.shared logMessage:@"OTP is disabled"];
-                }
+                [session readConfigurationWithCompletion:^(YKFKeyManagementReadConfigurationResponse *selectionResponse, NSError *error) {
+                    if (error) {
+                        [TestSharedLogger.shared logError: @"When reading configurations: %@", error.localizedDescription];
+                        return;
+                    }
+                    YKFManagementInterfaceConfiguration *configuration = selectionResponse.configuration;
+
+                    BOOL isOTPenabled = [configuration isEnabled:YKFManagementApplicationTypeOTP overTransport:transport];
+                    if (isOTPenabled) {
+                        [TestSharedLogger.shared logMessage:@"OTP is enabled"];
+                    } else {
+                        [TestSharedLogger.shared logMessage:@"OTP is disabled"];
+                    }
+                }];
             }];
         }];
     }];

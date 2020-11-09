@@ -21,11 +21,28 @@
 #import "YKFKeySession.h"
 #import "YKFBlockMacros.h"
 
+#import "YKFKeyChallengeResponseSession+Private.h"
+#import "YKFKeyRawCommandSession+Private.h"
+
 @interface YKFKeyChallengeResponseSession()
 
 @end
 
 @implementation YKFKeyChallengeResponseSession
+
++ (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
+                               completion:(YKFKeyChallengeResponseSessionCompletion _Nonnull)completion {
+    
+   YKFKeyChallengeResponseSession *session = [[YKFKeyChallengeResponseSession alloc] initWithConnectionController:connectionController];
+
+    [session selectYubiKeyApplication:^(NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+        } else {
+            completion(session, nil);
+        }
+    }];
+}
 
 - (void)sendChallenge:(nonnull NSData *)challenge slot:(YKFSlot)slot completion:(nonnull YKFKeyChallengeResponseSessionResponseBlock)completion {
     YKFKeyChalRespSendRequest *request = [[YKFKeyChalRespSendRequest alloc] initWithChallenge:challenge slot: slot];
@@ -34,40 +51,12 @@
 
 #pragma mark - execution of requests
 
-- (void)executeRequest:(YKFKeyChalRespRequest *)request completion:(nonnull YKFKeyChallengeResponseSessionResponseBlock)completion {
+- (void)executeRequest:(YKFKeyChalRespRequest *)request
+            completion:(YKFKeyChallengeResponseSessionResponseBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
-    id<YKFKeyRawCommandSessionProtocol> rawCommandService = YubiKitManager.shared.accessorySession.rawCommandService;
-    if (rawCommandService == nil) {
-        if (@available(iOS 13.0, *)) {
-            rawCommandService = YubiKitManager.shared.nfcSession.rawCommandService;
-        }
-    }
-    
-    if (rawCommandService == nil) {
-        completion(nil, [YKFKeyChallengeResponseError errorWithCode:YKFKeyChallengeResponseErrorCodeNoConnection]);
-        return;
-    }
-       
-    [self selectYubiKeyApplication:rawCommandService completion:^(NSError *error) {
-        if (error) {
-            completion(nil, error);
-            return;
-        }
-        [self executeRequestWithoutApplicationSelection:rawCommandService request:request completion:completion];
-    }];
-
-}
-
-- (void)executeRequestWithoutApplicationSelection:(id<YKFKeyRawCommandSessionProtocol>)rawCommandService
-                                          request: (YKFKeyChalRespRequest *)request
-                                       completion:(YKFKeyChallengeResponseSessionResponseBlock)completion {
-    YKFParameterAssertReturn(rawCommandService);
-    YKFParameterAssertReturn(request);
-    YKFParameterAssertReturn(completion);
-
-    [rawCommandService executeCommand:request.apdu configuration:[YKFKeyCommandConfiguration fastCommandCofiguration] completion:^(NSData *response, NSError *error) {
+    [self executeCommand:request.apdu configuration:[YKFKeyCommandConfiguration fastCommandCofiguration] completion:^(NSData *response, NSError *error) {
         
         if (error) {
             completion(nil, error);
@@ -92,11 +81,10 @@
 
 #pragma mark - Application Selection
 
-- (void)selectYubiKeyApplication:(id<YKFKeyRawCommandSessionProtocol>)rawCommandService
-                                              completion:(void (^)(NSError *))completion {
+- (void)selectYubiKeyApplication:(void (^)(NSError *))completion {
     YKFAPDU *selectYubiKeyApplicationAPDU = [[YKFSelectYubiKeyApplicationAPDU alloc] init];
-            
-    [rawCommandService executeCommand:selectYubiKeyApplicationAPDU configuration:[YKFKeyCommandConfiguration fastCommandCofiguration] completion:^(NSData *response, NSError *error) {
+    
+    [self executeCommand:selectYubiKeyApplicationAPDU configuration:[YKFKeyCommandConfiguration fastCommandCofiguration] completion:^(NSData *response, NSError *error) {
 
         NSError *returnedError = nil;
         
