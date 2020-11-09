@@ -285,7 +285,7 @@
 			path = Requests;
 			sourceTree = "<group>";
 		};
-		957DE0E52031A36700B53569 /* UI */ = {
+		957DE0E52031A36700B53569 /* Demos */ = {
 			isa = PBXGroup;
 			children = (
 				95FAFAD1202C483E00121DD5 /* LaunchScreen.storyboard */,
@@ -297,7 +297,7 @@
 				95F767D52033459B00208B88 /* QR */,
 				9528AC9220B5670B00513302 /* SharedUI */,
 			);
-			path = UI;
+			path = Demos;
 			sourceTree = "<group>";
 		};
 		957DE0E62031A6D100B53569 /* Assets */ = {
@@ -432,7 +432,7 @@
 				95FAFAD4202C483E00121DD5 /* Info.plist */,
 				95DBAA042062B5420092286C /* YubiKitDemo-Bridging-Header.h */,
 				95FAFAC8202C483E00121DD5 /* AppDelegate.swift */,
-				957DE0E52031A36700B53569 /* UI */,
+				957DE0E52031A36700B53569 /* Demos */,
 				955DEB372099FA7400259E71 /* Model */,
 				957DE0E62031A6D100B53569 /* Assets */,
 				95CEDFC52256065F001E2092 /* Examples */,
