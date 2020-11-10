@@ -14,126 +14,61 @@
 
 import UIKit
 
-class OtherDemoRootViewController: RootViewController {
-       
-    // MARK: - View Lifecycle
+class OtherDemoRootViewController: UIViewController, YKFManagerDelegate {
+    
+    func didConnectNFC(_ connection: YKFNFCConnection) {
+        nfcConnection = connection
+    }
+    
+    func didDisconnectNFC(_ connection: YKFNFCConnection, error: Error?) {
+        nfcConnection = nil
+    }
+    
+    func didConnectAccessory(_ connection: YKFAccessoryConnection) {
+        accessoryConnection = connection
+    }
+    
+    func didDisconnectAccessory(_ connection: YKFAccessoryConnection, error: Error?) {
+        accessoryConnection = nil
+    }
+    
+    var accessoryConnection: YKFAccessoryConnection?
+    
+    var nfcConnection: YKFNFCConnection? {
+        didSet {
+            if let connection = nfcConnection, let callback = connectionCallback {
+                callback(connection)
+            }
+        }
+    }
+    
+    var connectionCallback: ((_ connection: YKFConnectionProtocol) -> Void)?
+
+    func connection(completion: @escaping (_ connection: YKFConnectionProtocol) -> Void) {
+        if let connection = accessoryConnection {
+            completion(connection)
+        } else {
+            self.connectionCallback = { connection in
+                completion(connection)
+            }
+            if #available(iOS 13.0, *) {
+                YubiKitManager.shared.startNFCConnection()
+            }
+        }
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if (YubiKitDeviceCapabilities.supportsISO7816NFCTags) {
-            guard #available(iOS 13.0, *) else {
-                fatalError()
-            }
-            observeNfcSessionStateUpdates = true
-        }
-        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
-            YubiKitManager.shared.accessorySession.start()
-            observeSessionStateUpdates = true
-        } else {
-            present(message: "This device or iOS version does not support operations with MFi accessory YubiKeys.")
-        }
+        YubiKitManager.shared.delegate = self
+        YubiKitManager.shared.accessorySession.start()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
-            observeSessionStateUpdates = false
-            YubiKitManager.shared.accessorySession.cancelCommands()
-        }
-        
-        if (YubiKitDeviceCapabilities.supportsISO7816NFCTags) {
-            guard #available(iOS 13.0, *) else {
-                fatalError()
-            }
-            observeNfcSessionStateUpdates = false
-        }
-    }
-    
-    deinit {
-        observeSessionStateUpdates = false
-
+        YubiKitManager.shared.stopAccessoryConnection()
         if #available(iOS 13.0, *) {
-            observeNfcSessionStateUpdates = false
-        } else {
-            // Fallback on earlier versions
+            YubiKitManager.shared.stopNFCConnection()
         }
-    }
-    
-    // MARK: - Key State Observation
-    
-    private static var observationContext = 0
-    private var isObservingSessionStateUpdates = false
-    private var isNfcObservingSessionStateUpdates = false
-    private var nfcSesionStateObservation: NSKeyValueObservation?
-
-    var observeSessionStateUpdates: Bool {
-        get {
-            return isObservingSessionStateUpdates
-        }
-        set {
-            guard newValue != isObservingSessionStateUpdates else {
-                return
-            }
-            isObservingSessionStateUpdates = newValue
-            
-            let accessorySession = YubiKitManager.shared.accessorySession as AnyObject
-            let sessionStateKeyPath = #keyPath(YKFAccessoryConnection.connectionState)
-            
-            if isObservingSessionStateUpdates {
-                accessorySession.addObserver(self, forKeyPath: sessionStateKeyPath, options: [], context: &OtherDemoRootViewController.observationContext)
-            } else {
-                accessorySession.removeObserver(self, forKeyPath: sessionStateKeyPath)
-            }
-        }
-    }
-    
-    @available(iOS 13.0, *)
-    var observeNfcSessionStateUpdates: Bool {
-        get {
-            return isNfcObservingSessionStateUpdates
-        }
-        set {
-            guard newValue != isNfcObservingSessionStateUpdates else {
-                return
-            }
-            isNfcObservingSessionStateUpdates = newValue
-            
-            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCConnection
-            if isNfcObservingSessionStateUpdates {
-                self.nfcSesionStateObservation = nfcSession.observe(\.nfcConnectionState, changeHandler: { [weak self] session, change in
-                    DispatchQueue.main.async { [weak self] in
-                        self?.nfcSessionStateDidChange()
-                    }
-                })
-            } else {
-                self.nfcSesionStateObservation = nil
-            }
-        }
-    }
-    
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard context == &OtherDemoRootViewController.observationContext else {
-            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-            return
-        }
-        
-        switch keyPath {
-        case #keyPath(YKFAccessoryConnection.connectionState):
-            DispatchQueue.main.async { [weak self] in
-                self?.accessorySessionStateDidChange()
-            }
-        default:
-            fatalError()
-        }
-    }
-        
-    func accessorySessionStateDidChange() {
-        fatalError("Override the accessorySessionStateDidChange() to get session state updates.")
-    }
-    
-    @available(iOS 13.0, *)
-    func nfcSessionStateDidChange() {
-        fatalError("Override the nfcSessionStateDidChange() to get session state updates.")
+        YubiKitManager.shared.delegate = nil
     }
 }

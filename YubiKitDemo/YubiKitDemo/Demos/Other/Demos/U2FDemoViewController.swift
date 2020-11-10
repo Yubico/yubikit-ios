@@ -114,52 +114,52 @@ class U2FDemoViewController: OtherDemoRootViewController {
     }
 
     // MARK: - Session State Updates
-    override func accessorySessionStateDidChange() {
-        let sessionState = YubiKitManager.shared.accessorySession.connectionState
-        if sessionState == .closed {
-            logTextView.text = nil
-            setDemoButton(enabled: true)
-        } else if sessionState == .open {
-            if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
-                guard #available(iOS 13.0, *) else {
-                    fatalError()
-                }
-            
-                DispatchQueue.global(qos: .default).async { [weak self] in
-                    // if NFC UI is visible we consider the button is pressed
-                    // and we run demo as soon as 5ci connected
-                    if (YubiKitManager.shared.nfcSession.nfcConnectionState != .closed) {
-                        guard let self = self else {
-                                return
-                        }
-                        YubiKitManager.shared.nfcSession.stop()
-//                        self.runDemo(keyService: YubiKitManager.shared.accessorySession.u2fService)
-                    }
-                }
-            }
-        }
-    }
-
-    @available(iOS 13.0, *)
-    override func nfcSessionStateDidChange() {
-        // Execute the request after the key(tag) is connected.
-        switch YubiKitManager.shared.nfcSession.nfcConnectionState {
-        case .open:
-            DispatchQueue.global(qos: .default).async { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                
-                // NOTE: session can be closed during the execution of demo on background thread,
-                // so we need to make sure that we handle case when service for nfcSession is nil
-//                self.runDemo(keyService: YubiKitManager.shared.nfcSession.u2fService)
-            }
-        case .closed:
-            self.setDemoButton(enabled: true)
-        default:
-            break
-        }
-    }
+//    override func accessorySessionStateDidChange() {
+//        let sessionState = YubiKitManager.shared.accessorySession.connectionState
+//        if sessionState == .closed {
+//            logTextView.text = nil
+//            setDemoButton(enabled: true)
+//        } else if sessionState == .open {
+//            if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
+//                guard #available(iOS 13.0, *) else {
+//                    fatalError()
+//                }
+//            
+//                DispatchQueue.global(qos: .default).async { [weak self] in
+//                    // if NFC UI is visible we consider the button is pressed
+//                    // and we run demo as soon as 5ci connected
+//                    if (YubiKitManager.shared.nfcSession.nfcConnectionState != .closed) {
+//                        guard let self = self else {
+//                                return
+//                        }
+//                        YubiKitManager.shared.nfcSession.stop()
+////                        self.runDemo(keyService: YubiKitManager.shared.accessorySession.u2fService)
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    @available(iOS 13.0, *)
+//    override func nfcSessionStateDidChange() {
+//        // Execute the request after the key(tag) is connected.
+//        switch YubiKitManager.shared.nfcSession.nfcConnectionState {
+//        case .open:
+//            DispatchQueue.global(qos: .default).async { [weak self] in
+//                guard let self = self else {
+//                    return
+//                }
+//                
+//                // NOTE: session can be closed during the execution of demo on background thread,
+//                // so we need to make sure that we handle case when service for nfcSession is nil
+////                self.runDemo(keyService: YubiKitManager.shared.nfcSession.u2fService)
+//            }
+//        case .closed:
+//            self.setDemoButton(enabled: true)
+//        default:
+//            break
+//        }
+//    }
 
     // MARK: - Helpers
 

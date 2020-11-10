@@ -394,7 +394,7 @@ class PCSCDemoViewController: OtherDemoRootViewController {
          */
         
         // Temporary disable the observation to not wipe the logs after the card was disconnected.
-        observeSessionStateUpdates = false
+//        observeSessionStateUpdates = false
         
         result = YKFSCardDisconnect(card, YKF_SCARD_LEAVE_CARD)
         
@@ -402,7 +402,7 @@ class PCSCDemoViewController: OtherDemoRootViewController {
             log(message:"Could not disconnect from the key.")
         }
         
-        observeSessionStateUpdates = true
+//        observeSessionStateUpdates = true
         
         /*
          9. Clear buffers and release the context.
@@ -414,13 +414,13 @@ class PCSCDemoViewController: OtherDemoRootViewController {
     
     // MARK: - Session State Updates
     
-    override func accessorySessionStateDidChange() {
-        let sessionState = YubiKitManager.shared.accessorySession.connectionState        
-        if sessionState == .closed {
-            logTextView.text = nil
-            setDemoButton(enabled: true)
-        }
-    }
+//    override func accessorySessionStateDidChange() {
+//        let sessionState = YubiKitManager.shared.accessorySession.connectionState
+//        if sessionState == .closed {
+//            logTextView.text = nil
+//            setDemoButton(enabled: true)
+//        }
+//    }
     
     // MARK: - Logging Helpers
     
