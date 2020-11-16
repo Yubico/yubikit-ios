@@ -28,15 +28,15 @@
     Response block for [executeCommand:completion:] which provides the result for the execution
     of the raw request.
  
- @param response
-    The response of the request when it was successful. In case of error this parameter is nil.
+ @param data
+    The data of the response when it was successful. In case of error this parameter is nil.
  
  @param error
     In case of a failed request this parameter contains the error. If the request was successful
     this parameter is nil.
  */
 typedef void (^YKFKeyRawCommandSessionResponseBlock)
-    (NSData* _Nullable response, NSError* _Nullable error);
+    (NSData* _Nullable data, NSError* _Nullable error);
 
 
 typedef NS_ENUM(NSUInteger, YKFRawCommandSessionSendRemainingIns) {

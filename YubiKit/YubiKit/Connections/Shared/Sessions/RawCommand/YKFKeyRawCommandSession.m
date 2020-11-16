@@ -76,14 +76,13 @@
             // Queue a new request recursively
             [self executeCommand:sendRemainingApdu sendRemainingIns:sendRemainingIns configuration:configuration data:data completion:completion];
             return;
+        } else if (statusCode == 0x9000) {
+            completion(data, nil);
+            return;
+        } else {
+            YKFKeySessionError *error = [YKFKeySessionError errorWithCode:statusCode];
+            completion(nil, error);
         }
-
-        // Swap status code back to the endian used by the yubikey before adding it back to the response again
-        UInt16 bigStatusCode = CFSwapInt16BigToHost(statusCode);
-        NSMutableData *statusCodeData = [[NSMutableData alloc] initWithBytes:&bigStatusCode length:sizeof(UInt16)];
-        
-        [data appendData:statusCodeData];
-        completion(data, nil);
     }];
 }
 

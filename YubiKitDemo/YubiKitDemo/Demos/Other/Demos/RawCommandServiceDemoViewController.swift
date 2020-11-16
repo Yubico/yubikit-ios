@@ -55,15 +55,6 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
                         return
                     }
                     
-                    let responseParser = RawDemoResponseParser(response: response!)
-                    let statusCode = responseParser.statusCode
-                    
-                    if statusCode == 0x9000 {
-                        self.log(message: "PIV application selected.")
-                    } else {
-                        self.log(error: "PIV application selection failed. SW returned by the key: \(statusCode).")
-                    }
-                    
                     // 2. Verify against the PIV application from the key (PIN is default 123456).
                     let verifyApdu = YKFAPDU(data: Data([0x00, 0x20, 0x00, 0x80, 0x08, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0xff, 0xff]))!
 
@@ -72,30 +63,14 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
                             self.log(error: error!)
                             return
                         }
-                        
-                        let responseParser = RawDemoResponseParser(response: response!)
-                        let statusCode = responseParser.statusCode
-                        
-                        if statusCode == 0x9000 {
-                            self.log(message: "PIN verification successful.")
-                        } else {
-                            self.log(error: "PIN verification failed. SW returned by the key: \(statusCode).")
-                        }
-                        
+                        self.log(message: "PIN verification successful.")
+
                         // 3. Read the certificate stored on the PIV application in slot 9C.
                         let readApdu = YKFAPDU(data: Data([0x00, 0xCB, 0x3F, 0xFF, 0x05, 0x5C, 0x03, 0x5F, 0xC1, 0x0A]))!
                         session.executeCommand(readApdu) { data, error in
 
                             guard let data = data else {
                                 self.log(error: "Failed to read certificate")
-                                return
-                            }
-                            
-                            let responseParser = RawDemoResponseParser(response: data)
-                            let statusCode = responseParser.statusCode
-
-                            guard statusCode == 0x9000 else {
-                                self.log(error: "Could not read the certificate. SW returned by the key: \(statusCode).")
                                 return
                             }
                             
