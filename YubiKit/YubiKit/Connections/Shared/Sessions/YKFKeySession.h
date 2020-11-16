@@ -25,9 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// Returns the status code from a response received from a key command response.
 + (UInt16)statusCodeFromKeyResponse:(NSData *)response;
 
-/// Returns the first byte value of the status code.
-+ (UInt8)shortStatusCodeFromStatusCode:(UInt16)statusCode;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -367,9 +367,8 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         [responseDataBuffer appendData:responseData];
         
         int statusCode = [YKFKeySession statusCodeFromKeyResponse: result];
-        int shortStatusCode = [YKFKeySession shortStatusCodeFromStatusCode:statusCode];
         
-        if (shortStatusCode == YKFKeyAPDUErrorCodeMoreData) {
+        if (statusCode >> 8 == YKFKeyAPDUErrorCodeMoreData) {
             YKFLogInfo(@"Key has more data to send. Requesting for remaining data...");            
             
             // Queue a new request recursively
