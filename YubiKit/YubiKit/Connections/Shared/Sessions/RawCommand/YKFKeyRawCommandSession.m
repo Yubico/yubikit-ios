@@ -18,12 +18,14 @@
 #import "YKFKeySessionError.h"
 #import "YKFBlockMacros.h"
 #import "YKFAssert.h"
+#import "YKFLogger.h"
+#import "YKFKeyAPDUError.h"
 
 #import "YKFAPDU+Private.h"
 #import "YKFKeySessionError+Private.h"
 
-// Make a long timeout. This should be double checked by WTX responses.
-static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
+#import "YKFNSDataAdditions+Private.h"
+#import "YKFOATHSendRemainingAPDU.h"
 
 @interface YKFKeyRawCommandSession()
 
@@ -47,10 +49,7 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
 
 #pragma mark - Command Execution
 
-- (void)executeCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandSessionResponseBlock)completion {
-    YKFParameterAssertReturn(apdu);
-    YKFParameterAssertReturn(completion);
-
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFRawCommandSessionSendRemainingIns)sendRemainingIns  configuration:(YKFKeyCommandConfiguration *)configuration data:(NSMutableData *)data completion:(YKFKeyRawCommandSessionResponseBlock)completion {
     [self.connectionController execute:apdu
                          configuration:configuration
                             completion:^(NSData *response, NSError * error, NSTimeInterval executionTime) {
@@ -58,46 +57,50 @@ static const NSTimeInterval YKFKeyRawCommandServiceCommandTimeout = 600;
             completion(nil, error);
             return;
         }
-        completion(response, nil);
+        
+        [data appendData:[YKFKeySession dataFromKeyResponse: response]];
+        UInt16 statusCode = [YKFKeySession statusCodeFromKeyResponse: response];
+        int shortStatusCode = [YKFKeySession shortStatusCodeFromStatusCode: statusCode];
+        
+        if (shortStatusCode == YKFKeyAPDUErrorCodeMoreData) {
+            YKFLogInfo(@"Key has more data to send. Requesting for remaining data...");
+            UInt16 ins;
+            switch (sendRemainingIns) {
+                case YKFRawCommandSessionSendRemainingInsNormal:
+                    ins = 0xC0;
+                    break;
+                case YKFRawCommandSessionSendRemainingInsOATH:
+                    ins = 0xA5;
+                    break;
+            }
+            YKFAPDU *sendRemainingApdu = [[YKFAPDU alloc] initWithData:[NSData dataWithBytes:(unsigned char[]){0x00, ins, 0x00, 0x00} length:4]];
+            // Queue a new request recursively
+            [self executeCommand:sendRemainingApdu sendRemainingIns:sendRemainingIns configuration:configuration data:data completion:completion];
+            return;
+        }
+
+        // Swap status code back to the endian used by the yubikey before adding it back to the response again
+        UInt16 bigStatusCode = CFSwapInt16BigToHost(statusCode);
+        NSMutableData *statusCodeData = [[NSMutableData alloc] initWithBytes:&bigStatusCode length:sizeof(UInt16)];
+        
+        [data appendData:statusCodeData];
+        completion(data, nil);
     }];
+}
+
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFRawCommandSessionSendRemainingIns)sendRemainingIns configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandSessionResponseBlock)completion {
+    YKFParameterAssertReturn(apdu);
+    YKFParameterAssertReturn(completion);
+    NSMutableData *data = [NSMutableData new];
+    [self executeCommand:apdu sendRemainingIns:sendRemainingIns configuration:configuration data:data completion:completion];
+}
+
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFRawCommandSessionSendRemainingIns)sendRemainingIns completion:(YKFKeyRawCommandSessionResponseBlock)completion {
+    [self executeCommand:apdu sendRemainingIns:sendRemainingIns  configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:completion];
 }
 
 - (void)executeCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandSessionResponseBlock)completion {
-    [self executeCommand:apdu configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:completion];
+    [self executeCommand:apdu sendRemainingIns:YKFRawCommandSessionSendRemainingInsNormal configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:completion];
 }
 
-- (void)executeSyncCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandSessionResponseBlock)completion {
-    YKFParameterAssertReturn(apdu);
-    YKFParameterAssertReturn(completion);
-    
-    YKFAssertOffMainThread();
-    
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    
-    ykf_weak_self();
-    [self executeCommand:apdu
-           configuration:configuration
-             completion:^(NSData *response, NSError * error) {
-        ykf_safe_strong_self();
-        if (error) {
-            completion(nil, error);
-            dispatch_semaphore_signal(semaphore);
-            return;
-        }
-        
-        completion(response, nil);
-        dispatch_semaphore_signal(semaphore);
-    }];
-    
-    dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(YKFKeyRawCommandServiceCommandTimeout * NSEC_PER_SEC));
-    long requestDidTimeout = dispatch_semaphore_wait(semaphore, timeout);
-    
-    if (requestDidTimeout) {
-        completion(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorReadTimeoutCode]);
-    }
-}
-
-- (void)executeSyncCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandSessionResponseBlock)completion {
-    [self executeSyncCommand:apdu configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:completion];
-}
 @end
