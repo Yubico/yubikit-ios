@@ -58,7 +58,6 @@
 		95AFD4AA22CB566500CDF8D3 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95AFD4A922CB566500CDF8D3 /* DataExtensions.swift */; };
 		95C70DDF224A2FE70024E220 /* U2FDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C70DDE224A2FE70024E220 /* U2FDemoViewController.swift */; };
 		95DA54D121944C1000B60C18 /* OtherDemosStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 95DA54D021944C1000B60C18 /* OtherDemosStoryboard.storyboard */; };
-		95DA54D52194601500B60C18 /* PCSCDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95DA54D42194601500B60C18 /* PCSCDemoViewController.swift */; };
 		95DF4A972199B5D10025A152 /* DemoCustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95DF4A962199B5D10025A152 /* DemoCustomTabBar.swift */; };
 		95EAD56B220872EE00CD7C18 /* OtherDemoRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95EAD56A220872EE00CD7C18 /* OtherDemoRootViewController.swift */; };
 		95F14DE02062B27C000B1278 /* libYubiKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 95F14DE12062B27C000B1278 /* libYubiKit.a */; };
@@ -131,7 +130,6 @@
 		95C70DDE224A2FE70024E220 /* U2FDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = U2FDemoViewController.swift; sourceTree = "<group>"; };
 		95CEBA002031D4D000AF0D91 /* YubiKitDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YubiKitDemo.entitlements; sourceTree = "<group>"; };
 		95DA54D021944C1000B60C18 /* OtherDemosStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OtherDemosStoryboard.storyboard; sourceTree = "<group>"; };
-		95DA54D42194601500B60C18 /* PCSCDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCSCDemoViewController.swift; sourceTree = "<group>"; };
 		95DBAA042062B5420092286C /* YubiKitDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YubiKitDemo-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		95DF4A962199B5D10025A152 /* DemoCustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoCustomTabBar.swift; sourceTree = "<group>"; };
 		95EAD56A220872EE00CD7C18 /* OtherDemoRootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherDemoRootViewController.swift; sourceTree = "<group>"; };
@@ -219,7 +217,6 @@
 			children = (
 				955355622203177D00D633F3 /* RawDemoModel */,
 				95EAD56A220872EE00CD7C18 /* OtherDemoRootViewController.swift */,
-				95DA54D42194601500B60C18 /* PCSCDemoViewController.swift */,
 				953AB4FD21A4107900A1823A /* RawCommandServiceDemoViewController.swift */,
 				955355602203153000D633F3 /* FIDO2DemoViewController.swift */,
 				95C70DDE224A2FE70024E220 /* U2FDemoViewController.swift */,
@@ -529,7 +526,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				95DA54D52194601500B60C18 /* PCSCDemoViewController.swift in Sources */,
 				953AB50121A44F0100A1823A /* RawDemoResponseParser.swift in Sources */,
 				9576AF3B224AA59600CA7C1B /* WebAuthnUserRequest.swift in Sources */,
 				955355612203153000D633F3 /* FIDO2DemoViewController.swift in Sources */,
