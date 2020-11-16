@@ -91,13 +91,16 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
                                 return
                             }
                             
-                            guard statusCode != 0x9000 else {
+                            let responseParser = RawDemoResponseParser(response: data)
+                            let statusCode = responseParser.statusCode
+
+                            guard statusCode == 0x9000 else {
                                 self.log(error: "Could not read the certificate. SW returned by the key: \(statusCode).")
                                 return
                             }
                             
-                            guard data.count == 0 else {
-                                self.log(error: "Could not read the certificate from the slot. The slot seems to be empty.")
+                            guard data.count != 0 else {
+                                self.log(error: "Could not read a certificate from the slot. The slot seems to be empty.")
                                 return
                             }
                             
