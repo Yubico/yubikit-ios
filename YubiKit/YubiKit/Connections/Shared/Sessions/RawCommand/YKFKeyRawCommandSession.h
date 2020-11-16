@@ -38,6 +38,15 @@
 typedef void (^YKFKeyRawCommandSessionResponseBlock)
     (NSData* _Nullable response, NSError* _Nullable error);
 
+
+typedef NS_ENUM(NSUInteger, YKFRawCommandSessionSendRemainingIns) {
+    
+    /// The APDU instruction to read the remaining data from the Yubikey.
+    YKFRawCommandSessionSendRemainingInsNormal,
+    
+    /// The APDU instruction to read the remaining data from the OATH application on the Yubikey.
+    YKFRawCommandSessionSendRemainingInsOATH,
+};
 /**
  * ---------------------------------------------------------------------------------------------------------------------
  * @name Raw Command Service Protocol
@@ -71,6 +80,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)executeCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandSessionResponseBlock)completion;
 
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFRawCommandSessionSendRemainingIns)sendRemainingIns completion:(YKFKeyRawCommandSessionResponseBlock)completion;
+
 /*!
  @method executeSyncCommand:completion:
  
@@ -90,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
     will be executed on a background thread. After the completion block is executed the calling thread will
     resume its execution.
  */
-- (void)executeSyncCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandSessionResponseBlock)completion;
+//- (void)executeSyncCommand:(YKFAPDU *)apdu completion:(YKFKeyRawCommandSessionResponseBlock)completion;
 
 /*!
 @method executeCommand:completion:
@@ -116,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
 @note:
     This method is thread safe and can be invoked from any thread (main or a background thread).
 */
-- (void)executeCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandSessionResponseBlock)completion;
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFRawCommandSessionSendRemainingIns)sendRemainingIns configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandSessionResponseBlock)completion;
 
 /*!
  @method executeSyncCommand:completion:
@@ -144,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
     will be executed on a background thread. After the completion block is executed the calling thread will
     resume its execution.
  */
-- (void)executeSyncCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandSessionResponseBlock)completion;
+//- (void)executeSyncCommand:(YKFAPDU *)apdu configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyRawCommandSessionResponseBlock)completion;
 
 @end
 

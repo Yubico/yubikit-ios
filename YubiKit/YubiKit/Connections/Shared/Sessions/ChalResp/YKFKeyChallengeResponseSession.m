@@ -56,7 +56,7 @@
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
 
-    [self executeCommand:request.apdu configuration:[YKFKeyCommandConfiguration fastCommandCofiguration] completion:^(NSData *response, NSError *error) {
+    [self executeCommand:request.apdu sendRemainingIns:YKFRawCommandSessionSendRemainingInsNormal configuration:[YKFKeyCommandConfiguration fastCommandCofiguration] completion:^(NSData *response, NSError *error) {
         
         if (error) {
             completion(nil, error);
@@ -84,7 +84,7 @@
 - (void)selectYubiKeyApplication:(void (^)(NSError *))completion {
     YKFAPDU *selectYubiKeyApplicationAPDU = [[YKFSelectYubiKeyApplicationAPDU alloc] init];
     
-    [self executeCommand:selectYubiKeyApplicationAPDU configuration:[YKFKeyCommandConfiguration fastCommandCofiguration] completion:^(NSData *response, NSError *error) {
+    [self executeCommand:selectYubiKeyApplicationAPDU sendRemainingIns:YKFRawCommandSessionSendRemainingInsNormal configuration:[YKFKeyCommandConfiguration fastCommandCofiguration] completion:^(NSData *response, NSError *error) {
 
         NSError *returnedError = nil;
         
