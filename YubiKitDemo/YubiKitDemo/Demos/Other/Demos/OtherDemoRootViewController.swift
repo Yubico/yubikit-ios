@@ -48,9 +48,7 @@ class OtherDemoRootViewController: UIViewController, YKFManagerDelegate {
         if let connection = accessoryConnection {
             completion(connection)
         } else {
-            self.connectionCallback = { connection in
-                completion(connection)
-            }
+            self.connectionCallback = completion
             if #available(iOS 13.0, *) {
                 YubiKitManager.shared.startNFCConnection()
             }
