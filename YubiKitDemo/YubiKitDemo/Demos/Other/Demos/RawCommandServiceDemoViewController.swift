@@ -83,19 +83,26 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
                         }
                         
                         // 3. Read the certificate stored on the PIV application in slot 9C.
-                        let readBuffer = Data()
                         let readApdu = YKFAPDU(data: Data([0x00, 0xCB, 0x3F, 0xFF, 0x05, 0x5C, 0x03, 0x5F, 0xC1, 0x0A]))!
-                        self.readCertificate(session: session, readBuffer: readBuffer, readAPDU: readApdu) { data in
+                        session.executeCommand(readApdu) { data, error in
+
                             guard let data = data else {
                                 self.log(error: "Failed to read certificate")
                                 return
                             }
                             
-                            if data.count == 0 {
+                            guard statusCode != 0x9000 else {
+                                self.log(error: "Could not read the certificate. SW returned by the key: \(statusCode).")
+                                return
+                            }
+                            
+                            guard data.count == 0 else {
                                 self.log(error: "Could not read the certificate from the slot. The slot seems to be empty.")
                                 return
                             }
                             
+                            self.log(message: "Reading certificate successful.")
+
                             // 4. Parse the certificate data
                             guard let certificate = RawDemoSecCertificate(keyData: data) else {
                                 self.log(error: "Could not create a certificate with the data returned from the YubiKey.")
@@ -128,36 +135,6 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
                         }
                     }
                  }
-            }
-        }
-    }
-    
-    func readCertificate(session: YKFKeyRawCommandSessionProtocol, readBuffer: Data, readAPDU: YKFAPDU, completion:  @escaping ((_ data: Data?) -> Void))  {
-        
-        session.executeCommand(readAPDU) { response, error in
-            guard error == nil else {
-                self.log(message: "Error when executing command: \(error!.localizedDescription)")
-                return
-            }
-            var mutableReadBuffer = readBuffer
-            let responseParser = RawDemoResponseParser(response: response!)
-            let statusCode = responseParser.statusCode
-            let responseData = responseParser.responseData
-            if let responseData = responseData {
-                mutableReadBuffer.append(responseData)
-            }
-            
-            if statusCode == 0x9000 {
-                self.log(message: "Reading certificate successful.")
-                completion(mutableReadBuffer)
-            } else if statusCode >> 8 == 0x61 {
-                // PIV application send remaining APDU
-                let readRemainingApdu = YKFAPDU(data: Data([0x00, 0xC0, 0x00, 0x00]))!
-                self.log(message: "Fetching more data from the key...")
-                self.readCertificate(session: session, readBuffer: mutableReadBuffer, readAPDU: readRemainingApdu, completion: completion)
-            } else {
-                self.log(error: "Could not read the certificate. SW returned by the key: \(statusCode).")
-                completion(nil)
             }
         }
     }

@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController NS_DESIGNATED_INITIALIZER;
 
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFRawCommandSessionSendRemainingIns)sendRemainingIns configuration:(YKFKeyCommandConfiguration *)configuration data:(NSMutableData *)data completion:(YKFKeyRawCommandSessionResponseBlock)completion;
+
+
 @end
 
 NS_ASSUME_NONNULL_END
