@@ -60,9 +60,8 @@
         
         [data appendData:[YKFKeySession dataFromKeyResponse: response]];
         UInt16 statusCode = [YKFKeySession statusCodeFromKeyResponse: response];
-        int shortStatusCode = [YKFKeySession shortStatusCodeFromStatusCode: statusCode];
         
-        if (shortStatusCode == YKFKeyAPDUErrorCodeMoreData) {
+        if (statusCode >> 8 == YKFKeyAPDUErrorCodeMoreData) {
             YKFLogInfo(@"Key has more data to send. Requesting for remaining data...");
             UInt16 ins;
             switch (sendRemainingIns) {

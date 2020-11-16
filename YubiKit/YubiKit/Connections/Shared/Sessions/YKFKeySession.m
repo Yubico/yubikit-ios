@@ -44,8 +44,4 @@
     return [response ykf_getBigEndianIntegerInRange:NSMakeRange([response length] - 2, 2)];
 }
 
-+ (UInt8)shortStatusCodeFromStatusCode:(UInt16)statusCode {
-    return (UInt8)(statusCode >> 8);
-}
-
 @end
