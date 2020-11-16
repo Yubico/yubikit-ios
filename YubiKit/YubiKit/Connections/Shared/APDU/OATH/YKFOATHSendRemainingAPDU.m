@@ -18,7 +18,7 @@
 @implementation YKFOATHSendRemainingAPDU
 
 - (instancetype)init {
-    return [super initWithCla:0x00 ins:YKFAPDUCommandInstructionOATHSendRemaining p1:0x04 p2:0x00 data:[NSData data] type:YKFAPDUTypeShort];
+    return [super initWithCla:0x00 ins:0xA5 p1:0x04 p2:0x00 data:[NSData data] type:YKFAPDUTypeShort];
 }
 
 @end
