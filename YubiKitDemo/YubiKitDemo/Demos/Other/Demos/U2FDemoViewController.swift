@@ -15,162 +15,65 @@
 import UIKit
 
 class U2FDemoViewController: OtherDemoRootViewController {
-
-    // MARK: - Outlets
     
     @IBOutlet var logTextView: UITextView!
     @IBOutlet var runDemoButton: UIButton!
-    
-    // MARK: - Actions
-    
-    enum DemoName {
-        case GetInfo
-        case EccDemo
-        case EdDSADemo
-        case Reset
-        case PinVerify
-        case PinSet
-        case PinChange
-    }
-    
-    private var selectedOperation: DemoName?
 
     @IBAction func runDemoButtonPressed(_ sender: Any) {
-        
         logTextView.text = nil
         setDemoButton(enabled: false)
         
-        YubiKitExternalLocalization.nfcScanAlertMessage = "Insert YubiKey or scan over the top edge of your iPhone";
-        let keyConnected = YubiKitManager.shared.accessorySession.connectionState == .open
-
-        if YubiKitDeviceCapabilities.supportsISO7816NFCTags && !keyConnected {
-            guard #available(iOS 13.0, *) else {
-                fatalError()
-            }
-            YubiKitManager.shared.nfcSession.start()
-        } else {
-            logTextView.text = nil
-            setDemoButton(enabled: false)
-
-            DispatchQueue.global(qos: .default).async { [weak self] in
-               guard let self = self else {
-                   return
-               }
-//               self.runDemo(keyService: YubiKitManager.shared.accessorySession.u2fService)
-               self.setDemoButton(enabled: true)
-           }
-        }
-    }
-    
-    private func runDemo(keyService: YKFKeyU2FSessionProtocol?) {
-        let challenge = "D2pzTPZa7bq69ABuiGQILo9zcsTURP26RLifTyCkilc"
-        let appId = "https://demo.yubico.com"
-
-        executeRegisterRequestWith(keyService: keyService, challenge: challenge, appId: appId) { [weak self] (keyHandle) in
-            guard let self = self else {
-                return
-            }
-            guard let keyHandle = keyHandle else {
-                self.log(message: "The Register request did not return a key handle.")
-                self.finishDemo()
-                return
-            }
-            
-            self.log(message: "The Register request was successful with key handle: \(keyHandle)")
-            
-            self.executeSignRequestWith(keyService: keyService, keyHandle: keyHandle, challenge: challenge, appId: appId, completion: { [weak self] (success) in
-                guard let self = self else {
+        self.connection { connection in
+            connection.u2fSession { session, error in
+                guard let session = session else {
+                    self.log(message: "Failed to create session. Error: \(error!.localizedDescription)")
+                    self.finishDemo()
                     return
                 }
-                self.finishDemo()
+                
+                let challenge = "D2pzTPZa7bq69ABuiGQILo9zcsTURP26RLifTyCkilc"
+                let appId = "https://demo.yubico.com"
 
-                guard success else {
-                    self.log(message: "The Sign request did not return a signature.")
-                    return
+                self.executeRegisterRequestWith(session: session, challenge: challenge, appId: appId) { keyHandle in
+                    guard let keyHandle = keyHandle else {
+                        self.log(message: "The Register request did not return a key handle.")
+                        self.finishDemo()
+                        return
+                    }
+                    
+                    self.log(message: "The Register request was successful with key handle: \(keyHandle)")
+                    
+                    self.executeSignRequestWith(session: session, keyHandle: keyHandle, challenge: challenge, appId: appId, completion: { success in
+                        self.finishDemo()
+                        guard success else {
+                            self.log(message: "The Sign request did not return a signature.")
+                            return
+                        }
+                        self.log(message: "The Sign request was successful.")
+                    })
                 }
-                self.log(message: "The Sign request was successful.")
-            })
+            }
         }
     }
     
     private func finishDemo() {
-
         // Stop the session to dismiss the Core NFC system UI.
         if #available(iOS 13.0, *) {
             YubiKitManager.shared.nfcSession.stop()
         }
-        
         self.setDemoButton(enabled: true)
     }
     
     private func setDemoButton(enabled: Bool) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else {
-                return
-            }
+        DispatchQueue.main.async {
             self.runDemoButton.isEnabled = enabled
             self.runDemoButton.backgroundColor = enabled ? NamedColor.yubicoGreenColor : UIColor.lightGray
         }
     }
 
-    // MARK: - Session State Updates
-//    override func accessorySessionStateDidChange() {
-//        let sessionState = YubiKitManager.shared.accessorySession.connectionState
-//        if sessionState == .closed {
-//            logTextView.text = nil
-//            setDemoButton(enabled: true)
-//        } else if sessionState == .open {
-//            if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
-//                guard #available(iOS 13.0, *) else {
-//                    fatalError()
-//                }
-//            
-//                DispatchQueue.global(qos: .default).async { [weak self] in
-//                    // if NFC UI is visible we consider the button is pressed
-//                    // and we run demo as soon as 5ci connected
-//                    if (YubiKitManager.shared.nfcSession.nfcConnectionState != .closed) {
-//                        guard let self = self else {
-//                                return
-//                        }
-//                        YubiKitManager.shared.nfcSession.stop()
-////                        self.runDemo(keyService: YubiKitManager.shared.accessorySession.u2fService)
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    @available(iOS 13.0, *)
-//    override func nfcSessionStateDidChange() {
-//        // Execute the request after the key(tag) is connected.
-//        switch YubiKitManager.shared.nfcSession.nfcConnectionState {
-//        case .open:
-//            DispatchQueue.global(qos: .default).async { [weak self] in
-//                guard let self = self else {
-//                    return
-//                }
-//                
-//                // NOTE: session can be closed during the execution of demo on background thread,
-//                // so we need to make sure that we handle case when service for nfcSession is nil
-////                self.runDemo(keyService: YubiKitManager.shared.nfcSession.u2fService)
-//            }
-//        case .closed:
-//            self.setDemoButton(enabled: true)
-//        default:
-//            break
-//        }
-//    }
-
-    // MARK: - Helpers
-
-    private func executeRegisterRequestWith(keyService: YKFKeyU2FSessionProtocol?, challenge: String, appId: String, completion: @escaping (String?) -> Void) {
+    private func executeRegisterRequestWith(session: YKFKeyU2FSession, challenge: String, appId: String, completion: @escaping (String?) -> Void) {
         guard let registerRequest = YKFKeyU2FRegisterRequest(challenge: challenge, appId: appId) else {
             log(message: "Could not create the Register request.")
-            completion(nil)
-            return
-        }
-        guard let u2fService = keyService else {
-            log(message: "The U2F service is not available (the session is closed or the key is not connected).")
             completion(nil)
             return
         }
@@ -178,7 +81,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
         self.log(message: "Executing the Register request...")
         self.log(message: "(!)Touch the key when it's blinking slowly.")
         
-        u2fService.execute(registerRequest) { (response, error) in
+        session.execute(registerRequest) { response, error in
             guard error == nil else {
                 self.log(message: "Error after executing the Register request: \(error!.localizedDescription)")
                 completion(nil)
@@ -192,14 +95,9 @@ class U2FDemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func executeSignRequestWith(keyService: YKFKeyU2FSessionProtocol?, keyHandle: String, challenge: String, appId: String, completion: @escaping (Bool) -> Void) {
+    private func executeSignRequestWith(session: YKFKeyU2FSession, keyHandle: String, challenge: String, appId: String, completion: @escaping (Bool) -> Void) {
         guard let signRequest = YKFKeyU2FSignRequest(challenge: challenge, keyHandle: keyHandle, appId: appId) else {
             log(message: "Could not create the Sign request.")
-            completion(false)
-            return
-        }
-        guard let u2fService = keyService else {
-            log(message: "The U2F service is not available (the session is closed or the key is not connected).")
             completion(false)
             return
         }
@@ -207,10 +105,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
         self.log(message: "Executing the Sign request...")
         self.log(message: "(!)Touch the key when it's blinking slowly.")
         
-        u2fService.execute(signRequest) { [weak self] (response, error) in
-            guard let self = self else {
-                return
-            }
+        session.execute(signRequest) { response, error in
             guard error == nil else {
                 self.log(message: "Error after executing the Sign request: \(error!.localizedDescription)")
                 completion(false)
@@ -224,10 +119,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
     }
     
     private func log(message: String) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else {
-                return
-            }
+        DispatchQueue.main.async {
             print(message)
             self.logTextView.insertText("\(message)\n\n")
             
