@@ -81,7 +81,9 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFKeyChallengeResponseSession: YKFKeyRawCommandSession<YKFKeyChallengeResponseSessionProtocol>
+@interface YKFKeyChallengeResponseSession: NSObject<YKFKeyChallengeResponseSessionProtocol>
+
+- (nonnull instancetype)init NS_UNAVAILABLE;
 
 @end
 

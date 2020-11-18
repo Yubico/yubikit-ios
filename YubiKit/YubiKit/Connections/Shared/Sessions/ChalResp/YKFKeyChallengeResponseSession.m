@@ -8,34 +8,40 @@
 
 #import "YKFKeyChallengeResponseSession.h"
 #import "YubiKitManager.h"
-#import "YKFSelectYubiKeyApplicationAPDU.h"
 #import "YKFKeyChalRespSendRequest.h"
 #import "YKFKeyChalRespRequest+Private.h"
-
-#import "YKFAssert.h"
 #import "YKFKeyChallengeResponseError.h"
-#import "YKFKeySessionError.h"
-#import "YKFKeySessionError+Private.h"
-#import "YKFKeyAPDUError.h"
-
-#import "YKFKeySession.h"
-#import "YKFBlockMacros.h"
-
 #import "YKFKeyChallengeResponseSession+Private.h"
-#import "YKFKeyRawCommandSession+Private.h"
+#import "YKFSmartCardInterface.h"
+#import "YKFKeyChallengeResponseError.h"
+#import "YKFKeySessionError+Private.h"
+#import "YKFSelectApplicationAPDU.h"
 
 @interface YKFKeyChallengeResponseSession()
+
+@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
+
+- (instancetype)initWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController NS_DESIGNATED_INITIALIZER;
 
 @end
 
 @implementation YKFKeyChallengeResponseSession
 
+- (instancetype)initWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController {
+    self = [super init];
+    if (self) {
+        self.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
+    }
+    return self;
+}
+
 + (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
                                completion:(YKFKeyChallengeResponseSessionCompletion _Nonnull)completion {
     
    YKFKeyChallengeResponseSession *session = [[YKFKeyChallengeResponseSession alloc] initWithConnectionController:connectionController];
-
-    [session selectYubiKeyApplication:^(NSError * _Nullable error) {
+    
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameChalResp];
+    [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
         } else {
@@ -46,67 +52,19 @@
 
 - (void)sendChallenge:(nonnull NSData *)challenge slot:(YKFSlot)slot completion:(nonnull YKFKeyChallengeResponseSessionResponseBlock)completion {
     YKFKeyChalRespSendRequest *request = [[YKFKeyChalRespSendRequest alloc] initWithChallenge:challenge slot: slot];
-    [self executeRequest:request completion:completion];
-}
-
-#pragma mark - execution of requests
-
-- (void)executeRequest:(YKFKeyChalRespRequest *)request
-            completion:(YKFKeyChallengeResponseSessionResponseBlock)completion {
-    YKFParameterAssertReturn(request);
-    YKFParameterAssertReturn(completion);
-
-    [self executeCommand:request.apdu sendRemainingIns:YKFRawCommandSessionSendRemainingInsNormal configuration:[YKFKeyCommandConfiguration fastCommandCofiguration] completion:^(NSData *response, NSError *error) {
-        
+    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
+        } else if (data.length == 0) {
+            completion(nil, [YKFKeyChallengeResponseError errorWithCode:YKFKeyChallengeResponseErrorCodeEmptyResponse]);
         } else {
-            int statusCode = [YKFKeySession statusCodeFromKeyResponse:response];
-            switch (statusCode) {
-                case YKFKeyAPDUErrorCodeNoError:
-                    if (response.length > 2) {
-                        completion([YKFKeySession dataFromKeyResponse:response], nil);
-                    } else {
-                        completion(nil, [YKFKeyChallengeResponseError errorWithCode:YKFKeyChallengeResponseErrorCodeEmptyResponse]);
-                    }
-                    break;
-                    
-                default:
-                    completion(nil, [YKFKeySessionError errorWithCode:statusCode]);
-                    break;
-            }
+            completion(data, nil);
         }
     }];
 }
 
-#pragma mark - Application Selection
-
-- (void)selectYubiKeyApplication:(void (^)(NSError *))completion {
-    YKFAPDU *selectYubiKeyApplicationAPDU = [[YKFSelectYubiKeyApplicationAPDU alloc] init];
-    
-    [self executeCommand:selectYubiKeyApplicationAPDU sendRemainingIns:YKFRawCommandSessionSendRemainingInsNormal configuration:[YKFKeyCommandConfiguration fastCommandCofiguration] completion:^(NSData *response, NSError *error) {
-
-        NSError *returnedError = nil;
-        
-        if (error) {
-            returnedError = error;
-        } else {
-            int statusCode = [YKFKeySession statusCodeFromKeyResponse: response];
-            switch (statusCode) {
-                case YKFKeyAPDUErrorCodeNoError:
-                    break;
-                    
-                case YKFKeyAPDUErrorCodeMissingFile:
-                    returnedError = [YKFKeySessionError errorWithCode:YKFKeySessionErrorMissingApplicationCode];
-                    break;
-                    
-                default:
-                    returnedError = [YKFKeySessionError errorWithCode:statusCode];
-            }
-        }
-        
-        completion(returnedError);
-    }];    
+- (void)clearSessionState {
+    ;
 }
 
 @end
