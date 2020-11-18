@@ -72,7 +72,7 @@
                     ins = 0xA5;
                     break;
             }
-            YKFAPDU *sendRemainingApdu = [[YKFAPDU alloc] initWithData:[NSData dataWithBytes:(unsigned char[]){0x00, ins, 0x00, 0x00} length:4]];
+            YKFAPDU *sendRemainingApdu = [[YKFAPDU alloc] initWithData:[NSData dataWithBytes:(UInt8[]){0x00, ins, 0x00, 0x00} length:4]];
             // Queue a new request recursively
             [self executeCommand:sendRemainingApdu sendRemainingIns:sendRemainingIns configuration:configuration data:data completion:completion];
             return;
