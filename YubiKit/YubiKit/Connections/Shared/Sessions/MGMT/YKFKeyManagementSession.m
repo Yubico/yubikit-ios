@@ -6,56 +6,50 @@
 //  Copyright © 2020 Yubico. All rights reserved.
 //
 
-#import "YKFKeyManagementSession.h"
-#import "YubiKitManager.h"
-#import "YKFKeyRawCommandSession.h"
-
 #import "YKFKeyManagementRequest.h"
 #import "YKFKeyManagementRequest+Private.h"
-
 #import "YKFKeyManagementReadConfigurationRequest.h"
 #import "YKFKeyManagementReadConfigurationResponse.h"
 #import "YKFKeyManagementReadConfigurationResponse+Private.h"
-
-#import "YKFSelectManagementApplicationAPDU.h"
-#import "YKFKeyManagementSelectApplicationResponse.h"
-#import "YKFKeyManagementSelectApplicationResponse+Private.h"
-
 #import "YKFKeyManagementWriteConfigurationRequest.h"
-
-
 #import "YKFAssert.h"
 #import "YKFKeyAPDUError.h"
-#import "YKFKeyManagementError.h"
-#import "YKFKeySessionError.h"
-#import "YKFKeySessionError+Private.h"
-
 #import "YKFKeyManagementSession+Private.h"
-#import "YKFKeyRawCommandSession+Private.h"
-
-typedef void (^YKFKeyManagementSessionResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
-typedef void (^YKFKeyManagementSessionSelectCompletionBlock)(YKFKeyManagementSelectApplicationResponse* _Nullable  result, NSError* _Nullable error);
+#import "YKFSmartCardInterface.h"
+#import "YKFSelectApplicationAPDU.h"
 
 @interface YKFKeyManagementSession()
 
 @property (nonatomic, readwrite) YKFKeyVersion *version;
+@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
+
+- (instancetype)initWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController NS_DESIGNATED_INITIALIZER;
+
+- (YKFKeyVersion *)versionFromResponse:(nonnull NSData *)data;
 
 @end
 
 @implementation YKFKeyManagementSession
 
-
+- (instancetype)initWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController {
+    self = [super init];
+    if (self) {
+        self.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
+    }
+    return self;
+}
 
 + (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
                                completion:(YKFKeyManagementSessionCompletion _Nonnull)completion {
     
     YKFKeyManagementSession *session = [[YKFKeyManagementSession alloc] initWithConnectionController:connectionController];
     
-    [session selectManagementApplication:^(YKFKeyManagementSelectApplicationResponse * _Nullable result, NSError * _Nullable error) {
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameManagement];
+    [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
         } else {
-            session.version = result.version;
+            session.version = [session versionFromResponse:data];
             completion(session, nil);
         }
     }];
@@ -66,94 +60,55 @@ typedef void (^YKFKeyManagementSessionSelectCompletionBlock)(YKFKeyManagementSel
 
     YKFKeyManagementReadConfigurationRequest* request = [[YKFKeyManagementReadConfigurationRequest alloc] init];
     
-    [self executeRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    
+    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
             return;
         }
-        YKFKeyManagementReadConfigurationResponse *response =
-        [[YKFKeyManagementReadConfigurationResponse alloc] initWithKeyResponseData:result version:self.version];
-        
-        if (!response) {
-            completion(nil, [YKFKeyManagementError errorWithCode:YKFKeyManagementErrorCodeUnexpectedResponse]);
-            return;
-        }
-        
+        YKFKeyManagementReadConfigurationResponse *response = [[YKFKeyManagementReadConfigurationResponse alloc]
+                                                               initWithKeyResponseData:data
+                                                               version:self.version];
         completion(response, nil);
     }];
 }
 
-- (void) writeConfiguration:(YKFManagementInterfaceConfiguration*) configuration reboot: (BOOL) reboot completion: (nonnull YKFKeyManagementSessionWriteCompletionBlock) completion {
+- (void) writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot completion:(nonnull YKFKeyManagementSessionWriteCompletionBlock)completion {
     YKFParameterAssertReturn(configuration);
     YKFParameterAssertReturn(configuration);
     
     YKFKeyManagementWriteConfigurationRequest* request = [[YKFKeyManagementWriteConfigurationRequest alloc]
-                                                    initWithConfiguration: configuration
-                                                    reboot: reboot];
-
-    [self executeRequest: request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+                                                          initWithConfiguration: configuration
+                                                          reboot: reboot];
+    
+    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         completion(error);
     }];
 }
 
-#pragma mark - execution of requests
-
-- (void)executeRequest:(YKFKeyManagementRequest *)request
-            completion:(YKFKeyManagementSessionResultCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
-    YKFParameterAssertReturn(completion);
-
-    [self executeCommand:request.apdu completion:^(NSData *response, NSError *error) {
-        
-        if (error) {
-            completion(nil, error);
-        } else {
-            int statusCode = [YKFKeySession statusCodeFromKeyResponse:response];
-            switch (statusCode) {
-                case YKFKeyAPDUErrorCodeNoError:
-                    completion([YKFKeySession dataFromKeyResponse:response], nil);
-                    break;
-                    
-                default:
-                    completion(nil, [YKFKeySessionError errorWithCode:statusCode]);
-                    break;
-            }
-        }
-    }];
+// No state that needs clearing but this will be called when another
+// session is replacing the YKFKeyManagementSession.
+- (void)clearSessionState {
+    ;
 }
 
-#pragma mark - Application Selection
+#pragma mark - Helpers
 
-- (void)selectManagementApplication:(YKFKeyManagementSessionSelectCompletionBlock)completion {
-    YKFAPDU *selectApplicationAPDU = [[YKFSelectManagementApplicationAPDU alloc] init];
-            
-    [self executeCommand:selectApplicationAPDU completion:^(NSData *response, NSError *error) {
+- (YKFKeyVersion *)versionFromResponse:(nonnull NSData *)data {
+    NSString *responseString = [[NSString alloc] initWithBytes:data.bytes length:data.length encoding:NSASCIIStringEncoding];
+    NSArray *responseArray = [responseString componentsSeparatedByString:@" "];
 
-        NSError *returnedError = nil;
-        
-        if (error) {
-            returnedError = error;
-        } else {
-            int statusCode = [YKFKeySession statusCodeFromKeyResponse: response];
-            switch (statusCode) {
-                case YKFKeyAPDUErrorCodeNoError:
-                    completion([[YKFKeyManagementSelectApplicationResponse alloc] initWithKeyResponseData:[YKFKeySession dataFromKeyResponse:response]], nil);
-                    break;
-                    
-                case YKFKeyAPDUErrorCodeInsNotSupported:
-                case YKFKeyAPDUErrorCodeMissingFile:
-                    returnedError = [YKFKeySessionError errorWithCode:YKFKeySessionErrorMissingApplicationCode];
-                    break;
-                    
-                default:
-                    returnedError = [YKFKeySessionError errorWithCode:statusCode];
-            }
-        }
-        
-        if (returnedError != nil) {
-            completion(nil, returnedError);
-        }
-    }];
+    NSAssert(responseArray.count > 0, @"No version number in select management application response");
+    NSString *versionString = responseArray.lastObject;
+
+    NSArray *versionArray = [versionString componentsSeparatedByString:@"."];
+    NSAssert(versionArray.count == 3, @"Malformed version number: '%@'", versionString);
+    
+    NSUInteger major = [versionArray[0] intValue];
+    NSUInteger minor = [versionArray[1] intValue];
+    NSUInteger micro = [versionArray[2] intValue];
+
+    return [[YKFKeyVersion alloc] initWithBytes:(UInt8)major minor:(UInt8)minor micro:(UInt8)micro];
 }
 
 @end

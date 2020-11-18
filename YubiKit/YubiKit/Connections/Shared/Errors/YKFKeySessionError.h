@@ -63,7 +63,11 @@ typedef NS_ENUM(NSUInteger, YKFKeySessionErrorCode) {
     
     /*! A request to the key cannot be performed because the connection was not found
      */
-    YKFKeySessionErrorNoConnection = 0x000007
+    YKFKeySessionErrorNoConnection = 0x000007,
+    
+    /*! A request to the key returned an unexpected result
+     */
+    YKFKeySessionErrorUnexpectedStatusCode = 0x000007
 };
 
 /*!

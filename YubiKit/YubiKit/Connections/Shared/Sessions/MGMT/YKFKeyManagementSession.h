@@ -85,7 +85,10 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFKeyManagementSession : YKFKeyRawCommandSession<YKFKeyManagementSessionProtocol>
+@interface YKFKeyManagementSession : NSObject<YKFKeyManagementSessionProtocol>
+
+- (nonnull instancetype)init NS_UNAVAILABLE;
+
 
 @end
 

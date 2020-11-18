@@ -25,7 +25,7 @@ typedef NS_ENUM(NSUInteger, YKFKeyAPDUErrorCode) {
     YKFKeyAPDUErrorCodeWrongData                = 0x6A80,
     YKFKeyAPDUErrorCodeInsNotSupported          = 0x6D00,
     YKFKeyAPDUErrorCodeCLANotSupported          = 0x6E00,
-    YKFKeyAPDUErrorCodeUnknown                  = 0x6F00,
+    YKFKeyAPDUErrorCodeCommandAborted           = 0x6F00,
     YKFKeyAPDUErrorCodeMissingFile              = 0x6A82,
     
     // Application/Applet short codes

@@ -1047,8 +1047,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         
         [TestSharedLogger.shared logMessage:@"Received data length: %d", result.length];
         
-        NSData *echoData = [result subdataWithRange:NSMakeRange(0, result.length - 2)];
-        if ([echoData isEqualToData:data]) {
+        if ([result isEqualToData:result]) {
             [TestSharedLogger.shared logSuccess:@"Received data is equal with sent data."];
         } else {
             [TestSharedLogger.shared logError:@"Received data is not equal with sent data."];

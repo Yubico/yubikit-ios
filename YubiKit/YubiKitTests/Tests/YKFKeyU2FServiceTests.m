@@ -147,7 +147,7 @@
         @[@(0x00), @(0x69), @(0x84), @(YKFKeyAPDUErrorCodeDataInvalid)],
         @[@(0x00), @(0x67), @(0x00), @(YKFKeyAPDUErrorCodeWrongLength)],
         @[@(0x00), @(0x6E), @(0x00), @(YKFKeyAPDUErrorCodeCLANotSupported)],
-        @[@(0x00), @(0x6F), @(0x00), @(YKFKeyAPDUErrorCodeUnknown)]
+        @[@(0x00), @(0x6F), @(0x00), @(YKFKeyAPDUErrorCodeCommandAborted)]
     ];
     
     for (NSArray *statusCode in listOfErrorStatusCodes) {
