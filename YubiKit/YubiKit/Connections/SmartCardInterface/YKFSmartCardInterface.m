@@ -126,6 +126,14 @@
     [self executeCommand:apdu sendRemainingIns:sendRemainingIns configuration:configuration data:data completion:completion];
 }
 
+- (void)executeAfterCurrentCommands:(YKFKeySmartCardInterfaceExecutionBlock)block delay:(NSTimeInterval)delay {
+    [self.connectionController dispatchOnSequentialQueue:block delay:delay];
+}
+
+- (void)executeAfterCurrentCommands:(YKFKeySmartCardInterfaceExecutionBlock)block {
+    [self executeAfterCurrentCommands:block delay:0];
+}
+
 #pragma mark - Helpers
 
 - (NSData *)dataFromKeyResponse:(NSData *)response {

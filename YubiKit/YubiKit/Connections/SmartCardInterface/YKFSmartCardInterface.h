@@ -25,6 +25,7 @@
 //    (NSError* _Nullable error);
 typedef void (^YKFKeySmartCardInterfaceResponseBlock)
     (NSData* _Nullable data, NSError* _Nullable error);
+typedef void (^YKFKeySmartCardInterfaceExecutionBlock)(void);
 
 typedef NS_ENUM(NSUInteger, YKFSmartCardInterfaceSendRemainingIns) {
     
@@ -50,6 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns completion:(YKFKeySmartCardInterfaceResponseBlock)completion;
 
 - (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeySmartCardInterfaceResponseBlock)completion;
+
+- (void)executeAfterCurrentCommands:(YKFKeySmartCardInterfaceExecutionBlock)block delay:(NSTimeInterval)delay;
+
+- (void)executeAfterCurrentCommands:(YKFKeySmartCardInterfaceExecutionBlock)block;
 
 NS_ASSUME_NONNULL_END
 

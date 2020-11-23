@@ -13,18 +13,8 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFKeySession.h"
 
-#import "YKFKeyFIDO2Request.h"
-#import "YKFKeyFIDO2MakeCredentialRequest.h"
-#import "YKFKeyFIDO2GetAssertionRequest.h"
-#import "YKFKeyFIDO2VerifyPinRequest.h"
-#import "YKFKeyFIDO2SetPinRequest.h"
-#import "YKFKeyFIDO2ChangePinRequest.h"
-
-#import "YKFKeyFIDO2GetInfoResponse.h"
-#import "YKFKeyFIDO2MakeCredentialResponse.h"
-#import "YKFKeyFIDO2GetAssertionResponse.h"
+@class YKFKeyFIDO2MakeCredentialRequest, YKFKeyFIDO2GetAssertionRequest, YKFKeyFIDO2VerifyPinRequest, YKFKeyFIDO2SetPinRequest, YKFKeyFIDO2ChangePinRequest, YKFKeyFIDO2GetInfoResponse, YKFKeyFIDO2MakeCredentialResponse, YKFKeyFIDO2GetAssertionResponse;
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
@@ -137,8 +127,6 @@ NS_ASSUME_NONNULL_BEGIN
     Defines the interface for YKFKeyFIDO2Service.
  */
 @protocol YKFKeyFIDO2SessionProtocol<NSObject>
-
-- (void)selectFIDO2ApplicationWithCompletion:(void (^)(NSError *))completion;
 
 /*!
  @abstract
@@ -346,7 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
     create one. It has to use only the single shared instance from YKFAccessorySession and sync its usage with
     the session state.
  */
-@interface YKFKeyFIDO2Session: YKFKeySession<YKFKeyFIDO2SessionProtocol>
+@interface YKFKeyFIDO2Session: NSObject<YKFKeyFIDO2SessionProtocol>
 
 /*
  Not available: use only the shared instance from the YKFAccessorySession.
