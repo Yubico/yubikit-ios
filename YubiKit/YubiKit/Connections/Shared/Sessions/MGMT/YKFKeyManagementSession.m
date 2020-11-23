@@ -23,26 +23,17 @@
 @property (nonatomic, readwrite) YKFKeyVersion *version;
 @property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
 
-- (instancetype)initWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController NS_DESIGNATED_INITIALIZER;
-
 - (YKFKeyVersion *)versionFromResponse:(nonnull NSData *)data;
 
 @end
 
 @implementation YKFKeyManagementSession
 
-- (instancetype)initWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController {
-    self = [super init];
-    if (self) {
-        self.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
-    }
-    return self;
-}
-
 + (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
                                completion:(YKFKeyManagementSessionCompletion _Nonnull)completion {
     
-    YKFKeyManagementSession *session = [[YKFKeyManagementSession alloc] initWithConnectionController:connectionController];
+    YKFKeyManagementSession *session = [YKFKeyManagementSession new];
+    session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
     
     YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameManagement];
     [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {

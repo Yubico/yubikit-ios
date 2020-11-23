@@ -21,24 +21,15 @@
 
 @property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
 
-- (instancetype)initWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController NS_DESIGNATED_INITIALIZER;
-
 @end
 
 @implementation YKFKeyChallengeResponseSession
 
-- (instancetype)initWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController {
-    self = [super init];
-    if (self) {
-        self.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
-    }
-    return self;
-}
-
 + (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
                                completion:(YKFKeyChallengeResponseSessionCompletion _Nonnull)completion {
     
-   YKFKeyChallengeResponseSession *session = [[YKFKeyChallengeResponseSession alloc] initWithConnectionController:connectionController];
+    YKFKeyChallengeResponseSession *session = [YKFKeyChallengeResponseSession new];
+    session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
     
     YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameChalResp];
     [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
