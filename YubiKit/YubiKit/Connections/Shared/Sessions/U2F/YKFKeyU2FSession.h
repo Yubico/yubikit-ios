@@ -13,12 +13,8 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFKeySession.h"
-#import "YKFKeyU2FSignRequest.h"
-#import "YKFKeyU2FSignResponse.h"
-#import "YKFKeyU2FRegisterRequest.h"
-#import "YKFKeyU2FRegisterResponse.h"
 
+@class YKFKeyU2FSignRequest, YKFKeyU2FSignResponse, YKFKeyU2FRegisterRequest, YKFKeyU2FRegisterResponse;
 /**
  * ---------------------------------------------------------------------------------------------------------------------
  * @name U2F Service Response Blocks
@@ -108,23 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) YKFKeyU2FSessionKeyState keyState;
 
 /*!
- @method selectU2FApplicationWithCompletion:
- 
- @abstract
-    Sends to the key an U2F select request. This is the first request that is executed before sending any other request be defualt.
-    This method can be executed to receive response on selection.
- 
- @param completion
-    The response block which is executed after the request was processed by the key. The completion block
-    will be executed on a background thread. If the intention is to update the UI, dispatch the results
-    on the main thread to avoid an UIKit assertion.
- 
- @note
-    This method is thread safe and can be invoked from any thread (main or a background thread).
- */
-- (void)selectU2FApplicationWithCompletion:(void (^)(NSError *))completion;
-
-/*!
  @method executeRegisterRequest:completion:
  
  @abstract
@@ -188,7 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
     The U2F service is mantained by the key session which controls its lifecycle. The application must not create one.
     It has to use only the single shared instance from YKFAccessorySession and sync its usage with the session state.
  */
-@interface YKFKeyU2FSession: YKFKeySession<YKFKeyU2FSessionProtocol>
+@interface YKFKeyU2FSession: NSObject<YKFKeyU2FSessionProtocol>
 
 /*
  Not available: use only the shared instance from the YKFAccessorySession.

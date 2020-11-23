@@ -154,7 +154,6 @@
 		95885B1420A0994F00828D02 /* YKFAccessoryConnection.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD40A02099A8A300363FEE /* YKFAccessoryConnection.h */; };
 		95885B1520A0994F00828D02 /* YKFKeyU2FSession.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD40A22099A8A300363FEE /* YKFKeyU2FSession.h */; };
 		95885B1620A0994F00828D02 /* YKFNSDataAdditions.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD40762099A4EB00363FEE /* YKFNSDataAdditions.h */; };
-		95885B1720A2F92D00828D02 /* YKFSelectU2FApplicationAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40812099A86900363FEE /* YKFSelectU2FApplicationAPDU.m */; };
 		95885B1820A2F94700828D02 /* YKFAccessoryConnectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40A52099A8A400363FEE /* YKFAccessoryConnectionController.m */; };
 		95885B1920A2F95800828D02 /* YKFKeyU2FRegisterRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40912099A89500363FEE /* YKFKeyU2FRegisterRequest.m */; };
 		95885B1A20A2F96100828D02 /* YKFKeyU2FRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40922099A89600363FEE /* YKFKeyU2FRequest.m */; };
@@ -667,12 +666,10 @@
 		95DD407A2099A64C00363FEE /* YKFDispatch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFDispatch.m; sourceTree = "<group>"; };
 		95DD407F2099A86900363FEE /* YKFAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFAPDU.h; sourceTree = "<group>"; };
 		95DD40802099A86900363FEE /* YKFU2FSignAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFU2FSignAPDU.m; sourceTree = "<group>"; };
-		95DD40812099A86900363FEE /* YKFSelectU2FApplicationAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFSelectU2FApplicationAPDU.m; sourceTree = "<group>"; };
 		95DD40822099A86900363FEE /* YKFAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFAPDU.m; sourceTree = "<group>"; };
 		95DD40832099A86900363FEE /* YKFU2FRegisterAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFU2FRegisterAPDU.h; sourceTree = "<group>"; };
 		95DD40842099A86900363FEE /* YKFU2FSignAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFU2FSignAPDU.h; sourceTree = "<group>"; };
 		95DD40852099A86900363FEE /* YKFU2FRegisterAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFU2FRegisterAPDU.m; sourceTree = "<group>"; };
-		95DD40862099A86900363FEE /* YKFSelectU2FApplicationAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFSelectU2FApplicationAPDU.h; sourceTree = "<group>"; };
 		95DD408C2099A88400363FEE /* YKFKeySessionError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFKeySessionError.h; sourceTree = "<group>"; };
 		95DD408D2099A88400363FEE /* YKFKeySessionError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFKeySessionError.m; sourceTree = "<group>"; };
 		95DD40902099A89500363FEE /* YKFKeyU2FRegisterRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFKeyU2FRegisterRequest.h; sourceTree = "<group>"; };
@@ -1147,8 +1144,6 @@
 		9581395021591D32008558F3 /* U2F */ = {
 			isa = PBXGroup;
 			children = (
-				95DD40862099A86900363FEE /* YKFSelectU2FApplicationAPDU.h */,
-				95DD40812099A86900363FEE /* YKFSelectU2FApplicationAPDU.m */,
 				95DD40832099A86900363FEE /* YKFU2FRegisterAPDU.h */,
 				95DD40852099A86900363FEE /* YKFU2FRegisterAPDU.m */,
 				95DD40842099A86900363FEE /* YKFU2FSignAPDU.h */,
@@ -1720,7 +1715,6 @@
 				956DBB9021EE1E5E004D6EE3 /* YKFFIDO2GetInfoAPDU.m in Sources */,
 				95D9D3DD21D5110100473888 /* YKFCBOREncoder.m in Sources */,
 				95885B1920A2F95800828D02 /* YKFKeyU2FRegisterRequest.m in Sources */,
-				95885B1720A2F92D00828D02 /* YKFSelectU2FApplicationAPDU.m in Sources */,
 				95DD40892099A86A00363FEE /* YKFAPDU.m in Sources */,
 				95DD658B21663B0400BA85C9 /* YKFKeyOATHDeleteRequest.m in Sources */,
 				8152340623B56F80004D4788 /* YKFHMAC1ChallengeResponseAPDU.m in Sources */,

@@ -59,6 +59,11 @@
 #import "YKFKeyFIDO2GetAssertionResponse.h"
 #import "YKFKeyFIDO2GetInfoResponse.h"
 
+#import "YKFKeyU2FSignRequest.h"
+#import "YKFKeyU2FSignResponse.h"
+#import "YKFKeyU2FRegisterRequest.h"
+#import "YKFKeyU2FRegisterResponse.h"
+
 #import "YKFPCSC.h"
 
 #import "YKFNSDataAdditions.h"
