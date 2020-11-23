@@ -13,20 +13,26 @@
 // limitations under the License.
 
 #import "YKFKeyU2FSession.h"
-#import "YKFSelectU2FApplicationAPDU.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFKeyU2FError.h"
 #import "YKFKeyAPDUError.h"
-#import "YKFKeyCommandConfiguration.h"
 #import "YKFBlockMacros.h"
 #import "YKFAssert.h"
 
 #import "YKFKeySessionError+Private.h"
 #import "YKFKeyU2FSession+Private.h"
 #import "YKFKeyU2FRequest+Private.h"
+#import "YKFKeyU2FSignRequest.h"
+#import "YKFKeyU2FSignResponse.h"
+#import "YKFKeyU2FRegisterRequest.h"
+#import "YKFKeyU2FRegisterResponse.h"
+
 #import "YKFKeyU2FRegisterResponse+Private.h"
 #import "YKFKeyU2FSignResponse+Private.h"
 #import "YKFAPDU+Private.h"
+
+#import "YKFSmartCardInterface.h"
+#import "YKFSelectApplicationAPDU.h"
 
 typedef void (^YKFKeyU2FServiceResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
 
@@ -35,7 +41,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 @interface YKFKeyU2FSession()
 
 @property (nonatomic, assign, readwrite) YKFKeyU2FSessionKeyState keyState;
-@property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
+@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
 
 @end
 
@@ -44,8 +50,10 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 + (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
                                completion:(YKFKeyU2FSessionCompletion _Nonnull)completion {
     YKFKeyU2FSession *session = [YKFKeyU2FSession new];
-    session.connectionController = connectionController;
-    [session selectU2FApplicationWithCompletion:^(NSError *error) {
+    session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
+    
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameU2F];
+    [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
         } else {
@@ -101,82 +109,25 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
     }];
 }
 
-#pragma mark - Application Selection
-
-- (void)selectU2FApplicationWithCompletion:(void (^)(NSError *))completion {
-    YKFAPDU *selectU2FApplicationAPDU = [[YKFSelectU2FApplicationAPDU alloc] init];
-    
-    ykf_weak_self();
-    [self.connectionController execute:selectU2FApplicationAPDU
-                         configuration:[YKFKeyCommandConfiguration fastCommandCofiguration]
-                            completion:^(NSData *result, NSError *error, NSTimeInterval executionTime) {
-        ykf_safe_strong_self();
-        NSError *returnedError = nil;
-        
-        if (error) {
-            returnedError = error;
-        } else {
-            int statusCode = [YKFKeySession statusCodeFromKeyResponse: result];
-            switch (statusCode) {
-                case YKFKeyAPDUErrorCodeNoError:
-                    break;
-                    
-                case YKFKeyAPDUErrorCodeMissingFile:
-                    returnedError = [YKFKeySessionError errorWithCode:YKFKeySessionErrorMissingApplicationCode];
-                    break;
-                    
-                default:
-                    returnedError = [YKFKeySessionError errorWithCode:statusCode];
-            }
-        }
-        
-        completion(returnedError);
-    }];
-}
-
 #pragma mark - Request Execution
 
 - (void)executeU2FRequest:(YKFKeyU2FRequest *)request completion:(YKFKeyU2FServiceResultCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
-
-    [self updateKeyState:YKFKeyU2FSessionKeyStateProcessingRequest];
     
     ykf_weak_self();
-    [self selectU2FApplicationWithCompletion:^(NSError *error) {
+    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         ykf_safe_strong_self();
-        if (error) {
-            [strongSelf updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
-            completion(nil, error);
-            return;
-        }
-        [strongSelf executeU2FRequestWithoutApplicationSelection:request completion:completion];
-    }];
-}
-
-- (void)executeU2FRequestWithoutApplicationSelection:(YKFKeyU2FRequest *)request completion:(YKFKeyU2FServiceResultCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
-    YKFParameterAssertReturn(completion);
-    
-    ykf_weak_self();
-    YKFKeyConnectionControllerCommandResponseBlock block = ^(NSData *result, NSError *error, NSTimeInterval executionTime) {
-        ykf_safe_strong_self();
-        if (error) {
-            [strongSelf updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
-            completion(nil, error);
-            return;
-        }
-        int statusCode = [YKFKeySession statusCodeFromKeyResponse: result];
         
-        switch (statusCode) {
+        if (data) {
+            [strongSelf updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
+            completion(data, nil);
+            return;
+        }
+        
+        switch (error.code) {
             case YKFKeyAPDUErrorCodeConditionNotSatisfied: {
                 [strongSelf handleTouchRequired:request completion:completion];
-            }
-            break;
-                
-            case YKFKeyAPDUErrorCodeNoError: {
-                [strongSelf updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
-                completion(result, nil);
             }
             break;
                 
@@ -186,23 +137,14 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
                 completion(nil, connectionError);
             }
             break;
-                
-            case YKFKeyAPDUErrorCodeInsNotSupported: {
-                [strongSelf updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
-                completion(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorMissingApplicationCode]);
-            }
-            break;
-                
-            // Errors - The status code is the error. The key doesn't send any other information.
+
             default: {
                 [strongSelf updateKeyState:YYKFKeyU2FSessionKeyStateIdle];
-                YKFKeySessionError *connectionError = [YKFKeySessionError errorWithCode:statusCode];
-                completion(nil, connectionError);
+                completion(nil, error);
             }
             break;
         }
-    };
-    [self.connectionController execute:request.apdu completion:block];
+    }];
 }
 
 #pragma mark - Private
@@ -222,9 +164,9 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
     request.retries += 1;
     
     ykf_weak_self();
-    [self.connectionController dispatchOnSequentialQueue:^{
+    [self.smartCardInterface executeAfterCurrentCommands:^{
         ykf_safe_strong_self();
-        [strongSelf executeU2FRequestWithoutApplicationSelection:request completion:completion];
+        [strongSelf executeU2FRequest:request completion:completion];
     }
     delay:request.retryTimeInterval];
 }
@@ -232,13 +174,11 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 #pragma mark - Key responses
 
 - (YKFKeyU2FSignResponse *)processSignData:(NSData *)data request:(YKFKeyU2FSignRequest *)request {
-    NSData *signature = [YKFKeySession dataFromKeyResponse:data];
-    return [[YKFKeyU2FSignResponse alloc] initWithKeyHandle:request.keyHandle clientData:request.clientData signature:signature];
+    return [[YKFKeyU2FSignResponse alloc] initWithKeyHandle:request.keyHandle clientData:request.clientData signature:data];
 }
 
 - (YKFKeyU2FRegisterResponse *)processRegisterData:(NSData *)data request:(YKFKeyU2FRegisterRequest *)request {
-    NSData *registrationData = [YKFKeySession dataFromKeyResponse:data];
-    return [[YKFKeyU2FRegisterResponse alloc] initWithClientData:request.clientData registrationData:registrationData];
+    return [[YKFKeyU2FRegisterResponse alloc] initWithClientData:request.clientData registrationData:data];
 }
 
 @end
