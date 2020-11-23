@@ -27,7 +27,6 @@
 #import "YKFKeyFIDO2ClientPinRequest.h"
 #import "YKFKeyFIDO2ClientPinResponse.h"
 
-#import "YKFSelectFIDO2ApplicationAPDU.h"
 #import "YKFFIDO2MakeCredentialAPDU.h"
 #import "YKFFIDO2GetAssertionAPDU.h"
 #import "YKFFIDO2GetNextAssertionAPDU.h"
@@ -43,10 +42,20 @@
 #import "YKFKeyFIDO2MakeCredentialRequest+Private.h"
 #import "YKFKeyFIDO2GetAssertionRequest+Private.h"
 
+#import "YKFKeyFIDO2VerifyPinRequest.h"
+#import "YKFKeyFIDO2SetPinRequest.h"
+#import "YKFKeyFIDO2ChangePinRequest.h"
+
+#import "YKFKeyFIDO2GetInfoResponse.h"
+#import "YKFKeyFIDO2MakeCredentialResponse.h"
+#import "YKFKeyFIDO2GetAssertionResponse.h"
+
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFKeySessionError+Private.h"
 #import "YKFKeyFIDO2Request+Private.h"
-#import "YKFAPDU+Private.h"
+
+#import "YKFSmartCardInterface.h"
+#import "YKFSelectApplicationAPDU.h"
 
 #pragma mark - Private Response Blocks
 
@@ -64,12 +73,13 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
 @interface YKFKeyFIDO2Session()
 
 @property (nonatomic, assign, readwrite) YKFKeyFIDO2SessionKeyState keyState;
-@property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
 
 // The cached authenticator pinToken, assigned after a successful validation.
 @property NSData *pinToken;
 // Keeps the state of the application selection to avoid reselecting the application.
 @property BOOL applicationSelected;
+
+@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
 
 @end
 
@@ -77,12 +87,16 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
 
 + (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
                                completion:(YKFKeyFIDO2SessionCompletion _Nonnull)completion {
+    
     YKFKeyFIDO2Session *session = [YKFKeyFIDO2Session new];
-    session.connectionController = connectionController;
-    [session selectFIDO2ApplicationWithCompletion:^(NSError *error) {
+    session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
+
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameFIDO2];
+    [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
         } else {
+            [session updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
             completion(session, nil);
         }
     }];
@@ -110,14 +124,14 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     fido2Request.apdu = [[YKFFIDO2GetInfoAPDU alloc] init];
     
     ykf_weak_self();
-    [self executeFIDO2Request:fido2Request completion:^(NSData * response, NSError *error) {
+    [self executeFIDO2Request:fido2Request completion:^(NSData * data, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
             return;
         }
         
-        NSData *cborData = [strongSelf cborFromKeyResponsePayloadData:response];
+        NSData *cborData = [strongSelf cborFromKeyResponseData:data];
         YKFKeyFIDO2GetInfoResponse *getInfoResponse = [[YKFKeyFIDO2GetInfoResponse alloc] initWithCBORData:cborData];
         
         if (getInfoResponse) {
@@ -186,10 +200,11 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     YKFLogVerbose(@"Clearing FIDO2 Session user verification.");
     
     ykf_weak_self();
-    [self.connectionController dispatchOnSequentialQueue:^{
+    [self.smartCardInterface executeAfterCurrentCommands:^{
         ykf_safe_strong_self();
         strongSelf.pinToken = nil;
-        strongSelf.applicationSelected = NO; // Force also an application re-selection.
+// TODO: We can't do this anymore. Should we handle it in some other way?
+//        strongSelf.applicationSelected = NO; // Force also an application re-selection.
     }];
 }
 
@@ -326,14 +341,14 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     request.apdu = apdu;
     
     ykf_weak_self();
-    [self executeFIDO2Request:request completion:^(NSData *response, NSError *error) {
+    [self executeFIDO2Request:request completion:^(NSData *data, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
             return;
         }
         
-        NSData *cborData = [strongSelf cborFromKeyResponsePayloadData:response];
+        NSData *cborData = [strongSelf cborFromKeyResponseData:data];
         YKFKeyFIDO2MakeCredentialResponse *makeCredentialResponse = [[YKFKeyFIDO2MakeCredentialResponse alloc] initWithCBORData:cborData];
         
         if (makeCredentialResponse) {
@@ -368,14 +383,14 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     request.apdu = apdu;
     
     ykf_weak_self();
-    [self executeFIDO2Request:request completion:^(NSData *response, NSError *error) {
+    [self executeFIDO2Request:request completion:^(NSData *data, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
             return;
         }
         
-        NSData *cborData = [strongSelf cborFromKeyResponsePayloadData:response];
+        NSData *cborData = [strongSelf cborFromKeyResponseData:data];
         YKFKeyFIDO2GetAssertionResponse *getAssertionResponse = [[YKFKeyFIDO2GetAssertionResponse alloc] initWithCBORData:cborData];
         
         if (getAssertionResponse) {
@@ -393,14 +408,14 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     fido2Request.apdu = [[YKFFIDO2GetNextAssertionAPDU alloc] init];
     
     ykf_weak_self();
-    [self executeFIDO2Request:fido2Request completion:^(NSData *response, NSError *error) {
+    [self executeFIDO2Request:fido2Request completion:^(NSData *data, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
             return;
         }
         
-        NSData *cborData = [strongSelf cborFromKeyResponsePayloadData:response];
+        NSData *cborData = [strongSelf cborFromKeyResponseData:data];
         YKFKeyFIDO2GetAssertionResponse *getAssertionResponse = [[YKFKeyFIDO2GetAssertionResponse alloc] initWithCBORData:cborData];
         
         if (getAssertionResponse) {
@@ -442,14 +457,14 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     request.apdu = apdu;
     
     ykf_weak_self();
-    [self executeFIDO2Request:request completion:^(NSData *response, NSError *error) {
+    [self executeFIDO2Request:request completion:^(NSData *data, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
             return;
         }
         
-        NSData *cborData = [strongSelf cborFromKeyResponsePayloadData:response];
+        NSData *cborData = [strongSelf cborFromKeyResponseData:data];
         YKFKeyFIDO2ClientPinResponse *clientPinResponse = nil;
         
         // In case of Set/Change PIN no CBOR payload is returned.
@@ -475,7 +490,7 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     // If there is a cached user verification?
     
     ykf_weak_self();
-    [self.connectionController dispatchOnSequentialQueue:^{
+    [self.smartCardInterface executeAfterCurrentCommands:^{
         ykf_safe_strong_self();
         
         // Generate the platform key.
@@ -526,116 +541,28 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-#pragma mark - Application selection
-
-- (void)selectFIDO2ApplicationWithCompletion:(void (^)(NSError *))completion {
-    YKFParameterAssertReturn(completion);
-    
-    if (self.applicationSelected) {
-        completion(nil);
-        return;
-    }
-    
-    YKFAPDU *selectFIDO2ApplicationAPDU = [[YKFSelectFIDO2ApplicationAPDU alloc] init];
-    
-    ykf_weak_self();
-    [self.connectionController execute:selectFIDO2ApplicationAPDU
-                         configuration:[YKFKeyCommandConfiguration fastCommandCofiguration]
-                            completion:^(NSData *result, NSError *error, NSTimeInterval executionTime) {
-        ykf_safe_strong_self();
-        NSError *returnedError = nil;
-        
-        if (error) {
-            returnedError = error;
-        } else {
-            int statusCode = [YKFKeySession statusCodeFromKeyResponse: result];
-            switch (statusCode) {
-                case YKFKeyAPDUErrorCodeNoError:
-                    break;
-                    
-                case YKFKeyAPDUErrorCodeMissingFile:
-                    returnedError = [YKFKeySessionError errorWithCode:YKFKeySessionErrorMissingApplicationCode];
-                    break;
-                    
-                default:
-                    returnedError = [YKFKeySessionError errorWithCode:statusCode];
-            }
-        }
-
-        if (!returnedError) {
-            strongSelf.applicationSelected = YES;
-        }
-        completion(returnedError);
-    }];
-}
-
 #pragma mark - Request Execution
 
 - (void)executeFIDO2Request:(YKFKeyFIDO2Request *)request completion:(YKFKeyFIDO2SessionResultCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
     
-    [self updateKeyState:YKFKeyFIDO2SessionKeyStateProcessingRequest];
-    
     ykf_weak_self();
-    [self selectFIDO2ApplicationWithCompletion:^(NSError *error) {
+    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         ykf_safe_strong_self();
-        if (error) {
-            [strongSelf updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
-            completion(nil, error);
-            return;
-        }
-        [strongSelf executeFIDO2RequestWithoutApplicationSelection:request completion:completion];
-    }];
-}
 
-- (void)executeFIDO2RequestWithoutApplicationSelection:(YKFKeyFIDO2Request *)request completion:(YKFKeyFIDO2SessionResultCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
-    YKFParameterAssertReturn(completion);
-    
-    ykf_weak_self();
-    [self.connectionController execute:request.apdu completion:^(NSData *result, NSError *error, NSTimeInterval executionTime) {
-        ykf_safe_strong_self();
-        
-        if (error) {
-            if (error.code == YKFKeyFIDO2ErrorCodeTIMEOUT) {
-                strongSelf.applicationSelected = NO;
+        if (data) {
+            UInt8 fido2Error = [self fido2ErrorCodeFromResponseData:data];
+            if (fido2Error != YKFKeyFIDO2ErrorCodeSUCCESS) {
+                completion(nil, [YKFKeyFIDO2Error errorWithCode:fido2Error]);
+            } else {
+                completion(data, nil);
             }
-            
-            [strongSelf updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
-            completion(nil, error);
-            return;
-        }
-        
-        UInt16 statusCode = [YKFKeySession statusCodeFromKeyResponse: result];
-        
-        switch (statusCode) {
-            case YKFKeyAPDUErrorCodeNoError: {
-                UInt8 fido2Error = [strongSelf errorCodeFromKeyResponsePayloadData:result];
-                
-                if (fido2Error != YKFKeyFIDO2ErrorCodeSUCCESS) {
-                    completion(nil, [YKFKeyFIDO2Error errorWithCode:fido2Error]);
-                } else {
-                    completion(result, nil);
-                }
-                [strongSelf updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
-            }
-            break;
-                
-            case YKFKeyAPDUErrorCodeFIDO2TouchRequired: {
+        } else {
+            if (error.code == YKFKeyAPDUErrorCodeFIDO2TouchRequired) {
                 [strongSelf handleTouchRequired:request completion:completion];
-            }
-            break;
-                
-            case YKFKeyAPDUErrorCodeInsNotSupported: {
-                [strongSelf updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
-                completion(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorMissingApplicationCode]);
-            }
-            break;
-                
-            default: {
-                [strongSelf updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
-                completion(nil, [YKFKeyFIDO2Error errorWithCode:statusCode]);
+            } else {
+                completion(nil, error);
             }
         }
     }];
@@ -643,20 +570,17 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
 
 #pragma mark - Helpers
 
-- (UInt8)errorCodeFromKeyResponsePayloadData:(NSData *)response {
-    NSData *responsePayload = [YKFKeySession dataFromKeyResponse:response];
-    YKFAssertReturnValue(responsePayload.length >= 1, @"Cannot extract FIDO2 error code from the key response.", YKFKeyFIDO2ErrorCodeOTHER);
-    
-    UInt8 *payloadBytes = (UInt8 *)responsePayload.bytes;
+- (UInt8)fido2ErrorCodeFromResponseData:(NSData *)data {
+    YKFAssertReturnValue(data.length >= 1, @"Cannot extract FIDO2 error code from the key response.", YKFKeyFIDO2ErrorCodeOTHER);
+    UInt8 *payloadBytes = (UInt8 *)data.bytes;
     return payloadBytes[0];
 }
 
-- (NSData *)cborFromKeyResponsePayloadData:(NSData *)response {
-    NSData *responsePayload = [YKFKeySession dataFromKeyResponse:response];
-    YKFAssertReturnValue(responsePayload.length >= 1, @"Cannot extract FIDO2 cbor from the key response.", nil);
+- (NSData *)cborFromKeyResponseData:(NSData *)data {
+    YKFAssertReturnValue(data.length >= 1, @"Cannot extract FIDO2 cbor from the key response.", nil);
     
     // discard the error byte
-    return [responsePayload subdataWithRange:NSMakeRange(1, responsePayload.length - 1)];
+    return [data subdataWithRange:NSMakeRange(1, data.length - 1)];
 }
 
 - (void)handleTouchRequired:(YKFKeyFIDO2Request *)request completion:(YKFKeyFIDO2SessionResultCompletionBlock)completion {
@@ -675,14 +599,14 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     request.retries += 1;
 
     ykf_weak_self();
-    [self.connectionController dispatchOnSequentialQueue:^{
+    [self.smartCardInterface executeAfterCurrentCommands:^{
         ykf_safe_strong_self();
         
         YKFKeyFIDO2Request *retryRequest = [[YKFKeyFIDO2Request alloc] init];
         retryRequest.retries = request.retries;
         retryRequest.apdu = [[YKFFIDO2TouchPoolingAPDU alloc] init];
         
-        [strongSelf executeFIDO2RequestWithoutApplicationSelection:retryRequest completion:completion];
+        [strongSelf executeFIDO2Request:retryRequest completion:completion];
     }
     delay:request.retryTimeInterval];
 }
