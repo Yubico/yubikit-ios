@@ -303,22 +303,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)executeValidateRequest:(YKFKeyOATHValidateRequest *)request
                     completion:(YKFKeyOATHSessionCompletionBlock)completion;
-/*!
- @method selectOATHApplicationWithCompletion:
- 
- @abstract
-    Sends to the key an OATH select request. This is the first request that is executed before sending any other request be defualt.
-    This method can be executed to receive response on selection.
- 
- @param completion
-    The response block which is executed after the request was processed by the key. The completion block
-    will be executed on a background thread. If the intention is to update the UI, dispatch the results
-    on the main thread to avoid an UIKit assertion.
- 
- @note
-    This method is thread safe and can be invoked from any thread (main or a background thread).
- */
-- (void)selectOATHApplicationWithCompletion:(YKFKeyOATHSelectApplicationCompletionBlock)completion;
 
 @end
 
@@ -342,7 +326,7 @@ NS_ASSUME_NONNULL_BEGIN
     create one. It has to use only the single shared instance from YKFAccessorySession and sync its usage with
     the session state.
  */
-@interface YKFKeyOATHSession: YKFKeySession<YKFKeyOATHSessionProtocol>
+@interface YKFKeyOATHSession: NSObject<YKFKeyOATHSessionProtocol>
 
 /*
  Not available: use only the instance from the YKFAccessorySession.
