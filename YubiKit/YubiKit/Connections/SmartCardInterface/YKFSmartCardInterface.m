@@ -61,8 +61,9 @@
             return;
         }
         UInt16 statusCode = [self statusCodeFromKeyResponse:response];
+        NSData *data = [self dataFromKeyResponse:response];
         if (statusCode == YKFKeyAPDUErrorCodeNoError) {
-            completion(response, nil);
+            completion(data, nil);
         } else if (statusCode == YKFKeyAPDUErrorCodeMissingFile || statusCode == YKFKeyAPDUErrorCodeInsNotSupported) {
             NSError *error = [YKFKeySessionError errorWithCode:YKFKeySessionErrorMissingApplicationCode];
             completion(nil, error);
