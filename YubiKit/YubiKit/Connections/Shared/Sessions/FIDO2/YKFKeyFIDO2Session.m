@@ -198,14 +198,9 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     }
     
     YKFLogVerbose(@"Clearing FIDO2 Session user verification.");
-    
-    ykf_weak_self();
-    [self.smartCardInterface executeAfterCurrentCommands:^{
-        ykf_safe_strong_self();
-        strongSelf.pinToken = nil;
+    self.pinToken = nil;
 // TODO: We can't do this anymore. Should we handle it in some other way?
 //        strongSelf.applicationSelected = NO; // Force also an application re-selection.
-    }];
 }
 
 - (void)executeChangePinRequest:(nonnull YKFKeyFIDO2ChangePinRequest *)request completion:(nonnull YKFKeyFIDO2SessionCompletionBlock)completion {
@@ -487,57 +482,50 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
 - (void)executeGetSharedSecretWithCompletion:(YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
-    // If there is a cached user verification?
+    // Generate the platform key.
+    YKFFIDO2PinAuthKey *platformKey = [[YKFFIDO2PinAuthKey alloc] init];
+    if (!platformKey) {
+        completion(nil, nil, [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeOTHER]);
+        return;
+    }
+    YKFCBORMap *cosePlatformPublicKey = platformKey.cosePublicKey;
+    if (!cosePlatformPublicKey) {
+        completion(nil, nil, [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeOTHER]);
+        return;
+    }
     
-    ykf_weak_self();
-    [self.smartCardInterface executeAfterCurrentCommands:^{
-        ykf_safe_strong_self();
+    // Get the authenticator public key.
+    YKFKeyFIDO2ClientPinRequest *clientPinKeyAgreementRequest = [[YKFKeyFIDO2ClientPinRequest alloc] init];
+    clientPinKeyAgreementRequest.pinProtocol = 1;
+    clientPinKeyAgreementRequest.subCommand = YKFKeyFIDO2ClientPinRequestSubCommandGetKeyAgreement;
+    clientPinKeyAgreementRequest.keyAgreement = cosePlatformPublicKey;
+    
+    [self executeClientPinRequest:clientPinKeyAgreementRequest completion:^(YKFKeyFIDO2ClientPinResponse *response, NSError *error) {
+        if (error) {
+            completion(nil, nil, error);
+            return;
+        }
+        NSDictionary *authenticatorKeyData = response.keyAgreement;
+        if (!authenticatorKeyData) {
+            completion(nil, nil, [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeINVALID_CBOR]);
+            return;
+        }
+        YKFFIDO2PinAuthKey *authenticatorKey = [[YKFFIDO2PinAuthKey alloc] initWithCosePublicKey:authenticatorKeyData];
+        if (!authenticatorKey) {
+            completion(nil, nil, [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeINVALID_CBOR]);
+            return;
+        }
         
-        // Generate the platform key.
-        YKFFIDO2PinAuthKey *platformKey = [[YKFFIDO2PinAuthKey alloc] init];
-        if (!platformKey) {
+        // Generate the shared secret.
+        NSData *sharedSecret = [platformKey sharedSecretWithAuthKey:authenticatorKey];
+        if (!sharedSecret) {
             completion(nil, nil, [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeOTHER]);
             return;
         }
-        YKFCBORMap *cosePlatformPublicKey = platformKey.cosePublicKey;
-        if (!cosePlatformPublicKey) {
-            completion(nil, nil, [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeOTHER]);
-            return;
-        }
+        sharedSecret = [sharedSecret ykf_SHA256];
         
-        // Get the authenticator public key.
-        YKFKeyFIDO2ClientPinRequest *clientPinKeyAgreementRequest = [[YKFKeyFIDO2ClientPinRequest alloc] init];
-        clientPinKeyAgreementRequest.pinProtocol = 1;
-        clientPinKeyAgreementRequest.subCommand = YKFKeyFIDO2ClientPinRequestSubCommandGetKeyAgreement;
-        clientPinKeyAgreementRequest.keyAgreement = cosePlatformPublicKey;
-        
-        [strongSelf executeClientPinRequest:clientPinKeyAgreementRequest completion:^(YKFKeyFIDO2ClientPinResponse *response, NSError *error) {
-            if (error) {
-                completion(nil, nil, error);
-                return;
-            }
-            NSDictionary *authenticatorKeyData = response.keyAgreement;
-            if (!authenticatorKeyData) {
-                completion(nil, nil, [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeINVALID_CBOR]);
-                return;
-            }
-            YKFFIDO2PinAuthKey *authenticatorKey = [[YKFFIDO2PinAuthKey alloc] initWithCosePublicKey:authenticatorKeyData];
-            if (!authenticatorKey) {
-                completion(nil, nil, [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeINVALID_CBOR]);
-                return;
-            }
-            
-            // Generate the shared secret.
-            NSData *sharedSecret = [platformKey sharedSecretWithAuthKey:authenticatorKey];
-            if (!sharedSecret) {
-                completion(nil, nil, [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeOTHER]);
-                return;
-            }
-            sharedSecret = [sharedSecret ykf_SHA256];
-            
-            // Success
-            completion(sharedSecret, cosePlatformPublicKey, nil);
-        }];
+        // Success
+        completion(sharedSecret, cosePlatformPublicKey, nil);
     }];
 }
 
@@ -599,16 +587,14 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     request.retries += 1;
 
     ykf_weak_self();
-    [self.smartCardInterface executeAfterCurrentCommands:^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, request.retryTimeInterval * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         ykf_safe_strong_self();
-        
         YKFKeyFIDO2Request *retryRequest = [[YKFKeyFIDO2Request alloc] init];
         retryRequest.retries = request.retries;
         retryRequest.apdu = [[YKFFIDO2TouchPoolingAPDU alloc] init];
         
         [strongSelf executeFIDO2Request:retryRequest completion:completion];
-    }
-    delay:request.retryTimeInterval];
+    });
 }
 
 @end

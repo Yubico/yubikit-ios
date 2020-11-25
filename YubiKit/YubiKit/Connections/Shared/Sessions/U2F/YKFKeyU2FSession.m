@@ -164,11 +164,10 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
     request.retries += 1;
     
     ykf_weak_self();
-    [self.smartCardInterface executeAfterCurrentCommands:^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, request.retryTimeInterval * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         ykf_safe_strong_self();
         [strongSelf executeU2FRequest:request completion:completion];
-    }
-    delay:request.retryTimeInterval];
+    });
 }
 
 #pragma mark - Key responses
