@@ -52,10 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeySmartCardInterfaceResponseBlock)completion;
 
-- (void)executeAfterCurrentCommands:(YKFKeySmartCardInterfaceExecutionBlock)block delay:(NSTimeInterval)delay;
-
-- (void)executeAfterCurrentCommands:(YKFKeySmartCardInterfaceExecutionBlock)block;
-
 NS_ASSUME_NONNULL_END
 
 @end
