@@ -6,12 +6,9 @@
 //  Copyright © 2020 Yubico. All rights reserved.
 //
 
-#import "YKFKeyManagementRequest.h"
-#import "YKFKeyManagementRequest+Private.h"
-#import "YKFKeyManagementReadConfigurationRequest.h"
 #import "YKFKeyManagementReadConfigurationResponse.h"
 #import "YKFKeyManagementReadConfigurationResponse+Private.h"
-#import "YKFKeyManagementWriteConfigurationRequest.h"
+#import "YKFManagementWriteAPDU.h"
 #import "YKFAssert.h"
 #import "YKFKeyAPDUError.h"
 #import "YKFKeyManagementSession+Private.h"
@@ -49,10 +46,8 @@
 - (void)readConfigurationWithCompletion:(YKFKeyManagementSessionReadCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
 
-    YKFKeyManagementReadConfigurationRequest* request = [[YKFKeyManagementReadConfigurationRequest alloc] init];
-    
-    
-    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0x1D p1:0x00 p2:0x00 data:[NSData data] type:YKFAPDUTypeShort];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
             return;
@@ -64,20 +59,18 @@
     }];
 }
 
-- (void) writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot completion:(nonnull YKFKeyManagementSessionWriteCompletionBlock)completion {
+- (void)writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot completion:(nonnull YKFKeyManagementSessionWriteCompletionBlock)completion {
     YKFParameterAssertReturn(configuration);
     YKFParameterAssertReturn(configuration);
     
-    YKFKeyManagementWriteConfigurationRequest* request = [[YKFKeyManagementWriteConfigurationRequest alloc]
-                                                          initWithConfiguration: configuration
-                                                          reboot: reboot];
+    YKFManagementWriteAPDU *apdu = [[YKFManagementWriteAPDU alloc]initWithConfiguration:configuration reboot:reboot];
     
-    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         completion(error);
     }];
 }
 
-// No state that needs clearing but this will be called when another
+// No application side state that needs clearing but this will be called when another
 // session is replacing the YKFKeyManagementSession.
 - (void)clearSessionState {
     ;

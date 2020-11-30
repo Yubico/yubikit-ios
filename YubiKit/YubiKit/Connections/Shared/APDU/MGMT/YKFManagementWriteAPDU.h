@@ -7,13 +7,13 @@
 //
 
 #import "YKFAPDU.h"
-#import "YKFKeyManagementWriteConfigurationRequest.h"
-
 NS_ASSUME_NONNULL_BEGIN
+
+@class YKFManagementInterfaceConfiguration;
 
 @interface YKFManagementWriteAPDU : YKFAPDU
 
-- (nullable instancetype)initWithRequest:(YKFKeyManagementWriteConfigurationRequest *)request  NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithConfiguration:(nonnull YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
