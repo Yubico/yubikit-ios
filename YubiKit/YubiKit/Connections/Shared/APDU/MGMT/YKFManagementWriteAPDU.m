@@ -9,7 +9,6 @@
 #import "YKFManagementWriteAPDU.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFManagementInterfaceConfiguration+Private.h"
-#import "YKFManagementReadConfigurationTags.h"
 #import "YKFNSMutableDataAdditions.h"
 #import "YKFAssert.h"
 
@@ -17,11 +16,10 @@
 
 static UInt8 const YKFManagementConfigurationTagsReboot = 0x0c;
 
-- (instancetype)initWithRequest:(nonnull YKFKeyManagementWriteConfigurationRequest *)request {
-    YKFAssertAbortInit(request);
+- (instancetype)initWithConfiguration:(nonnull YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot {
+    YKFAssertAbortInit(configuration);
 
     NSMutableData *configData = [[NSMutableData alloc] init];
-    YKFManagementInterfaceConfiguration *configuration = request.configuration;
     if (configuration.usbMaskChanged) {
         [configData ykf_appendShortWithTag:YKFManagementReadConfigurationTagsUsbEnabled data:configuration.usbEnabledMask];
     }
@@ -30,7 +28,7 @@ static UInt8 const YKFManagementConfigurationTagsReboot = 0x0c;
         [configData ykf_appendShortWithTag:YKFManagementReadConfigurationTagsNfcEnabled data:configuration.nfcEnabledMask];
     }
     
-    if (request.reboot) {
+    if (reboot) {
         // specify that device requires reboot (force disconnection of YubiKey)
         [configData ykf_appendByte:YKFManagementConfigurationTagsReboot];
         [configData ykf_appendByte:0];
@@ -40,7 +38,7 @@ static UInt8 const YKFManagementConfigurationTagsReboot = 0x0c;
     [rawRequest ykf_appendByte:configData.length];
     [rawRequest appendData:configData];
 
-    return [super initWithCla:0x00 ins:YKFAPDUCommandInstructionManagementWrite p1:0x00 p2:0x00 data:rawRequest type:YKFAPDUTypeShort];
+    return [super initWithCla:0x00 ins:0x1C p1:0x00 p2:0x00 data:rawRequest type:YKFAPDUTypeShort];
 }
 
 @end

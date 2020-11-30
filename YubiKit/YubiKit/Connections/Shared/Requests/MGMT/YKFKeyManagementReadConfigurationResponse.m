@@ -10,7 +10,6 @@
 #import "YKFKeyManagementReadConfigurationResponse+Private.h"
 #import "YKFAssert.h"
 #import "YKFNSDataAdditions+Private.h"
-#import "YKFManagementReadConfigurationTags.h"
 #import "YKFManagementInterfaceConfiguration+Private.h"
 
 @interface YKFKeyManagementReadConfigurationResponse()

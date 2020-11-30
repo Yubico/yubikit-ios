@@ -46,8 +46,4 @@ typedef NS_ENUM(NSUInteger, YKFAPDUCommandInstruction) {
     
     /* Application selection */
     YKFAPDUCommandInstructionSelectApplication = 0xA4,
-    
-    /* Management/Management instructions **/
-    YKFAPDUCommandInstructionManagementRead = 0x1D,
-    YKFAPDUCommandInstructionManagementWrite = 0x1C
 };
