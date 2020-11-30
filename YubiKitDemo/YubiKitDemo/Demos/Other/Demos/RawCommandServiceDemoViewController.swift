@@ -44,8 +44,8 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
             }
             
             // 1. Select PIV application
-            let selectPIVAPDU = YKFAPDU(data: Data([0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08]))!
-            smartCard.executeCommand(selectPIVAPDU) { response, error in
+            let selectPIVAPDU = YKFSelectApplicationAPDU(data: Data([0xA0, 0x00, 0x00, 0x03, 0x08]))!
+            smartCard.selectApplication(selectPIVAPDU) { response, error in
                 guard error == nil else {
                     self.log(error: error!)
                     return
