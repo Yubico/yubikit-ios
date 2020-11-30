@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@class YKFKeyOATHSession, YKFKeyU2FSession, YKFKeyFIDO2Session, YKFKeyRawCommandSession, YKFKeyChallengeResponseSession, YKFKeyManagementSession;
+@class YKFKeyOATHSession, YKFKeyU2FSession, YKFKeyFIDO2Session, YKFKeyChallengeResponseSession, YKFKeyManagementSession, YKFSmartCardInterface;
 
 @protocol YKFConnectionProtocol<NSObject>
 
@@ -25,13 +25,12 @@ typedef void (^U2FSession)(YKFKeyU2FSession *_Nullable, NSError* _Nullable);
 typedef void (^FIDO2Session)(YKFKeyFIDO2Session *_Nullable, NSError* _Nullable);
 - (void)fido2Session:(FIDO2Session _Nonnull)callback;
 
-typedef void (^RawCommandSession)(YKFKeyRawCommandSession *_Nullable, NSError* _Nullable);
-- (void)rawCommandSession:(RawCommandSession _Nonnull)callback;
-
 typedef void (^ChallengeResponseSession)(YKFKeyChallengeResponseSession *_Nullable, NSError* _Nullable);
 - (void)challengeResponseSession:(ChallengeResponseSession _Nonnull)callback;
 
 typedef void (^ManagementSession)(YKFKeyManagementSession *_Nullable, NSError* _Nullable);
 - (void)managementSession:(ManagementSession _Nonnull)callback;
+
+@property (nonatomic, readonly) YKFSmartCardInterface *_Nullable smartCardInterface;
 
 @end

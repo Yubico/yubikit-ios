@@ -96,61 +96,59 @@
 
 #pragma mark - Command execution
 
+- (void)executeManagementApplicationSelection {
+    NSData *data = [NSData dataWithBytes:(UInt8[]){0xA0, 0x00, 0x00, 0x05, 0x27, 0x47, 0x11, 0x17} length:8];
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithData:data];
+    [self executeApplicationSelection:apdu];
+}
+
 - (void)executeU2FApplicationSelection {
-    static const NSUInteger applicationIdSize = 8;
-    UInt8 u2fApplicationId[applicationIdSize] = {0xA0, 0x00, 0x00, 0x06, 0x47, 0x2F, 0x00, 0x01};
-    NSData *data = [NSData dataWithBytes:u2fApplicationId length:applicationIdSize];
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0xA4 p1:0x04 p2:0x00 data:data type:YKFAPDUTypeShort];
-    
+    NSData *data = [NSData dataWithBytes:(UInt8[]){0xA0, 0x00, 0x00, 0x06, 0x47, 0x2F, 0x00, 0x01} length:8];
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithData:data];
     [self executeApplicationSelection:apdu];
 }
 
 - (void)executeGnubbyU2FApplicationSelection {
-    YKFAPDU *apdu = [[GnubbySelectU2FApplicationAPDU alloc] init];
+    NSData *data = [NSData dataWithBytes:(UInt8[]){0xA0, 0x00, 0x00, 0x05, 0x27, 0x10, 0x02, 0x01} length:8];
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithData:data];
     [self executeApplicationSelection:apdu];
 }
 
 - (void)executeYubiKeyApplicationSelection {
-    static const NSUInteger applicationIdSize = 8;
-    UInt8 yubiKeyApplicationId[applicationIdSize] = {0xA0, 0x00, 0x00, 0x05, 0x27, 0x20, 0x01, 0x01};
-    NSData *data = [NSData dataWithBytes:yubiKeyApplicationId length:applicationIdSize];
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0xA4 p1:0x04 p2:0x00 data:data type:YKFAPDUTypeShort];
-
+    
+    
+    
+    NSData *data = [NSData dataWithBytes:(UInt8[]){0xA0, 0x00, 0x00, 0x05, 0x27, 0x20, 0x01, 0x01} length:8];
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithData:data];
     [self executeApplicationSelection:apdu];
 }
 
 - (void)executePivApplicationSelection {
-    static const NSUInteger applicationIdSize = 10;
-    UInt8 yubiKeyApplicationId[applicationIdSize] = {0xA0, 0x00, 0x00, 0x03, 0x08, 0x00, 0x00, 0x10, 0x00, 0x00};
-    NSData *data = [NSData dataWithBytes:yubiKeyApplicationId length:applicationIdSize];
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0xA4 p1:0x04 p2:0x00 data:data type:YKFAPDUTypeShort];
-
+//    0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08
+    NSData *data = [NSData dataWithBytes:(UInt8[]){0xA0, 0x00, 0x00, 0x03, 0x08} length:5];
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithData:data];
     [self executeApplicationSelection:apdu];
 }
 
-- (void)executeApplicationSelection:(YKFAPDU *)apdu {
+- (void)executeApplicationSelection:(YKFSelectApplicationAPDU *)apdu {
     __weak typeof(self) weakSelf = self;
-    
-    [self.accessorySession rawCommandSession:^(YKFKeyRawCommandSession * _Nullable session, NSError * _Nullable error) {
-            [session executeCommand:apdu completion:^(NSData * _Nullable response, NSError * _Nullable error) {
-                __strong typeof(self) strongSelf = weakSelf;
-                if (error) {
-                    [TestSharedLogger.shared logError: @"U2F application selection failed with error: %@", error.localizedDescription];
-                    
-                    // Cancel all queued commands
-                    [strongSelf.accessorySession cancelCommands];
-                }
-            }];
+    [self.connection.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        __strong typeof(self) strongSelf = weakSelf;
+        if (error) {
+            [TestSharedLogger.shared logError: @"Application selection failed with error: %@", error.localizedDescription];
+            // Cancel all queued commands
+            [strongSelf.accessorySession cancelCommands];
+        } else {
+            [TestSharedLogger.shared logMessage: @"Application selected"];
+        }
     }];
 }
 
-- (void)executeCommandWithAPDU:(YKFAPDU *)apdu completion:(YKFKeyRawCommandSessionResponseBlock)completion {
-    [self.accessorySession rawCommandSession:^(YKFKeyRawCommandSession * _Nullable session, NSError * _Nullable error) {
-        [session executeCommand:apdu completion:completion];
-    }];
+- (void)executeCommandWithAPDU:(YKFAPDU *)apdu completion:(YKFKeySmartCardInterfaceResponseBlock)completion {
+    [self.accessorySession.smartCardInterface executeCommand:apdu completion:completion];
 }
 
-- (void)executeCommandWithData:(NSData *)data completion:(YKFKeyRawCommandSessionResponseBlock)completion {
+- (void)executeCommandWithData:(NSData *)data completion:(YKFKeySmartCardInterfaceResponseBlock)completion {
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithData:data];
     [self executeCommandWithAPDU:apdu completion:completion];
 }

@@ -14,8 +14,6 @@
 
 #import <XCTest/XCTest.h>
 #import "YKFTestCase.h"
-#import "YKFKeyRawCommandSession.h"
-#import "YKFKeyRawCommandService+Private.h"
 #import "FakeYKFKeyConnectionController.h"
 #import "YKFAPDU+Private.h"
 

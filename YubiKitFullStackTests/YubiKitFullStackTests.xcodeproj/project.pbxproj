@@ -608,6 +608,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.YubiKitFullStackTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				YKF_ENABLE_VERBOSE_LOGGING = YES;
 			};
 			name = Debug;
 		};
@@ -628,6 +629,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.YubiKitFullStackTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				YKF_ENABLE_VERBOSE_LOGGING = YES;
 			};
 			name = Release;
 		};

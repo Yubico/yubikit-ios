@@ -14,6 +14,7 @@
 
 #import "YKFAccessoryConnectionController.h"
 #import "YubiKitManager.h"
+#import "YKFSmartCardInterface.h"
 #import "YKFPCSCLayer.h"
 #import "YKFPCSCErrors.h"
 #import "YKFPCSCTypes.h"
@@ -182,18 +183,14 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
-    ykf_weak_self();
-    [YubiKitManager.shared.accessorySession rawCommandSession:^(YKFKeyRawCommandSession * _Nullable session, NSError * _Nullable error) {
-        ykf_safe_strong_self();
-        if (error) {
-            dispatch_semaphore_signal(semaphore);
-            return;
-        }
-        [session executeCommand:command completion:^(NSData * _Nullable response, NSError * _Nullable error) {
-            responseData = response;
+    YKFSmartCardInterface *smartCard = YubiKitManager.shared.accessorySession.smartCardInterface;
+    
+    if (smartCard) {
+        [smartCard executeCommand:command completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+            responseData = data;
             dispatch_semaphore_signal(semaphore);
         }];
-    }];
+    }
     
     dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(YKFPCSCCommandTimeout * NSEC_PER_SEC));
     dispatch_semaphore_wait(semaphore, timeout);

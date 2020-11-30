@@ -30,7 +30,7 @@
 #import "YKFDispatch.h"
 #import "YKFAssert.h"
 
-#import "YKFKeyRawCommandSession+Private.h"
+#import "YKFSmartCardInterface.h"
 #import "YKFKeyOATHSession+Private.h"
 #import "YKFKeyU2FSession+Private.h"
 #import "YKFKeyFIDO2Session+Private.h"
@@ -119,6 +119,13 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     return self;
 }
 
+- (YKFSmartCardInterface *)smartCardInterface {
+    if (!self.connectionController) {
+        return nil;
+    }
+    return [[YKFSmartCardInterface alloc] initWithConnectionController:self.connectionController];
+}
+
 - (void)oathSession:(OATHSession _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFKeyOATHSession sessionWithConnectionController:self.connectionController
@@ -144,13 +151,6 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
         self.currentSession = session;
         callback(session, error);
     }];
-}
-
-- (void)rawCommandSession:(RawCommandSession _Nonnull)callback {
-    [self.currentSession clearSessionState];
-    YKFKeyRawCommandSession *session = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.connectionController];
-    self.currentSession = session;
-    callback(session, nil);
 }
 
 - (void)challengeResponseSession:(ChallengeResponseSession _Nonnull)callback {

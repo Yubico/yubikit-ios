@@ -24,11 +24,11 @@
 #import "YKFLogger.h"
 #import "YKFAssert.h"
 
+#import "YKFSmartCardInterface.h"
 #import "YKFNFCOTPSession+Private.h"
 #import "YKFKeyU2FSession+Private.h"
 #import "YKFKeyFIDO2Session+Private.h"
 #import "YKFKeyOATHSession+Private.h"
-#import "YKFKeyRawCommandSession+Private.h"
 #import "YKFKeyChallengeResponseSession.h"
 #import "YKFKeyChallengeResponseSession+Private.h"
 #import "YKFKeyManagementSession.h"
@@ -45,7 +45,6 @@
 
 @property (nonatomic, readwrite) YKFNFCTagDescription *tagDescription API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFNFCOTPSession *otpService API_AVAILABLE(ios(11.0));
-@property (nonatomic, readwrite) YKFKeyRawCommandSession *rawCommandService API_AVAILABLE(ios(13.0));
 
 @property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
 
@@ -72,6 +71,13 @@
         [self setupCommunicationQueue];
     }
     return self;
+}
+
+- (YKFSmartCardInterface *)smartCardInterface {
+    if (!self.connectionController) {
+        return nil;
+    }
+    return [[YKFSmartCardInterface alloc] initWithConnectionController:self.connectionController];
 }
 
 - (void)oathSession:(OATHSession _Nonnull)callback {
@@ -103,13 +109,6 @@
         self.currentSession = session;
         callback(session, error);
     }];
-}
-
-- (void)rawCommandSession:(RawCommandSession _Nonnull)callback {
-    [self.currentSession clearSessionState];
-    YKFKeyRawCommandSession *session = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.connectionController];
-    self.currentSession = session;
-    callback(session, nil);
 }
 
 - (void)challengeResponseSession:(ChallengeResponseSession _Nonnull)callback {
@@ -268,10 +267,6 @@
     switch (state) {
         case YKFNFCConnectionStateClosed:
             [self.delegate didDisconnectNFC:self error:self.nfcConnectionError];
-//            self.u2fService = nil;
-//            self.fido2Service = nil;
-            self.rawCommandService = nil;
-//            self.oathService = nil;
             self.connectionController = nil;
             self.tagDescription = nil;
 
@@ -284,8 +279,6 @@
         
         case YKFNFCConnectionStatePolling:
             self.nfcConnectionError = nil;
-
-            self.rawCommandService = nil;
             self.connectionController = nil;
             self.tagDescription = nil;
             [self unobserveIso7816TagAvailability];
@@ -299,7 +292,6 @@
             self.connectionController = [[YKFNFCConnectionController alloc] initWithNFCTag:tag operationQueue:self.communicationQueue];
             [self.delegate didConnectNFC:self];
             
-            self.rawCommandService = [[YKFKeyRawCommandSession alloc] initWithConnectionController:self.connectionController];
             self.tagDescription = [[YKFNFCTagDescription alloc] initWithTag: tag];
             break;
     }
