@@ -34,16 +34,18 @@
 #import "YKFAccessoryConnection.h"
 #import "YKFAccessoryDescription.h"
 
+#import "YKFSelectApplicationAPDU.h"
 #import "YKFKeySessionError.h"
 #import "YKFKeyFIDO2Error.h"
 #import "YKFKeyU2FError.h"
 #import "YKFKeyOATHError.h"
 #import "YKFKeyAPDUError.h"
 
+#import "YKFSmartCardInterface.h"
+
 #import "YKFKeyU2FSession.h"
 #import "YKFKeyFIDO2Session.h"
 #import "YKFKeyOATHSession.h"
-#import "YKFKeyRawCommandSession.h"
 #import "YKFKeyChallengeResponseSession.h"
 #import "YKFKeyManagementSession.h"
 

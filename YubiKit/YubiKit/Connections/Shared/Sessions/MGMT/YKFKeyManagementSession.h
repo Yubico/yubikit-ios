@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "YKFKeyRawCommandSession.h"
 #import "YKFKeyManagementReadConfigurationResponse.h"
 
 /**

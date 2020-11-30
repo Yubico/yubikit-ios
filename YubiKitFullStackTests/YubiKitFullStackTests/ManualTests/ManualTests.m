@@ -111,7 +111,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     NSMutableArray *pivTests = [[NSMutableArray alloc] init];
 
     // Do rsa sig
-    NSValue *pivGenAuthRsaSig = [NSValue valueWithPointer:@selector(test_WhenSendingGeneralAuthToSlot1_KeySendsRsaSig)];
+    NSValue *pivGenAuthRsaSig = [NSValue valueWithPointer:@selector(test_generateRsa2048Signature)];
     NSArray *pivGenAuthRsaSigTestEntry = @[@"PIV Verify Pin and General Auth", @"Performs an RSA signature.", pivGenAuthRsaSig];
     [pivTests addObject:pivGenAuthRsaSigTestEntry];
 
@@ -299,13 +299,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
             [TestSharedLogger.shared logError: @"Error: %@", error.localizedDescription];
             return;
         }
-        NSUInteger statusCode = [KeyCommandResponseParser statusCodeFromData:response];
-        
-        if (statusCode == YKFKeyAPDUErrorCodeNoError) {
-            [TestSharedLogger.shared logSuccess:@"Received application version."];
-        } else {
-            [TestSharedLogger.shared logError:@"Received wrong response status."];
-        }
+        [TestSharedLogger.shared logSuccess:@"Received application version."];
     }];
 }
 
@@ -576,86 +570,35 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
 
 #pragma mark - Piv Tests
 
-- (void)test_WhenSendingGeneralAuthToSlot1_KeySendsRsaSig {
-    NSString *hexString = @"313233343536ffff";
-    NSData *data = [self.testDataGenerator dataFromHexString:hexString];
-
+- (void)test_generateRsa2048Signature {
     [self executePivApplicationSelection];
-
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0x20 p1:0x00 p2:0x80 data:data type:YKFAPDUTypeShort];
-
-    [self executeCommandWithAPDU:apdu completion:^(NSData *result, NSError *error) {
+    // Verify PIN with default PIN number (123456)
+    NSData *pinData = [NSData dataWithBytes:(UInt8[]){0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0xff, 0xff} length:8];
+    YKFAPDU *pinApdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0x20 p1:0x00 p2:0x80 data:pinData type:YKFAPDUTypeShort];
+    [self executeCommandWithAPDU:pinApdu completion:^(NSData *result, NSError *error) {
         if (error) {
             [TestSharedLogger.shared logError: @"Failed pin verification: %@", error.localizedDescription];
             return;
         }
-        [TestSharedLogger.shared logMessage:@"Received data length: %d", result.length];
-
-        NSData *respData = [result subdataWithRange:NSMakeRange(0, result.length - 2)];
-        [TestSharedLogger.shared logMessage:@"Sent data:\n%@", data];
-        [TestSharedLogger.shared logMessage:@"Received data:\n%@", respData];
-    }];
-
-    hexString = @"7c8201068200818201000001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff003031300d060960864801650304020105000420c6b7edaa05038235152a79711e34f64e0d0b01e5c3";
-
-    data = [self.testDataGenerator dataFromHexString:hexString];
-
-    apdu = [[YKFAPDU alloc] initWithCla:0x10 ins:0x87 p1:0x07 p2:0x9a data:data type:YKFAPDUTypeShort];
-
-    [self executeCommandWithAPDU:apdu completion:^(NSData *result, NSError *error) {
-        if (error) {
-            [TestSharedLogger.shared logError: @"Failed sig: %@", error.localizedDescription];
-            return;
-        }
-        [TestSharedLogger.shared logMessage:@"Received data length: %d", result.length];
-
-        NSData *respData = [result subdataWithRange:NSMakeRange(0, result.length - 2)];
-        [TestSharedLogger.shared logMessage:@"Sent data:\n%@", data];
-        [TestSharedLogger.shared logMessage:@"Received data:\n%@", respData];
-    }];
-
-    hexString = @"952cb588b3dbbf0d23009400";
-
-    data = [self.testDataGenerator dataFromHexString:hexString];
-
-    apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0x87 p1:0x07 p2:0x9a data:data type:YKFAPDUTypeShort];
-
-    [self executeCommandWithAPDU:apdu completion:^(NSData *result, NSError *error) {
-        if (error) {
-            [TestSharedLogger.shared logError: @"Failed sig: %@", error.localizedDescription];
-            return;
-        }
-        [TestSharedLogger.shared logMessage:@"Received data length: %d", result.length];
-
-        NSData *respData = [result subdataWithRange:NSMakeRange(0, result.length - 2)];
-        [TestSharedLogger.shared logMessage:@"Sent data:\n%@", data];
-        [TestSharedLogger.shared logMessage:@"Received data:\n%@", respData];
-    }];
-
-    hexString = @"00000000000000000000";
-
-    data = [self.testDataGenerator dataFromHexString:hexString];
-
-    apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0xc0 p1:0x00 p2:0x00 data:data type:YKFAPDUTypeShort];
-
-    [self executeCommandWithAPDU:apdu completion:^(NSData *result, NSError *error) {
-        if (error) {
-            [TestSharedLogger.shared logError: @"Failed sig: %@", error.localizedDescription];
-            return;
-        }
-        [TestSharedLogger.shared logMessage:@"Received data length: %d", result.length];
-
-        NSData *respData = [result subdataWithRange:NSMakeRange(0, result.length - 2)];
-        [TestSharedLogger.shared logMessage:@"Sent data:\n%@", data];
-        [TestSharedLogger.shared logMessage:@"Received data:\n%@", respData];
+        [TestSharedLogger.shared logMessage:@"PIN verified."];
+        NSData *data = [self.testDataGenerator dataFromHexString:@"7c8201068200818201000001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff003031300d060960864801650304020105000420c6b7edaa05038235152a79711e34f64e0d0b01e5c3952cb588b3dbbf0d23009400"];
+        YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0x87 p1:0x07 p2:0x9a data:data type:YKFAPDUTypeExtended];
+        [self executeCommandWithAPDU:apdu completion:^(NSData * _Nullable resultData, NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logError: @"Make sure there is a RSA2048 certificate in slot 9a on your Yubikey. Error: %d", error.code];
+                return;
+            }
+            [TestSharedLogger.shared logMessage:@"Sent data: %@", data];
+            [TestSharedLogger.shared logMessage:@"Received data: %@", resultData];
+            [TestSharedLogger.shared logSuccess:@"RSA2048 decrypt successfull"];
+        }];
     }];
 }
 
 #pragma mark - FIDO2 Tests
 
 - (void)test_WhenCallingFIDO2Reset_KeyApplicationResets {
-    YKFAccessoryConnection *connection = YubiKitManager.shared.accessorySession;
-    [connection fido2Session:^(id<YKFKeyFIDO2SessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
+    [self.connection fido2Session:^(id<YKFKeyFIDO2SessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
         if (sessionError) {
             [TestSharedLogger.shared logMessage:@"Failed to create FIDO2 session: %ld - %@", sessionError.code, sessionError.localizedDescription];
             return;
@@ -735,13 +678,9 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
 #pragma mark - Touch Tests
 
 - (void)test_WhenTouchIsRequiredForCCID_TouchIsDetected {
-    static const NSUInteger aidSize = 8;
-    static const UInt8 aid[aidSize] = {0xA0, 0x00, 0x00, 0x05, 0x27, 0x47, 0x11, 0x17};
-    NSData *data = [NSData dataWithBytes:aid length:aidSize];
-    YKFAPDU *selectAPDU = [[YKFAPDU alloc] initWithCla:0x00 ins:0xA4 p1:0x04 p2:0x00 data:data type:YKFAPDUTypeShort];
-    
+    YKFAPDU *selectApplicationAPDU = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameManagement];
     __weak typeof(self) weakSelf = self;
-    [self executeCommandWithAPDU:selectAPDU completion:^(NSData *response, NSError *error) {
+    [self executeCommandWithAPDU:selectApplicationAPDU completion:^(NSData *response, NSError *error) {
         if (error) {
             [TestSharedLogger.shared logError: @"Could not select the management application."];
         } else {

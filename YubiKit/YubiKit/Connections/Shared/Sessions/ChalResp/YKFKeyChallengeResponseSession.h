@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "YKFKeyRawCommandSession.h"
 #import "YKFKeySession.h"
 #import "YKFSlot.h"
 

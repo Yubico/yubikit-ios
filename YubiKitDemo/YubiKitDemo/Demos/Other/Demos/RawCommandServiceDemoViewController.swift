@@ -38,59 +38,55 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
     @IBAction func runDemoButtonPressed(_ sender: Any) {
         self.connection { connection in
             self.log(message: "Connection: \(connection)")
-            connection.rawCommandSession { session, error in
-                guard let session = session else {
-                    if let error = error {
-                        self.log(error: error)
-                    } else {
-                        fatalError()
-                    }
+            guard let smartCard = connection.smartCardInterface else {
+                self.log(error: "Failed to get smart card interface.")
+                return
+            }
+            
+            // 1. Select PIV application
+            let selectPIVAPDU = YKFAPDU(data: Data([0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08]))!
+            smartCard.executeCommand(selectPIVAPDU) { response, error in
+                guard error == nil else {
+                    self.log(error: error!)
                     return
                 }
-                // 1. Select PIV application
-                let selectPIVAPDU = YKFAPDU(data: Data([0x00, 0xA4, 0x04, 0x00, 0x05, 0xA0, 0x00, 0x00, 0x03, 0x08]))!
-                session.executeCommand(selectPIVAPDU) { response, error in
+                
+                // 2. Verify against the PIV application from the key (PIN is default 123456).
+                let verifyApdu = YKFAPDU(data: Data([0x00, 0x20, 0x00, 0x80, 0x08, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0xff, 0xff]))!
+                
+                smartCard.executeCommand(verifyApdu) { response, error in
                     guard error == nil else {
                         self.log(error: error!)
                         return
                     }
+                    self.log(message: "PIN verification successful.")
                     
-                    // 2. Verify against the PIV application from the key (PIN is default 123456).
-                    let verifyApdu = YKFAPDU(data: Data([0x00, 0x20, 0x00, 0x80, 0x08, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0xff, 0xff]))!
-
-                    session.executeCommand(verifyApdu) { response, error in
-                        guard error == nil else {
-                            self.log(error: error!)
+                    // 3. Read the certificate stored on the PIV application in slot 9C.
+                    let readApdu = YKFAPDU(data: Data([0x00, 0xCB, 0x3F, 0xFF, 0x05, 0x5C, 0x03, 0x5F, 0xC1, 0x0A]))!
+                    smartCard.executeCommand(readApdu) { data, error in
+                        
+                        guard let data = data else {
+                            self.log(error: "Failed to read certificate")
                             return
                         }
-                        self.log(message: "PIN verification successful.")
-
-                        // 3. Read the certificate stored on the PIV application in slot 9C.
-                        let readApdu = YKFAPDU(data: Data([0x00, 0xCB, 0x3F, 0xFF, 0x05, 0x5C, 0x03, 0x5F, 0xC1, 0x0A]))!
-                        session.executeCommand(readApdu) { data, error in
-
-                            guard let data = data else {
-                                self.log(error: "Failed to read certificate")
-                                return
-                            }
-                            
-                            guard data.count != 0 else {
-                                self.log(error: "Could not read a certificate from the slot. The slot seems to be empty.")
-                                return
-                            }
-                            
-                            self.log(message: "Reading certificate successful.")
-
-                            // 4. Parse the certificate data
-                            guard let certificate = RawDemoSecCertificate(keyData: data) else {
-                                self.log(error: "Could not create a certificate with the data returned from the YubiKey.")
-                                return
-                            }
-
-                            // 5. Use the certificate to verify a signature.
-                            // The data which was signed with the private key of the stored certificate.
-                            let signedString = "yk certificate test"
-                            let signedStringB64Signature = """
+                        
+                        guard data.count != 0 else {
+                            self.log(error: "Could not read a certificate from the slot. The slot seems to be empty.")
+                            return
+                        }
+                        
+                        self.log(message: "Reading certificate successful.")
+                        
+                        // 4. Parse the certificate data
+                        guard let certificate = RawDemoSecCertificate(keyData: data) else {
+                            self.log(error: "Could not create a certificate with the data returned from the YubiKey.")
+                            return
+                        }
+                        
+                        // 5. Use the certificate to verify a signature.
+                        // The data which was signed with the private key of the stored certificate.
+                        let signedString = "yk certificate test"
+                        let signedStringB64Signature = """
                                                            XKDV/7sBSYEOEYcTL+C3PErOQ46Ql8y0MJDzh6OT7g3hvI/zi/UfHNls+CRrm8rjE0\
                                                            UtwqpniBU5lhMQxoICcUemg3c3BZeFl4QaKsuNfcPQ4Q0cPFT35vr5aMwj9EHcLlzS\
                                                            iYT20lVNpk8m48LBMGu0r8KGTz1GD1lzxxLJe/ZHbkTJTSCrbRBORpq8kGgB33Eukr\
@@ -98,21 +94,20 @@ class RawCommandServiceDemoViewController: OtherDemoRootViewController {
                                                            F5SUpeBpLeqrJ3FYC6m+oyuXG/fpVJQzCHDTIWpXKSvYiebvFQ9OYiBDrN+KCF6n/j\
                                                            07IDatH/5WnQ==
                                                            """
-                            let signatureData = Data(base64Encoded: signedStringB64Signature)
-                            if signatureData == nil {
-                                self.log(error: "Could not create a data object from the supplied signature Base64 encoded string.")
-                                return
-                            }
-                            let signedData = signedString.data(using: String.Encoding.utf8)!
-
-                            let signatureIsValid = certificate.verify(data: signedData, signature: signatureData!)
-                            self.log(message:signatureIsValid ? "Signature is valid." : "Signature is not valid.")
-                            if #available(iOS 13.0, *) {
-                                YubiKitManager.shared.stopNFCConnection()
-                            }
+                        let signatureData = Data(base64Encoded: signedStringB64Signature)
+                        if signatureData == nil {
+                            self.log(error: "Could not create a data object from the supplied signature Base64 encoded string.")
+                            return
+                        }
+                        let signedData = signedString.data(using: String.Encoding.utf8)!
+                        
+                        let signatureIsValid = certificate.verify(data: signedData, signature: signatureData!)
+                        self.log(message:signatureIsValid ? "Signature is valid." : "Signature is not valid.")
+                        if #available(iOS 13.0, *) {
+                            YubiKitManager.shared.stopNFCConnection()
                         }
                     }
-                 }
+                }
             }
         }
     }

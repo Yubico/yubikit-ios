@@ -51,7 +51,6 @@
 		950C700C22980CFE00E48458 /* FakeUIDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C700B22980CFE00E48458 /* FakeUIDevice.m */; };
 		951446A021873D43002BB3C5 /* YKFNSMutableDataAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D5E2DB2187159700AA1C11 /* YKFNSMutableDataAdditions.m */; };
 		951446A421874CC2002BB3C5 /* YKFKeyCommandConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 951446A321874CC2002BB3C5 /* YKFKeyCommandConfiguration.m */; };
-		951446A521876060002BB3C5 /* YKFKeyRawCommandSession.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95D5E2D7218712BF00AA1C11 /* YKFKeyRawCommandSession.h */; };
 		951446AA2188592C002BB3C5 /* YKFPCSCLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 951446A92188592C002BB3C5 /* YKFPCSCLayer.m */; };
 		951446AD21885962002BB3C5 /* YKFPCSC.m in Sources */ = {isa = PBXBuildFile; fileRef = 951446AC21885962002BB3C5 /* YKFPCSC.m */; };
 		95233E552330DEE000C51F92 /* YubiKitLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 95233E532330DEDF00C51F92 /* YubiKitLogger.m */; };
@@ -205,7 +204,6 @@
 		95C2965A2062A5970091318B /* YubiKitManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 95C296592062A5970091318B /* YubiKitManager.m */; };
 		95CCAE5F2241220600B567D2 /* YKFKeyFIDO2SetPinRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 95CCAE5E2241220600B567D2 /* YKFKeyFIDO2SetPinRequest.m */; };
 		95CCAE62224122FD00B567D2 /* YKFKeyFIDO2ChangePinRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 95CCAE61224122FD00B567D2 /* YKFKeyFIDO2ChangePinRequest.m */; };
-		95D5E2D9218712BF00AA1C11 /* YKFKeyRawCommandSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D5E2D8218712BF00AA1C11 /* YKFKeyRawCommandSession.m */; };
 		95D5E2DC2187159700AA1C11 /* YKFNSMutableDataAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D5E2DB2187159700AA1C11 /* YKFNSMutableDataAdditions.m */; };
 		95D5E2DD2187173D00AA1C11 /* YKFAPDU.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD407F2099A86900363FEE /* YKFAPDU.h */; };
 		95D61A04216F9159001E7AC8 /* YKFOATHCredentialValidatorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D61A03216F9159001E7AC8 /* YKFOATHCredentialValidatorTests.m */; };
@@ -307,7 +305,6 @@
 				9541143521908A8C00D39C7B /* YKFPCSC.h in CopyFiles */,
 				9541143621908A8C00D39C7B /* YKFPCSCErrors.h in CopyFiles */,
 				9541143721908A8C00D39C7B /* YKFPCSCTypes.h in CopyFiles */,
-				951446A521876060002BB3C5 /* YKFKeyRawCommandSession.h in CopyFiles */,
 				95D5E2DD2187173D00AA1C11 /* YKFAPDU.h in CopyFiles */,
 				81FD3B9424048295004C4FE9 /* YKFKeyOATHSelectApplicationResponse.h in CopyFiles */,
 				95A4566E2177725B00AD5A94 /* YKFKeyOATHCalculateAllResponse.h in CopyFiles */,
@@ -418,7 +415,6 @@
 		950C700B22980CFE00E48458 /* FakeUIDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FakeUIDevice.m; sourceTree = "<group>"; };
 		950FB9302179D8F6003F712E /* YKFKeyOATHCalculateRequest+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyOATHCalculateRequest+Private.h"; sourceTree = "<group>"; };
 		9513760921512824006C843F /* EAAccessoryManager+Testing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EAAccessoryManager+Testing.h"; sourceTree = "<group>"; };
-		951446A121874013002BB3C5 /* YKFKeyRawCommandSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyRawCommandSession+Private.h"; sourceTree = "<group>"; };
 		951446A221874CC2002BB3C5 /* YKFKeyCommandConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyCommandConfiguration.h; sourceTree = "<group>"; };
 		951446A321874CC2002BB3C5 /* YKFKeyCommandConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyCommandConfiguration.m; sourceTree = "<group>"; };
 		951446A82188592C002BB3C5 /* YKFPCSCLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPCSCLayer.h; sourceTree = "<group>"; };
@@ -637,8 +633,6 @@
 		95CCAE60224122FD00B567D2 /* YKFKeyFIDO2ChangePinRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyFIDO2ChangePinRequest.h; sourceTree = "<group>"; };
 		95CCAE61224122FD00B567D2 /* YKFKeyFIDO2ChangePinRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyFIDO2ChangePinRequest.m; sourceTree = "<group>"; };
 		95D433E7215E662A004463F5 /* YKFNSDataAdditions+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFNSDataAdditions+Private.h"; sourceTree = "<group>"; };
-		95D5E2D7218712BF00AA1C11 /* YKFKeyRawCommandSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyRawCommandSession.h; sourceTree = "<group>"; };
-		95D5E2D8218712BF00AA1C11 /* YKFKeyRawCommandSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyRawCommandSession.m; sourceTree = "<group>"; };
 		95D5E2DA2187159700AA1C11 /* YKFNSMutableDataAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFNSMutableDataAdditions.h; sourceTree = "<group>"; };
 		95D5E2DB2187159700AA1C11 /* YKFNSMutableDataAdditions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFNSMutableDataAdditions.m; sourceTree = "<group>"; };
 		95D61A03216F9159001E7AC8 /* YKFOATHCredentialValidatorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHCredentialValidatorTests.m; sourceTree = "<group>"; };
@@ -1135,7 +1129,6 @@
 				81311F3723AAF9F400765522 /* ChalResp */,
 				95D9D3D921D510A700473888 /* FIDO2 */,
 				958139562159281D008558F3 /* OATH */,
-				95D5E2D6218711CB00AA1C11 /* RawCommand */,
 				958139552159280B008558F3 /* U2F */,
 			);
 			path = Sessions;
@@ -1351,16 +1344,6 @@
 				816C684C234315CC00209342 /* YKFNFCTagDescription+Private.h */,
 			);
 			path = NFCConnection;
-			sourceTree = "<group>";
-		};
-		95D5E2D6218711CB00AA1C11 /* RawCommand */ = {
-			isa = PBXGroup;
-			children = (
-				95D5E2D7218712BF00AA1C11 /* YKFKeyRawCommandSession.h */,
-				95D5E2D8218712BF00AA1C11 /* YKFKeyRawCommandSession.m */,
-				951446A121874013002BB3C5 /* YKFKeyRawCommandSession+Private.h */,
-			);
-			path = RawCommand;
 			sourceTree = "<group>";
 		};
 		95D9D3D921D510A700473888 /* FIDO2 */ = {
@@ -1732,7 +1715,6 @@
 				9533068A2088CB9F00A625C8 /* UIWindowAdditions.m in Sources */,
 				814813E123EA380A0003893B /* YKFKeyManagementReadConfigurationRequest.m in Sources */,
 				955BCC04215A43A000C2EA2B /* YKFKeyOATHRequest.m in Sources */,
-				95D5E2D9218712BF00AA1C11 /* YKFKeyRawCommandSession.m in Sources */,
 				958793EA216CE6B9001A0406 /* YKFKeyOATHListRequest.m in Sources */,
 				95DF11922317C60600CF0C39 /* YKFNFCConnectionController.m in Sources */,
 				951446A421874CC2002BB3C5 /* YKFKeyCommandConfiguration.m in Sources */,

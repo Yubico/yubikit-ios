@@ -19,7 +19,6 @@
 #import "YKFKeyU2FSession.h"
 #import "YKFKeyFIDO2Session.h"
 #import "YKFKeyOATHSession.h"
-#import "YKFKeyRawCommandSession.h"
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
