@@ -25,7 +25,6 @@
 //    (NSError* _Nullable error);
 typedef void (^YKFKeySmartCardInterfaceResponseBlock)
     (NSData* _Nullable data, NSError* _Nullable error);
-typedef void (^YKFKeySmartCardInterfaceExecutionBlock)(void);
 
 typedef NS_ENUM(NSUInteger, YKFSmartCardInterfaceSendRemainingIns) {
     

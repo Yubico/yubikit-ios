@@ -25,14 +25,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Command execution
 
+- (void)executeManagementApplicationSelection;
 - (void)executeU2FApplicationSelection;
 - (void)executeGnubbyU2FApplicationSelection;
 - (void)executeYubiKeyApplicationSelection;
 - (void)executePivApplicationSelection;
 
 
-- (void)executeCommandWithAPDU:(YKFAPDU *)apdu completion:(YKFKeyRawCommandSessionResponseBlock)completion;
-- (void)executeCommandWithData:(NSData *)data completion:(YKFKeyRawCommandSessionResponseBlock)completion;
+- (void)executeCommandWithAPDU:(YKFAPDU *)apdu completion:(YKFKeySmartCardInterfaceResponseBlock)completion;
+- (void)executeCommandWithData:(NSData *)data completion:(YKFKeySmartCardInterfaceResponseBlock)completion;
 
 @end
 
