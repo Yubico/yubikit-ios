@@ -14,15 +14,14 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
-#import "YKFKeyOATHCalculateRequest.h"
 
-@class YKFKeyOATHCalculateRequest;
+@class YKFOATHCredential;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFOATHCalculateAPDU: YKFAPDU
 
-- (nullable instancetype)initWithRequest:(YKFKeyOATHCalculateRequest *)request NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCredential:(YKFOATHCredential *)credential timestamp:(NSDate *)timestamp NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

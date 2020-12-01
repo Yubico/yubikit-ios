@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #import "YKFKeyOATHListResponse.h"
-#import "YKFKeyOATHListResponse+Private.h"
 #import "YKFOATHCredential.h"
 #import "YKFOATHCredential+Private.h"
 #import "YKFAssert.h"

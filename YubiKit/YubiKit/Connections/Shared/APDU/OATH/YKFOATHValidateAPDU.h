@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSData *expectedChallengeData;
 
-- (nullable instancetype)initWithRequest:(YKFKeyOATHValidateRequest *)request challenge:(NSData *)challenge salt:(NSData *)salt NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCode:(NSString *)code challenge:(NSData *)challenge salt:(NSData *)salt NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

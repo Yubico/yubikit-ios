@@ -15,13 +15,13 @@
 #import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
 
-@class YKFKeyOATHDeleteRequest;
+@class YKFOATHCredential;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFOATHDeleteAPDU: YKFAPDU
 
-- (nullable instancetype)initWithRequest:(YKFKeyOATHDeleteRequest *)request NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCredential:(YKFOATHCredential *)request NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

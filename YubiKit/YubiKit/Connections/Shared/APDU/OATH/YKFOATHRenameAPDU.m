@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import "YKFOATHRenameAPDU.h"
-#import "YKFKeyOATHRenameRequest.h"
+#import "YKFOATHCredential.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFAssert.h"
 #import "YKFNSMutableDataAdditions.h"
@@ -23,22 +23,24 @@ static const UInt8 YKFOATHRenameAPDUNameTag = 0x71;
 
 @implementation YKFOATHRenameAPDU
 
-- (instancetype)initWithRequest:(nonnull YKFKeyOATHRenameRequest *)request {
-    YKFAssertAbortInit(request);
-    
-    NSMutableData *rawRequest = [[NSMutableData alloc] init];
+- (nullable instancetype)initWithCredential:(YKFOATHCredential *)credential
+                          renamedCredential:(YKFOATHCredential *)renamedCredential {
+    YKFAssertAbortInit(credential);
+    YKFAssertAbortInit(renamedCredential);
+
+    NSMutableData *data = [[NSMutableData alloc] init];
     
     // Current name
-    NSString *name = request.credential.key;
+    NSString *name = credential.key;
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
-    [rawRequest ykf_appendEntryWithTag:YKFOATHRenameAPDUNameTag data:nameData];
+    [data ykf_appendEntryWithTag:YKFOATHRenameAPDUNameTag data:nameData];
     
     // New name
-    NSString *newName = request.renamedCredential.key;
+    NSString *newName = renamedCredential.key;
     NSData *newNameData = [newName dataUsingEncoding:NSUTF8StringEncoding];
-    [rawRequest ykf_appendEntryWithTag:YKFOATHRenameAPDUNameTag data:newNameData];
+    [data ykf_appendEntryWithTag:YKFOATHRenameAPDUNameTag data:newNameData];
     
-    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHRename p1:0 p2:0 data:rawRequest type:YKFAPDUTypeShort];
+    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHRename p1:0 p2:0 data:data type:YKFAPDUTypeShort];
 }
 
 @end
