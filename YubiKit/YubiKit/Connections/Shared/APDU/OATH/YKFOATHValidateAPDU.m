@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #import "YKFOATHValidateAPDU.h"
-#import "YKFKeyOATHValidateRequest.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFOATHCredential.h"
 #import "YKFAssert.h"
@@ -25,19 +24,19 @@ static const UInt8 YKFKeyOATHSetCodeAPDUResponseTag = 0x75;
 
 @implementation YKFOATHValidateAPDU
 
-- (nullable instancetype)initWithRequest:(nonnull YKFKeyOATHValidateRequest *)request challenge:(NSData *)challenge salt:(NSData *)salt {
-    YKFAssertAbortInit(request);
+- (nullable instancetype)initWithCode:(nonnull NSString *)code challenge:(NSData *)challenge salt:(NSData *)salt {
+    YKFAssertAbortInit(code);
     YKFAssertAbortInit(challenge);
     YKFAssertAbortInit(salt.length);
     
-    NSMutableData *rawRequest = [[NSMutableData alloc] init];
+    NSMutableData *data = [[NSMutableData alloc] init];
     
-    NSData *keyData = [[request.password dataUsingEncoding:NSUTF8StringEncoding] ykf_deriveOATHKeyWithSalt:salt];
+    NSData *keyData = [[code dataUsingEncoding:NSUTF8StringEncoding] ykf_deriveOATHKeyWithSalt:salt];
     
     // Response (hmac of the select challenge)
     
     NSData *response = [challenge ykf_oathHMACWithKey:keyData];
-    [rawRequest ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUResponseTag data:response];
+    [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUResponseTag data:response];
         
     // Challenge (random bytes)
     
@@ -46,9 +45,9 @@ static const UInt8 YKFKeyOATHSetCodeAPDUResponseTag = 0x75;
     NSData *randomChallenge = [NSData dataWithBytes:challengeBuffer length:8];
     
     self.expectedChallengeData = [randomChallenge ykf_oathHMACWithKey:keyData];
-    [rawRequest ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUChallengeTag data:randomChallenge];
+    [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUChallengeTag data:randomChallenge];
         
-    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHValidate p1:0 p2:0 data:rawRequest type:YKFAPDUTypeShort];
+    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHValidate p1:0 p2:0 data:data type:YKFAPDUTypeShort];
 }
 
 @end

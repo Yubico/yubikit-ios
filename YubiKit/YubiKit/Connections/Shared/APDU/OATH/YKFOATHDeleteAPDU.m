@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import "YKFOATHDeleteAPDU.h"
-#import "YKFKeyOATHDeleteRequest.h"
+#import "YKFOATHCredential.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFAssert.h"
 #import "YKFNSMutableDataAdditions.h"
@@ -23,19 +23,13 @@ static const UInt8 YKFOATHDeleteAPDUNameTag = 0x71;
 
 @implementation YKFOATHDeleteAPDU
 
-- (instancetype)initWithRequest:(nonnull YKFKeyOATHDeleteRequest *)request {
-    YKFAssertAbortInit(request);
+- (instancetype)initWithCredential:(YKFOATHCredential *)credential {
+    YKFAssertAbortInit(credential);
     
-    NSMutableData *rawRequest = [[NSMutableData alloc] init];
-    
-    // Name
-    
-    NSString *name = request.credential.key;
-    NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
-    
-    [rawRequest ykf_appendEntryWithTag:YKFOATHDeleteAPDUNameTag data:nameData];
-    
-    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHDelete p1:0 p2:0 data:rawRequest type:YKFAPDUTypeShort];
+    NSMutableData *data = [[NSMutableData alloc] init];
+    NSString *name = credential.key;
+    [data ykf_appendEntryWithTag:YKFOATHDeleteAPDUNameTag data:[name dataUsingEncoding:NSUTF8StringEncoding]];
+    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHDelete p1:0 p2:0 data:data type:YKFAPDUTypeShort];
 }
 
 @end

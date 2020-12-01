@@ -82,6 +82,8 @@
  */
 @property (nonatomic, readonly, nonnull) NSArray *credentials;
 
+- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData requestTimetamp:(nonnull NSDate *)timestamp NS_DESIGNATED_INITIALIZER;
+
 /*
  Not available: the library will create a response as the result of the Calculate All request.
  */

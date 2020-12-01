@@ -13,10 +13,10 @@
 // limitations under the License.
 
 #import "YKFOATHPutAPDU.h"
-#import "YKFKeyOATHPutRequest.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFAssert.h"
 #import "YKFNSMutableDataAdditions.h"
+#import "YKFOATHCredential.h"
 #import "YKFOATHCredential+Private.h"
 
 typedef NS_ENUM(NSUInteger, YKFOATHPutCredentialAPDUTag) {
@@ -32,34 +32,32 @@ typedef NS_ENUM(NSUInteger, YKFOATHPutCredentialAPDUProperty) {
 
 @implementation YKFOATHPutAPDU
 
-- (instancetype)initWithRequest:(YKFKeyOATHPutRequest *)request {
-    YKFAssertAbortInit(request);
+- (instancetype)initWithCredential:(YKFOATHCredential *)credential {
+    YKFAssertAbortInit(credential);
     
     NSMutableData *rawRequest = [[NSMutableData alloc] init];
     
     // Name - max 64 bytes
-    
-    NSString *name = request.credential.key;
+    NSString *name = credential.key;
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     [rawRequest ykf_appendEntryWithTag:YKFOATHPutCredentialAPDUTagName data:nameData];
     
     // Key
-    
-    NSData *secret = request.credential.secret;
-    UInt8 keyAlgorithm = request.credential.algorithm | request.credential.type;
-    UInt8 keyDigits = request.credential.digits;
+    NSData *secret = credential.secret;
+    UInt8 keyAlgorithm = credential.algorithm | credential.type;
+    UInt8 keyDigits = credential.digits;
     
     [rawRequest ykf_appendEntryWithTag:YKFOATHPutCredentialAPDUTagKey headerBytes:@[@(keyAlgorithm), @(keyDigits)] data:secret];
     
     // Touch
-    if (request.credential.requiresTouch) {
+    if (credential.requiresTouch) {
         [rawRequest ykf_appendByte:YKFOATHPutCredentialAPDUTagProperty];
         [rawRequest ykf_appendByte:YKFOATHPutCredentialAPDUPropertyTouch];
     }
     
     // Counter if HOTP
-    if (request.credential.type == YKFOATHCredentialTypeHOTP) {
-        [rawRequest ykf_appendUInt32EntryWithTag:YKFOATHPutCredentialAPDUTagCounter value:request.credential.counter];
+    if (credential.type == YKFOATHCredentialTypeHOTP) {
+        [rawRequest ykf_appendUInt32EntryWithTag:YKFOATHPutCredentialAPDUTagCounter value:credential.counter];
     }
     
     return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHPut p1:0 p2:0 data:rawRequest type:YKFAPDUTypeShort];

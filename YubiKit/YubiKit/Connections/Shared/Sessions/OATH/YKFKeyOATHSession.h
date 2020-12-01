@@ -16,17 +16,10 @@
 #import "YKFKeySession.h"
 #import "YKFKeyVersion.h"
 
-@class YKFKeyOATHCalculateAllRequest,
-       YKFKeyOATHCalculateAllResponse,
-       YKFKeyOATHCalculateRequest,
-       YKFKeyOATHCalculateResponse,
-       YKFKeyOATHDeleteRequest,
-       YKFKeyOATHListResponse,
-       YKFKeyOATHPutRequest,
-       YKFKeyOATHRenameRequest,
-       YKFKeyOATHSelectApplicationResponse,
-       YKFKeyOATHSetCodeRequest,
-       YKFKeyOATHValidateRequest;
+@class YKFKeyOATHCalculateResponse,
+       YKFOATHCredential,
+       YKFKeyOATHSelectApplicationResponse;
+
 /**
  * ---------------------------------------------------------------------------------------------------------------------
  * @name OATH Service Response Blocks
@@ -64,15 +57,15 @@ typedef void (^YKFKeyOATHSessionCalculateCompletionBlock)
     Response block for [executeListRequest:completion:] which provides the result for the execution
     of the List request.
  
- @param response
-    The response of the request when it was successful. In case of error this parameter is nil.
+ @param credentials
+    An array containing all the credentials. In case of error this parameter is nil.
  
  @param error
     In case of a failed request this parameter contains the error. If the request was successful this
     parameter is nil.
  */
 typedef void (^YKFKeyOATHSessionListCompletionBlock)
-    (YKFKeyOATHListResponse* _Nullable response, NSError* _Nullable error);
+    (NSArray<YKFOATHCredential*>* _Nullable credentials, NSError* _Nullable error);
 
 /*!
  @abstract
@@ -87,7 +80,7 @@ typedef void (^YKFKeyOATHSessionListCompletionBlock)
     parameter is nil.
  */
 typedef void (^YKFKeyOATHSessionCalculateAllCompletionBlock)
-    (YKFKeyOATHCalculateAllResponse* _Nullable response, NSError* _Nullable error);
+    (NSArray<YKFOATHCredential*>* _Nullable response, NSError* _Nullable error);
 
 /*!
  @abstract
@@ -121,14 +114,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) YKFKeyVersion* version;
 
 /*!
- @method executePutRequest:completion:
+ @method putCredential:completion:
  
  @abstract
     Sends to the key an OATH Put request to add a new credential. The request is performed asynchronously
     on a background execution queue.
  
- @param request
-    The request which contains the required information to add a new credential.
+ @param credential
+    The new credential to add.
  
  @param completion
     The response block which is executed after the request was processed by the key. The completion block
@@ -138,17 +131,16 @@ NS_ASSUME_NONNULL_BEGIN
  @note:
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executePutRequest:(YKFKeyOATHPutRequest *)request
-               completion:(YKFKeyOATHSessionCompletionBlock)completion;
+- (void)putCredential:(YKFOATHCredential *)credential completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
- @method executeDeleteRequest:completion:
+ @method deleteCredential:completion:
  
  @abstract
     Sends to the key an OATH Delete request to remove an existing credential. The request is performed
     asynchronously on a background execution queue.
  
- @param request
+ @param credential
     The request which contains the required information to remove a credential.
  
  @param completion
@@ -159,18 +151,23 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeDeleteRequest:(YKFKeyOATHDeleteRequest *)request
-                  completion:(YKFKeyOATHSessionCompletionBlock)completion;
+- (void)deleteCredential:(YKFOATHCredential *)credential completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
- @method executeRenameRequest:completion:
+ @method renameCredential:newIssuer:newAccount:completion:
  
  @abstract
     Sends to the key an OATH Rename request to update issuer and account on an existing credential. The request is performed
     asynchronously on a background execution queue. This operation is available on Yubikeys from version 5.3.1.
  
- @param request
-    The request which contains the required information to rename a credential.
+ @param credential
+    The credential to rename.
+ 
+ @param newIssuer
+    The new issuer name.
+ 
+ @param newAccount
+    The new account name.
  
  @param completion
     The response block which is executed after the request was processed by the key. The completion block
@@ -180,18 +177,20 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeRenameRequest:(YKFKeyOATHRenameRequest *)request
-                  completion:(YKFKeyOATHSessionCompletionBlock)completion;
+- (void)renameCredential:(YKFOATHCredential *)credential
+               newIssuer:(NSString*)newIssuer
+              newAccount:(NSString*)newAccount
+              completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
- @method executeCalculateRequest:completion:
+ @method calculateCredential:completion:
  
  @abstract
     Sends to the key an OATH Calculate request to calculate an existing credential. The request is performed
     asynchronously on a background execution queue.
  
- @param request
-    The request which contains the required information to calculate a credential.
+ @param credential
+    The credential to calculate.
  
  @param completion
     The response block which is executed after the request was processed by the key. The completion block
@@ -201,19 +200,15 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeCalculateRequest:(YKFKeyOATHCalculateRequest *)request
-                     completion:(YKFKeyOATHSessionCalculateCompletionBlock)completion;
+- (void)calculateCredential:(YKFOATHCredential *)credential completion:(YKFKeyOATHSessionCalculateCompletionBlock)completion;
 
 /*!
- @method executeCalculateAllRequestWithCompletion:
+ @method calculateAllWithCompletion:
  
  @abstract
     Sends to the key an OATH Calculate All request to calculate all stored credentials on the key.
     The request is performed asynchronously on a background execution queue.
  
- @param request
-    The request which contains the required information to calculate all credential.
- 
  @param completion
     The response block which is executed after the request was processed by the key. The completion block
     will be executed on a background thread. If the intention is to update the UI, dispatch the results
@@ -222,11 +217,10 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeCalculateAllRequest:(YKFKeyOATHCalculateAllRequest *)request
-                        completion:(YKFKeyOATHSessionCalculateAllCompletionBlock)completion;
+- (void)calculateAllWithCompletion:(YKFKeyOATHSessionCalculateAllCompletionBlock)completion;
 
 /*!
- @method executeListRequestWithCompletion:
+ @method listCredentialsWithCompletion:
  
  @abstract
     Sends to the key an OATH List request to enumerate all stored credentials on the key.
@@ -240,10 +234,10 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeListRequestWithCompletion:(YKFKeyOATHSessionListCompletionBlock)completion;
+- (void)listCredentialsWithCompletion:(YKFKeyOATHSessionListCompletionBlock)completion;
 
 /*!
- @method executeResetRequestWithCompletion:
+ @method resetWithCompletion:
  
  @abstract
     Sends to the key an OATH Reset request to reset the OATH application to its default state. This request
@@ -258,17 +252,18 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeResetRequestWithCompletion:(YKFKeyOATHSessionCompletionBlock)completion;
+- (void)resetWithCompletion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
- @method executeSetCodeRequest:completion:
+ @method setCode:completion:
  
  @abstract
     Sends to the key an OATH Set Code request to set a PIN on the key OATH application. The request
     is performed asynchronously on a background execution queue.
  
- @param request
-    The request which contains the required information to set a PIN on the key OATH application.
+ @param code
+    The password to set on the OATH application. The password can be an empty string. If the
+    password is an empty string, the authentication will be removed.
  
  @param completion
     The response block which is executed after the request was processed by the key. The completion block
@@ -278,20 +273,20 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeSetCodeRequest:(YKFKeyOATHSetCodeRequest *)request
-                   completion:(YKFKeyOATHSessionCompletionBlock)completion;
+- (void)setCode:(NSString *)code completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
- @method executeValidateRequest:completion:
+ @method validateCode:completion:
  
  @abstract
-    Sends to the key an OATH Validate request to authentificate against the OATH application. After authentification
-    all subsequent requests can be performed until the key application is deselected, as the result of performing
-    another type of request (e.g. U2F) or by unplugging the key from the device. The request is performed
-    asynchronously on a background execution queue.
+    Sends to the key an OATH Validate request to authentificate against the OATH application. This request maps
+    to the VALIDATE command from YOATH protocol: https://developers.yubico.com/OATH/YKOATH_Protocol.html
+    After authentification all subsequent requests can be performed until the key application is deselected,
+    as the result of performing another type of request (e.g. U2F) or by unplugging the key from the device.
+    The method is performed asynchronously on a background execution queue.
  
- @param request
-    The request which contains the required information to validate a PIN on the key OATH application.
+ @param code
+    The code to authenticate the OATH application.
  
  @param completion
     The response block which is executed after the request was processed by the key. The completion block
@@ -301,8 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeValidateRequest:(YKFKeyOATHValidateRequest *)request
-                    completion:(YKFKeyOATHSessionCompletionBlock)completion;
+- (void)validateCode:(NSString *)code completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 @end
 

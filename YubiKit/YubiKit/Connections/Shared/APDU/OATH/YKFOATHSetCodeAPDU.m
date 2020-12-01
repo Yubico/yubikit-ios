@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #import "YKFOATHSetCodeAPDU.h"
-#import "YKFKeyOATHSetCodeRequest.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFOATHCredential.h"
 #import "YKFAssert.h"
@@ -26,37 +25,37 @@ static const UInt8 YKFKeyOATHSetCodeAPDUResponseTag = 0x75;
 
 @implementation YKFOATHSetCodeAPDU
 
-- (instancetype)initWithRequest:(YKFKeyOATHSetCodeRequest *)request salt:(NSData *)salt {
-    YKFAssertAbortInit(request);
+- (instancetype)initWithCode:(NSString *)code salt:(NSData *)salt {
+    YKFAssertAbortInit(code);
     YKFAssertAbortInit(salt.length);
     
-    NSMutableData *rawRequest = [[NSMutableData alloc] init];
+    NSMutableData *data = [[NSMutableData alloc] init];
     
-    // Password available - set authentication
-    if (request.password.length) {
-        NSData *keyData = [[request.password dataUsingEncoding:NSUTF8StringEncoding] ykf_deriveOATHKeyWithSalt:salt];
+    if (code.length) {
+        // Set password
+        NSData *keyData = [[code dataUsingEncoding:NSUTF8StringEncoding] ykf_deriveOATHKeyWithSalt:salt];
         UInt8 algorithm = YKFOATHCredentialTypeTOTP | YKFOATHCredentialAlgorithmSHA1;
         
-        [rawRequest ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUKeyTag headerBytes:@[@(algorithm)] data:keyData];
+        [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUKeyTag headerBytes:@[@(algorithm)] data:keyData];
         
         // Challenge
         
         UInt8 challengeBuffer[8];
         arc4random_buf(challengeBuffer, 8);
         NSData *challenge = [NSData dataWithBytes:challengeBuffer length:8];
-        [rawRequest ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUChallengeTag data:challenge];
+        [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUChallengeTag data:challenge];
         
         // Response
         
         NSData *response = [challenge ykf_oathHMACWithKey:keyData];
-        [rawRequest ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUResponseTag data:response];
+        [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUResponseTag data:response];
     } else {
-        // Password empty - remove authentication
-        [rawRequest ykf_appendByte:YKFKeyOATHSetCodeAPDUKeyTag];
-        [rawRequest ykf_appendByte:0x00];
+        // Remove password
+        [data ykf_appendByte:YKFKeyOATHSetCodeAPDUKeyTag];
+        [data ykf_appendByte:0x00];
     }
         
-    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHSet p1:0 p2:0 data:rawRequest type:YKFAPDUTypeShort];
+    return [super initWithCla:0 ins:0x03 p1:0 p2:0 data:data type:YKFAPDUTypeShort];
 }
 
 @end

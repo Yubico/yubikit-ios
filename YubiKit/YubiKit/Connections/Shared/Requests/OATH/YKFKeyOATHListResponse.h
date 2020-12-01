@@ -29,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly, nonnull) NSArray *credentials;
 
+
+- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData NS_DESIGNATED_INITIALIZER;
+
 /*
  Not available: the library will create a response as the result of the List request.
  */
