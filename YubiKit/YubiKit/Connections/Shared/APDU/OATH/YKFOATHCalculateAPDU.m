@@ -13,45 +13,43 @@
 // limitations under the License.
 
 #import "YKFOATHCalculateAPDU.h"
-#import "YKFKeyOATHCalculateRequest.h"
+#import "YKFOATHCredential.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFAssert.h"
 #import "YKFNSMutableDataAdditions.h"
 #import "YKFOATHCredential+Private.h"
-#import "YKFKeyOATHCalculateRequest+Private.h"
 
 static const UInt8 YKFOATHCalculateAPDUNameTag = 0x71;
 static const UInt8 YKFOATHCalculateAPDUChallengeTag = 0x74;
 
 @implementation YKFOATHCalculateAPDU
 
-- (nullable instancetype)initWithRequest:(nonnull YKFKeyOATHCalculateRequest *)request {
-    YKFAssertAbortInit(request);
+- (nullable instancetype)initWithCredential:(YKFOATHCredential *)credential timestamp:(NSDate *)timestamp {
+    YKFAssertAbortInit(credential);
     
-    NSMutableData *rawRequest = [[NSMutableData alloc] init];
+    NSMutableData *data = [[NSMutableData alloc] init];
     
     // Name
-    NSString *name = request.credential.key;
+    NSString *name = credential.key;
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     
-    [rawRequest ykf_appendEntryWithTag:YKFOATHCalculateAPDUNameTag data:nameData];
+    [data ykf_appendEntryWithTag:YKFOATHCalculateAPDUNameTag data:nameData];
     
     // Challenge
-    
-    if (request.credential.type == YKFOATHCredentialTypeTOTP) {
-        time_t time = (time_t)[request.timestamp timeIntervalSince1970];
-        time_t challengeTime = time / request.credential.period;
+    if (credential.type == YKFOATHCredentialTypeTOTP) {
+        time_t time = (time_t)[timestamp timeIntervalSince1970];
+        time_t challengeTime = time / credential.period;
         
-        [rawRequest ykf_appendUInt64EntryWithTag:YKFOATHCalculateAPDUChallengeTag value:challengeTime];
+        [data ykf_appendUInt64EntryWithTag:YKFOATHCalculateAPDUChallengeTag value:challengeTime];
     } else {
         // For HOTP the challenge is 0
-        [rawRequest ykf_appendByte:YKFOATHCalculateAPDUChallengeTag];
-        [rawRequest ykf_appendByte:0];
+        [data ykf_appendByte:YKFOATHCalculateAPDUChallengeTag];
+        [data ykf_appendByte:0];
     }
     
     // P2 is 0x01 for truncated response only
-    UInt8 p2 = request.credential.notTruncated ? 0x00 : 0x01;
-    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHCalculate p1:0 p2:p2 data:rawRequest type:YKFAPDUTypeShort];
+    UInt8 p2 = credential.notTruncated ? 0x00 : 0x01;
+    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHCalculate p1:0 p2:p2 data:data type:YKFAPDUTypeShort];
 }
 
 @end

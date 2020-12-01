@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFOATHSetCodeAPDU: YKFAPDU
 
-- (nullable instancetype)initWithRequest:(YKFKeyOATHSetCodeRequest *)request salt:(NSData *)salt NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCode:(NSString *)code salt:(NSData *)salt NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

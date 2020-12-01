@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #import "YKFKeyOATHCalculateAllResponse.h"
-#import "YKFKeyOATHCalculateAllResponse+Private.h"
 #import "YKFAssert.h"
 #import "YKFNSStringAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
@@ -35,6 +34,7 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
 @property (nonatomic, readwrite, nonnull) NSDateInterval *validity;
 @property (nonatomic, readwrite) NSString *otp;
 @property (nonatomic, readwrite) BOOL requiresTouch;
+@property (nonatomic, nonnull) NSString *key;
 
 @end
 

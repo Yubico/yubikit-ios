@@ -136,7 +136,7 @@
     YKFKeyOATHPutRequest *putRequest = [[YKFKeyOATHPutRequest alloc] initWithCredential:credential];
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Put expectation."];
-    [oathService executePutRequest:putRequest completion:^(NSError * _Nullable error) {
+    [oathService put:putRequest completion:^(NSError * _Nullable error) {
         if (error) {
             return;
         }
@@ -155,7 +155,7 @@
     YKFKeyOATHDeleteRequest *deleteRequest = [[YKFKeyOATHDeleteRequest alloc] initWithCredential:credential];
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Delete expectation."];
-    [oathService executeDeleteRequest:deleteRequest completion:^(NSError * _Nullable error) {
+    [oathService deleteCredential:deleteRequest completion:^(NSError * _Nullable error) {
         if (error) {
             return;
         }
@@ -174,7 +174,7 @@
     NSAssert(oathService, @"Oath service not available.");
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"List expectation."];
-    [oathService executeListRequestWithCompletion:^(YKFKeyOATHListResponse * _Nullable response, NSError * _Nullable error) {
+    [oathService listCredentialsWithCompletion:^(YKFKeyOATHListResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             return;
         }
@@ -199,7 +199,7 @@
     XCTAssertNotNil(calculateRequest, @"Could not create calculate request from credential.");
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Calculate expectation."];
-    [oathService executeCalculateRequest:calculateRequest completion:^(YKFKeyOATHCalculateResponse * _Nullable response, NSError * _Nullable error) {
+    [oathService calculateCredential:calculateRequest completion:^(YKFKeyOATHCalculateResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             return;
         }
@@ -219,7 +219,7 @@
     id<YKFKeyOATHSessionProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Reset expectation."];
-    [oathService executeResetRequestWithCompletion:^(NSError * _Nullable error) {
+    [oathService resetWithCompletion:^(NSError * _Nullable error) {
         [expectation fulfill];
     }];
     XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];

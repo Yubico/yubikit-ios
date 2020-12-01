@@ -15,13 +15,13 @@
 #import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
 
-@class YKFKeyOATHRenameRequest;
+@class YKFOATHCredential;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFOATHRenameAPDU: YKFAPDU
 
-- (nullable instancetype)initWithRequest:(YKFKeyOATHRenameRequest *)request NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCredential:(YKFOATHCredential *)credential renamedCredential:(YKFOATHCredential *)renamedCredential NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

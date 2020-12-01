@@ -29,34 +29,25 @@
 #import "YKFOATHValidateAPDU.h"
 
 #import "YKFKeySessionError+Private.h"
-#import "YKFKeyOATHRequest+Private.h"
 
 #import "YKFNSDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
 
 #import "YKFAPDU+Private.h"
 
-#import "YKFKeyOATHCalculateAllRequest+Private.h"
-#import "YKFKeyOATHCalculateAllRequest.h"
-#import "YKFKeyOATHCalculateAllRequest.h"
-#import "YKFKeyOATHCalculateAllResponse+Private.h"
+#import "YKFOATHPutAPDU.h"
+#import "YKFOATHDeleteAPDU.h"
+#import "YKFOATHRenameAPDU.h"
+#import "YKFOATHCalculateAPDU.h"
+#import "YKFOATHCalculateAllAPDU.h"
+
 #import "YKFKeyOATHCalculateAllResponse.h"
 #import "YKFKeyOATHCalculateAllResponse.h"
-#import "YKFKeyOATHCalculateRequest+Private.h"
-#import "YKFKeyOATHCalculateRequest.h"
 #import "YKFKeyOATHCalculateResponse+Private.h"
 #import "YKFKeyOATHCalculateResponse.h"
-#import "YKFKeyOATHDeleteRequest.h"
-#import "YKFKeyOATHListRequest.h"
-#import "YKFKeyOATHListResponse+Private.h"
 #import "YKFKeyOATHListResponse.h"
-#import "YKFKeyOATHPutRequest.h"
-#import "YKFKeyOATHRenameRequest.h"
-#import "YKFKeyOATHResetRequest.h"
 #import "YKFKeyOATHSelectApplicationResponse.h"
 #import "YKFKeyOATHSelectApplicationResponse.h"
-#import "YKFKeyOATHSetCodeRequest.h"
-#import "YKFKeyOATHValidateRequest.h"
 #import "YKFKeyOATHValidateResponse.h"
 
 #import "YKFSmartCardInterface.h"
@@ -108,54 +99,69 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 #pragma mark - Credential Add/Delete
 
-- (void)executePutRequest:(YKFKeyOATHPutRequest *)request completion:(YKFKeyOATHSessionCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)putCredential:(YKFOATHCredential *)credential completion:(YKFKeyOATHSessionCompletionBlock)completion {
+    YKFParameterAssertReturn(credential);
     YKFParameterAssertReturn(completion);
     
-    YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:request.credential includeSecret:YES];
+    YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:credential includeSecret:YES];
     if (credentialError) {
         completion(credentialError);
         return;
     }
     
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    YKFOATHPutAPDU *apdu = [[YKFOATHPutAPDU alloc] initWithCredential:credential];
+    
+    [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         // No result except status code
         completion(error);
     }];
 }
 
-- (void)executeDeleteRequest:(YKFKeyOATHDeleteRequest *)request completion:(YKFKeyOATHSessionCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)deleteCredential:(YKFOATHCredential *)credential completion:(YKFKeyOATHSessionCompletionBlock)completion {
+    YKFParameterAssertReturn(credential);
     YKFParameterAssertReturn(completion);
 
-    YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:request.credential includeSecret:NO];
+    YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:credential includeSecret:NO];
     if (credentialError) {
         completion(credentialError);
         return;
     }
-    
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+
+    YKFOATHDeleteAPDU *apdu = [[YKFOATHDeleteAPDU alloc] initWithCredential:credential];
+    [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         // No result except status code
         completion(error);
     }];
 }
 
-- (void)executeRenameRequest:(YKFKeyOATHRenameRequest *)request completion:(YKFKeyOATHSessionCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)renameCredential:(nonnull YKFOATHCredential *)credential
+               newIssuer:(nonnull NSString*)newIssuer
+              newAccount:(nonnull NSString*)newAccount
+              completion:(YKFKeyOATHSessionCompletionBlock)completion {
+    YKFParameterAssertReturn(credential);
+    YKFParameterAssertReturn(newIssuer);
+    YKFParameterAssertReturn(newAccount);
     YKFParameterAssertReturn(completion);
     
-    YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:request.credential includeSecret:NO];
+    YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:credential includeSecret:NO];
     if (credentialError) {
         completion(credentialError);
         return;
     }
-    YKFKeySessionError *renamedCredentialError = [YKFOATHCredentialValidator validateCredential:request.renamedCredential includeSecret:NO];
+    
+    YKFOATHCredential *renamedCredential = credential.copy;
+    renamedCredential.issuer = newIssuer;
+    renamedCredential.account = newAccount;
+    
+    YKFKeySessionError *renamedCredentialError = [YKFOATHCredentialValidator validateCredential:renamedCredential includeSecret:NO];
     if (renamedCredentialError) {
         completion(renamedCredentialError);
         return;
     }
     
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    YKFAPDU *apdu = [[YKFOATHRenameAPDU alloc] initWithCredential:credential renamedCredential:renamedCredential];
+    
+    [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         // No result except status code
         completion(error);
     }];
@@ -163,25 +169,28 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 #pragma mark - Credential Calculation
 
-- (void)executeCalculateRequest:(YKFKeyOATHCalculateRequest *)request completion:(YKFKeyOATHSessionCalculateCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)calculateCredential:(YKFOATHCredential *)credential completion:(YKFKeyOATHSessionCalculateCompletionBlock)completion {
+    YKFParameterAssertReturn(credential);
     YKFParameterAssertReturn(completion);
     
-    YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:request.credential includeSecret:NO];
+    YKFKeySessionError *credentialError = [YKFOATHCredentialValidator validateCredential:credential includeSecret:NO];
     if (credentialError) {
         completion(nil, credentialError);
         return;
     }
-
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    
+    NSDate *timestamp = [NSDate date];
+    YKFAPDU *apdu = [[YKFOATHCalculateAPDU alloc] initWithCredential:credential timestamp:timestamp];
+    
+    [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
             return;
         }
         YKFKeyOATHCalculateResponse *response = [[YKFKeyOATHCalculateResponse alloc] initWithKeyResponseData:result
-                                                                                             requestTimetamp:request.timestamp
-                                                                                               requestPeriod:request.credential.period
-                                                                                              truncateResult:!request.credential.notTruncated];
+                                                                                             requestTimetamp:timestamp
+                                                                                               requestPeriod:credential.period
+                                                                                              truncateResult:!credential.notTruncated];
         if (!response) {
             completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeBadCalculationResponse]);
             return;
@@ -190,32 +199,34 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     }];
 }
 
-- (void)executeCalculateAllRequest:(YKFKeyOATHCalculateAllRequest *)request
-                        completion:(YKFKeyOATHSessionCalculateAllCompletionBlock)completion {
+- (void)calculateAllWithCompletion:(YKFKeyOATHSessionCalculateAllCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    NSDate *timestamp = [NSDate date];
+    YKFAPDU *apdu = [[YKFOATHCalculateAllAPDU alloc] initWithTimestamp:timestamp];
+    
+    [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
             return;
-        }        
+        }
         YKFKeyOATHCalculateAllResponse *response = [[YKFKeyOATHCalculateAllResponse alloc] initWithKeyResponseData:result
-                                                                                                   requestTimetamp:request.timestamp];
+                                                                                                   requestTimetamp:timestamp];
         if (!response) {
             completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeBadCalculateAllResponse]);
             return;
         }
-        completion(response, nil);
+        completion(response.credentials, nil);
     }];
 }
 
 #pragma mark - Credential Listing
 
-- (void)executeListRequestWithCompletion:(YKFKeyOATHSessionListCompletionBlock)completion {
+- (void)listCredentialsWithCompletion:(YKFKeyOATHSessionListCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0xA1 p1:0x00 p2:0x00 data:[NSData data] type:YKFAPDUTypeShort];
     
-    YKFKeyOATHListRequest *request = [[YKFKeyOATHListRequest alloc] init];
-    [self executeOATHRequest:request completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+    [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
             return;
@@ -225,21 +236,23 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
             completion(nil, [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeBadListResponse]);
             return;
         }
-        completion(response, nil);
+        
+        completion(response.credentials, nil);
     }];
 }
 
 #pragma mark - Reset
 
-- (void)executeResetRequestWithCompletion:(YKFKeyOATHSessionCompletionBlock)completion {
+- (void)resetWithCompletion:(YKFKeyOATHSessionCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     if (!self.isValid) {
         completion([YKFKeySessionError errorWithCode:YKFKeySessionErrorInvalidSessionStateStatusCode]);
         return;
     }
+    
     self.cachedSelectApplicationResponse = nil;
-    YKFKeyOATHResetRequest *request = [[YKFKeyOATHResetRequest alloc] init];
-    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0x04 p1:0xDE p2:0xAD data:[NSData data] type:YKFAPDUTypeShort];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (!error) {
             YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameOATH];
             [self.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
@@ -258,8 +271,8 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 #pragma mark - OATH Authentication
 
-- (void)executeSetCodeRequest:(YKFKeyOATHSetCodeRequest *)request completion:(YKFKeyOATHSessionCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)setCode:(NSString *)code completion:(YKFKeyOATHSessionCompletionBlock)completion {
+    YKFParameterAssertReturn(code);
     YKFParameterAssertReturn(completion);
     // Check if the session is valid since we need the cached select application response later
     if (!self.isValid) {
@@ -267,21 +280,21 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
         return;
     }
     // Build the request APDU with the select ID salt
-    request.apdu = [[YKFOATHSetCodeAPDU alloc] initWithRequest:request salt:self.cachedSelectApplicationResponse.selectID];
-    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    YKFOATHSetCodeAPDU *apdu = [[YKFOATHSetCodeAPDU alloc] initWithCode:code salt:self.cachedSelectApplicationResponse.selectID];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         completion(error);
     }];
 }
 
-- (void)executeValidateRequest:(YKFKeyOATHValidateRequest *)request completion:(YKFKeyOATHSessionCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)validateCode:(NSString *)code completion:(YKFKeyOATHSessionCompletionBlock)completion {
+    YKFParameterAssertReturn(code);
     YKFParameterAssertReturn(completion);
     if (!self.isValid) {
         completion([YKFKeySessionError errorWithCode:YKFKeySessionErrorInvalidSessionStateStatusCode]);
         return;
     }
-    request.apdu = [[YKFOATHValidateAPDU alloc] initWithRequest:request challenge:self.cachedSelectApplicationResponse.challenge salt:self.cachedSelectApplicationResponse.selectID];
-    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    YKFOATHValidateAPDU *apdu = [[YKFOATHValidateAPDU alloc] initWithCode:code challenge:self.cachedSelectApplicationResponse.challenge salt:self.cachedSelectApplicationResponse.selectID];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
             if (error.code == YKFKeyAPDUErrorCodeWrongData) {
                 completion([YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeWrongPassword]);
@@ -296,7 +309,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
             completion([YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeBadValidationResponse]);
             return;
         }
-        NSData *expectedApduData = ((YKFOATHValidateAPDU *)request.apdu).expectedChallengeData;
+        NSData *expectedApduData = apdu.expectedChallengeData;
         if (![validateResponse.response isEqualToData:expectedApduData]) {
             completion([YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeBadValidationResponse]);
             return;
@@ -308,8 +321,8 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 #pragma mark - Request Execution
 
-- (void)executeOATHRequest:(YKFKeyOATHRequest *)request completion:(YKFKeyOATHServiceResultCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)executeOATHCommand:(YKFAPDU *)apdu completion:(YKFKeyOATHServiceResultCompletionBlock)completion {
+    YKFParameterAssertReturn(apdu);
     YKFParameterAssertReturn(completion);
     if (!self.isValid) {
         completion(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorInvalidSessionStateStatusCode]);
@@ -317,7 +330,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     }
     
     NSDate *startTime = [NSDate date];
-    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (data) {
             completion(data, nil);
             return;
