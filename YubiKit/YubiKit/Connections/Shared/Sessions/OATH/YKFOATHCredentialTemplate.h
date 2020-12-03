@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2020 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import <Foundation/Foundation.h>
+#ifndef YKFOATHCredentialTemplate_h
+#define YKFOATHCredentialTemplate_h
+
 #import "YKFOATHCredentialTypes.h"
 #import "YKFOATHCredentialUtils.h"
 
@@ -30,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
  @abstract
     The YKFOATHCredential is a data model which contains a list of properties defining an OATH credential.
  */
-@interface YKFOATHCredential: NSObject <YKFOATHCredentialIdentifier, NSCopying>
+@interface YKFOATHCredentialTemplate: NSObject <YKFOATHCredentialIdentifier, NSCopying>
 
 /*!
  The credential type (HOTP or TOTP).
@@ -38,10 +40,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) YKFOATHCredentialType type;
 
 /*!
- The Label of the credential as defined in the Key URI Format specifications:
+ The hash algorithm to use for the OATH credential.
+ */
+@property (nonatomic, assign) YKFOATHCredentialAlgorithm algorithm;
+
+/*!
+ The Secret of the credential as defined in the Key URI Format specifications:
  https://github.com/google/google-authenticator/wiki/Key-Uri-Format
  */
-@property (nonatomic, nullable, readonly) NSString *label;
+@property (nonatomic) NSData *secret;
 
 /*!
  The Issuer of the credential as defined in the Key URI Format specifications:
@@ -50,10 +57,22 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *issuer;
 
 /*!
+ How long is the one-time passcode to display to the user. The value for this property can
+ only be 6, 7 or 8. The default value is 6.
+ */
+@property (nonatomic, assign) NSUInteger digits;
+
+/*!
  The validity period for a TOTP code, in seconds. The default value for this property is 30.
  If the credential is of HOTP type, this property returns 0.
  */
 @property (nonatomic, assign) NSUInteger period;
+
+/*!
+ The counter parameter is required when the type is HOTP. It will set the initial counter value.
+ If the credential is of TOTP type, this property returns 0.
+ */
+@property (nonatomic, assign) UInt32 counter;
 
 /*!
  The account name extracted from the label. If the label does not contain the issuer, the
@@ -61,16 +80,27 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) NSString *account;
 
-/*!
- The credential requires the user to touch the key to generate it.
- */
-@property (nonatomic) BOOL requiresTouch;
 
 /*!
- The credential requires the user to touch the key to generate it.
+ @method initWithURL:
+ 
+ @abstract
+    Convenience initializer which creates a new credential from an URL which conforms to ther Key URI Format
+    specifications as defined in:
+    https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+ 
+ @returns
+    The credential object created from the URL or nil if the URL is incorrect.
+ 
+ @param url
+    The URL containing the credential properties.
  */
-@property (nonatomic) BOOL notTruncated;
+- (nullable instancetype)initWithURL:(NSURL *)url;
 
 @end
 
+
 NS_ASSUME_NONNULL_END
+
+
+#endif /* YKFOATHCredentialTemplate_h */

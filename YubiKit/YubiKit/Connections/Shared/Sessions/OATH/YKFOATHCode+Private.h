@@ -13,9 +13,11 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFKeyOATHCalculateResponse.h"
+#import "YKFOATHCode.h"
 
-@interface YKFKeyOATHCalculateResponse()
+@interface YKFOATHCode()
+
+- (nonnull instancetype)initWithOtp:(nullable NSString *)otp validity:(nonnull NSDateInterval *)validity;
 
 - (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData requestTimetamp:(nonnull NSDate *)timestamp requestPeriod:(NSUInteger)period truncateResult:(BOOL)truncate NS_DESIGNATED_INITIALIZER;
 

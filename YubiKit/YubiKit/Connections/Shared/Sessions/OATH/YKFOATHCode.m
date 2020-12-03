@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFKeyOATHCalculateResponse.h"
-#import "YKFKeyOATHCalculateResponse+Private.h"
+#import "YKFOATHCode.h"
+#import "YKFOATHCode+Private.h"
 #import "YKFAssert.h"
 #import "YKFNSDataAdditions+Private.h"
 
@@ -22,14 +22,23 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHCalculateResponseType) {
     YKFKeyOATHCalculateResponseTypeTruncated = 0x76
 };
 
-@interface YKFKeyOATHCalculateResponse()
+@interface YKFOATHCode()
 
 @property (nonatomic, readwrite) NSString *otp;
 @property (nonatomic, readwrite) NSDateInterval *validity;
 
 @end
 
-@implementation YKFKeyOATHCalculateResponse
+@implementation YKFOATHCode
+
+- (instancetype)initWithOtp:(nullable NSString *)otp validity:(nonnull NSDateInterval *)validity {
+    self = [self init];
+    if (self) {
+        self.otp = otp;
+        self.validity = validity;
+    }
+    return self;
+}
 
 - (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData requestTimetamp:(NSDate *)timestamp requestPeriod:(NSUInteger)period truncateResult:(BOOL)truncate {
     YKFAssertAbortInit(responseData.length);

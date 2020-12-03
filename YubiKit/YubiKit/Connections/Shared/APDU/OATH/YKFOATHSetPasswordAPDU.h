@@ -13,30 +13,15 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
+#import "YKFAPDU.h"
 
-@class YKFOATHCredential;
+@class YKFKeyOATHSetCodeRequest;
 
 NS_ASSUME_NONNULL_BEGIN
 
-/*!
- @class YKFKeyOATHListResponse
- 
- @abstract
-    Response from List OATH credentials request.
- */
-@interface YKFKeyOATHListResponse : NSObject
+@interface YKFOATHSetPasswordAPDU: YKFAPDU
 
-/*!
- The list of stored credentials (YKFOATHCredential type) on the key.
- */
-@property (nonatomic, readonly, nonnull) NSArray<YKFOATHCredential*> *credentials;
-
-
-- (nullable instancetype)initWithKeyResponseData:(nonnull NSData *)responseData NS_DESIGNATED_INITIALIZER;
-
-/*
- Not available: the library will create a response as the result of the List request.
- */
+- (nullable instancetype)initWithPassword:(NSString *)code salt:(NSData *)salt NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

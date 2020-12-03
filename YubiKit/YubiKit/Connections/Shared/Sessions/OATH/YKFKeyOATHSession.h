@@ -16,8 +16,10 @@
 #import "YKFKeySession.h"
 #import "YKFKeyVersion.h"
 
-@class YKFKeyOATHCalculateResponse,
+@class YKFOATHCode,
        YKFOATHCredential,
+       YKFOATHCredentialWithCode,
+       YKFOATHCredentialTemplate,
        YKFKeyOATHSelectApplicationResponse;
 
 /**
@@ -50,7 +52,7 @@ typedef void (^YKFKeyOATHSessionCompletionBlock)
     parameter is nil.
  */
 typedef void (^YKFKeyOATHSessionCalculateCompletionBlock)
-    (YKFKeyOATHCalculateResponse* _Nullable response, NSError* _Nullable error);
+    (YKFOATHCode* _Nullable response, NSError* _Nullable error);
 
 /*!
  @abstract
@@ -80,7 +82,7 @@ typedef void (^YKFKeyOATHSessionListCompletionBlock)
     parameter is nil.
  */
 typedef void (^YKFKeyOATHSessionCalculateAllCompletionBlock)
-    (NSArray<YKFOATHCredential*>* _Nullable response, NSError* _Nullable error);
+    (NSArray<YKFOATHCredentialWithCode*>* _Nullable response, NSError* _Nullable error);
 
 /*!
  @abstract
@@ -131,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note:
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)putCredential:(YKFOATHCredential *)credential completion:(YKFKeyOATHSessionCompletionBlock)completion;
+- (void)putCredential:(YKFOATHCredentialTemplate *)credential requiresTouch:(BOOL)requiresTouch completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
  @method deleteCredential:completion:
@@ -255,13 +257,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resetWithCompletion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
- @method setCode:completion:
+ @method setPassword:completion:
  
  @abstract
     Sends to the key an OATH Set Code request to set a PIN on the key OATH application. The request
     is performed asynchronously on a background execution queue.
  
- @param code
+ @param password
     The password to set on the OATH application. The password can be an empty string. If the
     password is an empty string, the authentication will be removed.
  
@@ -273,10 +275,10 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)setCode:(NSString *)code completion:(YKFKeyOATHSessionCompletionBlock)completion;
+- (void)setPassword:(NSString *)password completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
- @method validateCode:completion:
+ @method unlockWithPassword:completion:
  
  @abstract
     Sends to the key an OATH Validate request to authentificate against the OATH application. This request maps
@@ -285,8 +287,8 @@ NS_ASSUME_NONNULL_BEGIN
     as the result of performing another type of request (e.g. U2F) or by unplugging the key from the device.
     The method is performed asynchronously on a background execution queue.
  
- @param code
-    The code to authenticate the OATH application.
+ @param password
+    The password to authenticate the OATH application.
  
  @param completion
     The response block which is executed after the request was processed by the key. The completion block
@@ -296,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)validateCode:(NSString *)code completion:(YKFKeyOATHSessionCompletionBlock)completion;
+- (void)unlockWithPassword:(NSString *)password completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 @end
 

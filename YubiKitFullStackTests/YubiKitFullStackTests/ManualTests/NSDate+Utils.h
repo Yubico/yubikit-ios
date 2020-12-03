@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2020 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import <Foundation/Foundation.h>
+#ifndef NSDate_Utils_h
+#define NSDate_Utils_h
 
-@interface YKFKeyOATHValidateResponse: NSObject
+@interface NSDate ()
 
-@property (nonatomic, readonly, nonnull) NSData *response;
-
-- (nullable instancetype)initWithResponseData:(nonnull NSData *)responseData NS_DESIGNATED_INITIALIZER;
-- (nonnull instancetype)init NS_UNAVAILABLE;
++ (void)swizzleDate;
 
 @end
+
+#endif /* NSDate_Utils_h */

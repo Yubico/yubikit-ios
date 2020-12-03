@@ -13,33 +13,17 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
+#import "YKFAPDU.h"
+
+@class YKFKeyOATHValidateRequest;
 
 NS_ASSUME_NONNULL_BEGIN
 
-/*!
- @class YKFKeyOATHCalculateResponse
- 
- @abstract
-    Response from Calculate OATH credential request.
- */
-@interface YKFKeyOATHCalculateResponse: NSObject
+@interface YKFOATHUnlockAPDU: YKFAPDU
 
-/*!
- The OTP value for the credential. The value of this string is numeric and may have
- only 6 or 8 characters.
- */
-@property (nonatomic, readonly) NSString *otp;
+@property (nonatomic, nullable) NSData *expectedChallengeData;
 
-/*!
- The validity of the OTP when the credential is TOTP. For HOTP this property is the
- interval [<time of request>, <date distant future>] because an HOTP credential does
- not have an expiration date.
- */
-@property (nonatomic, readonly) NSDateInterval *validity;
-
-/*
- Not available: the library will create a response as the result of the Calculate request.
- */
+- (nullable instancetype)initWithPassword:(NSString *)code challenge:(NSData *)challenge salt:(NSData *)salt NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

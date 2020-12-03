@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2020 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,17 +11,26 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 #import <Foundation/Foundation.h>
-#import "YKFOATHCredential.h"
-#import "YKFKeySessionError.h"
+#import "YKFOATHCredentialWithCode.h"
 
-NS_ASSUME_NONNULL_BEGIN
+@interface YKFOATHCredentialWithCode()
 
-@interface YKFOATHCredentialValidator : NSObject
-
-+ (nullable YKFKeySessionError *)validateCredential:(YKFOATHCredential *)credential includeSecret:(BOOL)secretIncluded;
+@property (nonatomic, strong, readwrite, nonnull) YKFOATHCredential *credential;
+@property (nonatomic, strong, readwrite, nullable) YKFOATHCode *code;
 
 @end
 
-NS_ASSUME_NONNULL_END
+@implementation YKFOATHCredentialWithCode
+
+- (instancetype)initWithCredential:(YKFOATHCredential *)credential code:(YKFOATHCode *)code {
+    self = [super init];
+    if (self) {
+        self.credential = credential;
+        self.code = code;
+    }
+    return self;
+}
+
+
+@end
