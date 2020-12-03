@@ -13,19 +13,12 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFAPDU.h"
 
-@class YKFKeyOATHValidateRequest;
+@interface YKFKeyOATHUnlockResponse: NSObject
 
-NS_ASSUME_NONNULL_BEGIN
+@property (nonatomic, readonly, nonnull) NSData *response;
 
-@interface YKFOATHValidateAPDU: YKFAPDU
-
-@property (nonatomic, nullable) NSData *expectedChallengeData;
-
-- (nullable instancetype)initWithCode:(NSString *)code challenge:(NSData *)challenge salt:(NSData *)salt NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithResponseData:(nonnull NSData *)responseData NS_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)init NS_UNAVAILABLE;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -18,6 +18,7 @@
 #import "YKFAssert.h"
 #import "YKFNSMutableDataAdditions.h"
 #import "YKFOATHCredential+Private.h"
+#import "YKFOATHCredentialUtils.h"
 
 static const UInt8 YKFOATHRenameAPDUNameTag = 0x71;
 
@@ -31,12 +32,12 @@ static const UInt8 YKFOATHRenameAPDUNameTag = 0x71;
     NSMutableData *data = [[NSMutableData alloc] init];
     
     // Current name
-    NSString *name = credential.key;
+    NSString *name = [YKFOATHCredentialUtils keyFromCredentialIdentifier:credential];
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     [data ykf_appendEntryWithTag:YKFOATHRenameAPDUNameTag data:nameData];
     
     // New name
-    NSString *newName = renamedCredential.key;
+    NSString *newName = [YKFOATHCredentialUtils keyFromCredentialIdentifier:renamedCredential];
     NSData *newNameData = [newName dataUsingEncoding:NSUTF8StringEncoding];
     [data ykf_appendEntryWithTag:YKFOATHRenameAPDUNameTag data:newNameData];
     

@@ -9,6 +9,7 @@
 #import "ManualTests.h"
 #import "TestSharedLogger.h"
 #import "KeyCommandResponseParser.h"
+#import "NSDate+Utils.h"
 
 typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     ManualTestsInstructionU2FPing = 0x40
@@ -79,10 +80,25 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     
     NSMutableArray *oathTests = [[NSMutableArray alloc] init];
     
-    // Add credential and calculate
-    NSValue *oathAddAndCalculateSelector = [NSValue valueWithPointer:@selector(test_WhenAddingAnOATHCredential_CredentialIsAddedToTheKeyAndValueCanBeComputed)];
-    NSArray *oathAddAndCalculateTestEntry = @[@"OATH Put and Calculate", @"Puts, calculates and removes a credential.", oathAddAndCalculateSelector];
-    [oathTests addObject:oathAddAndCalculateTestEntry];
+    // Add credential and reset
+    NSValue *oathAddCredentialAndResetOATHSelector = [NSValue valueWithPointer:@selector(test_AddCredentialAndResetOATH)];
+    NSArray *oathAddCredentialAndResetOATHTestEntry = @[@"OATH Reset", @"Add credential and reset OATH application.", oathAddCredentialAndResetOATHSelector];
+    [oathTests addObject:oathAddCredentialAndResetOATHTestEntry];
+    
+    // Set password and unlock
+    NSValue *oathSetCodeAndUnlockSelector = [NSValue valueWithPointer:@selector(test_SetCodeAndUnlock)];
+    NSArray *oathSetCodeAndUnlockTestEntry = @[@"OATH set password and unlock", @"Set a password, create new OATH session and unlock.", oathSetCodeAndUnlockSelector];
+    [oathTests addObject:oathSetCodeAndUnlockTestEntry];
+    
+    // Add TOTP credential and calculate
+    NSValue *oathAddAndCalculateTOTPSelector = [NSValue valueWithPointer:@selector(test_WhenAddingAnOATHTOTPCredential_CredentialIsAddedToTheKeyAndValueCanBeComputed)];
+    NSArray *oathAddAndCalculateTOTPTestEntry = @[@"OATH Put and Calculate TOTP", @"Puts, calculates and removes a TOTP credential.", oathAddAndCalculateTOTPSelector];
+    [oathTests addObject:oathAddAndCalculateTOTPTestEntry];
+    
+    // Add HOTP credential and calculate
+    NSValue *oathAddAndCalculateHOTPSelector = [NSValue valueWithPointer:@selector(test_WhenAddingAnOATHHOTPCredential_CredentialIsAddedToTheKeyAndValueCanBeComputed)];
+    NSArray *oathAddAndCalculateHOTPTestEntry = @[@"OATH Put and Calculate HOTP", @"Puts, calculates and removes a HOTP credential.", oathAddAndCalculateHOTPSelector];
+    [oathTests addObject:oathAddAndCalculateHOTPTestEntry];
     
     // Add credential and rename it
     NSValue *oathAddAndRenameSelector = [NSValue valueWithPointer:@selector(test_WhenRenamingAnOATHCredential_CredentialIsRenamed)];
@@ -305,9 +321,96 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
 
 #pragma mark - OATH Tests
 
-- (void)test_WhenAddingAnOATHCredential_CredentialIsAddedToTheKeyAndValueCanBeComputed {
+- (void)test_AddCredentialAndResetOATH {
+    [self.connection oathSession:^(YKFKeyOATHSession * _Nullable session, NSError * _Nullable sessionError) {
+        if (sessionError) {
+            [TestSharedLogger.shared logError:@"Could not create OATH session."];
+            return;
+        }
+        NSString *oathUrlString = @"otpauth://totp/Yubico:oath-reset-test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=Yubico&algorithm=SHA1&digits=6&period=30";
+        NSURL *url = [NSURL URLWithString:oathUrlString];
+        YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:url];
+
+        [session putCredential:credential requiresTouch:NO completion:^(NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logError:@"Could not add the credential to the key."];
+                return;
+            }
+            [TestSharedLogger.shared logMessage:@"Credential was added to the key."];
+        }];
+        
+        [session resetWithCompletion:^(NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logError:@"Could not reset OATH."];
+                return;
+            }
+            [session listCredentialsWithCompletion:^(NSArray<YKFOATHCredential *> * _Nullable credentials, NSError * _Nullable error) {
+                if (error) {
+                    [TestSharedLogger.shared logError:@"Could not list OATH credentials."];
+                    return;
+                }
+                [TestSharedLogger.shared logMessage:@"Listed %i credentials on key after reset", credentials.count];
+                if (credentials.count != 0) {
+                    [TestSharedLogger.shared logError:@"Failed to reset OATH credentials. Still %i credentials on key.", credentials.count];
+                    return;
+                }
+                [TestSharedLogger.shared logSuccess:@"Reset OATH."];
+            }];
+        }];
+        
+    }];
+}
+
+- (void)test_SetCodeAndUnlock {
+    [self.connection oathSession:^(id<YKFKeyOATHSessionProtocol> _Nullable session, NSError * _Nullable error) {
+        if (error) {
+            [TestSharedLogger.shared logError:@"Could not create OATH session: %@", error];
+            return;
+        }
+        [session setPassword:@"271828" completion:^(NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logError:@"Failed to set code: %@", error];
+                return;
+            }
+            // We need to select a different application and then reselect oath to force the oath session to ask for the new passcode.
+            [self.connection fido2Session:^(YKFKeyFIDO2Session * _Nullable fidoSession, NSError * _Nullable error) {
+                if (error) {
+                    [TestSharedLogger.shared logError:@"Failed to create FIDO2 session: %@", error];
+                    return;
+                }
+                [self.connection oathSession:^(YKFKeyOATHSession * _Nullable session, NSError * _Nullable error) {
+                    if (error) {
+                        [TestSharedLogger.shared logError:@"Could not create OATH session: %@", error];
+                        return;
+                    }
+                    [session unlockWithPassword:@"271828" completion:^(NSError * _Nullable error) {
+                        if (error) {
+                            [TestSharedLogger.shared logError:@"Could not unlock OATH session: %@", error];
+                            return;
+                        }
+                        [session listCredentialsWithCompletion:^(NSArray<YKFOATHCredential *> * _Nullable credentials, NSError * _Nullable error) {
+                            if (error) {
+                                [TestSharedLogger.shared logError:@"Could not list credentials after successful unlock: %@", error];
+                                return;
+                            }
+                            [session setPassword:@"" completion:^(NSError * _Nullable error) {
+                                if (error) {
+                                    [TestSharedLogger.shared logError:@"Failed to remove password: %@", error];
+                                    return;
+                                }
+                                [TestSharedLogger.shared logSuccess:@"Set password and unlock."];
+                            }];
+                        }];
+                    }];
+                }];
+            }];
+        }];
+    }];
+}
+
+- (void)test_WhenAddingAnOATHTOTPCredential_CredentialIsAddedToTheKeyAndValueCanBeComputed {
     // This is an URL conforming to Key URI Format specs.
-    NSString *oathUrlString = @"otpauth://totp/Yubico:example@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=Yubico&algorithm=SHA1&digits=6&period=30";
+    NSString *oathUrlString = @"otpauth://totp/Yubico:oath-add-totp-test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=Yubico&algorithm=SHA1&digits=6&period=30";
     NSURL *url = [NSURL URLWithString:oathUrlString];
     if (!url) {
         [TestSharedLogger.shared logError:@"Invalid OATH URL."];
@@ -315,7 +418,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     }
     
     // Create the credential from the URL using the convenience initializer.
-    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:url];
+    YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:url];
     if (!credential) {
         [TestSharedLogger.shared logError:@"Could not create OATH credential."];
         return;
@@ -329,9 +432,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         /*
          1. Add the credential to the key
          */
-//        YKFKeyOATHPutRequest *putRequest = [[YKFKeyOATHPutRequest alloc] initWithCredential:credential];
-        
-        [session putCredential:credential completion:^(NSError * _Nullable error) {
+        [session putCredential:credential requiresTouch:NO completion:^(NSError * _Nullable error) {
             if (error) {
                 [TestSharedLogger.shared logError:@"Could not add the credential to the key."];
                 return;
@@ -340,33 +441,69 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         }];
         
         /*
-         2. Calculate the credential.
+         2. List credentials.
          */
-        [session calculateCredential:credential completion:^(YKFKeyOATHCalculateResponse * _Nullable response, NSError * _Nullable error) {
-            if (error) {
-                [TestSharedLogger.shared logError:@"Could not calculate the credential."];
+        [session listCredentialsWithCompletion:^(NSArray<YKFOATHCredential *> * _Nullable credentials, NSError * _Nullable error) {
+            YKFOATHCredential *newCredential;
+            for(YKFOATHCredential *credential in credentials) {
+                if ([credential.account isEqual:@"oath-add-totp-test@yubico.com"]) {
+                    newCredential = credential;
+                }
+            }
+            if (error || !newCredential) {
+                [TestSharedLogger.shared logError:@"Could not read credential from the key."];
                 return;
             }
-            NSString *successLog = [NSString stringWithFormat:@"OTP value for the credential %@ is %@", credential.label, response.otp];
-            [TestSharedLogger.shared logSuccess:successLog];
-        }];
-        
-        /*
-         3. Remove the credential.
-         */
-        [session deleteCredential:credential completion:^(NSError * _Nullable error) {
-            if (error) {
-                [TestSharedLogger.shared logError:@"Could not delete the credential."];
-                return;
-            }
-            [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
+            /*
+             2. Swizzle [NSDate date] to always return the same date and calculate TOTP using calculate and calculate all
+             */
+            [NSDate swizzleDate];
+
+            [session calculateCredential:newCredential completion:^(YKFOATHCode * _Nullable response, NSError * _Nullable error) {
+                if (error || ![response.otp isEqualToString:@"239396"]) {
+                    [TestSharedLogger.shared logError:@"Could not calculate the credential using calculate."];
+                    return;
+                }
+                NSString *successLog = [NSString stringWithFormat:@"OTP value for the credential %@ is %@", credential.account, response.otp];
+                [TestSharedLogger.shared logSuccess:successLog];
+            }];
+            
+            [session calculateAllWithCompletion:^(NSArray<YKFOATHCredentialWithCode *> * _Nullable credentials, NSError * _Nullable error) {
+                if (error) {
+                    [TestSharedLogger.shared logError:@"Could not calculate the credential."];
+                    return;
+                }
+                YKFOATHCredentialWithCode *credentialWithCode;
+                for(YKFOATHCredentialWithCode *result in credentials) {
+                    if ([result.credential.account isEqual:@"oath-add-totp-test@yubico.com"]) {
+                        credentialWithCode = result;
+                    }
+                }
+                if (![credentialWithCode.code.otp isEqualToString:@"239396"]) {
+                    [TestSharedLogger.shared logError:@"Could not calculate the credential using calculate all."];
+                    return;
+                }
+                NSString *successLog = [NSString stringWithFormat:@"OTP value for the credential %@ is %@", credentialWithCode.credential.account, credentialWithCode.code.otp];
+                [TestSharedLogger.shared logSuccess:successLog];
+            }];
+            
+            /*
+             3. Remove the credential.
+             */
+            [session deleteCredential:newCredential completion:^(NSError * _Nullable error) {
+                [NSDate swizzleDate];
+                if (error) {
+                    [TestSharedLogger.shared logError:@"Could not delete the credential."];
+                    return;
+                }
+                [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
+            }];
         }];
     }];
 }
 
-- (void)test_WhenRenamingAnOATHCredential_CredentialIsRenamed {
-    // This is an URL conforming to Key URI Format specs.
-    NSString *oathUrlString = @"otpauth://totp/Yubico:example@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=Yubico&algorithm=SHA1&digits=6&period=30";
+- (void)test_WhenAddingAnOATHHOTPCredential_CredentialIsAddedToTheKeyAndValueCanBeComputed {
+    NSString *oathUrlString = @"otpauth://hotp/Yubico:oath-add-hotp-test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=Yubico&algorithm=SHA1&digits=6&counter=30";
     NSURL *url = [NSURL URLWithString:oathUrlString];
     if (!url) {
         [TestSharedLogger.shared logError:@"Invalid OATH URL."];
@@ -374,7 +511,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     }
     
     // Create the credential from the URL using the convenience initializer.
-    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:url];
+    YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:url];
     if (!credential) {
         [TestSharedLogger.shared logError:@"Could not create OATH credential."];
         return;
@@ -388,7 +525,80 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         /*
          1. Add the credential to the key
          */
-        [session putCredential:credential completion:^(NSError * _Nullable error) {
+        [session putCredential:credential requiresTouch:NO completion:^(NSError * _Nullable error) {
+            if (error) {
+                [TestSharedLogger.shared logError:@"Could not add the credential to the key."];
+                return;
+            }
+            [TestSharedLogger.shared logSuccess:@"The credential was added to the key."];
+        }];
+        
+        /*
+         2. List credentials.
+         */
+        [session listCredentialsWithCompletion:^(NSArray<YKFOATHCredential *> * _Nullable credentials, NSError * _Nullable error) {
+            YKFOATHCredential *newCredential;
+            for(YKFOATHCredential *credential in credentials) {
+                if ([credential.account isEqual:@"oath-add-hotp-test@yubico.com"]) {
+                    newCredential = credential;
+                }
+            }
+            if (error || !newCredential) {
+                [TestSharedLogger.shared logError:@"Could not read credential from the key."];
+                return;
+            }
+            /*
+             2. Calculate HOTP
+             */
+            [session calculateCredential:newCredential completion:^(YKFOATHCode * _Nullable response, NSError * _Nullable error) {
+                if (error || ![response.otp isEqualToString:@"726826"]) {
+                    [TestSharedLogger.shared logError:@"Could not calculate the credential using calculate."];
+                    return;
+                }
+                NSString *successLog = [NSString stringWithFormat:@"OTP value for the credential %@ is %@", credential.account, response.otp];
+                [TestSharedLogger.shared logSuccess:successLog];
+            }];
+            
+            /*
+             3. Remove the credential.
+             */
+            [session deleteCredential:newCredential completion:^(NSError * _Nullable error) {
+                if (error) {
+                    [TestSharedLogger.shared logError:@"Could not delete the credential."];
+                    return;
+                }
+                [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
+            }];
+        }];
+    }];
+}
+
+
+- (void)test_WhenRenamingAnOATHCredential_CredentialIsRenamed {
+    // This is an URL conforming to Key URI Format specs.
+    NSString *oathUrlString = @"otpauth://totp/Yubico:oath-rename-test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=Yubico&algorithm=SHA1&digits=6&period=30";
+    NSURL *url = [NSURL URLWithString:oathUrlString];
+    if (!url) {
+        [TestSharedLogger.shared logError:@"Invalid OATH URL."];
+        return;
+    }
+    
+    // Create the credential from the URL using the convenience initializer.
+    YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:url];
+    if (!credential) {
+        [TestSharedLogger.shared logError:@"Could not create OATH credential."];
+        return;
+    }
+    
+    [self.connection oathSession:^(id<YKFKeyOATHSessionProtocol> _Nullable session, NSError * _Nullable sessionError) {
+        if (sessionError) {
+            [TestSharedLogger.shared logError:@"Could not create OATH session."];
+            return;
+        }
+        /*
+         1. Add the credential to the key
+         */
+        [session putCredential:credential requiresTouch:NO completion:^(NSError * _Nullable error) {
             if (error) {
                 [TestSharedLogger.shared logError:@"Could not add the credential to the key."];
                 return;
@@ -399,51 +609,64 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         /*
          2. Rename the credential.
          */
-        [session renameCredential:credential newIssuer:@"Transnomino Inc" newAccount:@"renamed-account@yubico.com" completion:^(NSError * _Nullable error) {
-            if (error) {
-                [TestSharedLogger.shared logError:@"Could not rename the credential. %@", error];
-                return;
-            }
-            [TestSharedLogger.shared logSuccess:@"Credential renamed"];
-        }];
-        
-        /*
-         3. List credentials and verify that the credential has been renamed
-         */
-        [session listCredentialsWithCompletion:^(NSArray<YKFOATHCredential*> * _Nullable credentials, NSError * _Nullable error) {
-            if (error) {
-                [TestSharedLogger.shared logError:@"Could not list credentials. %@", error];
-            }
-            
-            YKFOATHCredential* renamedCredential;
-            for (YKFOATHCredential* credential in credentials) {
-                if ([credential.issuer isEqual:@"Transnomino Inc"] && [credential.account isEqual:@"renamed-account@yubico.com"]) {
-                    renamedCredential = credential;
-                    break;
+        [session listCredentialsWithCompletion:^(NSArray<YKFOATHCredential *> * _Nullable credentials, NSError * _Nullable error) {
+            YKFOATHCredential *newCredential;
+            for(YKFOATHCredential *credential in credentials) {
+                if ([credential.account isEqual:@"oath-rename-test@yubico.com"]) {
+                    newCredential = credential;
                 }
             }
-            
-            if (renamedCredential) {
-                [TestSharedLogger.shared logSuccess:@"Retrieved and verified renamed credential from key"];
-                
-                [session deleteCredential:renamedCredential completion:^(NSError * _Nullable error) {
-                    if (error) {
-                        [TestSharedLogger.shared logError:@"Could not delete the credential. %@", error];
-                        return;
-                    }
-                    [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
-                }];
-                
-            } else {
-                [session deleteCredential:credential completion:^(NSError * _Nullable error) {
-                    if (error) {
-                        [TestSharedLogger.shared logError:@"Could not delete the credential. %@", error];
-                        return;
-                    }
-                    [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
-                }];
-                [TestSharedLogger.shared logError:@"Failed retrieving renamed credential"];
+            if (error || !newCredential) {
+                [TestSharedLogger.shared logError:@"Could not read credential from the key."];
+                return;
             }
+            
+            [session renameCredential:newCredential newIssuer:@"Transnomino Inc" newAccount:@"renamed-account@yubico.com" completion:^(NSError * _Nullable error) {
+                if (error) {
+                    [TestSharedLogger.shared logError:@"Could not rename the credential. %@", error];
+                    return;
+                }
+                [TestSharedLogger.shared logSuccess:@"Credential renamed"];
+            }];
+            
+            /*
+             3. List credentials and verify that the credential has been renamed
+             */
+            [session listCredentialsWithCompletion:^(NSArray<YKFOATHCredential*> * _Nullable credentials, NSError * _Nullable error) {
+                if (error) {
+                    [TestSharedLogger.shared logError:@"Could not list credentials. %@", error];
+                }
+                
+                YKFOATHCredential* renamedCredential;
+                for (YKFOATHCredential* credential in credentials) {
+                    if ([credential.issuer isEqual:@"Transnomino Inc"] && [credential.account isEqual:@"renamed-account@yubico.com"]) {
+                        renamedCredential = credential;
+                        break;
+                    }
+                }
+                
+                if (renamedCredential) {
+                    [TestSharedLogger.shared logSuccess:@"Retrieved and verified renamed credential from key"];
+                    
+                    [session deleteCredential:renamedCredential completion:^(NSError * _Nullable error) {
+                        if (error) {
+                            [TestSharedLogger.shared logError:@"Could not delete the credential. %@", error];
+                            return;
+                        }
+                        [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
+                    }];
+                    
+                } else {
+                    [session deleteCredential:newCredential completion:^(NSError * _Nullable error) {
+                        if (error) {
+                            [TestSharedLogger.shared logError:@"Could not delete the credential. %@", error];
+                            return;
+                        }
+                        [TestSharedLogger.shared logSuccess:@"The credential was removed from the key."];
+                    }];
+                    [TestSharedLogger.shared logError:@"Failed retrieving renamed credential"];
+                }
+            }];
         }];
     }];
 }

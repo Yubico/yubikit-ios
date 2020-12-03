@@ -18,6 +18,7 @@
 #import "YKFAssert.h"
 #import "YKFNSMutableDataAdditions.h"
 #import "YKFOATHCredential+Private.h"
+#import "YKFOATHCredentialUtils.h"
 
 static const UInt8 YKFOATHCalculateAPDUNameTag = 0x71;
 static const UInt8 YKFOATHCalculateAPDUChallengeTag = 0x74;
@@ -30,7 +31,7 @@ static const UInt8 YKFOATHCalculateAPDUChallengeTag = 0x74;
     NSMutableData *data = [[NSMutableData alloc] init];
     
     // Name
-    NSString *name = credential.key;
+    NSString *name = [YKFOATHCredentialUtils keyFromCredentialIdentifier:credential];
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     
     [data ykf_appendEntryWithTag:YKFOATHCalculateAPDUNameTag data:nameData];

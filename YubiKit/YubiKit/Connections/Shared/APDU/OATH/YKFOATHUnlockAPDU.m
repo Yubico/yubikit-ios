@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFOATHValidateAPDU.h"
+#import "YKFOATHUnlockAPDU.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFOATHCredential.h"
 #import "YKFAssert.h"
@@ -22,16 +22,16 @@
 static const UInt8 YKFKeyOATHSetCodeAPDUChallengeTag = 0x74;
 static const UInt8 YKFKeyOATHSetCodeAPDUResponseTag = 0x75;
 
-@implementation YKFOATHValidateAPDU
+@implementation YKFOATHUnlockAPDU
 
-- (nullable instancetype)initWithCode:(nonnull NSString *)code challenge:(NSData *)challenge salt:(NSData *)salt {
-    YKFAssertAbortInit(code);
+- (nullable instancetype)initWithPassword:(nonnull NSString *)password challenge:(NSData *)challenge salt:(NSData *)salt {
+    YKFAssertAbortInit(password);
     YKFAssertAbortInit(challenge);
     YKFAssertAbortInit(salt.length);
     
     NSMutableData *data = [[NSMutableData alloc] init];
     
-    NSData *keyData = [[code dataUsingEncoding:NSUTF8StringEncoding] ykf_deriveOATHKeyWithSalt:salt];
+    NSData *keyData = [[password dataUsingEncoding:NSUTF8StringEncoding] ykf_deriveOATHKeyWithSalt:salt];
     
     // Response (hmac of the select challenge)
     

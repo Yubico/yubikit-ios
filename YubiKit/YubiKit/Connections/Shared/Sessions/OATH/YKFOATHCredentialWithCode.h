@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2020 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import <Foundation/Foundation.h>
-#import "YKFAPDU.h"
+#ifndef YKFOATHCredentialWithCode_h
+#define YKFOATHCredentialWithCode_h
 
-@class YKFKeyOATHSetCodeRequest;
+@class YKFOATHCredential, YKFOATHCode;
 
-NS_ASSUME_NONNULL_BEGIN
+@interface YKFOATHCredentialWithCode: NSObject
 
-@interface YKFOATHSetCodeAPDU: YKFAPDU
+@property (nonatomic, strong, readonly, nonnull) YKFOATHCredential *credential;
+@property (nonatomic, strong, readonly, nullable) YKFOATHCode *code;
 
-- (nullable instancetype)initWithCode:(NSString *)code salt:(NSData *)salt NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype _Nonnull)initWithCredential:(YKFOATHCredential *_Nonnull)credential code:(YKFOATHCode *_Nullable)code;
 
 @end
 
-NS_ASSUME_NONNULL_END
+#endif /* YKFOATHCredentialWithCode_h */

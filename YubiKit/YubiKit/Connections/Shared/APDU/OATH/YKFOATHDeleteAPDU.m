@@ -18,6 +18,7 @@
 #import "YKFAssert.h"
 #import "YKFNSMutableDataAdditions.h"
 #import "YKFOATHCredential+Private.h"
+#import "YKFOATHCredentialUtils.h"
 
 static const UInt8 YKFOATHDeleteAPDUNameTag = 0x71;
 
@@ -27,7 +28,7 @@ static const UInt8 YKFOATHDeleteAPDUNameTag = 0x71;
     YKFAssertAbortInit(credential);
     
     NSMutableData *data = [[NSMutableData alloc] init];
-    NSString *name = credential.key;
+    NSString *name = [YKFOATHCredentialUtils keyFromCredentialIdentifier:credential];
     [data ykf_appendEntryWithTag:YKFOATHDeleteAPDUNameTag data:[name dataUsingEncoding:NSUTF8StringEncoding]];
     return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHDelete p1:0 p2:0 data:data type:YKFAPDUTypeShort];
 }

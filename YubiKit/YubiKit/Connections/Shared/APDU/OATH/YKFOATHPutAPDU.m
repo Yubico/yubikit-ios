@@ -16,8 +16,9 @@
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFAssert.h"
 #import "YKFNSMutableDataAdditions.h"
-#import "YKFOATHCredential.h"
+#import "YKFOATHCredentialTemplate.h"
 #import "YKFOATHCredential+Private.h"
+#import "YKFOATHCredentialUtils.h"
 
 typedef NS_ENUM(NSUInteger, YKFOATHPutCredentialAPDUTag) {
     YKFOATHPutCredentialAPDUTagName = 0x71,
@@ -32,13 +33,13 @@ typedef NS_ENUM(NSUInteger, YKFOATHPutCredentialAPDUProperty) {
 
 @implementation YKFOATHPutAPDU
 
-- (instancetype)initWithCredential:(YKFOATHCredential *)credential {
+- (instancetype)initWithCredential:(YKFOATHCredentialTemplate *)credential requriesTouch:(BOOL)requiresTouch {
     YKFAssertAbortInit(credential);
     
     NSMutableData *rawRequest = [[NSMutableData alloc] init];
     
     // Name - max 64 bytes
-    NSString *name = credential.key;
+    NSString *name = [YKFOATHCredentialUtils keyFromCredentialIdentifier:credential];
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     [rawRequest ykf_appendEntryWithTag:YKFOATHPutCredentialAPDUTagName data:nameData];
     
@@ -50,7 +51,7 @@ typedef NS_ENUM(NSUInteger, YKFOATHPutCredentialAPDUProperty) {
     [rawRequest ykf_appendEntryWithTag:YKFOATHPutCredentialAPDUTagKey headerBytes:@[@(keyAlgorithm), @(keyDigits)] data:secret];
     
     // Touch
-    if (credential.requiresTouch) {
+    if (requiresTouch) {
         [rawRequest ykf_appendByte:YKFOATHPutCredentialAPDUTagProperty];
         [rawRequest ykf_appendByte:YKFOATHPutCredentialAPDUPropertyTouch];
     }
