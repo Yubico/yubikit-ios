@@ -63,7 +63,7 @@
         completionBlockExecuted = YES;
         [expectation fulfill];
     };
-    [self.u2fService executeRegisterRequest:registerRequest completion:completionBlock];
+    [self.u2fService registerWithChallenge:registerRequest completion:completionBlock];
 
     XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];
     XCTAssert(result == XCTWaiterResultCompleted, @"");
@@ -85,7 +85,7 @@
         completionBlockExecuted = YES;
         [expectation fulfill];
     };
-    [self.u2fService executeSignRequest:signRequest completion:completionBlock];
+    [self.u2fService signWithChallenge:signRequest completion:completionBlock];
 
     XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];
     XCTAssert(result == XCTWaiterResultCompleted, @"");
@@ -111,7 +111,7 @@
         errorReceived = error.code == expectedErrorCode;
         [expectation fulfill];
     };
-    [self.u2fService executeRegisterRequest:registerRequest completion:completionBlock];
+    [self.u2fService registerWithChallenge:registerRequest completion:completionBlock];
     
     XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];
     XCTAssert(result == XCTWaiterResultCompleted, @"");
@@ -134,7 +134,7 @@
         [expectation fulfill];
     };
     
-    [self.u2fService executeSignRequest:signRequest completion:completionBlock];
+    [self.u2fService signWithChallenge:signRequest completion:completionBlock];
 
     XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];
     XCTAssert(result == XCTWaiterResultCompleted, @"");
@@ -166,7 +166,7 @@
             [expectation fulfill];
         };
         
-        [self.u2fService executeSignRequest:signRequest completion:completionBlock];
+        [self.u2fService signWithChallenge:signRequest completion:completionBlock];
 
         XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];
         XCTAssert(result == XCTWaiterResultCompleted, @"");
@@ -201,7 +201,7 @@
             [expectation fulfill];
         };
         
-        [self.u2fService executeSignRequest:signRequest completion:completionBlock];
+        [self.u2fService signWithChallenge:signRequest completion:completionBlock];
         
         XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];
         XCTAssert(result == XCTWaiterResultCompleted, @"");
@@ -227,7 +227,7 @@
         errorReceived = error.code == expectedErrorCode;
         [expectation fulfill];
     };
-    [self.u2fService executeSignRequest:signRequest completion:completionBlock];
+    [self.u2fService signWithChallenge:signRequest completion:completionBlock];
     
     XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];
     XCTAssert(result == XCTWaiterResultCompleted, @"");
@@ -246,7 +246,7 @@
     
     YKFKeyU2FRegisterRequest *registerRequest = [[YKFKeyU2FRegisterRequest alloc] initWithChallenge:self.challenge appId:self.appId];
     YKFKeyU2FSessionRegisterCompletionBlock completionBlock = ^(YKFKeyU2FRegisterResponse *response, NSError *error) {};
-    [self.u2fService executeRegisterRequest:registerRequest completion:completionBlock];
+    [self.u2fService registerWithChallenge:registerRequest completion:completionBlock];
     
     [self waitForTimeInterval:0.3]; // give time to update the property
     
@@ -267,7 +267,7 @@
     YKFKeyU2FSessionSignCompletionBlock completionBlock = ^(YKFKeyU2FSignResponse *response, NSError *error) {
         [expectation fulfill];
     };
-    [self.u2fService executeSignRequest:signRequest completion:completionBlock];
+    [self.u2fService signWithChallenge:signRequest completion:completionBlock];
     
     XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:10];
     XCTAssert(result == XCTWaiterResultCompleted, @"");

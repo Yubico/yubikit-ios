@@ -15,37 +15,51 @@
 #import "YKFU2FRegisterAPDU.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFNSDataAdditions.h"
-#import "YKFKeyU2FRegisterRequest.h"
 #import "YKFAssert.h"
-
-#import "YKFKeyU2FRequest+Private.h"
 #import "YKFNSDataAdditions+Private.h"
+
+/*
+ DOMString typ as defined in FIDO U2F Raw Message Format
+ https://fidoalliance.org/specs/u2f-specs-1.0-bt-nfc-id-amendment/fido-u2f-raw-message-formats.html
+ */
+static NSString* const U2FClientDataTypeRegistration = @"navigator.id.finishEnrollment";
+
+/*
+ Client data as defined in FIDO U2F Raw Message Format
+ https://fidoalliance.org/specs/u2f-specs-1.0-bt-nfc-id-amendment/fido-u2f-raw-message-formats.html
+ Note: The "cid_pubkey" is missing in this case since the TLS stack on iOS does not support channel id.
+ */
+static NSString* const U2FClientDataTemplate = @"\{\"typ\":\"%@\",\"challenge\":\"%@\",\"origin\":\"%@\"}";
 
 static const UInt8 YKFU2FRegisterAPDUEnforceUserPresenceAndSign = 0x03;
 
+
+@interface YKFU2FRegisterAPDU()
+
+@property (nonatomic, readwrite) NSString *clientData;
+
+@end
+
 @implementation YKFU2FRegisterAPDU
 
-- (instancetype)initWithU2FRegisterRequest:(YKFKeyU2FRegisterRequest *)request {
-    YKFAssertAbortInit(request);
-        
-    NSString *appId = request.appId;
+- (nullable instancetype)initWithChallenge:(NSString *)challenge appId:(NSString *)appId {
+    YKFAssertAbortInit(challenge);
     YKFAssertAbortInit(appId);
-        
-    NSString *clientData = request.clientData;
-    YKFAssertAbortInit(clientData);
+
+    self.clientData = [[NSString alloc] initWithFormat:U2FClientDataTemplate, U2FClientDataTypeRegistration, challenge, appId];
     
-    NSData *challengeSHA256 = [[clientData dataUsingEncoding:NSUTF8StringEncoding] ykf_SHA256];
+    NSData *challengeSHA256 = [[self.clientData dataUsingEncoding:NSUTF8StringEncoding] ykf_SHA256];
     YKFAssertAbortInit(challengeSHA256);
     
     NSData *applicationSHA256 = [[appId dataUsingEncoding:NSUTF8StringEncoding] ykf_SHA256];
     YKFAssertAbortInit(applicationSHA256);
     
-    NSMutableData *rawU2fRequest = [[NSMutableData alloc] init];
+    NSMutableData *data = [[NSMutableData alloc] init];
     
-    [rawU2fRequest appendData:challengeSHA256];
-    [rawU2fRequest appendData:applicationSHA256];
+    [data appendData:challengeSHA256];
+    [data appendData:applicationSHA256];
     
-    return [super initWithCla:0 ins:YKFAPDUCommandInstructionU2FRegister p1:YKFU2FRegisterAPDUEnforceUserPresenceAndSign p2:0 data:rawU2fRequest type:YKFAPDUTypeExtended];
+    return [super initWithCla:0 ins:YKFAPDUCommandInstructionU2FRegister p1:YKFU2FRegisterAPDUEnforceUserPresenceAndSign p2:0 data:data type:YKFAPDUTypeExtended];
 }
 
 @end

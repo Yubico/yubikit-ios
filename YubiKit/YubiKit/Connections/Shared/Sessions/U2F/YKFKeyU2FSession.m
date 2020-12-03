@@ -21,11 +21,11 @@
 
 #import "YKFKeySessionError+Private.h"
 #import "YKFKeyU2FSession+Private.h"
-#import "YKFKeyU2FRequest+Private.h"
-#import "YKFKeyU2FSignRequest.h"
 #import "YKFKeyU2FSignResponse.h"
-#import "YKFKeyU2FRegisterRequest.h"
 #import "YKFKeyU2FRegisterResponse.h"
+
+#import "YKFU2FRegisterAPDU.h"
+#import "YKFU2FSignAPDU.h"
 
 #import "YKFKeyU2FRegisterResponse+Private.h"
 #import "YKFKeyU2FSignResponse+Private.h"
@@ -37,6 +37,9 @@
 typedef void (^YKFKeyU2FServiceResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
 
 NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
+
+static const int YKFKeyU2FMaxRetries = 30; // times
+static const NSTimeInterval YKFKeyU2FRetryTimeInterval = 0.5; // seconds
 
 @interface YKFKeyU2FSession()
 
@@ -75,48 +78,57 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 
 #pragma mark - U2F Register
 
-- (void)executeRegisterRequest:(YKFKeyU2FRegisterRequest *)request completion:(YKFKeyU2FSessionRegisterCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)registerWithChallenge:(NSString *)challenge appId:(NSString *)appId completion:(YKFKeyU2FSessionRegisterCompletionBlock)completion {
+    YKFParameterAssertReturn(challenge);
+    YKFParameterAssertReturn(appId);
     YKFParameterAssertReturn(completion);
-    
+
+    YKFU2FRegisterAPDU *apdu = [[YKFU2FRegisterAPDU alloc] initWithChallenge:challenge appId:appId];
     ykf_weak_self();
-    [self executeU2FRequest:request completion:^(NSData *result, NSError *error) {
+    [self executeU2FCommand:apdu retryCount:0 completion:^(NSData *result, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
             return;
         }
-        YKFKeyU2FRegisterResponse *registerResponse = [strongSelf processRegisterData:result request:request];
+        YKFKeyU2FRegisterResponse *registerResponse = [strongSelf processRegisterData:result clientData:apdu.clientData];
         completion(registerResponse, nil);
     }];
 }
 
 #pragma mark - U2F Sign
 
-- (void)executeSignRequest:(YKFKeyU2FSignRequest *)request completion:(YKFKeyU2FSessionSignCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)signWithChallenge:(NSString *)challenge
+                keyHandle:(NSString *)keyHandle
+                    appId:(NSString *)appId
+               completion:(YKFKeyU2FSessionSignCompletionBlock)completion {
+    YKFParameterAssertReturn(challenge);
+    YKFParameterAssertReturn(keyHandle);
+    YKFParameterAssertReturn(appId);
     YKFParameterAssertReturn(completion);
 
+    YKFU2FSignAPDU *apdu = [[YKFU2FSignAPDU alloc] initWithChallenge:challenge keyHandle:keyHandle appId:appId];
+    
     ykf_weak_self();
-    [self executeU2FRequest:request completion:^(NSData *result, NSError *error) {
+    [self executeU2FCommand:apdu retryCount:0 completion:^(NSData *result, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
             return;
         }
-        YKFKeyU2FSignResponse *signResponse = [strongSelf processSignData:result request:request];
+        YKFKeyU2FSignResponse *signResponse = [strongSelf processSignData:result keyHandle:keyHandle clientData:apdu.clientData];
         completion(signResponse, nil);
     }];
 }
 
 #pragma mark - Request Execution
 
-- (void)executeU2FRequest:(YKFKeyU2FRequest *)request completion:(YKFKeyU2FServiceResultCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)executeU2FCommand:(YKFAPDU *)apdu retryCount:(int)retryCount completion:(YKFKeyU2FServiceResultCompletionBlock)completion {
+    YKFParameterAssertReturn(apdu);
     YKFParameterAssertReturn(completion);
     
     ykf_weak_self();
-    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         ykf_safe_strong_self();
         
         if (data) {
@@ -127,7 +139,7 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
         
         switch (error.code) {
             case YKFKeyAPDUErrorCodeConditionNotSatisfied: {
-                [strongSelf handleTouchRequired:request completion:completion];
+                [strongSelf handleTouchRequired:apdu retryCount:retryCount completion:completion];
             }
             break;
                 
@@ -149,10 +161,10 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
 
 #pragma mark - Private
 
-- (void)handleTouchRequired:(YKFKeyU2FRequest *)request completion:(YKFKeyU2FServiceResultCompletionBlock)completion {
+- (void)handleTouchRequired:(YKFAPDU *)apdu retryCount:(int)retryCount completion:(YKFKeyU2FServiceResultCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
-    if (![request shouldRetry]) {
+    if (retryCount >= YKFKeyU2FMaxRetries) {
         YKFKeySessionError *timeoutError = [YKFKeySessionError errorWithCode:YKFKeySessionErrorTouchTimeoutCode];
         completion(nil, timeoutError);
         
@@ -161,23 +173,23 @@ NSString* const YKFKeyU2FServiceProtocolKeyStatePropertyKey = @"keyState";
     }
     
     [self updateKeyState:YKFKeyU2FSessionKeyStateTouchKey];    
-    request.retries += 1;
+    retryCount += 1;
     
     ykf_weak_self();
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, request.retryTimeInterval * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, YKFKeyU2FRetryTimeInterval * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         ykf_safe_strong_self();
-        [strongSelf executeU2FRequest:request completion:completion];
+        [strongSelf executeU2FCommand:apdu retryCount:retryCount completion:completion];
     });
 }
 
 #pragma mark - Key responses
 
-- (YKFKeyU2FSignResponse *)processSignData:(NSData *)data request:(YKFKeyU2FSignRequest *)request {
-    return [[YKFKeyU2FSignResponse alloc] initWithKeyHandle:request.keyHandle clientData:request.clientData signature:data];
+- (YKFKeyU2FSignResponse *)processSignData:(NSData *)data keyHandle:(NSString *)keyHandle clientData:(NSString *)clientData {
+    return [[YKFKeyU2FSignResponse alloc] initWithKeyHandle:keyHandle clientData:clientData signature:data];
 }
 
-- (YKFKeyU2FRegisterResponse *)processRegisterData:(NSData *)data request:(YKFKeyU2FRegisterRequest *)request {
-    return [[YKFKeyU2FRegisterResponse alloc] initWithClientData:request.clientData registrationData:data];
+- (YKFKeyU2FRegisterResponse *)processRegisterData:(NSData *)data clientData:(NSString *)clientData {
+    return [[YKFKeyU2FRegisterResponse alloc] initWithClientData:clientData registrationData:data];
 }
 
 @end
