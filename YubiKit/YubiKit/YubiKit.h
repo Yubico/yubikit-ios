@@ -69,9 +69,9 @@
 #import "YKFNSDataAdditions.h"
 #import "YKFWebAuthnClientData.h"
 
-#import "YKFKeyOATHCalculateResponse.h"
 #import "YKFKeyOATHSelectApplicationResponse.h"
 #import "YKFKeyOATHValidateResponse.h"
 #import "YKFOATHCredential.h"
+#import "YKFOATHCode.h"
 #import "YKFOATHCredentialTemplate.h"
 #import "YKFOATHCredentialWithCode.h"
