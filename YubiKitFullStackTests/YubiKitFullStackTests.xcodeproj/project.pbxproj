@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		51E1B9A02578400F003C1CA4 /* NSDate+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B99F2578400F003C1CA4 /* NSDate+Utils.m */; };
 		950AC92A2147C582004967AE /* OTPAutomationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 958439BB211C59D800985F6B /* OTPAutomationTests.m */; };
 		950AC92B2147C586004967AE /* U2FAutomationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 95A46FCB20E120F80096B7A1 /* U2FAutomationTests.m */; };
 		950AC92C2147C58B004967AE /* KeyConnectionAutomationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 95FF5E4820DA4413003CCA16 /* KeyConnectionAutomationTests.m */; };
@@ -56,6 +57,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		51E1B99F2578400F003C1CA4 /* NSDate+Utils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSDate+Utils.m"; sourceTree = "<group>"; };
+		51E1B9A32578402B003C1CA4 /* NSDate+Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDate+Utils.h"; sourceTree = "<group>"; };
 		9520F9E721B574470072CD01 /* RawCommandAutomationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RawCommandAutomationTests.m; sourceTree = "<group>"; };
 		95352F4120F4D49C0014D6DC /* KeyCommandResponseParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyCommandResponseParser.h; sourceTree = "<group>"; };
 		95352F4220F4D49C0014D6DC /* KeyCommandResponseParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeyCommandResponseParser.m; sourceTree = "<group>"; };
@@ -300,6 +303,8 @@
 				958DCCDA20B6ADA7004244B2 /* GnubbyManualTests.h */,
 				958DCCDB20B6ADA7004244B2 /* GnubbyManualTests.m */,
 				958DCCE320B6BAC1004244B2 /* CustomAPDU */,
+				51E1B9A32578402B003C1CA4 /* NSDate+Utils.h */,
+				51E1B99F2578400F003C1CA4 /* NSDate+Utils.m */,
 			);
 			path = ManualTests;
 			sourceTree = "<group>";
@@ -432,6 +437,7 @@
 				958DCCDF20B6B0A4004244B2 /* ManualTestsViewController.m in Sources */,
 				958DDB69211C65AF0064A50F /* OTPUIResponder.m in Sources */,
 				956884E220AB289C00E0F72C /* AppDelegate.m in Sources */,
+				51E1B9A02578400F003C1CA4 /* NSDate+Utils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -13,9 +13,14 @@
 // limitations under the License.
 
 #import "YKFKeyOATHCalculateAllResponse.h"
+#import "YKFOATHCredential.h"
+#import "YKFOATHCredential+Private.h"
+#import "YKFOATHCode.h"
+#import "YKFOATHCode+Private.h"
 #import "YKFAssert.h"
 #import "YKFNSStringAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
+#import "YKFOATHCredentialWithCode.h"
 
 static const UInt8 YKFKeyOATHCalculateAllNameTag = 0x71;
 static const UInt8 YKFKeyOATHCalculateAllResponseHOTPTag = 0x77;
@@ -24,31 +29,6 @@ static const UInt8 YKFKeyOATHCalculateAllResponseTruncatedResponseTag = 0x76;
 static const UInt8 YKFKeyOATHCalculateAllResponseTouchTag = 0x7C;
 
 static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // seconds
-
-@interface YKFOATHCredentialCalculateResult()
-
-@property (nonatomic, assign, readwrite) YKFOATHCredentialType type;
-@property (nonatomic, readwrite) NSString *account;
-@property (nonatomic, readwrite) NSString *issuer;
-@property (nonatomic, assign, readwrite) NSUInteger period;
-@property (nonatomic, readwrite, nonnull) NSDateInterval *validity;
-@property (nonatomic, readwrite) NSString *otp;
-@property (nonatomic, readwrite) BOOL requiresTouch;
-@property (nonatomic, nonnull) NSString *key;
-
-@end
-
-@implementation YKFOATHCredentialCalculateResult
-
-- (NSUInteger)period {
-    if (_period) {
-        return _period;
-    }
-    return self.type == YKFOATHCredentialTypeTOTP ? YKFOATHCredentialCalculateResultDefaultPeriod : 0;
-}
-
-@end
-
 
 @interface YKFKeyOATHCalculateAllResponse()
 
@@ -68,7 +48,7 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
         NSUInteger readIndex = 0;
         
         while (readIndex < responseData.length && responseBytes[readIndex] == YKFKeyOATHCalculateAllNameTag) {
-            YKFOATHCredentialCalculateResult *credentialResult = [[YKFOATHCredentialCalculateResult alloc] init];
+            YKFOATHCredential *credential = [[YKFOATHCredential alloc] init];
             
             ++readIndex;
             YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
@@ -81,7 +61,7 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
             YKFAssertAbortInit([responseData ykf_containsRange:nameRange]);
             
             NSData *nameData = [responseData subdataWithRange:nameRange];
-            credentialResult.key = [[NSString alloc] initWithData:nameData encoding:NSUTF8StringEncoding];
+            credential.key = [[NSString alloc] initWithData:nameData encoding:NSUTF8StringEncoding];
             
             readIndex += nameLength;
             YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
@@ -89,19 +69,19 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
             UInt8 responseTag = responseBytes[readIndex];
             switch (responseTag) {
                 case YKFKeyOATHCalculateAllResponseHOTPTag:
-                    credentialResult.type = YKFOATHCredentialTypeHOTP;
+                    credential.type = YKFOATHCredentialTypeHOTP;
                     break;
                     
                 case YKFKeyOATHCalculateAllResponseFullResponseTag:
                 case YKFKeyOATHCalculateAllResponseTruncatedResponseTag:
                 case YKFKeyOATHCalculateAllResponseTouchTag:
-                    credentialResult.type = YKFOATHCredentialTypeTOTP;
+                    credential.type = YKFOATHCredentialTypeTOTP;
                     break;
                 
                 default:
-                    credentialResult.type = YKFOATHCredentialTypeUnknown;
+                    credential.type = YKFOATHCredentialTypeUnknown;
             }
-            YKFAssertAbortInit(credentialResult.type != YKFOATHCredentialTypeUnknown);
+            YKFAssertAbortInit(credential.type != YKFOATHCredentialTypeUnknown);
             
             ++readIndex;
             YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
@@ -117,7 +97,7 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
             
             // Parse the period, account and issuer from the key.
             
-            NSString *credentialKey = credentialResult.key;
+            NSString *credentialKey = credential.key;
             NSUInteger period = 0;
             NSString *issuer = nil;
             NSString *account = nil;
@@ -125,47 +105,47 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
             
             [credentialKey ykf_OATHKeyExtractPeriod:&period issuer:&issuer account:&account label:&label];
             
-            credentialResult.issuer = issuer;
-            credentialResult.account = account;
-            if (credentialResult.type == YKFOATHCredentialTypeTOTP) {
-                credentialResult.period = period ? period : YKFOATHCredentialCalculateResultDefaultPeriod;
+            credential.issuer = issuer;
+            credential.account = account;
+            if (credential.type == YKFOATHCredentialTypeTOTP) {
+                credential.period = period ? period : YKFOATHCredentialCalculateResultDefaultPeriod;
             }
             
             // Parse the OTP value when TOTP and touch is not required.
-            
-            if (credentialResult.type == YKFOATHCredentialTypeTOTP && responseTag != YKFKeyOATHCalculateAllResponseTouchTag) {
+            NSString *otp;
+            if (credential.type == YKFOATHCredentialTypeTOTP && responseTag != YKFKeyOATHCalculateAllResponseTouchTag) {
                 ++readIndex;
                 YKFAssertAbortInit([responseData ykf_containsIndex:readIndex]);
                 
                 UInt8 otpBytesLength = responseLength - 1;
                 YKFAssertAbortInit(otpBytesLength == 4);
                 
-                NSString *otp = [responseData ykf_parseOATHOTPFromIndex:readIndex digits:digits];
+                otp = [responseData ykf_parseOATHOTPFromIndex:readIndex digits:digits];
                 YKFAssertAbortInit(otp.length == digits);
-                
-                credentialResult.otp = otp;
                 
                 readIndex += otpBytesLength; // Jump to the next extry.
             } else {
                 // No result for TOTP with touch or HOTP
-                if (credentialResult.type == YKFOATHCredentialTypeTOTP) {
-                    credentialResult.requiresTouch = YES;
+                if (credential.type == YKFOATHCredentialTypeTOTP) {
+                    credential.requiresTouch = YES;
                 }
                 ++readIndex;
             }
             
             // Calculate validity
-            
-            if (credentialResult.type == YKFOATHCredentialTypeTOTP && responseTag != YKFKeyOATHCalculateAllResponseTouchTag) {
+            NSDateInterval *validity;
+            if (credential.type == YKFOATHCredentialTypeTOTP && responseTag != YKFKeyOATHCalculateAllResponseTouchTag) {
                 NSUInteger timestampTimeInterval = [timestamp timeIntervalSince1970]; // truncate to seconds
                 
-                NSDate *startDate = [NSDate dateWithTimeIntervalSince1970:timestampTimeInterval - timestampTimeInterval % credentialResult.period];
-                credentialResult.validity = [[NSDateInterval alloc] initWithStartDate:startDate duration:credentialResult.period];
+                NSDate *startDate = [NSDate dateWithTimeIntervalSince1970:timestampTimeInterval - timestampTimeInterval % credential.period];
+                validity = [[NSDateInterval alloc] initWithStartDate:startDate duration:credential.period];
             } else {
-                credentialResult.validity = [[NSDateInterval alloc] initWithStartDate:timestamp endDate:[NSDate distantFuture]];
-            }                        
-            
-            [responseCredentials addObject:credentialResult];
+                validity = [[NSDateInterval alloc] initWithStartDate:timestamp endDate:[NSDate distantFuture]];
+            }
+
+            YKFOATHCode *code = [[YKFOATHCode alloc] initWithOtp:otp validity:validity];
+            YKFOATHCredentialWithCode *result = [[YKFOATHCredentialWithCode alloc] initWithCredential:credential code:code];
+            [responseCredentials addObject:result];
         }
         self.credentials = [responseCredentials copy];
     }

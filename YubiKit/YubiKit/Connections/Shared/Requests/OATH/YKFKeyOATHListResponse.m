@@ -78,16 +78,6 @@ static const int YKFKeyOATHListResponseNameTag = 0x72;
             return NO; // Malformed response otp type
         }
         
-        if (type & YKFOATHCredentialAlgorithmSHA1) {
-            credential.algorithm = YKFOATHCredentialAlgorithmSHA1;
-        } else if (type & YKFOATHCredentialAlgorithmSHA256) {
-            credential.algorithm = YKFOATHCredentialAlgorithmSHA256;
-        } else if (type & YKFOATHCredentialAlgorithmSHA512) {
-            credential.algorithm = YKFOATHCredentialAlgorithmSHA512;
-        } else {
-            return NO; // Malformed response algorithm
-        }
-        
         ++readIndex;
         if (![data ykf_containsIndex:readIndex]) {
             return NO;

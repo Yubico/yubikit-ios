@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFOATHSetCodeAPDU.h"
+#import "YKFOATHSetPasswordAPDU.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFOATHCredential.h"
 #import "YKFAssert.h"
@@ -23,30 +23,28 @@ static const UInt8 YKFKeyOATHSetCodeAPDUKeyTag = 0x73;
 static const UInt8 YKFKeyOATHSetCodeAPDUChallengeTag = 0x74;
 static const UInt8 YKFKeyOATHSetCodeAPDUResponseTag = 0x75;
 
-@implementation YKFOATHSetCodeAPDU
+@implementation YKFOATHSetPasswordAPDU
 
-- (instancetype)initWithCode:(NSString *)code salt:(NSData *)salt {
-    YKFAssertAbortInit(code);
+- (instancetype)initWithPassword:(NSString *)password salt:(NSData *)salt {
+    YKFAssertAbortInit(password);
     YKFAssertAbortInit(salt.length);
     
     NSMutableData *data = [[NSMutableData alloc] init];
     
-    if (code.length) {
+    if (password.length) {
         // Set password
-        NSData *keyData = [[code dataUsingEncoding:NSUTF8StringEncoding] ykf_deriveOATHKeyWithSalt:salt];
+        NSData *keyData = [[password dataUsingEncoding:NSUTF8StringEncoding] ykf_deriveOATHKeyWithSalt:salt];
         UInt8 algorithm = YKFOATHCredentialTypeTOTP | YKFOATHCredentialAlgorithmSHA1;
         
         [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUKeyTag headerBytes:@[@(algorithm)] data:keyData];
         
         // Challenge
-        
         UInt8 challengeBuffer[8];
         arc4random_buf(challengeBuffer, 8);
         NSData *challenge = [NSData dataWithBytes:challengeBuffer length:8];
         [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUChallengeTag data:challenge];
         
         // Response
-        
         NSData *response = [challenge ykf_oathHMACWithKey:keyData];
         [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUResponseTag data:response];
     } else {

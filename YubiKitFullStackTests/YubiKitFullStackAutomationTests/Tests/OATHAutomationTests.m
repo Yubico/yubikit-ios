@@ -93,7 +93,7 @@
     YKFOATHCredential *credential = [self credentialWithURLString:oathUrlString];
     
     [self addCredentialToKey:credential];
-    YKFKeyOATHCalculateResponse *calculateResponse = [self calculateCredential:credential];
+    YKFOATHCode *calculateResponse = [self calculateCredential:credential];
     
     XCTAssertNotNil(calculateResponse.otp, @"Calculate request did not return an OTP.");
     XCTAssert(calculateResponse.otp.length == 6, @"The calculate OTP has the wrong length.");
@@ -189,8 +189,8 @@
     return listResponse;
 }
 
-- (YKFKeyOATHCalculateResponse *)calculateCredential:(YKFOATHCredential *)credential {
-    __block YKFKeyOATHCalculateResponse *calculateResponse = nil;
+- (YKFOATHCode *)calculateCredential:(YKFOATHCredential *)credential {
+    __block YKFOATHCode *calculateResponse = nil;
     
     id<YKFKeyOATHSessionProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
     NSAssert(oathService, @"Oath service not available.");
@@ -199,7 +199,7 @@
     XCTAssertNotNil(calculateRequest, @"Could not create calculate request from credential.");
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Calculate expectation."];
-    [oathService calculateCredential:calculateRequest completion:^(YKFKeyOATHCalculateResponse * _Nullable response, NSError * _Nullable error) {
+    [oathService calculateCredential:calculateRequest completion:^(YKFOATHCredentialCode * _Nullable response, NSError * _Nullable error) {
         if (error) {
             return;
         }

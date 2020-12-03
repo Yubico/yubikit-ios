@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFKeyOATHValidateResponse.h"
+#import "YKFKeyOATHUnlockResponse.h"
 #import "YKFAssert.h"
 #import "YKFNSDataAdditions+Private.h"
 
 static const UInt8 YKFKeyOATHValidateResponseTag = 0x75;
 
-@interface YKFKeyOATHValidateResponse()
+@interface YKFKeyOATHUnlockResponse()
 
 @property (nonatomic, readwrite, nonnull) NSData *response;
 
 @end
 
-@implementation YKFKeyOATHValidateResponse
+@implementation YKFKeyOATHUnlockResponse
 
 - (instancetype)initWithResponseData:(NSData *)responseData {
     YKFAssertAbortInit(responseData.length);
