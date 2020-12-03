@@ -72,16 +72,11 @@ class U2FDemoViewController: OtherDemoRootViewController {
     }
 
     private func executeRegisterRequestWith(session: YKFKeyU2FSession, challenge: String, appId: String, completion: @escaping (String?) -> Void) {
-        guard let registerRequest = YKFKeyU2FRegisterRequest(challenge: challenge, appId: appId) else {
-            log(message: "Could not create the Register request.")
-            completion(nil)
-            return
-        }
         
-        self.log(message: "Executing the Register request...")
-        self.log(message: "(!)Touch the key when it's blinking slowly.")
+        self.log(message: "Running the U2F Register...")
+        self.log(message: "Touch the key when it's blinking slowly.")
         
-        session.execute(registerRequest) { response, error in
+        session.register(withChallenge: challenge, appId: appId) { response, error in
             guard error == nil else {
                 self.log(message: "Error after executing the Register request: \(error!.localizedDescription)")
                 completion(nil)
@@ -96,16 +91,11 @@ class U2FDemoViewController: OtherDemoRootViewController {
     }
     
     private func executeSignRequestWith(session: YKFKeyU2FSession, keyHandle: String, challenge: String, appId: String, completion: @escaping (Bool) -> Void) {
-        guard let signRequest = YKFKeyU2FSignRequest(challenge: challenge, keyHandle: keyHandle, appId: appId) else {
-            log(message: "Could not create the Sign request.")
-            completion(false)
-            return
-        }
         
-        self.log(message: "Executing the Sign request...")
-        self.log(message: "(!)Touch the key when it's blinking slowly.")
+        self.log(message: "Running U2F Sign...")
+        self.log(message: "Touch the key when it's blinking slowly.")
         
-        session.execute(signRequest) { response, error in
+        session.sign(withChallenge: challenge, keyHandle: keyHandle, appId: appId) { response, error in
             guard error == nil else {
                 self.log(message: "Error after executing the Sign request: \(error!.localizedDescription)")
                 completion(false)

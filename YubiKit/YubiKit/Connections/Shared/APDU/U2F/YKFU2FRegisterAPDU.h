@@ -21,7 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFU2FRegisterAPDU : YKFAPDU
 
-- (nullable instancetype)initWithU2FRegisterRequest:(YKFKeyU2FRegisterRequest *)request NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly) NSString *clientData;
+
+- (nullable instancetype)initWithChallenge:(NSString *)challenge appId:(NSString *)appId NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

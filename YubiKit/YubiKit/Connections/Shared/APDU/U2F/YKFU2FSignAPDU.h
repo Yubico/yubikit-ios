@@ -14,7 +14,6 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
-#import "YKFKeyU2FSignRequest.h"
 
 @class YKFKeyU2FSignRequest;
 
@@ -22,7 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFU2FSignAPDU : YKFAPDU
 
-- (nullable instancetype)initWithU2fSignRequest:(YKFKeyU2FSignRequest *)request NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly) NSString *clientData;
+
+- (nullable instancetype)initWithChallenge:(NSString *)challenge
+                                 keyHandle:(NSString *)keyHandle
+                                     appId:(NSString *)appId NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
