@@ -1,1 +1,1 @@
-..//Sessions/NFCSession/YKFNFCTagDescription.h
+..//Connections/NFCConnection/YKFNFCTagDescription.h

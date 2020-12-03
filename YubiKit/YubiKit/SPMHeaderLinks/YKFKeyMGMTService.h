@@ -1,1 +1,1 @@
-..//Sessions/Shared/Services/MGMT/YKFKeyMGMTService.h
+..//Connections/Shared/Sessions/MGMT/YKFKeyMGMTService.h

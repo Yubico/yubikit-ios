@@ -1,1 +1,1 @@
-..//Sessions/Shared/APDU/ChalResp/YKFHMAC1ChallengeResponseAPDU.h
+..//Connections/Shared/APDU/ChalResp/YKFHMAC1ChallengeResponseAPDU.h

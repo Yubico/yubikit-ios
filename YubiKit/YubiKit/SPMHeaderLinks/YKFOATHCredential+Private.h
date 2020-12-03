@@ -1,1 +1,1 @@
-..//Sessions/Shared/Services/OATH/YKFOATHCredential+Private.h
+..//Connections/Shared/Sessions/OATH/YKFOATHCredential+Private.h

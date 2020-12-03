@@ -1,1 +1,1 @@
-..//Sessions/Shared/Errors/YKFKeySessionError.h
+..//Connections/Shared/Errors/YKFKeySessionError.h
