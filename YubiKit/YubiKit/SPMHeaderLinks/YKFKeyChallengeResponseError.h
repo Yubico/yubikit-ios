@@ -1,1 +1,1 @@
-..//Sessions/Shared/Errors/YKFKeyChallengeResponseError.h
+..//Connections/Shared/Errors/YKFKeyChallengeResponseError.h

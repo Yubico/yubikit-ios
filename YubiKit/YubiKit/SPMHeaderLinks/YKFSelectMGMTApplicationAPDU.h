@@ -1,1 +1,0 @@
-..//Sessions/Shared/APDU/MGMT/YKFSelectMGMTApplicationAPDU.h

@@ -1,1 +1,1 @@
-..//Sessions/Shared/Requests/FIDO2/YKFKeyFIDO2ClientPinResponse.h
+..//Connections/Shared/Requests/FIDO2/YKFKeyFIDO2ClientPinResponse.h

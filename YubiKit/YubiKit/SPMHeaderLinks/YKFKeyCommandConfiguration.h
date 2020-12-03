@@ -1,1 +1,1 @@
-..//Sessions/Shared/YKFKeyCommandConfiguration.h
+..//Connections/Shared/YKFKeyCommandConfiguration.h

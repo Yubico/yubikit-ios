@@ -1,1 +1,1 @@
-..//Sessions/Shared/APDU/U2F/YKFU2FRegisterAPDU.h
+..//Connections/Shared/APDU/U2F/YKFU2FRegisterAPDU.h
