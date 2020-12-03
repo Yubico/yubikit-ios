@@ -1,1 +1,1 @@
-..//Sessions/NFCSession/YKFNFCConnectionController.h
+..//Connections/NFCConnection/YKFNFCConnectionController.h

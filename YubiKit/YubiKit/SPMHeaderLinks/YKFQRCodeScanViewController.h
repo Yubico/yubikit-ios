@@ -1,1 +1,1 @@
-..//Sessions/QRReaderSession/YKFQRCodeScanViewController.h
+..//Connections/QRReaderSession/YKFQRCodeScanViewController.h

@@ -1,1 +1,1 @@
-..//Sessions/AccessorySession/YKFAccessoryDescription+Private.h
+..//Connections/AccessoryConnection/YKFAccessoryDescription+Private.h

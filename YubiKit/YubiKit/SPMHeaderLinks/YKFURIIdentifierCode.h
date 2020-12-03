@@ -1,1 +1,1 @@
-..//Sessions/NFCSession/YKFURIIdentifierCode.h
+..//Connections/NFCConnection/YKFURIIdentifierCode.h
