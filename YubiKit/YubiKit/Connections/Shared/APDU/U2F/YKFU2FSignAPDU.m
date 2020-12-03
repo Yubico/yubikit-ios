@@ -16,28 +16,41 @@
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFNSDataAdditions.h"
 #import "YKFAssert.h"
-
 #import "YKFNSDataAdditions+Private.h"
-#import "YKFKeyU2FRequest+Private.h"
+
+/*
+ DOMString typ as defined in FIDO U2F Raw Message Format
+ https://fidoalliance.org/specs/u2f-specs-1.0-bt-nfc-id-amendment/fido-u2f-raw-message-formats.html
+ */
+static NSString* const U2FClientDataTypeAuthentication = @"navigator.id.getAssertion";
+
+/*
+ Client data as defined in FIDO U2F Raw Message Format
+ https://fidoalliance.org/specs/u2f-specs-1.0-bt-nfc-id-amendment/fido-u2f-raw-message-formats.html
+ Note: The "cid_pubkey" is missing in this case since the TLS stack on iOS does not support channel id.
+ */
+static NSString* const U2FClientDataTypeTemplate = @"\{\"typ\":\"%@\",\"challenge\":\"%@\",\"origin\":\"%@\"}";
 
 static const UInt8 YKFU2FSignAPDUKeyHandleSize = 64;
 static const UInt8 YKFU2FSignAPDUEnforceUserPresenceAndSign = 0x03;
 
+
+@interface YKFU2FSignAPDU()
+
+@property (nonatomic, readwrite) NSString *clientData;
+
+@end
+
 @implementation YKFU2FSignAPDU
 
-- (instancetype)initWithU2fSignRequest:(YKFKeyU2FSignRequest *)request {
-    YKFAssertAbortInit(request);
-        
-    NSString *keyHandle = request.keyHandle;
+- (instancetype)initWithChallenge:(NSString *)challenge keyHandle:(NSString *)keyHandle appId:(NSString *)appId {
+    YKFAssertAbortInit(challenge);
     YKFAssertAbortInit(keyHandle);
-    
-    NSString *appId = request.appId;
     YKFAssertAbortInit(appId);
-        
-    NSString *clientData = request.clientData;
-    YKFAssertAbortInit(clientData);
     
-    NSData *challengeSHA256 = [[clientData dataUsingEncoding:NSUTF8StringEncoding] ykf_SHA256];
+    self.clientData = [[NSString alloc] initWithFormat:U2FClientDataTypeTemplate, U2FClientDataTypeAuthentication, challenge, appId];
+    
+    NSData *challengeSHA256 = [[self.clientData dataUsingEncoding:NSUTF8StringEncoding] ykf_SHA256];
     YKFAssertAbortInit(challengeSHA256);
     
     NSData *applicationSHA256 = [[appId dataUsingEncoding:NSUTF8StringEncoding] ykf_SHA256];

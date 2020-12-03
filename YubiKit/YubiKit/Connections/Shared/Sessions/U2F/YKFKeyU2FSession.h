@@ -104,13 +104,21 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) YKFKeyU2FSessionKeyState keyState;
 
 /*!
- @method executeRegisterRequest:completion:
+ @method registerWithChallenge:appId:completion:
  
  @abstract
-    Sends to the key an U2F register request. The request is performed asynchronously on a background execution queue.
+    Sends to the key a U2F registration. The request is performed asynchronously on a background execution queue.
  
- @param request
-    The request which packs all the required information to perform a registration.
+ @param challenge
+    The U2F registration challenge which is usually received from the authentication server.
+    Registration challenge message format as defined by the FIDO Alliance specifications:
+    https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-raw-message-formats-v1.2-ps-20170411.html#registration-messages
+ 
+ @param appId
+    The application ID (sometimes reffered as origin or facet ID) as described by the U2F standard.
+    This is usually a domain which belongs to the application.
+    Documentation for the application ID format:
+    https://developers.yubico.com/U2F/App_ID.html
  
  @param completion
     The response block which gets executed after the request was processed by the key. The completion block will be
@@ -122,17 +130,33 @@ NS_ASSUME_NONNULL_BEGIN
     The key can execute only one request at a time. If multiple requests are made against the service, they are
     queued in the order they are received and executed sequentially.
  */
-- (void)executeRegisterRequest:(YKFKeyU2FRegisterRequest *)request
-                    completion:(YKFKeyU2FSessionRegisterCompletionBlock)completion;
+- (void)registerWithChallenge:(NSString *)challenge
+                        appId:(NSString *)appId
+                   completion:(YKFKeyU2FSessionRegisterCompletionBlock)completion;
 
 /*!
- @method executeRegisterRequest:completion:
+ @method signWithChallenge:keyHandle:appId:completion:
  
  @abstract
-    Sends to the key an U2F sign request. The request is performed asynchronously on a background execution queue.
+    Sends to the key an U2F sign request. The operation is performed asynchronously on a background execution queue.
  
- @param request
-    The request which packs all the required information to perform a signing.
+ @param challenge
+    The U2F authentication challenge which is usually received from the authentication server.
+    Authentication challenge message format as defined by the FIDO Alliance specifications:
+    https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-raw-message-formats-v1.2-ps-20170411.html#authentication-messages
+
+ @param keyHandle
+    The U2F authentication keyHandle which is usually received from the authentication server and used by
+    the hardware key to identify the required cryptographic key for signing.
+    Format as defined by the FIDO Alliance specifications:
+    https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-raw-message-formats-v1.2-ps-20170411.html#authentication-messages
+ 
+ @param appId
+    The application ID (sometimes reffered as origin or facet ID) as described by the U2F standard.
+    This is usually a domain which belongs to the application.
+    Documentation for the application ID format:
+    https://developers.yubico.com/U2F/App_ID.html
+ 
  @param completion
     The response block which gets executed after the request was processed by the key. The completion block will be
     executed on a background thread. If the intention is to update the UI, dispatch the results on the main thread
@@ -143,7 +167,9 @@ NS_ASSUME_NONNULL_BEGIN
     The key can execute only one request at a time. If multiple requests are made against the service, they are
     queued in the order they are received and executed sequentially.
  */
-- (void)executeSignRequest:(YKFKeyU2FSignRequest *)request
+- (void)signWithChallenge:(NSString *)challenge
+                keyHandle:(NSString *)keyHandle
+                    appId:(NSString *)appId
                 completion:(YKFKeyU2FSessionSignCompletionBlock)completion;
 
 @end
