@@ -33,6 +33,61 @@
     return self;
 }
 
+
+- (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
+                               secret:(NSData *)secret
+                               issuer:(NSString *)issuer
+                              account:(NSString *)account
+                               digits:(NSUInteger)digits
+                               period:(NSUInteger)period {
+    return [self initWithType:YKFOATHCredentialTypeTOTP
+                    algorithm:algorithm
+                       secret:secret
+                       issuer:issuer
+                      account:account
+                       digits:digits
+                       period:period
+                      counter:0];
+}
+
+- (instancetype)initHOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
+                               secret:(NSData *)secret
+                               issuer:(NSString *)issuer
+                              account:(NSString *)account
+                               digits:(NSUInteger)digits
+                              counter:(UInt32)counter {
+    return [self initWithType:YKFOATHCredentialTypeHOTP
+                    algorithm:algorithm
+                       secret:secret
+                       issuer:issuer
+                      account:account
+                       digits:digits
+                       period:0
+                      counter:counter];
+}
+
+- (instancetype)initWithType:(YKFOATHCredentialType)type
+                   algorithm:(YKFOATHCredentialAlgorithm)algorithm
+                      secret:(NSData *)secret
+                      issuer:(NSString *)issuer
+                     account:(NSString *)account
+                      digits:(NSUInteger)digits
+                      period:(NSUInteger)period
+                     counter:(UInt32)counter {
+    self = [super init];
+    if (self) {
+        self.type = type;
+        self.algorithm = algorithm;
+        self.secret = secret;
+        self.issuer = issuer;
+        self.account = account;
+        self.digits = digits;
+        self.period = period;
+        self.counter = counter;
+    }
+    return self;
+}
+
 #pragma mark - Properties Overrides
 
 - (YKFOATHCredentialType)type {
