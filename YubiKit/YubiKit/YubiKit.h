@@ -72,5 +72,6 @@
 #import "YKFKeyOATHSelectApplicationResponse.h"
 #import "YKFOATHCredential.h"
 #import "YKFOATHCode.h"
+#import "YKFOATHCredentialTypes.h"
 #import "YKFOATHCredentialTemplate.h"
 #import "YKFOATHCredentialWithCode.h"
