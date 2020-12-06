@@ -97,26 +97,16 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable instancetype)initWithURL:(NSURL *)url;
 
-- (instancetype)initWithType:(YKFOATHCredentialType)type
-                   algorithm:(YKFOATHCredentialAlgorithm)algorithm
-                      secret:(NSData *)secret
-                      issuer:(NSString *)issuer
-                     account:(NSString *)account
-                      digits:(NSUInteger)digits
-                      period:(NSUInteger)period
-                     counter:(UInt32)counter;
-
-
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
-                               issuer:(NSString *)issuer
+                               issuer:(NSString *_Nullable)issuer
                               account:(NSString *)account
                                digits:(NSUInteger)digits
                                period:(NSUInteger)period;
 
 - (instancetype)initHOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
-                               issuer:(NSString *)issuer
+                               issuer:(NSString *_Nullable)issuer
                               account:(NSString *)account
                                digits:(NSUInteger)digits
                               counter:(UInt32)counter;

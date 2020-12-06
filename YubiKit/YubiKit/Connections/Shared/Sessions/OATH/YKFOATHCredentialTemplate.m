@@ -33,10 +33,9 @@
     return self;
 }
 
-
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
-                               issuer:(NSString *)issuer
+                               issuer:(NSString *_Nullable)issuer
                               account:(NSString *)account
                                digits:(NSUInteger)digits
                                period:(NSUInteger)period {
@@ -52,7 +51,7 @@
 
 - (instancetype)initHOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
-                               issuer:(NSString *)issuer
+                               issuer:(NSString *_Nullable)issuer
                               account:(NSString *)account
                                digits:(NSUInteger)digits
                               counter:(UInt32)counter {
@@ -69,7 +68,7 @@
 - (instancetype)initWithType:(YKFOATHCredentialType)type
                    algorithm:(YKFOATHCredentialAlgorithm)algorithm
                       secret:(NSData *)secret
-                      issuer:(NSString *)issuer
+                      issuer:(NSString *_Nullable)issuer
                      account:(NSString *)account
                       digits:(NSUInteger)digits
                       period:(NSUInteger)period
