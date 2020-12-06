@@ -100,6 +100,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
+                              account:(NSString *)account;
+
+- (instancetype)initHOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
+                               secret:(NSData *)secret
+                               issuer:(NSString *_Nullable)issuer
+                              account:(NSString *)account;
+
+- (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
+                               secret:(NSData *)secret
+                               issuer:(NSString *_Nullable)issuer
                               account:(NSString *)account
                                digits:(NSUInteger)digits
                                period:(NSUInteger)period;

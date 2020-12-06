@@ -36,6 +36,18 @@
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
+                              account:(NSString *)account {
+    return [self initTOTPWithAlgorithm:algorithm
+                                secret:secret
+                                issuer:issuer
+                               account:account
+                                digits:YKFOATHCredentialDefaultDigits
+                                period:YKFOATHCredentialDefaultPeriod];
+}
+
+- (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
+                               secret:(NSData *)secret
+                               issuer:(NSString *_Nullable)issuer
                               account:(NSString *)account
                                digits:(NSUInteger)digits
                                period:(NSUInteger)period {
@@ -47,6 +59,18 @@
                        digits:digits
                        period:period
                       counter:0];
+}
+
+- (instancetype)initHOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
+                               secret:(NSData *)secret
+                               issuer:(NSString *_Nullable)issuer
+                              account:(NSString *)account {
+    return [self initHOTPWithAlgorithm:algorithm
+                                secret:secret
+                                issuer:issuer
+                               account:account
+                                digits:YKFOATHCredentialDefaultDigits
+                               counter:0];
 }
 
 - (instancetype)initHOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
