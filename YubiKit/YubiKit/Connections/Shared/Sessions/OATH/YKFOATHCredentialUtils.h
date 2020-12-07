@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
  The account name extracted from the label. If the label does not contain the issuer, the
  name is the same as the label.
  */
-@property (nonatomic) NSString *account;
+@property (nonatomic) NSString *accountName;
 
 /*!
  The Issuer of the credential as defined in the Key URI Format specifications:

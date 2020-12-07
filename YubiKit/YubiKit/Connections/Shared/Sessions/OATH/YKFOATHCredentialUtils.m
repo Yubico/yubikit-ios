@@ -29,12 +29,12 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
 @implementation YKFOATHCredentialUtils
 
 + (NSString *)labelFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier {
-    YKFAssertReturnValue(credentialIdentifier.account, @"Missing OATH credential account. Cannot build the credential label.", nil);
+    YKFAssertReturnValue(credentialIdentifier.accountName, @"Missing OATH credential account. Cannot build the credential label.", nil);
     
     if (credentialIdentifier.issuer) {
-        return [NSString stringWithFormat:@"%@:%@", credentialIdentifier.issuer, credentialIdentifier.account];
+        return [NSString stringWithFormat:@"%@:%@", credentialIdentifier.issuer, credentialIdentifier.accountName];
     } else {
-        return credentialIdentifier.account;
+        return credentialIdentifier.accountName;
     }
 }
 

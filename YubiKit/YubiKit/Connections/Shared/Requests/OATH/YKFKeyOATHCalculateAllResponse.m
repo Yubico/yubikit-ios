@@ -106,7 +106,7 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
             [credentialKey ykf_OATHKeyExtractPeriod:&period issuer:&issuer account:&account label:&label];
             
             credential.issuer = issuer;
-            credential.account = account;
+            credential.accountName = account;
             if (credential.type == YKFOATHCredentialTypeTOTP) {
                 credential.period = period ? period : YKFOATHCredentialCalculateResultDefaultPeriod;
             }
