@@ -331,7 +331,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         NSURL *url = [NSURL URLWithString:oathUrlString];
         YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:url];
 
-        [session putCredential:credential requiresTouch:NO completion:^(NSError * _Nullable error) {
+        [session putCredentialTemplate:credential requiresTouch:NO completion:^(NSError * _Nullable error) {
             if (error) {
                 [TestSharedLogger.shared logError:@"Could not add the credential to the key."];
                 return;
@@ -432,7 +432,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         /*
          1. Add the credential to the key
          */
-        [session putCredential:credential requiresTouch:NO completion:^(NSError * _Nullable error) {
+        [session putCredentialTemplate:credential requiresTouch:NO completion:^(NSError * _Nullable error) {
             if (error) {
                 [TestSharedLogger.shared logError:@"Could not add the credential to the key."];
                 return;
@@ -446,7 +446,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         [session listCredentialsWithCompletion:^(NSArray<YKFOATHCredential *> * _Nullable credentials, NSError * _Nullable error) {
             YKFOATHCredential *newCredential;
             for(YKFOATHCredential *credential in credentials) {
-                if ([credential.account isEqual:@"oath-add-totp-test@yubico.com"]) {
+                if ([credential.accountName isEqual:@"oath-add-totp-test@yubico.com"]) {
                     newCredential = credential;
                 }
             }
@@ -464,7 +464,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
                     [TestSharedLogger.shared logError:@"Could not calculate the credential using calculate."];
                     return;
                 }
-                NSString *successLog = [NSString stringWithFormat:@"OTP value for the credential %@ is %@", credential.account, response.otp];
+                NSString *successLog = [NSString stringWithFormat:@"OTP value for the credential %@ is %@", credential.accountName, response.otp];
                 [TestSharedLogger.shared logSuccess:successLog];
             }];
             
@@ -475,7 +475,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
                 }
                 YKFOATHCredentialWithCode *credentialWithCode;
                 for(YKFOATHCredentialWithCode *result in credentials) {
-                    if ([result.credential.account isEqual:@"oath-add-totp-test@yubico.com"]) {
+                    if ([result.credential.accountName isEqual:@"oath-add-totp-test@yubico.com"]) {
                         credentialWithCode = result;
                     }
                 }
@@ -483,7 +483,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
                     [TestSharedLogger.shared logError:@"Could not calculate the credential using calculate all."];
                     return;
                 }
-                NSString *successLog = [NSString stringWithFormat:@"OTP value for the credential %@ is %@", credentialWithCode.credential.account, credentialWithCode.code.otp];
+                NSString *successLog = [NSString stringWithFormat:@"OTP value for the credential %@ is %@", credentialWithCode.credential.accountName, credentialWithCode.code.otp];
                 [TestSharedLogger.shared logSuccess:successLog];
             }];
             
@@ -525,7 +525,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         /*
          1. Add the credential to the key
          */
-        [session putCredential:credential requiresTouch:NO completion:^(NSError * _Nullable error) {
+        [session putCredentialTemplate:credential requiresTouch:NO completion:^(NSError * _Nullable error) {
             if (error) {
                 [TestSharedLogger.shared logError:@"Could not add the credential to the key."];
                 return;
@@ -539,7 +539,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         [session listCredentialsWithCompletion:^(NSArray<YKFOATHCredential *> * _Nullable credentials, NSError * _Nullable error) {
             YKFOATHCredential *newCredential;
             for(YKFOATHCredential *credential in credentials) {
-                if ([credential.account isEqual:@"oath-add-hotp-test@yubico.com"]) {
+                if ([credential.accountName isEqual:@"oath-add-hotp-test@yubico.com"]) {
                     newCredential = credential;
                 }
             }
@@ -555,7 +555,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
                     [TestSharedLogger.shared logError:@"Could not calculate the credential using calculate."];
                     return;
                 }
-                NSString *successLog = [NSString stringWithFormat:@"OTP value for the credential %@ is %@", credential.account, response.otp];
+                NSString *successLog = [NSString stringWithFormat:@"OTP value for the credential %@ is %@", credential.accountName, response.otp];
                 [TestSharedLogger.shared logSuccess:successLog];
             }];
             
@@ -598,7 +598,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         /*
          1. Add the credential to the key
          */
-        [session putCredential:credential requiresTouch:NO completion:^(NSError * _Nullable error) {
+        [session putCredentialTemplate:credential requiresTouch:NO completion:^(NSError * _Nullable error) {
             if (error) {
                 [TestSharedLogger.shared logError:@"Could not add the credential to the key."];
                 return;
@@ -612,7 +612,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
         [session listCredentialsWithCompletion:^(NSArray<YKFOATHCredential *> * _Nullable credentials, NSError * _Nullable error) {
             YKFOATHCredential *newCredential;
             for(YKFOATHCredential *credential in credentials) {
-                if ([credential.account isEqual:@"oath-rename-test@yubico.com"]) {
+                if ([credential.accountName isEqual:@"oath-rename-test@yubico.com"]) {
                     newCredential = credential;
                 }
             }
@@ -639,7 +639,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
                 
                 YKFOATHCredential* renamedCredential;
                 for (YKFOATHCredential* credential in credentials) {
-                    if ([credential.issuer isEqual:@"Transnomino Inc"] && [credential.account isEqual:@"renamed-account@yubico.com"]) {
+                    if ([credential.issuer isEqual:@"Transnomino Inc"] && [credential.accountName isEqual:@"renamed-account@yubico.com"]) {
                         renamedCredential = credential;
                         break;
                     }

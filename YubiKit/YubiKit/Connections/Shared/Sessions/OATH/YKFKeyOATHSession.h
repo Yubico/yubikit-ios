@@ -116,13 +116,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) YKFKeyVersion* version;
 
 /*!
- @method putCredential:completion:
+ @method putCredentialTemplate:completion:
  
  @abstract
     Sends to the key an OATH Put request to add a new credential. The request is performed asynchronously
     on a background execution queue.
  
- @param credential
+ @param credentialTemplate
     The new credential to add.
  
  @param completion
@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note:
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)putCredential:(YKFOATHCredentialTemplate *)credential requiresTouch:(BOOL)requiresTouch completion:(YKFKeyOATHSessionCompletionBlock)completion;
+- (void)putCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate requiresTouch:(BOOL)requiresTouch completion:(YKFKeyOATHSessionCompletionBlock)completion;
 
 /*!
  @method deleteCredential:completion:

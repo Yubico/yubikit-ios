@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFOATHPutAPDU: YKFAPDU
 
-- (nullable instancetype)initWithCredential:(YKFOATHCredentialTemplate *)credential requriesTouch:(BOOL)requiresTouch NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCredentialTemplate:(YKFOATHCredentialTemplate *)credential requriesTouch:(BOOL)requiresTouch NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

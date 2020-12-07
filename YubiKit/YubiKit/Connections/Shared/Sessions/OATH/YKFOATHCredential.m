@@ -48,12 +48,12 @@
 }
 
 - (NSString *)label {
-    YKFAssertReturnValue(self.account, @"Missing OATH credential account. Cannot build the credential label.", nil);
+    YKFAssertReturnValue(self.accountName, @"Missing OATH credential account. Cannot build the credential label.", nil);
     
     if (self.issuer) {
-        return [NSString stringWithFormat:@"%@:%@", self.issuer, self.account];
+        return [NSString stringWithFormat:@"%@:%@", self.issuer, self.accountName];
     } else {
-        return self.account;
+        return self.accountName;
     }
 }
 
@@ -61,7 +61,7 @@
 
 - (nonnull id)copyWithZone:(nullable NSZone *)zone {
     YKFOATHCredential *copy = [YKFOATHCredential new];
-    copy.account = [self.account copyWithZone:zone];
+    copy.accountName = [self.accountName copyWithZone:zone];
     copy.issuer = [self.issuer copyWithZone:zone];
     copy.period = self.period;
     copy.type = self.type;

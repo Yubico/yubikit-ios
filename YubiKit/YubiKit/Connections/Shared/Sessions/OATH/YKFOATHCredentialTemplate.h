@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
  The account name extracted from the label. If the label does not contain the issuer, the
  name is the same as the label.
  */
-@property (nonatomic) NSString *account;
+@property (nonatomic) NSString *accountName;
 
 
 /*!
@@ -100,24 +100,24 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
-                              account:(NSString *)account;
+                          accountName:(NSString *)accountName;
 
 - (instancetype)initHOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
-                              account:(NSString *)account;
+                          accountName:(NSString *)accountName;
 
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
-                              account:(NSString *)account
+                          accountName:(NSString *)accountName
                                digits:(NSUInteger)digits
                                period:(NSUInteger)period;
 
 - (instancetype)initHOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
-                              account:(NSString *)account
+                          accountName:(NSString *)accountName
                                digits:(NSUInteger)digits
                               counter:(UInt32)counter;
 
