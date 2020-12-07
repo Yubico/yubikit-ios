@@ -36,11 +36,11 @@
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
-                              account:(NSString *)account {
+                          accountName:(NSString *)accountName {
     return [self initTOTPWithAlgorithm:algorithm
                                 secret:secret
                                 issuer:issuer
-                               account:account
+                           accountName:accountName
                                 digits:YKFOATHCredentialDefaultDigits
                                 period:YKFOATHCredentialDefaultPeriod];
 }
@@ -48,14 +48,14 @@
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
-                              account:(NSString *)account
+                          accountName:(NSString *)accountName
                                digits:(NSUInteger)digits
                                period:(NSUInteger)period {
     return [self initWithType:YKFOATHCredentialTypeTOTP
                     algorithm:algorithm
                        secret:secret
                        issuer:issuer
-                      account:account
+                  accountName:accountName
                        digits:digits
                        period:period
                       counter:0];
@@ -64,11 +64,11 @@
 - (instancetype)initHOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
-                              account:(NSString *)account {
+                              accountName:(NSString *)accountName {
     return [self initHOTPWithAlgorithm:algorithm
                                 secret:secret
                                 issuer:issuer
-                               account:account
+                               accountName:accountName
                                 digits:YKFOATHCredentialDefaultDigits
                                counter:0];
 }
@@ -76,14 +76,14 @@
 - (instancetype)initHOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
-                              account:(NSString *)account
+                          accountName:(NSString *)accountName
                                digits:(NSUInteger)digits
                               counter:(UInt32)counter {
     return [self initWithType:YKFOATHCredentialTypeHOTP
                     algorithm:algorithm
                        secret:secret
                        issuer:issuer
-                      account:account
+                  accountName:accountName
                        digits:digits
                        period:0
                       counter:counter];
@@ -93,7 +93,7 @@
                    algorithm:(YKFOATHCredentialAlgorithm)algorithm
                       secret:(NSData *)secret
                       issuer:(NSString *_Nullable)issuer
-                     account:(NSString *)account
+                 accountName:(NSString *)accountName
                       digits:(NSUInteger)digits
                       period:(NSUInteger)period
                      counter:(UInt32)counter {
@@ -103,7 +103,7 @@
         self.algorithm = algorithm;
         self.secret = secret;
         self.issuer = issuer;
-        self.account = account;
+        self.accountName = accountName;
         self.digits = digits;
         self.period = period;
         self.counter = counter;
@@ -279,9 +279,9 @@
     if ([label containsString:@":"]) { // Issuer is present in the label
         NSArray *labelComponents = [label componentsSeparatedByString:@":"];
         self.issuer = labelComponents.firstObject; // It's fine if nil
-        self.account = labelComponents.lastObject;
+        self.accountName = labelComponents.lastObject;
     } else {
-        self.account = label;
+        self.accountName = label;
     }
     
     return YES;
@@ -335,7 +335,7 @@
 
 - (nonnull id)copyWithZone:(nullable NSZone *)zone {
     YKFOATHCredentialTemplate *copy = [YKFOATHCredentialTemplate new];
-    copy.account = [self.account copyWithZone:zone];
+    copy.accountName = [self.accountName copyWithZone:zone];
     copy.issuer = [self.issuer copyWithZone:zone];
     copy.period = self.period;
     copy.digits = self.digits;

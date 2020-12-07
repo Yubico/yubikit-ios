@@ -103,7 +103,7 @@ static const int YKFKeyOATHListResponseNameTag = 0x72;
         [keyString ykf_OATHKeyExtractPeriod:&period issuer:&issuer account:&account label:&label];
         credential.period = period;
         credential.issuer = issuer;
-        credential.account = account;
+        credential.accountName = account;
         
         [parsedCredentials addObject:credential];
         

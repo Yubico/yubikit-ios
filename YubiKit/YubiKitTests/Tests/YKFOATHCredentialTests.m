@@ -155,16 +155,16 @@
     NSString *label = @"issuer:account";
     
     credential.issuer = @"issuer";
-    credential.account = @"account";
+    credential.accountName = @"account";
     
     XCTAssert([credential.label isEqualToString:label], @"Credential label is not built if missing.");
 }
 
 - (void)test_WhenCredentialIsManuallyCreatedWithoutLabelAndIssuer_LabelIsBuildFromTheAccount {
     YKFOATHCredential *credential = [[YKFOATHCredential alloc] init];
-    credential.account = @"account";
+    credential.accountName = @"account";
     
-    XCTAssert([credential.label isEqualToString:credential.account], @"Credential label is not built if missing.");
+    XCTAssert([credential.label isEqualToString:credential.accountName], @"Credential label is not built if missing.");
 }
 
 #pragma mark - Key

@@ -100,17 +100,17 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
 
 #pragma mark - Credential Add/Delete
 
-- (void)putCredential:(YKFOATHCredentialTemplate *)credential requiresTouch:(BOOL)requiresTouch completion:(YKFKeyOATHSessionCompletionBlock)completion {
-    YKFParameterAssertReturn(credential);
+- (void)putCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate requiresTouch:(BOOL)requiresTouch completion:(YKFKeyOATHSessionCompletionBlock)completion {
+    YKFParameterAssertReturn(credentialTemplate);
     YKFParameterAssertReturn(completion);
     
-    YKFKeySessionError *credentialError = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
+    YKFKeySessionError *credentialError = [YKFOATHCredentialUtils validateCredentialTemplate:credentialTemplate];
     if (credentialError) {
         completion(credentialError);
         return;
     }
     
-    YKFOATHPutAPDU *apdu = [[YKFOATHPutAPDU alloc] initWithCredential:credential requriesTouch:requiresTouch];
+    YKFOATHPutAPDU *apdu = [[YKFOATHPutAPDU alloc] initWithCredentialTemplate:credentialTemplate requriesTouch:requiresTouch];
     
     [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         // No result except status code
@@ -152,7 +152,7 @@ typedef void (^YKFKeyOATHServiceResultCompletionBlock)(NSData* _Nullable  result
     
     YKFOATHCredential *renamedCredential = credential.copy;
     renamedCredential.issuer = newIssuer;
-    renamedCredential.account = newAccount;
+    renamedCredential.accountName = newAccount;
     
     YKFKeySessionError *renamedCredentialError = [YKFOATHCredentialUtils validateCredential:renamedCredential];
     if (renamedCredentialError) {

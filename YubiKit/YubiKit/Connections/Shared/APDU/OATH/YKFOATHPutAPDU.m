@@ -33,7 +33,7 @@ typedef NS_ENUM(NSUInteger, YKFOATHPutCredentialAPDUProperty) {
 
 @implementation YKFOATHPutAPDU
 
-- (instancetype)initWithCredential:(YKFOATHCredentialTemplate *)credential requriesTouch:(BOOL)requiresTouch {
+- (instancetype)initWithCredentialTemplate:(YKFOATHCredentialTemplate *)credential requriesTouch:(BOOL)requiresTouch {
     YKFAssertAbortInit(credential);
     
     NSMutableData *rawRequest = [[NSMutableData alloc] init];
