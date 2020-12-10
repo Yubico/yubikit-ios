@@ -155,7 +155,7 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2PinAuthKeyCoseCurve) {
 #pragma mark - Key Generation
 
 - (BOOL)generateECKeyPair {
-    YKFAssertOffMainThread();
+   // YKFAssertOffMainThread();
     
     NSMutableDictionary *privateKeyParams = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *publicKeyParams = [[NSMutableDictionary alloc] init];

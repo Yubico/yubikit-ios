@@ -15,10 +15,6 @@
 #import "YKFFIDO2MakeCredentialAPDU.h"
 #import "YKFCBOREncoder.h"
 #import "YKFAssert.h"
-
-#import "YKFKeyFIDO2MakeCredentialRequest.h"
-#import "YKFKeyFIDO2MakeCredentialRequest+Private.h"
-
 #import "YKFFIDO2Type.h"
 #import "YKFFIDO2Type+Private.h"
 
@@ -36,6 +32,76 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2MakeCredentialAPDUKey) {
 
 @implementation YKFFIDO2MakeCredentialAPDU
 
+- (nullable instancetype)initWithClientDataHash:(NSData *)clientDataHash
+                                             rp:(YKFFIDO2PublicKeyCredentialRpEntity *)rp
+                                           user:(YKFFIDO2PublicKeyCredentialUserEntity *)user
+                               pubKeyCredParams:(NSArray *)pubKeyCredParams
+                                     excludeList:(NSArray * _Nullable)excludeList
+                                        pinAuth:(NSData * _Nullable)pinAuth
+                                    pinProtocol:(NSUInteger)pinProtocol
+                                        options:(NSDictionary  * _Nullable)options {
+    
+    YKFAssertAbortInit(clientDataHash);
+    YKFAssertAbortInit(rp);
+    YKFAssertAbortInit(user);
+    YKFAssertAbortInit(pubKeyCredParams);
+    
+    NSMutableDictionary *requestDictionary = [[NSMutableDictionary alloc] init];
+    
+    // Client Data Hash
+    requestDictionary[YKFCBORInteger(YKFFIDO2MakeCredentialAPDUKeyClientDataHash)] = YKFCBORByteString(clientDataHash);
+    
+    // RP
+    requestDictionary[YKFCBORInteger(YKFFIDO2MakeCredentialAPDUKeyRp)] = [rp cborTypeObject];
+    
+    // User
+    requestDictionary[YKFCBORInteger(YKFFIDO2MakeCredentialAPDUKeyUser)] = [user cborTypeObject];
+    
+    // PubKeyCredParams
+    NSMutableArray *mutablePubKeyCredParams = [[NSMutableArray alloc] initWithCapacity:pubKeyCredParams.count];
+    for (YKFFIDO2PublicKeyCredentialType *credentialType in pubKeyCredParams) {
+        [mutablePubKeyCredParams addObject:[credentialType cborTypeObject]];
+    }
+    requestDictionary[YKFCBORInteger(YKFFIDO2MakeCredentialAPDUKeyPubKeyCredParams)] = YKFCBORArray(mutablePubKeyCredParams);
+    
+    // ExcludeList
+    if (excludeList) {
+        NSMutableArray *mutableExcludeList = [[NSMutableArray alloc] initWithCapacity:excludeList.count];
+        for (YKFFIDO2PublicKeyCredentialDescriptor *descriptor in excludeList) {
+            [mutableExcludeList addObject:[descriptor cborTypeObject]];
+        }
+        requestDictionary[YKFCBORInteger(YKFFIDO2MakeCredentialAPDUKeyExcludeList)] = YKFCBORArray(mutableExcludeList);
+    }
+    
+    // Options
+    if (options) {
+        NSMutableDictionary *mutableOptions = [[NSMutableDictionary alloc] initWithCapacity:options.count];
+        NSArray *optionsKeys = options.allKeys;
+        for (NSString *optionKey in optionsKeys) {
+            NSNumber *value = options[optionKey];
+            mutableOptions[YKFCBORTextString(optionKey)] = YKFCBORBool(value.boolValue);
+        }
+        requestDictionary[YKFCBORInteger(YKFFIDO2MakeCredentialAPDUKeyOptions)] = YKFCBORMap(mutableOptions);
+    }
+    
+    // Pin Auth
+    if (pinAuth) {
+        requestDictionary[YKFCBORInteger(YKFFIDO2MakeCredentialAPDUKeyPinAuth)] = YKFCBORByteString(pinAuth);
+    }
+    
+    // Pin Protocol
+    if (pinProtocol) {
+        requestDictionary[YKFCBORInteger(YKFFIDO2MakeCredentialAPDUKeyPinProtocol)] = YKFCBORInteger(pinProtocol);
+    }
+
+    NSData *cborData = [YKFCBOREncoder encodeMap:YKFCBORMap(requestDictionary)];
+    YKFAssertAbortInit(cborData);
+    
+    return [super initWithCommand:YKFFIDO2CommandMakeCredential data:cborData];
+    
+}
+
+/*
 - (instancetype)initWithRequest:(YKFKeyFIDO2MakeCredentialRequest *)request {
     YKFAssertAbortInit(request)
     YKFAssertAbortInit(request.clientDataHash)
@@ -95,6 +161,6 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2MakeCredentialAPDUKey) {
     YKFAssertAbortInit(cborData);
     
     return [super initWithCommand:YKFFIDO2CommandMakeCredential data:cborData];
-}
+}*/
 
 @end

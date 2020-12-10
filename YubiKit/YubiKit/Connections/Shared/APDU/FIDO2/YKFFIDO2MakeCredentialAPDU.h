@@ -15,13 +15,22 @@
 #import <Foundation/Foundation.h>
 #import "YKFFIDO2CommandAPDU.h"
 
-@class YKFKeyFIDO2MakeCredentialRequest;
+@class YKFFIDO2PublicKeyCredentialRpEntity, YKFFIDO2PublicKeyCredentialUserEntity;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFFIDO2MakeCredentialAPDU: YKFFIDO2CommandAPDU
 
-- (nullable instancetype)initWithRequest:(YKFKeyFIDO2MakeCredentialRequest *)request NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithClientDataHash:(NSData *)clientDataHash
+                                             rp:(YKFFIDO2PublicKeyCredentialRpEntity *)rp
+                                           user:(YKFFIDO2PublicKeyCredentialUserEntity *)user
+                               pubKeyCredParams:(NSArray *)pubKeyCredParams
+                                    excludeList:(NSArray * _Nullable)excludeList
+                                        pinAuth:(NSData * _Nullable)pinAuth
+                                    pinProtocol:(NSUInteger)pinProtocol
+                                        options:(NSDictionary * _Nullable)options NS_DESIGNATED_INITIALIZER;
+
+//- (nullable instancetype)initWithRequest:(YKFKeyFIDO2MakeCredentialRequest *)request NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

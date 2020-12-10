@@ -816,7 +816,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
             return;
         }
         
-        [session executeResetRequestWithCompletion:^(NSError * _Nullable error) {
+        [session resetWithCompletion:^(NSError * _Nullable error) {
             if (error) {
                 [TestSharedLogger.shared logMessage:@"Reset request ended in error: %ld - %@.", error.code, error.localizedDescription];
                 return;
@@ -835,7 +835,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
             return;
         }
         
-        [session executeGetInfoRequestWithCompletion:^(YKFKeyFIDO2GetInfoResponse *response, NSError *error) {
+        [session getInfoWithCompletion:^(YKFKeyFIDO2GetInfoResponse *response, NSError *error) {
             __strong typeof(self) strongSelf = weakSelf;
             if (!strongSelf) {
                 return;
@@ -852,37 +852,37 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
 }
 
 - (void)test_WhenAdingFIDO2Credential_ECCNonRKCredentialIsAddedToTheKey {
-    NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2MakeCredentialRequestOptionRK: @(NO)};
+    NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2OptionRK: @(NO)};
     
     [self addFIDO2CredentialWithAlg:YKFFIDO2PublicKeyAlgorithmES256 options:makeCredentialOptions];
 }
 
 - (void)test_WhenAdingFIDO2Credential_EdDSACredentialIsAddedToTheKey {
-    NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2MakeCredentialRequestOptionRK: @(NO)};
+    NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2OptionRK: @(NO)};
     
     [self addFIDO2CredentialWithAlg:YKFFIDO2PublicKeyAlgorithmEdDSA options:makeCredentialOptions];
 }
 
 - (void)test_AfterAdingECCFIDO2Credential_SignatureCanBeRequested {
-    NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2MakeCredentialRequestOptionRK: @(NO)};
-    NSDictionary *getAssertionOptions = @{YKFKeyFIDO2GetAssertionRequestOptionUP: @(YES),
-                                          YKFKeyFIDO2GetAssertionRequestOptionUV: @(NO)};
+    NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2OptionRK: @(NO)};
+    NSDictionary *getAssertionOptions = @{YKFKeyFIDO2OptionUP: @(YES),
+                                          YKFKeyFIDO2OptionUV: @(NO)};
     
     [self addFIDO2CredentialWithAlg:YKFFIDO2PublicKeyAlgorithmES256 options:makeCredentialOptions getAssertionOptions:getAssertionOptions];
 }
 
 - (void)test_AfterAdingEdDSAFIDO2Credential_SignatureCanBeRequested {
-    NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2MakeCredentialRequestOptionRK: @(YES)};
-    NSDictionary *getAssertionOptions = @{YKFKeyFIDO2GetAssertionRequestOptionUP: @(YES),
-                                          YKFKeyFIDO2GetAssertionRequestOptionUV: @(NO)};
+    NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2OptionRK: @(YES)};
+    NSDictionary *getAssertionOptions = @{YKFKeyFIDO2OptionUP: @(YES),
+                                          YKFKeyFIDO2OptionUV: @(NO)};
     
     [self addFIDO2CredentialWithAlg:YKFFIDO2PublicKeyAlgorithmEdDSA options:makeCredentialOptions getAssertionOptions:getAssertionOptions];
 }
 
 - (void)test_AfterAdingECCFIDO2Credential_SilentSignatureCanBeRequested {
-    NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2MakeCredentialRequestOptionRK: @(NO)};
-    NSDictionary *getAssertionOptions = @{YKFKeyFIDO2GetAssertionRequestOptionUP: @(NO),
-                                          YKFKeyFIDO2GetAssertionRequestOptionUV: @(NO)};
+    NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2OptionRK: @(NO)};
+    NSDictionary *getAssertionOptions = @{YKFKeyFIDO2OptionUP: @(NO),
+                                          YKFKeyFIDO2OptionUV: @(NO)};
     
     [self addFIDO2CredentialWithAlg:YKFFIDO2PublicKeyAlgorithmES256 options:makeCredentialOptions getAssertionOptions:getAssertionOptions];
 }
@@ -914,8 +914,6 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
 #pragma mark - FIDO2 Command Helpers
 
 - (void)addFIDO2CredentialWithAlg:(NSInteger)alg options:(NSDictionary *)options getAssertionOptions:(NSDictionary *)assertionOptions {
-    YKFKeyFIDO2GetAssertionRequest *getAssertionRequest = [[YKFKeyFIDO2GetAssertionRequest alloc] init];
-    YKFKeyFIDO2MakeCredentialRequest *makeCredentialRequest = [[YKFKeyFIDO2MakeCredentialRequest alloc] init];
     
     UInt8 *buffer = malloc(32);
     if (!buffer) {
@@ -926,31 +924,20 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     free(buffer);
     
     // Make Credential Request Params
-    
-    makeCredentialRequest.clientDataHash = data;
+    NSData *clientDataHash = data;
     
     YKFFIDO2PublicKeyCredentialRpEntity *rp = [[YKFFIDO2PublicKeyCredentialRpEntity alloc] init];
     rp.rpId = @"example.com";
     rp.rpName = @"Acme";
-    makeCredentialRequest.rp = rp;
     
     YKFFIDO2PublicKeyCredentialUserEntity *user = [[YKFFIDO2PublicKeyCredentialUserEntity alloc] init];
     user.userId = data;
     user.userName = @"johnpsmith@example.com";
     user.userDisplayName = @"John P. Smith";
-    makeCredentialRequest.user = user;
     
     YKFFIDO2PublicKeyCredentialParam *param = [[YKFFIDO2PublicKeyCredentialParam alloc] init];
     param.alg = alg;
-    makeCredentialRequest.pubKeyCredParams = @[param];
-    
-    makeCredentialRequest.options = options;
-    
-    // Get Assertion Request Params
-    
-    getAssertionRequest.rpId = @"example.com";
-    getAssertionRequest.clientDataHash = data;
-    getAssertionRequest.options = assertionOptions;
+    NSArray  *pubKeyCredParams = @[param];
     
     __weak typeof(self) weakSelf = self;
     
@@ -962,7 +949,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
             return;
         }
         
-        [session executeMakeCredentialRequest:makeCredentialRequest completion:^(YKFKeyFIDO2MakeCredentialResponse *response, NSError *error) {
+        [session makeCredentialWithClientDataHash:clientDataHash rp:rp user:user pubKeyCredParams:pubKeyCredParams excludeList:nil options:options completion:^(YKFKeyFIDO2MakeCredentialResponse * _Nullable response, NSError * _Nullable error) {
             __strong typeof(self) strongSelf = weakSelf;
             if (!strongSelf) {
                 return;
@@ -984,9 +971,10 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
                 credType.name = @"public-key";
                 credentialDescriptor.credentialType = credType;
                 
-                getAssertionRequest.allowList = @[credentialDescriptor];
+                NSArray *allowList = @[credentialDescriptor];
+                NSString *rpId = @"example.com";
                 
-                [session executeGetAssertionRequest:getAssertionRequest completion:^(YKFKeyFIDO2GetAssertionResponse * response, NSError *error) {
+                [session getAssertionWithClientDataHash:clientDataHash rpId:rpId allowList:allowList options:assertionOptions completion:^(YKFKeyFIDO2GetAssertionResponse * _Nullable response, NSError * _Nullable error) {
                     if (error) {
                         [TestSharedLogger.shared logMessage:@"Get Assertion request ended in error: %ld - %@.", error.code, error.localizedDescription];
                         return;
@@ -1001,7 +989,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
 }
 
 - (void)addFIDO2CredentialWithAlg:(NSInteger)alg options:(NSDictionary *)options {
-    YKFKeyFIDO2MakeCredentialRequest *makeCredentialRequest = [[YKFKeyFIDO2MakeCredentialRequest alloc] init];
+//    YKFKeyFIDO2MakeCredentialRequest *makeCredentialRequest = [[YKFKeyFIDO2MakeCredentialRequest alloc] init];
     
     UInt8 *buffer = malloc(32);
     if (!buffer) {
@@ -1012,28 +1000,23 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
     free(buffer);
     
     // client data hash
-    makeCredentialRequest.clientDataHash = data;
+    NSData *clientDataHash = data;
     
     // RP
     YKFFIDO2PublicKeyCredentialRpEntity *rp = [[YKFFIDO2PublicKeyCredentialRpEntity alloc] init];
     rp.rpId = @"example.com";
     rp.rpName = @"Acme";
-    makeCredentialRequest.rp = rp;
     
     // User
     YKFFIDO2PublicKeyCredentialUserEntity *user = [[YKFFIDO2PublicKeyCredentialUserEntity alloc] init];
     user.userId = data;
     user.userName = @"johnpsmith@example.com";
     user.userDisplayName = @"John P. Smith";
-    makeCredentialRequest.user = user;
     
     // pubKeyParams
     YKFFIDO2PublicKeyCredentialParam *param = [[YKFFIDO2PublicKeyCredentialParam alloc] init];
     param.alg = alg;
-    makeCredentialRequest.pubKeyCredParams = @[param];
-    
-    // options
-    makeCredentialRequest.options = options;
+    NSArray *pubKeyCredParams = @[param];
     
     [TestSharedLogger.shared logMessage:@"Requesting FIDO2 authenticatorMakeCredential."];
     
@@ -1045,7 +1028,7 @@ typedef NS_ENUM(NSUInteger, ManualTestsInstruction) {
             [TestSharedLogger.shared logMessage:@"Failed to create FIDO2 session: %ld - %@", sessionError.code, sessionError.localizedDescription];
             return;
         }
-        [session executeMakeCredentialRequest:makeCredentialRequest completion:^(YKFKeyFIDO2MakeCredentialResponse *response, NSError *error) {
+        [session makeCredentialWithClientDataHash:clientDataHash rp:rp user:user pubKeyCredParams:pubKeyCredParams excludeList:nil options:options completion:^(YKFKeyFIDO2MakeCredentialResponse * _Nullable response, NSError * _Nullable error) {
             __strong typeof(self) strongSelf = weakSelf;
             if (!strongSelf) {
                 return;
