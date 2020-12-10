@@ -59,7 +59,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
     private func finishDemo() {
         // Stop the session to dismiss the Core NFC system UI.
         if #available(iOS 13.0, *) {
-            YubiKitManager.shared.nfcSession.stop()
+            YubiKitManager.shared.stopNFCConnection()
         }
         self.setDemoButton(enabled: true)
     }

@@ -47,7 +47,7 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
         
         if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
             // Make sure the session is started (in case it was closed by another demo).
-            YubiKitManager.shared.accessorySession.start()
+            YubiKitManager.shared.startAccessoryConnection()
         
             // Enable state observation (see MFIKeyInteractionViewController)
             observeAccessorySessionStateUpdates = true
@@ -184,7 +184,7 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
     private func readOTPOverNFC() {
         // Here is the important code snippet to ask YubiKit to scan an OTP.
         if #available(iOS 11, *) {
-            YubiKitManager.shared.nfcSession.otpService.requestOTPToken { [weak self] (token, error) in
+            YubiKitManager.shared.otpSession.requestOTPToken { [weak self] (token, error) in
                 guard let strongSelf = self else {
                     return
                 }
@@ -202,12 +202,13 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
         // Make the otpUIResponder the first responder to intercept the OTP.
         otpUIResponder.isEnabled = true
         waitingForReadingOTP = true
-        
+        /*
         if YubiKitManager.shared.accessorySession.connectionState == .open {
             presentMFIKeyActionSheet(state: .touchKey, message: "Touch the key to read the OTP.")
         } else {
             presentMFIKeyActionSheet(state: .insertKey, message: "Insert the key to read the OTP.")
         }
+         */
     }
     
     // MARK: - State Observation
@@ -216,6 +217,7 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
         guard waitingForReadingOTP else {
             return // If the view controller is not actively waiting for an OTP discard the updates.
         }
+        /*
         let state = YubiKitManager.shared.accessorySession.connectionState
         
         if state == .open {
@@ -226,6 +228,7 @@ class OTPScanViewController: MFIKeyInteractionViewController, OTPScanResultsView
             otpUIResponder.isEnabled = false
             dismissMFIKeyActionSheet()
         }
+         */
     }
 
     // MARK: - OTPUIResponderDelegate
