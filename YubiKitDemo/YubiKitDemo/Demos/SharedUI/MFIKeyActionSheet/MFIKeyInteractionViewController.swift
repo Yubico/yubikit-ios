@@ -158,7 +158,7 @@ class MFIKeyInteractionViewController: RootViewController, MFIKeyActionSheetView
             isObservingAccessorySessionStateUpdates = newValue
                                     
             if isObservingAccessorySessionStateUpdates {
-                let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessoryConnection
+                let accessorySession = YubiKitManager.shared.accessorySession
                 accessorySessionStateObservation = accessorySession.observe(\.connectionState, changeHandler: { [weak self] session, change in
                     DispatchQueue.main.async {
                         self?.accessorySessionStateDidChange()
