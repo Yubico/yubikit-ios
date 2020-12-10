@@ -38,6 +38,10 @@ static const UInt8 YKFPCSCAtr[] = {0x3b, 0xfd, 0x13, 0x00, 0x00, 0x81, 0x31, 0xf
 static const NSUInteger YKFPCSCLayerContextLimit = 10;
 static const NSUInteger YKFPCSCLayerCardLimitPerContext = 10;
 
+@interface YubiKitManager()
+@property (nonatomic, readonly, nonnull) YKFNFCConnection *nfcSession NS_AVAILABLE_IOS(11.0);
+@property (nonatomic, readonly, nonnull) YKFAccessoryConnection *accessorySession;
+@end
 
 @interface YKFPCSCLayer()
 
