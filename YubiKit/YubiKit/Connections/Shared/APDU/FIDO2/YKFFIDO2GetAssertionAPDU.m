@@ -16,10 +16,6 @@
 #import "YKFCBORType.h"
 #import "YKFCBOREncoder.h"
 #import "YKFAssert.h"
-
-#import "YKFKeyFIDO2GetAssertionRequest.h"
-#import "YKFKeyFIDO2GetAssertionRequest+Private.h"
-
 #import "YKFFIDO2Type.h"
 #import "YKFFIDO2Type+Private.h"
 
@@ -35,47 +31,51 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2GetAssertionAPDUKey) {
 
 @implementation YKFFIDO2GetAssertionAPDU
 
-- (instancetype)initWithRequest:(YKFKeyFIDO2GetAssertionRequest *)request {
-    YKFAssertAbortInit(request);
-    YKFAssertAbortInit(request.rpId);
-    YKFAssertAbortInit(request.clientDataHash);
+- (nullable instancetype)initWithClientDataHash:(NSData *)clientDataHash
+                                           rpId:(NSString *)rpId
+                                      allowList:(NSArray * _Nullable)allowList
+                                        pinAuth:(NSData * _Nullable)pinAuth
+                                    pinProtocol:(NSUInteger)pinProtocol
+                                        options:(NSDictionary * _Nullable)options {
+    YKFAssertAbortInit(clientDataHash);
+    YKFAssertAbortInit(rpId);
     
     NSMutableDictionary *requestDictionary = [[NSMutableDictionary alloc] init];
     
     // RP
-    requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyRp)] = YKFCBORTextString(request.rpId);
+    requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyRp)] = YKFCBORTextString(rpId);
     
     // Client Data Hash
-    requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyClientDataHash)] = YKFCBORByteString(request.clientDataHash);
+    requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyClientDataHash)] = YKFCBORByteString(clientDataHash);
     
     // Allow List
-    if (request.allowList) {
-        NSMutableArray *allowList = [[NSMutableArray alloc] initWithCapacity:request.allowList.count];
-        for (YKFFIDO2PublicKeyCredentialDescriptor *credentialDescriptor in request.allowList) {
-            [allowList addObject:[credentialDescriptor cborTypeObject]];
+    if (allowList) {
+        NSMutableArray *mutableAllowList = [[NSMutableArray alloc] initWithCapacity:allowList.count];
+        for (YKFFIDO2PublicKeyCredentialDescriptor *credentialDescriptor in allowList) {
+            [mutableAllowList addObject:[credentialDescriptor cborTypeObject]];
         }
-        requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyAllowList)] = YKFCBORArray(allowList);
+        requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyAllowList)] = YKFCBORArray(mutableAllowList);
     }
     
     // Options
-    if (request.options) {
-        NSMutableDictionary *options = [[NSMutableDictionary alloc] initWithCapacity:request.options.count];
-        NSArray *optionsKeys = request.options.allKeys;
+    if (options) {
+        NSMutableDictionary *mutableOptions = [[NSMutableDictionary alloc] initWithCapacity:options.count];
+        NSArray *optionsKeys = options.allKeys;
         for (NSString *optionKey in optionsKeys) {
-            NSNumber *value = request.options[optionKey];
-            options[YKFCBORTextString(optionKey)] = YKFCBORBool(value.boolValue);
+            NSNumber *value = options[optionKey];
+            mutableOptions[YKFCBORTextString(optionKey)] = YKFCBORBool(value.boolValue);
         }
-        requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyOptions)] = YKFCBORMap(options);
+        requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyOptions)] = YKFCBORMap(mutableOptions);
     }
 
     // Pin Auth
-    if (request.pinAuth) {
-        requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyPinAuth)] = YKFCBORByteString(request.pinAuth);
+    if (pinAuth) {
+        requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyPinAuth)] = YKFCBORByteString(pinAuth);
     }
 
     // Pin Protocol
-    if (request.pinProtocol) {
-        requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyPinProtocol)] = YKFCBORInteger(request.pinProtocol);
+    if (pinProtocol) {
+        requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyPinProtocol)] = YKFCBORInteger(pinProtocol);
     }
     
     NSData *cborData = [YKFCBOREncoder encodeMap:YKFCBORMap(requestDictionary)];

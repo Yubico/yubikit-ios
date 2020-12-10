@@ -21,7 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFFIDO2GetAssertionAPDU: YKFFIDO2CommandAPDU
 
-- (nullable instancetype)initWithRequest:(YKFKeyFIDO2GetAssertionRequest *)request NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithClientDataHash:(NSData *)clientDataHash
+                                           rpId:(NSString *)rpId
+                                      allowList:(NSArray * _Nullable)allowList
+                                        pinAuth:(NSData * _Nullable)pinAuth
+                                    pinProtocol:(NSUInteger)pinProtocol
+                                        options:(NSDictionary * _Nullable)options NS_DESIGNATED_INITIALIZER;
+//- (nullable instancetype)initWithRequest:(YKFKeyFIDO2GetAssertionRequest *)request NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

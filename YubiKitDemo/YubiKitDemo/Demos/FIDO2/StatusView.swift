@@ -42,18 +42,23 @@ class StatusView: UIView {
                 self.isHidden = false
                 switch newValue {
                 case .message(let message):
+                    self.progressView.startAnimating()
+                    self.isHidden = false
                     progressView.alpha = 1
                     accessoryKeyView.alpha = 0
                     progressView.message = message
                 case .insertKey:
+                    self.isHidden = false
                     progressView.alpha = 0
                     accessoryKeyView.alpha = 1
                     accessoryKeyView.animateInsertKey(message: "Insert key")
                 case .touchKey:
+                    self.isHidden = false
                     progressView.alpha = 0
                     accessoryKeyView.alpha = 1
                     accessoryKeyView.animateTouchKey(message: "Touch key")
                 case .processingKey:
+                    self.isHidden = false
                     progressView.alpha = 0
                     accessoryKeyView.alpha = 1
                     accessoryKeyView.animateProcessing(message: "Processing...")
@@ -70,18 +75,22 @@ class StatusView: UIView {
     func dismiss(message: String = "", accessory: Accessory = .none, delay: TimeInterval = 0.0) {
         DispatchQueue.main.async { [self] in
             self.progressView.stopAnimating()
+            progressView.message = message
             switch accessory {
             case .checkmark:
                 progressView.showCheckmark = true
+                progressView.showError = false
             case .error:
+                progressView.showCheckmark = false
                 progressView.showError = true
             case .none:
                 break
             }
-            self.state = .message(message)
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [self] in
-            self.removeFromSuperview()
+            self.state = .hidden
+            progressView.showCheckmark = false
+            progressView.showError = false
         }
     }
     

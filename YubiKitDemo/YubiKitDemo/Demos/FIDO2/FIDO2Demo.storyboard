@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15400" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="nNp-H2-eAJ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="nNp-H2-eAJ">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15404"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -15,7 +16,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="PMT-YK-08A">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="barTintColor" red="0.60500001910000001" green="0.79299998279999995" blue="0.23600000139999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <textAttributes key="titleTextAttributes">
@@ -60,7 +61,7 @@
                                                 </connections>
                                             </segmentedControl>
                                         </subviews>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="lessThanOrEqual" constant="400" id="6rQ-Hd-Mjt"/>
                                             <constraint firstAttribute="bottom" secondItem="bc2-Q0-X10" secondAttribute="bottom" constant="2" id="78A-Xa-hog"/>
@@ -86,7 +87,7 @@
                             </view>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="r4M-dR-zSP">
                                 <rect key="frame" x="30" y="100" width="354" height="30"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="5xy-zL-lN2"/>
                                     <constraint firstAttribute="width" relation="lessThanOrEqual" constant="400" id="ZEa-xo-kzA"/>
@@ -99,7 +100,7 @@
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="N7U-1F-oDU">
                                 <rect key="frame" x="30" y="140" width="354" height="30"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="lessThanOrEqual" constant="400" id="O8Y-fU-U5u"/>
                                     <constraint firstAttribute="height" constant="30" id="sOa-RU-k9e"/>
@@ -110,7 +111,7 @@
                                     <outlet property="delegate" destination="Sph-az-zg7" id="iea-pU-bBQ"/>
                                 </connections>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Epm-WT-BHc">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Epm-WT-BHc">
                                 <rect key="frame" x="30" y="190" width="354" height="40"/>
                                 <color key="backgroundColor" red="0.60500001910000001" green="0.79299998279999995" blue="0.23600000139999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
@@ -118,7 +119,7 @@
                                     <constraint firstAttribute="height" constant="40" id="qoz-Er-5hN"/>
                                 </constraints>
                                 <state key="normal" title="Register">
-                                    <color key="titleColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <color key="titleColor" systemColor="labelColor"/>
                                 </state>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -138,20 +139,30 @@
                                 <color key="textColor" red="0.66422420739999999" green="0.66424006219999998" blue="0.66423153879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Simply tap the Register button to use a NFC Yubikey or insert a 5Ci Yubikey and then tap the Register button." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7xk-Qt-9z1">
+                                <rect key="frame" x="30" y="270" width="354" height="61"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="OFp-1Q-FiR"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="N7U-1F-oDU" firstAttribute="top" secondItem="r4M-dR-zSP" secondAttribute="bottom" constant="10" id="1g2-DR-plC"/>
                             <constraint firstItem="OFp-1Q-FiR" firstAttribute="trailing" secondItem="N7U-1F-oDU" secondAttribute="trailing" priority="750" constant="30" id="3qp-XE-akb"/>
                             <constraint firstItem="OFp-1Q-FiR" firstAttribute="trailing" secondItem="r4M-dR-zSP" secondAttribute="trailing" priority="750" constant="30" id="7Q5-Fp-7Pn"/>
+                            <constraint firstItem="7xk-Qt-9z1" firstAttribute="top" secondItem="Epm-WT-BHc" secondAttribute="bottom" constant="40" id="CLn-xw-ypK"/>
                             <constraint firstItem="Epm-WT-BHc" firstAttribute="top" secondItem="N7U-1F-oDU" secondAttribute="bottom" constant="20" id="CNl-Jp-IHz"/>
                             <constraint firstItem="KzE-2s-mdU" firstAttribute="leading" secondItem="OFp-1Q-FiR" secondAttribute="leading" constant="30" id="DsZ-tD-D2u"/>
                             <constraint firstItem="N7U-1F-oDU" firstAttribute="leading" secondItem="OFp-1Q-FiR" secondAttribute="leading" priority="750" constant="30" id="HIW-eG-VkU"/>
+                            <constraint firstItem="7xk-Qt-9z1" firstAttribute="leading" secondItem="OFp-1Q-FiR" secondAttribute="leading" constant="30" id="Hk1-oR-MoP"/>
                             <constraint firstItem="Epm-WT-BHc" firstAttribute="centerX" secondItem="XvC-Oe-qG2" secondAttribute="centerX" id="KET-x2-Sjr"/>
                             <constraint firstItem="N7U-1F-oDU" firstAttribute="centerX" secondItem="XvC-Oe-qG2" secondAttribute="centerX" id="TE6-J9-Ru5"/>
                             <constraint firstItem="OFp-1Q-FiR" firstAttribute="trailing" secondItem="KzE-2s-mdU" secondAttribute="trailing" constant="30" id="evk-Ti-hQd"/>
                             <constraint firstItem="r4M-dR-zSP" firstAttribute="leading" secondItem="OFp-1Q-FiR" secondAttribute="leading" priority="750" constant="30" id="fKM-8q-9UG"/>
+                            <constraint firstItem="OFp-1Q-FiR" firstAttribute="trailing" secondItem="7xk-Qt-9z1" secondAttribute="trailing" constant="30" id="gAA-HT-hOX"/>
                             <constraint firstItem="Epm-WT-BHc" firstAttribute="leading" secondItem="OFp-1Q-FiR" secondAttribute="leading" priority="750" constant="30" id="gMf-pd-wzX"/>
                             <constraint firstItem="r4M-dR-zSP" firstAttribute="centerX" secondItem="XvC-Oe-qG2" secondAttribute="centerX" id="hhG-FY-ebI"/>
                             <constraint firstItem="ucM-yM-z6I" firstAttribute="leading" secondItem="OFp-1Q-FiR" secondAttribute="leading" id="lsx-BT-5Xg"/>
@@ -161,7 +172,6 @@
                             <constraint firstItem="r4M-dR-zSP" firstAttribute="top" secondItem="ucM-yM-z6I" secondAttribute="bottom" constant="30" id="vII-JC-NXv"/>
                             <constraint firstItem="ucM-yM-z6I" firstAttribute="top" secondItem="OFp-1Q-FiR" secondAttribute="top" id="vkb-EV-cGI"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="OFp-1Q-FiR"/>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="R6m-hn-2l1" appends="YES" id="Zn3-F1-RN4"/>
                         </connections>
@@ -171,7 +181,7 @@
                     </tabBarItem>
                     <navigationItem key="navigationItem" title="FIDO2 Demo" id="PzE-M8-lA6">
                         <barButtonItem key="backBarButtonItem" title=" " id="UGx-jb-l1Z">
-                            <color key="tintColor" systemColor="placeholderTextColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="tintColor" systemColor="placeholderTextColor"/>
                         </barButtonItem>
                     </navigationItem>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
@@ -190,10 +200,19 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="832.79999999999995" y="-118.29085457271366"/>
+            <point key="canvasLocation" x="831.88405797101461" y="-118.52678571428571"/>
         </scene>
     </scenes>
     <resources>
         <image name="FIDO2 Icon" width="30" height="30"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="placeholderTextColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>
