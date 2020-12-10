@@ -51,12 +51,6 @@
 
 #import "YKFSlot.h"
 
-#import "YKFKeyFIDO2Request.h"
-#import "YKFKeyFIDO2MakeCredentialRequest.h"
-#import "YKFKeyFIDO2GetAssertionRequest.h"
-#import "YKFKeyFIDO2VerifyPinRequest.h"
-#import "YKFKeyFIDO2SetPinRequest.h"
-#import "YKFKeyFIDO2ChangePinRequest.h"
 #import "YKFKeyFIDO2MakeCredentialResponse.h"
 #import "YKFKeyFIDO2GetAssertionResponse.h"
 #import "YKFKeyFIDO2GetInfoResponse.h"

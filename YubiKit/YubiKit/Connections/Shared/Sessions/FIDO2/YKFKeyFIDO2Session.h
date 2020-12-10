@@ -14,7 +14,46 @@
 
 #import <Foundation/Foundation.h>
 
-@class YKFKeyFIDO2MakeCredentialRequest, YKFKeyFIDO2GetAssertionRequest, YKFKeyFIDO2VerifyPinRequest, YKFKeyFIDO2SetPinRequest, YKFKeyFIDO2ChangePinRequest, YKFKeyFIDO2GetInfoResponse, YKFKeyFIDO2MakeCredentialResponse, YKFKeyFIDO2GetAssertionResponse;
+@class YKFKeyFIDO2MakeCredentialRequest, YKFKeyFIDO2GetAssertionRequest, YKFKeyFIDO2VerifyPinRequest, YKFKeyFIDO2SetPinRequest, YKFKeyFIDO2ChangePinRequest, YKFKeyFIDO2GetInfoResponse, YKFKeyFIDO2MakeCredentialResponse, YKFKeyFIDO2GetAssertionResponse, YKFFIDO2PublicKeyCredentialRpEntity, YKFFIDO2PublicKeyCredentialUserEntity;
+
+NS_ASSUME_NONNULL_BEGIN
+
+/**
+ * ---------------------------------------------------------------------------------------------------------------------
+ * @name Option Keys
+ * ---------------------------------------------------------------------------------------------------------------------
+ */
+
+/*!
+ @abstract
+    Resident Key option key to set in the create credential options dictionary.
+ 
+ @discusion
+    Instructs the authenticator to store the key material on the device. Set this key in the options dictionary of
+    when necessary.
+ */
+extern NSString* const YKFKeyFIDO2OptionRK;
+
+/*!
+ @abstract
+    User Verification option key to set in the create credential options dictionary.
+ 
+ @discussion
+    Instructs the authenticator to require a gesture that verifies the user to complete the request. Examples of such
+    gestures are fingerprint scan or a PIN. Set this key in the options dictionary when necessary.
+ */
+extern NSString* const YKFKeyFIDO2OptionUV;
+
+/*!
+ @abstract
+    User Presence option key to set in the request options dictionary.
+ 
+ @discussion
+    Instructs the authenticator to require user consent to complete the operation. Set this key in the options
+    dictionary when necessary.
+ */
+extern NSString* const YKFKeyFIDO2OptionUP;
+
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
@@ -114,19 +153,42 @@ typedef NS_ENUM(NSUInteger, YKFKeyFIDO2SessionKeyState) {
     YKFKeyFIDO2SessionKeyStateTouchKey
 };
 
+
+
+/*!
+ @abstract
+    This delegate protocol provides the contextual state of the key when performing FIDO2 requests.
+ 
+ @discussion
+    This delegate will be called with the new key state when the status of the Yubikey changes.
+ */
+@protocol YKFKeyFIDO2SessionKeyStateDelegate
+
+- (void)keyStateChanged:(YKFKeyFIDO2SessionKeyState)keyState;
+
+@end
+
 /**
  * ---------------------------------------------------------------------------------------------------------------------
  * @name YKFKeyFIDO2ServiceProtocol
  * ---------------------------------------------------------------------------------------------------------------------
  */
 
-NS_ASSUME_NONNULL_BEGIN
-
 /*!
  @abstract
     Defines the interface for YKFKeyFIDO2Service.
  */
 @protocol YKFKeyFIDO2SessionProtocol<NSObject>
+
+/*!
+ @abstract
+   The FIDO2Session's key state delegate.
+ 
+ @discussion
+    The delegate must conform to the YKFKeyFIDO2SessionKeyStateDelegate protocol. Setting this
+    delegate you will get notificed to changes to the the key state.
+  */
+@property (nonatomic, assign, readwrite) id<YKFKeyFIDO2SessionKeyStateDelegate> delegate;
 
 /*!
  @abstract
@@ -140,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) YKFKeyFIDO2SessionKeyState keyState;
 
 /*!
- @method executeGetInfoRequestWithCompletion:
+ @method getInfoWithCompletion:
  
  @abstract
     Sends to the key a FIDO2 Get Info request to retrieve the authenticator properties. The request
@@ -154,10 +216,10 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeGetInfoRequestWithCompletion:(YKFKeyFIDO2SessionGetInfoCompletionBlock)completion;
+- (void)getInfoWithCompletion:(YKFKeyFIDO2SessionGetInfoCompletionBlock)completion;
 
 /*!
- @method executeVerifyPinRequest:completion:
+ @method verifyPin:completion:
  
  @abstract
     Authenticates the session with the FIDO2 application from the key. This should be done once
@@ -168,6 +230,9 @@ NS_ASSUME_NONNULL_BEGIN
     Once authenticated, the library will automatically attach the required PIN authentication parameters
     to the subsequent requests against the key, when necessary.
  
+ @param pin
+    The pin to use for authentication.
+ 
  @param completion
     The response block which is executed after the request was processed by the key. The completion block
     will be executed on a background thread. If the intention is to update the UI, dispatch the results
@@ -176,7 +241,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeVerifyPinRequest:(YKFKeyFIDO2VerifyPinRequest *)request completion:(YKFKeyFIDO2SessionCompletionBlock)completion;
+- (void)verifyPin:(NSString *)pin completion:(YKFKeyFIDO2SessionCompletionBlock)completion;
 
 /*!
  @method clearUserVerification
@@ -204,7 +269,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeSetPinRequest:(YKFKeyFIDO2SetPinRequest *)request completion:(YKFKeyFIDO2SessionCompletionBlock)completion;
+- (void)setPin:(NSString *)pin completion:(YKFKeyFIDO2SessionCompletionBlock)completion;
 
 /*!
  @method executeChangePinRequest:completion:
@@ -224,7 +289,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeChangePinRequest:(YKFKeyFIDO2ChangePinRequest *)request completion:(YKFKeyFIDO2SessionCompletionBlock)completion;
+- (void)changePin:(NSString *)oldPin to:(NSString *)newPin completion:(YKFKeyFIDO2SessionCompletionBlock)completion;
 
 /*!
  @method executeGetPinRetriesWithCompletion:
@@ -240,14 +305,66 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeGetPinRetriesWithCompletion:(YKFKeyFIDO2SessionGetPinRetriesCompletionBlock)completion;
+- (void)getPinRetriesWithCompletion:(YKFKeyFIDO2SessionGetPinRetriesCompletionBlock)completion;
 
 /*!
- @method executeMakeCredentialRequest:completion:
+ @method makeCredentialWithClientDataHash:clientDataHash:rp:user:pubKeyCredParams:exludeList:options:completion:
  
  @abstract
-    Sends to the key a FIDO2 Make Credential request to create/update a FIDO2 credential. The request
-    is performed asynchronously on a background execution queue.
+    Sends a command to the key to create/update a FIDO2 credential. This command maps to the
+    authenticatorMakeCredential command from CTAP2 protocol:
+    https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.pdf
+    The request is performed asynchronously on a background execution queue.
+ 
+ @param clientDataHash
+    Hash of the ClientData contextual binding specified by host.
+    This property is required by the key to fulfil the request. The value should be a SHA256 of the received
+    Client Data from the WebAuthN server. If missing, the FIDO2 Session will return an error when trying to
+    execute the request.
+ 
+ @param rp
+    This property describes a Relying Party with which the new public key credential will be associated.
+    This property is required by the key to fulfil the request. If missing, the FIDO2 Service will return
+    an error when trying to execute the request.
+ 
+ @param user
+    This property describes the user account to which the new public key credential will be associated at the RP.
+    This property is required by the key to fulfil the request. If missing, the FIDO2 Service will return
+    an error when trying to execute the request.
+ 
+ @param pubKeyCredParams
+    A list of YKFFIDO2PublicKeyCredentialParam objects with algorithm identifiers which are values registered in
+    the IANA COSE Algorithms registry. This sequence is ordered from most preferred (by the RP) to least preferred.
+    This property is required by the key to fulfil the request. If missing, the FIDO2 Service will return
+    an error when trying to execute the request.
+
+ @param excludeList
+    A list of YKFFIDO2PublicKeyCredentialDescriptor to be excluded when creating a new credential.
+    The authenticator returns an error if the authenticator already contains one of the credentials enumerated in
+    this sequence. This allows RPs to limit the creation of multiple credentials for the same account on a single
+    authenticator. This property is optional.
+ 
+ @param options
+    Parameters to influence authenticator operation, as specified in in the table below.
+    This parameter is optional.
+
+    @code
+    Key           | Definition
+    -------------------------------------------------------------------
+    rk            | resident key: Instructs the authenticator to store
+                    the key material on the device.
+    ----------------------------------------------------------------------------------------
+    uv            | user verification: Instructs the authenticator to
+                    require a gesture that verifies the user to complete
+                    the request. Examples of such gestures are fingerprint
+                    scan or a PIN. This key is not supported by the 5Ci
+                    nor the NFC Yubikeys.
+    -------------------------------------------------------------------
+    up            | user presence: The key will return an error if this
+                    parameter is set when creating a credential.
+                    UP cannot be configured when creating a credential
+                    because it's implicitly set to true.
+    @endcode
  
  @param completion
     The response block which is executed after the request was processed by the key. The completion block
@@ -257,15 +374,54 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeMakeCredentialRequest:(YKFKeyFIDO2MakeCredentialRequest *)request completion:(YKFKeyFIDO2SessionMakeCredentialCompletionBlock)completion;
+- (void)makeCredentialWithClientDataHash:(NSData *)clientDataHash
+                                      rp:(YKFFIDO2PublicKeyCredentialRpEntity *)rp
+                                    user:(YKFFIDO2PublicKeyCredentialUserEntity *)user
+                        pubKeyCredParams:(NSArray *)pubKeyCredParams
+                              excludeList:(NSArray * _Nullable)excludeList
+                                 options:(NSDictionary  * _Nullable)options
+                              completion:(YKFKeyFIDO2SessionMakeCredentialCompletionBlock)completion;
 
 /*!
- @method executeGetAssertionRequest:completion:
+ @method getAssertionWithClientDataHash:rpId:allowList:options:completion:
  
  @abstract
     Sends to the key a FIDO2 Get Assertion request to retrieve signatures for FIDO2 credentials. The request
     is performed asynchronously on a background execution queue.
  
+ @param clientDataHash
+    Hash of the serialized client data collected by the host as defined in WebAuthN.
+    This property is required by the key to fulfil the request. The value should be a SHA256 of the received
+    Client Data from the WebAuthN server. If missing, the FIDO2 Session will return an error when trying to
+    execute the request.
+ 
+ @param rpId
+    Relying party identifier as defined in WebAuthN.
+    This property is required by the key to fulfil the request. If missing, the FIDO2 Service will return an error
+    when trying to execute the request.
+ 
+ @param allowList
+    A sequence of YKFFIDO2PublicKeyCredentialDescriptor objects, each denoting a credential. The authenticator
+    will generate a signature for each credential.
+    This property is optional but it's recommended to always specify a credential in the list and not make
+    assumtions on the number of credentials generated by the key.
+ 
+ @param options
+    The options provide a list of properties to influence authenticator operation when signing, as specified
+    in in the table below. This parameter is optional.
+    
+    @code
+    Key           | Default value      | Definition
+    ----------------------------------------------------------------------------------------
+    uv            | false              | user verification: Instructs the authenticator to
+                                         require a gesture that verifies the user to complete
+                                         the request. Examples of such gestures are fingerprint
+                                         scan or a PIN.
+    ----------------------------------------------------------------------------------------
+    up            | true               | user presence: Instructs the authenticator to require
+                                         user consent to complete the operation.
+    @endcode
+ 
  @param completion
     The response block which is executed after the request was processed by the key. The completion block
     will be executed on a background thread. If the intention is to update the UI, dispatch the results
@@ -274,10 +430,14 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeGetAssertionRequest:(YKFKeyFIDO2GetAssertionRequest *)request completion:(YKFKeyFIDO2SessionGetAssertionCompletionBlock)completion;
+- (void)getAssertionWithClientDataHash:(NSData *)clientDataHash
+                                  rpId:(NSString *)rpId
+                             allowList:(NSArray * _Nullable)allowList
+                               options:(NSDictionary * _Nullable)options
+                            completion:(YKFKeyFIDO2SessionGetAssertionCompletionBlock)completion;
 
 /*!
- @method executeGetNextAssertionRequest:completion:
+ @method getNextAssertionWithCompletion:completion:
  
  @abstract
     Sends to the key a FIDO2 Get Next Assertion request to retrieve the next assertion from the list of
@@ -292,10 +452,10 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeGetNextAssertionWithCompletion:(YKFKeyFIDO2SessionGetAssertionCompletionBlock)completion;
+- (void)getNextAssertionWithCompletion:(YKFKeyFIDO2SessionGetAssertionCompletionBlock)completion;
 
 /*!
- @method executeResetRequestWithCompletion:
+ @method resetWithCompletion:
  
  @abstract
     Sends to the key a FIDO2 Reset to revert the key FIDO2 application to factory settings.
@@ -314,7 +474,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)executeResetRequestWithCompletion:(YKFKeyFIDO2SessionCompletionBlock)completion;
+- (void)resetWithCompletion:(YKFKeyFIDO2SessionCompletionBlock)completion;
 
 @end
 

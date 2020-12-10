@@ -13,8 +13,10 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFKeyFIDO2Request.h"
+#import "YKFKeyRequest.h"
 #import "YKFCBORType.h"
+
+@class YKFAPDU;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,7 +28,9 @@ typedef NS_ENUM(NSUInteger, YKFKeyFIDO2ClientPinRequestSubCommand) {
     YKFKeyFIDO2ClientPinRequestSubCommandGetPINToken        = 0x05
 };
 
-@interface YKFKeyFIDO2ClientPinRequest: YKFKeyFIDO2Request
+@interface YKFKeyFIDO2ClientPinRequest: YKFKeyRequest
+
+@property (nonatomic) YKFAPDU *apdu;
 
 @property (nonatomic) NSUInteger pinProtocol;
 @property (nonatomic) YKFKeyFIDO2ClientPinRequestSubCommand subCommand;

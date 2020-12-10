@@ -39,23 +39,21 @@
 #import "YKFKeyFIDO2MakeCredentialResponse+Private.h"
 #import "YKFKeyFIDO2GetAssertionResponse+Private.h"
 
-#import "YKFKeyFIDO2MakeCredentialRequest+Private.h"
-#import "YKFKeyFIDO2GetAssertionRequest+Private.h"
-
-#import "YKFKeyFIDO2VerifyPinRequest.h"
-#import "YKFKeyFIDO2SetPinRequest.h"
-#import "YKFKeyFIDO2ChangePinRequest.h"
-
 #import "YKFKeyFIDO2GetInfoResponse.h"
 #import "YKFKeyFIDO2MakeCredentialResponse.h"
 #import "YKFKeyFIDO2GetAssertionResponse.h"
 
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFKeySessionError+Private.h"
-#import "YKFKeyFIDO2Request+Private.h"
 
 #import "YKFSmartCardInterface.h"
 #import "YKFSelectApplicationAPDU.h"
+
+static const int YKFKeyFIDO2RequestMaxRetries = 30; // times
+static const NSTimeInterval YKFKeyFIDO2RequestRetryTimeInterval = 0.5; // seconds
+NSString* const YKFKeyFIDO2OptionRK = @"rk";
+NSString* const YKFKeyFIDO2OptionUV = @"uv";
+NSString* const YKFKeyFIDO2OptionUP = @"up";
 
 #pragma mark - Private Response Blocks
 
@@ -85,6 +83,8 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
 
 @implementation YKFKeyFIDO2Session
 
+@synthesize delegate;
+
 + (void)sessionWithConnectionController:(nonnull id<YKFKeyConnectionControllerProtocol>)connectionController
                                completion:(YKFKeyFIDO2SessionCompletion _Nonnull)completion {
     
@@ -113,18 +113,18 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
         return;
     }
     self.keyState = keyState;
+    [self.delegate keyStateChanged:keyState];
 }
 
 #pragma mark - Public Requests
 
-- (void)executeGetInfoRequestWithCompletion:(YKFKeyFIDO2SessionGetInfoCompletionBlock)completion {
+- (void)getInfoWithCompletion:(YKFKeyFIDO2SessionGetInfoCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
-    YKFKeyFIDO2Request *fido2Request = [[YKFKeyFIDO2Request alloc] init];
-    fido2Request.apdu = [[YKFFIDO2GetInfoAPDU alloc] init];
+    YKFAPDU *apdu = [[YKFFIDO2CommandAPDU alloc] initWithCommand:YKFFIDO2CommandGetInfo data:nil];
     
     ykf_weak_self();
-    [self executeFIDO2Request:fido2Request completion:^(NSData * data, NSError *error) {
+    [self executeFIDO2Command:apdu retryCount:0 completion:^(NSData * data, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
@@ -142,9 +142,8 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeVerifyPinRequest:(YKFKeyFIDO2VerifyPinRequest *)request completion:(YKFKeyFIDO2SessionCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
-    YKFParameterAssertReturn(request.pin);
+- (void)verifyPin:(NSString *)pin completion:(YKFKeyFIDO2SessionCompletionBlock)completion {
+    YKFParameterAssertReturn(pin);
     YKFParameterAssertReturn(completion);
 
     [self clearUserVerification];
@@ -165,7 +164,7 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
         clientPinGetPinTokenRequest.subCommand = YKFKeyFIDO2ClientPinRequestSubCommandGetPINToken;
         clientPinGetPinTokenRequest.keyAgreement = cosePlatformPublicKey;
         
-        NSData *pinData = [request.pin dataUsingEncoding:NSUTF8StringEncoding];
+        NSData *pinData = [pin dataUsingEncoding:NSUTF8StringEncoding];
         NSData *pinHash = [[pinData ykf_SHA256] subdataWithRange:NSMakeRange(0, 16)];
         clientPinGetPinTokenRequest.pinHashEnc = [pinHash ykf_aes256EncryptedDataWithKey:sharedSecret];
         
@@ -203,14 +202,13 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
 //        strongSelf.applicationSelected = NO; // Force also an application re-selection.
 }
 
-- (void)executeChangePinRequest:(nonnull YKFKeyFIDO2ChangePinRequest *)request completion:(nonnull YKFKeyFIDO2SessionCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
-    YKFParameterAssertReturn(request.pinOld);
-    YKFParameterAssertReturn(request.pinNew);
+- (void)changePin:(nonnull NSString *)oldPin to:(nonnull NSString *)newPin completion:(nonnull YKFKeyFIDO2SessionCompletionBlock)completion {
+    YKFParameterAssertReturn(oldPin);
+    YKFParameterAssertReturn(newPin);
     YKFParameterAssertReturn(completion);
 
-    if (request.pinOld.length < 4 || request.pinNew.length < 4 ||
-        request.pinOld.length > 255 || request.pinNew.length > 255) {
+    if (oldPin.length < 4 || newPin.length < 4 ||
+        oldPin.length > 255 || newPin.length > 255) {
         completion([YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodePIN_POLICY_VIOLATION]);
         return;
     }
@@ -227,8 +225,8 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
         
         // Change the PIN
         YKFKeyFIDO2ClientPinRequest *changePinRequest = [[YKFKeyFIDO2ClientPinRequest alloc] init];
-        NSData *oldPinData = [request.pinOld dataUsingEncoding:NSUTF8StringEncoding];
-        NSData *newPinData = [[request.pinNew dataUsingEncoding:NSUTF8StringEncoding] ykf_fido2PaddedPinData];
+        NSData *oldPinData = [oldPin dataUsingEncoding:NSUTF8StringEncoding];
+        NSData *newPinData = [[newPin dataUsingEncoding:NSUTF8StringEncoding] ykf_fido2PaddedPinData];
 
         changePinRequest.pinProtocol = 1;
         changePinRequest.subCommand = YKFKeyFIDO2ClientPinRequestSubCommandChangePIN;
@@ -255,12 +253,11 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeSetPinRequest:(nonnull YKFKeyFIDO2SetPinRequest *)request completion:(nonnull YKFKeyFIDO2SessionCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
-    YKFParameterAssertReturn(request.pin);
+- (void)setPin:(nonnull NSString *)pin completion:(nonnull YKFKeyFIDO2SessionCompletionBlock)completion {
+    YKFParameterAssertReturn(pin);
     YKFParameterAssertReturn(completion);
 
-    if (request.pin.length < 4 || request.pin.length > 255) {
+    if (pin.length < 4 || pin.length > 255) {
         completion([YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodePIN_POLICY_VIOLATION]);
         return;
     }
@@ -281,7 +278,7 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
         setPinRequest.subCommand = YKFKeyFIDO2ClientPinRequestSubCommandSetPIN;
         setPinRequest.keyAgreement = cosePlatformPublicKey;
         
-        NSData *pinData = [[request.pin dataUsingEncoding:NSUTF8StringEncoding] ykf_fido2PaddedPinData];
+        NSData *pinData = [[pin dataUsingEncoding:NSUTF8StringEncoding] ykf_fido2PaddedPinData];
         
         setPinRequest.pinEnc = [pinData ykf_aes256EncryptedDataWithKey:sharedSecret];
         setPinRequest.pinAuth = [[setPinRequest.pinEnc ykf_fido2HMACWithKey:sharedSecret] subdataWithRange:NSMakeRange(0, 16)];
@@ -296,7 +293,7 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeGetPinRetriesWithCompletion:(YKFKeyFIDO2SessionGetPinRetriesCompletionBlock)completion {
+- (void)getPinRetriesWithCompletion:(YKFKeyFIDO2SessionGetPinRetriesCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
     YKFKeyFIDO2ClientPinRequest *pinRetriesRequest = [[YKFKeyFIDO2ClientPinRequest alloc] init];
@@ -312,31 +309,43 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeMakeCredentialRequest:(YKFKeyFIDO2MakeCredentialRequest *)request completion:(YKFKeyFIDO2SessionMakeCredentialCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)makeCredentialWithClientDataHash:(NSData *)clientDataHash
+                                      rp:(YKFFIDO2PublicKeyCredentialRpEntity *)rp
+                                    user:(YKFFIDO2PublicKeyCredentialUserEntity *)user
+                        pubKeyCredParams:(NSArray *)pubKeyCredParams
+                              excludeList:(NSArray * _Nullable)excludeList
+                                 options:(NSDictionary  * _Nullable)options
+                              completion:(YKFKeyFIDO2SessionMakeCredentialCompletionBlock)completion {
+    YKFParameterAssertReturn(clientDataHash);
+    YKFParameterAssertReturn(rp);
+    YKFParameterAssertReturn(user);
+    YKFParameterAssertReturn(pubKeyCredParams);
+    YKFParameterAssertReturn(options);
     YKFParameterAssertReturn(completion);
-    
+
     // Attach the PIN authentication if the pinToken is present.
+    NSData *pinAuth;
+    NSUInteger pinProtocol = 0;
     if (self.pinToken) {
-        YKFParameterAssertReturn(request.clientDataHash);
-        request.pinProtocol = 1;
-        NSData *hmac = [request.clientDataHash ykf_fido2HMACWithKey:self.pinToken];
-        request.pinAuth = [hmac subdataWithRange:NSMakeRange(0, 16)];
-        if (!request.pinAuth) {
+        YKFParameterAssertReturn(clientDataHash);
+        pinProtocol = 1;
+        NSData *hmac = [clientDataHash ykf_fido2HMACWithKey:self.pinToken];
+        pinAuth = [hmac subdataWithRange:NSMakeRange(0, 16)];
+        if (pinAuth) {
             completion(nil, [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeOTHER]);
         }
     }
     
-    YKFFIDO2MakeCredentialAPDU *apdu = [[YKFFIDO2MakeCredentialAPDU alloc] initWithRequest:request];
+    YKFAPDU *apdu = [[YKFFIDO2MakeCredentialAPDU alloc] initWithClientDataHash:clientDataHash rp:rp user:user pubKeyCredParams:pubKeyCredParams excludeList:excludeList pinAuth:pinAuth pinProtocol:pinProtocol options:options];
+    
     if (!apdu) {
         YKFKeySessionError *error = [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeOTHER];
         completion(nil, error);
         return;
     }
-    request.apdu = apdu;
     
     ykf_weak_self();
-    [self executeFIDO2Request:request completion:^(NSData *data, NSError *error) {
+    [self executeFIDO2Command:apdu retryCount:0 completion:^(NSData *data, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
@@ -354,31 +363,42 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeGetAssertionRequest:(YKFKeyFIDO2GetAssertionRequest *)request completion:(YKFKeyFIDO2SessionGetAssertionCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)getAssertionWithClientDataHash:(NSData *)clientDataHash
+                                  rpId:(NSString *)rpId
+                             allowList:(NSArray * _Nullable)allowList
+                               options:(NSDictionary * _Nullable)options
+                            completion:(YKFKeyFIDO2SessionGetAssertionCompletionBlock)completion {
+    YKFParameterAssertReturn(clientDataHash);
+    YKFParameterAssertReturn(rpId);
     YKFParameterAssertReturn(completion);
     
     // Attach the PIN authentication if the pinToken is present.
-    if (self.pinToken) {
-        YKFParameterAssertReturn(request.clientDataHash);
-        request.pinProtocol = 1;
-        NSData *hmac = [request.clientDataHash ykf_fido2HMACWithKey:self.pinToken];
-        request.pinAuth = [hmac subdataWithRange:NSMakeRange(0, 16)];
-        if (!request.pinAuth) {
-            completion(nil, [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeOTHER]);
-        }
-    }
+    NSData *pinAuth;
+    NSUInteger pinProtocol = 0;
+//    if (self.pinToken) {
+//        YKFParameterAssertReturn(clientDataHash);
+//        pinProtocol = 1;
+//        NSData *hmac = [clientDataHash ykf_fido2HMACWithKey:self.pinToken];
+//        pinAuth = [hmac subdataWithRange:NSMakeRange(0, 16)];
+//        if (!pinAuth) {
+//            completion(nil, [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeOTHER]);
+//        }
+//    }
     
-    YKFFIDO2GetAssertionAPDU *apdu = [[YKFFIDO2GetAssertionAPDU alloc] initWithRequest:request];
+    YKFFIDO2GetAssertionAPDU *apdu = [[YKFFIDO2GetAssertionAPDU alloc] initWithClientDataHash:clientDataHash
+                                                                                         rpId:rpId
+                                                                                    allowList:allowList
+                                                                                      pinAuth:pinAuth
+                                                                                  pinProtocol:pinProtocol
+                                                                                      options:options];
     if (!apdu) {
         YKFKeySessionError *error = [YKFKeyFIDO2Error errorWithCode:YKFKeyFIDO2ErrorCodeOTHER];
         completion(nil, error);
         return;
     }
-    request.apdu = apdu;
     
     ykf_weak_self();
-    [self executeFIDO2Request:request completion:^(NSData *data, NSError *error) {
+    [self executeFIDO2Command:apdu retryCount:0 completion:^(NSData *data, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
@@ -396,14 +416,13 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeGetNextAssertionWithCompletion:(YKFKeyFIDO2SessionGetAssertionCompletionBlock)completion {
+- (void)getNextAssertionWithCompletion:(YKFKeyFIDO2SessionGetAssertionCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
-    YKFKeyFIDO2Request *fido2Request = [[YKFKeyFIDO2Request alloc] init];
-    fido2Request.apdu = [[YKFFIDO2GetNextAssertionAPDU alloc] init];
+    YKFAPDU *apdu = [[YKFFIDO2GetNextAssertionAPDU alloc] init];
     
     ykf_weak_self();
-    [self executeFIDO2Request:fido2Request completion:^(NSData *data, NSError *error) {
+    [self executeFIDO2Command:apdu retryCount:0 completion:^(NSData *data, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
@@ -421,14 +440,13 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)executeResetRequestWithCompletion:(YKFKeyFIDO2SessionCompletionBlock)completion {
+- (void)resetWithCompletion:(YKFKeyFIDO2SessionCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
-    YKFKeyFIDO2Request *fido2Request = [[YKFKeyFIDO2Request alloc] init];
-    fido2Request.apdu = [[YKFFIDO2ResetAPDU alloc] init];
+    YKFAPDU *apdu = [[YKFFIDO2ResetAPDU alloc] init];
     
     ykf_weak_self();
-    [self executeFIDO2Request:fido2Request completion:^(NSData *response, NSError *error) {
+    [self executeFIDO2Command:apdu retryCount:0 completion:^(NSData *response, NSError *error) {
         ykf_strong_self();
         if (!error) {
             [strongSelf clearUserVerification];
@@ -452,7 +470,7 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     request.apdu = apdu;
     
     ykf_weak_self();
-    [self executeFIDO2Request:request completion:^(NSData *data, NSError *error) {
+    [self executeFIDO2Command:request.apdu retryCount:0 completion:^(NSData *data, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
             completion(nil, error);
@@ -531,12 +549,14 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
 
 #pragma mark - Request Execution
 
-- (void)executeFIDO2Request:(YKFKeyFIDO2Request *)request completion:(YKFKeyFIDO2SessionResultCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)executeFIDO2Command:(YKFAPDU *)apdu retryCount:(int)retryCount completion:(YKFKeyFIDO2SessionResultCompletionBlock)completion {
+    YKFParameterAssertReturn(apdu);
     YKFParameterAssertReturn(completion);
     
+    [self updateKeyState:YKFKeyFIDO2SessionKeyStateProcessingRequest];
+    
     ykf_weak_self();
-    [self.smartCardInterface executeCommand:request.apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         ykf_safe_strong_self();
 
         if (data) {
@@ -546,10 +566,12 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
             } else {
                 completion(data, nil);
             }
+            [strongSelf updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
         } else {
             if (error.code == YKFKeyAPDUErrorCodeFIDO2TouchRequired) {
-                [strongSelf handleTouchRequired:request completion:completion];
+                [strongSelf handleTouchRequired:apdu retryCount:retryCount completion:completion];
             } else {
+                [strongSelf updateKeyState:YKFKeyFIDO2SessionKeyStateIdle];
                 completion(nil, error);
             }
         }
@@ -571,11 +593,11 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     return [data subdataWithRange:NSMakeRange(1, data.length - 1)];
 }
 
-- (void)handleTouchRequired:(YKFKeyFIDO2Request *)request completion:(YKFKeyFIDO2SessionResultCompletionBlock)completion {
-    YKFParameterAssertReturn(request);
+- (void)handleTouchRequired:(YKFAPDU *)apdu  retryCount:(int)retryCount completion:(YKFKeyFIDO2SessionResultCompletionBlock)completion {
+    YKFParameterAssertReturn(apdu);
     YKFParameterAssertReturn(completion);
     
-    if (![request shouldRetry]) {
+    if (retryCount >= YKFKeyFIDO2RequestMaxRetries) {
         YKFKeySessionError *timeoutError = [YKFKeySessionError errorWithCode:YKFKeySessionErrorTouchTimeoutCode];
         completion(nil, timeoutError);
 
@@ -584,16 +606,14 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     }
     
     [self updateKeyState:YKFKeyFIDO2SessionKeyStateTouchKey];
-    request.retries += 1;
+    retryCount += 1;
 
     ykf_weak_self();
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, request.retryTimeInterval * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, YKFKeyFIDO2RequestRetryTimeInterval * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         ykf_safe_strong_self();
-        YKFKeyFIDO2Request *retryRequest = [[YKFKeyFIDO2Request alloc] init];
-        retryRequest.retries = request.retries;
-        retryRequest.apdu = [[YKFFIDO2TouchPoolingAPDU alloc] init];
-        
-        [strongSelf executeFIDO2Request:retryRequest completion:completion];
+
+        YKFAPDU* apdu = [[YKFFIDO2TouchPoolingAPDU alloc] init];
+        [strongSelf executeFIDO2Command:apdu retryCount:retryCount completion:completion];
     });
 }
 
