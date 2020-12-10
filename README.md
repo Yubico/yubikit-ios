@@ -169,9 +169,9 @@ YubiKit headers are documented and the documentation is available either by read
 
 ## Using the Library
 
-YubiKit is exposing a simple and easy to use API for executing operations on the YubiKey. The API is divided into `Connections` and `Sessions`. The supported connections are `YKFAccessoryConnection` and `YKFNFCConnection`. Each session is started by calling `YubiKitManager.shared.startAccessoryConnection()` respectively `YubiKitManager.shared.startNFCConnection()`. Once a YubiKey connects the SDK delivers the new connection via the `YKFManagerDelegate` protocol. Disconnects are also signaled through the protocol. For a easier and a more Swift-like experience you can implement something similar to this example: [YKFManagerDelegate wrapper](./docs/easy-handling-connections.md).
+YubiKit is exposing a simple and easy to use API for executing operations on the YubiKey. The API is divided into `Connections` and `Sessions`. The supported connections are `YKFAccessoryConnection` and `YKFNFCConnection`. Each session is started by calling `YubiKitManager.shared.startAccessoryConnection()` respectively `YubiKitManager.shared.startNFCConnection()`. Once a YubiKey connects the SDK delivers the new connection via the `YKFManagerDelegate` protocol. Disconnects are also signaled through the protocol.
 
-From a connection you can retrieve any of the sessions currently supported in the SDK. The connections are fetched by calling a method with a callback block. Once the session has been established and the corresponding application on the YubiKey has been selected the callback will return the new session. For e.g a FIDO2 session it would look like this:
+From a connection you can retrieve any of the sessions currently supported in the SDK. The connections are fetched by calling a method with a callback block. Once the session has been established and the corresponding application on the YubiKey has been selected the callback will return the new session.
 
 ##### Swift    
 
@@ -189,7 +189,7 @@ connection.fido2Session { session, error in
 ```objective-c
 #import <YubiKit/YubiKit.h>
 
-[self.connection fido2Session:^(YKFFIDO2Session * _Nullable session, NSError * _Nullable error) {
+[self.connection fido2Session:^(YKFKeyFIDO2Session * _Nullable session, NSError * _Nullable error) {
     if (error) { /* handle error and return */ }
     [session verifyPin:pin completion:^(NSError * _Nullable error) {
         ...
@@ -207,7 +207,7 @@ The same goes for the NFC connection and similar to the accessory connection the
 if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
     // Provide additional setup when NFC is available            
     // example
-    YubiKitManager.shared.nfcSession.startIso7816Session()
+    YubiKitManager.shared.startNFCConnection()
 } else {
     // Handle the missing NFC support 
 }
@@ -225,28 +225,24 @@ if (YubiKitDeviceCapabilities.supportsISO7816NFCTags) {
     // Handle the missing NFC support
 }
 ```
-An important property of the `YKFAccessorySession` is the `sessionState`( or `iso7816SessionState` of `NFCSession`)  which can be used to check the state of the session. This property can be observed using KVO. Observe this property to see when the key is connected or disconnected and take appropriate actions to update the UI and to send requests to the key. Because the KVO code can be verbose, a complete example on how to observe this property is provided in the Demo application and not here. When the host application prefers a delegate pattern to observe this property, the YubiKit Demo application provides an example on how to isolate the KVO observation into a separate class and use a delegate to update about changes. The example can be found in the Examples/Observers project group.
 
-The session was designed to provide a list of services. A service usually maps a major capability of the key. Over the same session the application can talk to different functionalities provided by the key. For example, The YKFKeyU2FService will communicate with the U2F functionality from the key. The U2F service lifecycle is fully controlled by the key session and it must not be created by the host application. The lifecycle of the U2F service is dependent on the session state. When the session is opened and it can communicate with the key, the U2F service become available. If the session is closed the U2F service is nil.
-After the key session was started and a key was connected the session state becomes open so the application can start sending requests to the key.
+List of sessions is documented below with it's own specifics and samples:
 
-List of services is documented below with it's own specifics and samples:
+- [FIDO](./docs/fido2.md) - Provides FIDO2 operations accessible via the *YKFKeyFIDO2Session*.
 
-- [FIDO](./docs/fido2.md) - Provides FIDO2 operations accessible via the *YKFFIDO2Session*.
-
-- [U2F](./docs/u2f.md) - Provides U2F operations accessible via the *YKFU2FSession*.
+- [U2F](./docs/u2f.md) - Provides U2F operations accessible via the *YKFKeyU2FSession*.
 
 - [OATH](./docs/oath.md) - Allows applications, such as an authenticator app to store OATH TOTP and HOTP secrets on a YubiKey and generate one-time passwords.
 
 - [OTP](./docs/otp.md) - Provides implementation classes to obtain YubiKey OTP via accessory (5Ci) or NFC.
-
-- [RAW](./docs/raw.md) - Allows sending raw commands to YubiKeys over two channels: *YKFKeyRawCommandService* or over a [PC/SC](https://en.wikipedia.org/wiki/PC/SC) like interface.
 
 - [Challenge-response](./docs/chr.md) - Provides a method to use HMAC-SHA1 challenge-response.
 
 - [Management](./docs/mgmt.md) - Provides ability to enable or disable available application on YubiKey
 
 - [SmartCardInterface](./docs/smartcard-interface.md) - Provides low level access to the Yubikey with which you can send custom APDUs to the key
+
+For lower level access to the Yubikey there's also a `YKFSmartCardInterface` with which you can send APDUs to the key.
 
 ## Customize the Library
 YubiKit allows customizing some of its behavior by using `YubiKitConfiguration` and `YubiKitExternalLocalization`.
