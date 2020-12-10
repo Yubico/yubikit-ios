@@ -36,7 +36,7 @@
 @end
 
 
-@protocol YubiKitManagerProtocol
+@interface YubiKitManager : NSObject
 
 @property(nonatomic, weak) id<YKFManagerDelegate> _Nullable delegate;
 
@@ -46,32 +46,7 @@
 - (void)startAccessoryConnection;
 - (void)stopAccessoryConnection;
 
-/*!
- @property nfcReaderSession
- 
- @abstract
-    Returns the shared instance of YKFNFCSession to interact with the NFC reader.
- */
-@property (nonatomic, readonly, nonnull) YKFNFCConnection *nfcSession NS_AVAILABLE_IOS(11.0);
-
-/*!
- @property accessorySession
- 
- @abstract
-    Returns the shared instance of YKFAccessorySession to interact with a MFi accessory YubiKey.
- */
-@property (nonatomic, readonly, nonnull) YKFAccessoryConnection *accessorySession;
-
-@end
-
-
-/*!
- @class YubiKitManager
- 
- @abstract
-    Provides the main access point for YubiKit.
- */
-@interface YubiKitManager : NSObject<YubiKitManagerProtocol>
+@property(nonatomic, nonnull, readonly) YKFNFCOTPSession *otpSession API_AVAILABLE(ios(11.0));
 
 /*!
  @property shared
@@ -79,7 +54,7 @@
  @abstract
     YubiKitManager is a singleton and should be accessed only by using the shared instance provided by this property.
  */
-@property (class, nonatomic, readonly, nonnull) id<YubiKitManagerProtocol> shared;
+@property (class, nonatomic, readonly, nonnull) YubiKitManager *shared;
 
 /*
  Not available: use the shared property from YubiKitManager to retreive the shared single instance.

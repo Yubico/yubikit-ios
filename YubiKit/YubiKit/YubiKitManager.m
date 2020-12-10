@@ -25,6 +25,7 @@
 
 @property (nonatomic, readwrite) YKFNFCConnection *nfcSession NS_AVAILABLE_IOS(11.0);
 @property (nonatomic, readwrite) YKFAccessoryConnection *accessorySession;
+@property (nonatomic, readwrite) YKFNFCOTPSession *otpSession NS_AVAILABLE_IOS(11.0);
 
 @end
 
@@ -32,9 +33,9 @@
 
 @synthesize delegate;
 
-static id<YubiKitManagerProtocol> sharedInstance;
+static YubiKitManager *sharedInstance;
 
-+ (id<YubiKitManagerProtocol>)shared {
++ (YubiKitManager *)shared {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedInstance = [[YubiKitManager alloc] initOnce];
@@ -56,6 +57,10 @@ static id<YubiKitManagerProtocol> sharedInstance;
         YKFAccessoryConnection *accessoryConnection = [[YKFAccessoryConnection alloc] initWithAccessoryManager:accessoryManager configuration:configuration];
         accessoryConnection.delegate = self;
         self.accessorySession = accessoryConnection;
+        
+        if (@available(iOS 11.0, *)) {
+            self.otpSession = [[YKFNFCOTPSession alloc] initWithTokenParser:nil session:nil];
+        }
     }
     return self;
 }

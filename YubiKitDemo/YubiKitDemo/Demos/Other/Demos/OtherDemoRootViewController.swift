@@ -58,7 +58,7 @@ class OtherDemoRootViewController: UIViewController, YKFManagerDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         YubiKitManager.shared.delegate = self
-        YubiKitManager.shared.accessorySession.start()
+        YubiKitManager.shared.startAccessoryConnection()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
