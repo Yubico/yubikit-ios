@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="aww-dt-wuR">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -104,6 +103,37 @@
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <connections>
                                             <segue destination="b3H-V2-ocY" kind="show" id="nCr-xe-JhU"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection headerTitle="OATH" id="kJn-ld-WPb" userLabel="OATH">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="gray" accessoryType="disclosureIndicator" indentationWidth="17" reuseIdentifier="OtherDemosTableViewCell" textLabel="9kE-wv-pAj" detailTextLabel="wsW-ZO-ztX" style="IBUITableViewCellStyleSubtitle" id="0WN-68-v1S">
+                                        <rect key="frame" x="0.0" y="380" width="414" height="80"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="0WN-68-v1S" id="Vd8-Sm-qSb">
+                                            <rect key="frame" x="0.0" y="0.0" width="383" height="80"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="OATH Demo" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="9kE-wv-pAj">
+                                                    <rect key="frame" x="20" y="10" width="99.5" height="21.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="A basic demo showing how to calculate, add and delete OATH credentials on a YubiKey." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="wsW-ZO-ztX">
+                                                    <rect key="frame" x="20" y="34.5" width="318" height="33.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <connections>
+                                            <segue destination="ial-Ue-F8L" kind="show" id="fqg-g0-tKA"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>
@@ -414,6 +444,16 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wrh-1N-dwQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1497" y="538"/>
+        </scene>
+        <!--OATH Demo-->
+        <scene sceneID="1f9-Sh-86d">
+            <objects>
+                <hostingController id="ial-Ue-F8L" customClass="OATHHostingController" customModule="YubiKitDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" title="OATH Demo" id="5OF-aX-Hte"/>
+                </hostingController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tCA-1Y-6gW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1496" y="-155"/>
         </scene>
     </scenes>
     <resources>

@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		516BCE13253444AE0022F455 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516BCE12253444AD0022F455 /* StatusView.swift */; };
+		51DA98552587B0BA002DB82C /* CredentialListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA98542587B0BA002DB82C /* CredentialListView.swift */; };
+		51DA98592587B0D8002DB82C /* CredentialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA98582587B0D8002DB82C /* CredentialView.swift */; };
+		51DA985C2587B0F6002DB82C /* CredentialsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA985B2587B0F6002DB82C /* CredentialsProvider.swift */; };
+		51DA985F2587B10D002DB82C /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA985E2587B10D002DB82C /* Credential.swift */; };
+		51DA98642587B3CF002DB82C /* OATHHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA98632587B3CF002DB82C /* OATHHostingController.swift */; };
 		81DF8FD6237B530000737268 /* docassets in Resources */ = {isa = PBXBuildFile; fileRef = 81DF8FD4237B530000737268 /* docassets */; };
 		81DF8FD7237B530000737268 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 81DF8FD5237B530000737268 /* README.md */; };
 		81FA3C42231D52CB009C22AB /* CustomLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FA3C41231D52CB009C22AB /* CustomLogger.swift */; };
@@ -79,6 +84,11 @@
 
 /* Begin PBXFileReference section */
 		516BCE12253444AD0022F455 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
+		51DA98542587B0BA002DB82C /* CredentialListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialListView.swift; sourceTree = "<group>"; };
+		51DA98582587B0D8002DB82C /* CredentialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialView.swift; sourceTree = "<group>"; };
+		51DA985B2587B0F6002DB82C /* CredentialsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsProvider.swift; sourceTree = "<group>"; };
+		51DA985E2587B10D002DB82C /* Credential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credential.swift; sourceTree = "<group>"; };
+		51DA98632587B3CF002DB82C /* OATHHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OATHHostingController.swift; sourceTree = "<group>"; };
 		81DF8FD4237B530000737268 /* docassets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = docassets; sourceTree = "<group>"; };
 		81DF8FD5237B530000737268 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		81FA3C41231D52CB009C22AB /* CustomLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLogger.swift; sourceTree = "<group>"; };
@@ -164,6 +174,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		51DA98532587AFF9002DB82C /* OATH */ = {
+			isa = PBXGroup;
+			children = (
+				51DA98632587B3CF002DB82C /* OATHHostingController.swift */,
+				51DA98542587B0BA002DB82C /* CredentialListView.swift */,
+				51DA98582587B0D8002DB82C /* CredentialView.swift */,
+				51DA985B2587B0F6002DB82C /* CredentialsProvider.swift */,
+				51DA985E2587B10D002DB82C /* Credential.swift */,
+			);
+			path = OATH;
+			sourceTree = "<group>";
+		};
 		9519A50523279FDD0087EE8F /* ProgressHud */ = {
 			isa = PBXGroup;
 			children = (
@@ -215,6 +237,7 @@
 		953AB4FF21A43BB700A1823A /* Demos */ = {
 			isa = PBXGroup;
 			children = (
+				51DA98532587AFF9002DB82C /* OATH */,
 				955355622203177D00D633F3 /* RawDemoModel */,
 				95EAD56A220872EE00CD7C18 /* OtherDemoRootViewController.swift */,
 				953AB4FD21A4107900A1823A /* RawCommandServiceDemoViewController.swift */,
@@ -533,9 +556,11 @@
 				9576AF3D224AAE4C00CA7C1B /* WebAuthnCreateUserResponse.swift in Sources */,
 				95885AFB209B42F700828D02 /* NamedColors.swift in Sources */,
 				95A04D1822523336008E3036 /* AccessorySessionObserver.swift in Sources */,
+				51DA98642587B3CF002DB82C /* OATHHostingController.swift in Sources */,
 				957DE0EC2031B52D00B53569 /* OTPScanContainerView.swift in Sources */,
 				95885AF9209B266D00828D02 /* FIDO2ViewController.swift in Sources */,
 				951208FC2243C44B0037475A /* FIDO2PinInputController.swift in Sources */,
+				51DA985F2587B10D002DB82C /* Credential.swift in Sources */,
 				9528AC9420B5685E00513302 /* UIView+Extensions.swift in Sources */,
 				950A340F203EBA1B005C9754 /* AboutViewController.swift in Sources */,
 				95FAFACB202C483E00121DD5 /* OTPScanViewController.swift in Sources */,
@@ -560,6 +585,7 @@
 				95885AF7209B265000828D02 /* MFIKeyActionSheetView.swift in Sources */,
 				953407FB224BAEFA00BB9A0D /* WebAuthnRegisterFinishResponse.swift in Sources */,
 				9526E3CC21AFEE480003DAB8 /* MFIKeyInteractionViewController.swift in Sources */,
+				51DA985C2587B0F6002DB82C /* CredentialsProvider.swift in Sources */,
 				955DEB3B2099FB4C00259E71 /* WebServiceError.swift in Sources */,
 				950A340B203DC54E005C9754 /* QRCodeScanNotAvailableView.swift in Sources */,
 				95482973218B596600A3D8FA /* OTPUIResponder.swift in Sources */,
@@ -567,7 +593,9 @@
 				952C3C02203D64F60000A115 /* QRCodeScanContainerView.swift in Sources */,
 				95EAD56B220872EE00CD7C18 /* OtherDemoRootViewController.swift in Sources */,
 				953407F9224BAB4700BB9A0D /* WebAuthnRegisterFinishRequest.swift in Sources */,
+				51DA98592587B0D8002DB82C /* CredentialView.swift in Sources */,
 				95340807224E0F2A00BB9A0D /* WebAuthnRequest.swift in Sources */,
+				51DA98552587B0BA002DB82C /* CredentialListView.swift in Sources */,
 				95F767D0203337E900208B88 /* OTPScanResultsView.swift in Sources */,
 				95F767CC20331E4D00208B88 /* OTPWaitingScanView.swift in Sources */,
 				95AFD4AA22CB566500CDF8D3 /* DataExtensions.swift in Sources */,
@@ -726,7 +754,6 @@
 				DEVELOPMENT_TEAM = LQA3CS5MM7;
 				HEADER_SEARCH_PATHS = "../YubiKit/**";
 				INFOPLIST_FILE = YubiKitDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 2.9.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.YubiKitDemoApp;
@@ -748,7 +775,6 @@
 				DEVELOPMENT_TEAM = LQA3CS5MM7;
 				HEADER_SEARCH_PATHS = "../YubiKit/**";
 				INFOPLIST_FILE = YubiKitDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 2.9.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.YubiKitDemoApp;
