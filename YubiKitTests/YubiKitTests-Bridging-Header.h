@@ -9,5 +9,6 @@
 #define YubiKitTests_Bridging_Header_h
 
 #import <YubiKit.h>
+#import "NSDate+Utils.h"
 
 #endif /* YubiKitTests_Bridging_Header_h */
