@@ -65,6 +65,10 @@ static YubiKitManager *sharedInstance;
     return self;
 }
 
+//- (void)setDelegate:(id<YKFManagerDelegate>)delegate {
+//    self.delegate = delegate;
+//}
+
 - (void)startAccessoryConnection {
     [self.accessorySession start];
 }
@@ -82,28 +86,20 @@ static YubiKitManager *sharedInstance;
 }
 
 - (void)didConnectAccessory:(YKFAccessoryConnection *_Nonnull)connection {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegate didConnectAccessory:connection];
-    });
+    [self.delegate didConnectAccessory:connection];
 }
 
 - (void)didDisconnectAccessory:(YKFAccessoryConnection *_Nonnull)connection error:(NSError * _Nullable)error {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegate didDisconnectAccessory:connection error:error];
-    });
+    [self.delegate didDisconnectAccessory:connection error:error];
 }
 
 
 - (void)didConnectNFC:(YKFNFCConnection *_Nonnull)connection {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegate didConnectNFC:connection];
-    });
+    [self.delegate didConnectNFC:connection];
 }
 
 - (void)didDisconnectNFC:(YKFNFCConnection *_Nonnull)connection error:(NSError * _Nullable)error {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegate didDisconnectNFC:connection error:error];
-    });
+    [self.delegate didDisconnectNFC:connection error:error];
 }
 
 @end

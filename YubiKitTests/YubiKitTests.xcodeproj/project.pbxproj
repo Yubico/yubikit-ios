@@ -1,0 +1,502 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		510339CD25890FA700EB3692 /* HostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510339CC25890FA700EB3692 /* HostApp.swift */; };
+		510339D125890FA800EB3692 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 510339D025890FA800EB3692 /* Assets.xcassets */; };
+		510339D425890FA800EB3692 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 510339D325890FA800EB3692 /* Preview Assets.xcassets */; };
+		510339E1258910E900EB3692 /* libYubiKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 510339E0258910E900EB3692 /* libYubiKit.a */; };
+		510339EE2589130400EB3692 /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510339ED2589130400EB3692 /* SessionTests.swift */; };
+		516329F4258A20A20043CBB5 /* YubiKeyConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516329F3258A20A20043CBB5 /* YubiKeyConnection.swift */; };
+		516329FA258A213C0043CBB5 /* XCTestCase+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516329F9258A213C0043CBB5 /* XCTestCase+Extensions.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		510339F02589130400EB3692 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 510339C125890FA700EB3692 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 510339C825890FA700EB3692;
+			remoteInfo = YubiKitTests;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		510339C925890FA700EB3692 /* TestHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		510339CC25890FA700EB3692 /* HostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostApp.swift; sourceTree = "<group>"; };
+		510339D025890FA800EB3692 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		510339D325890FA800EB3692 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		510339D525890FA800EB3692 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		510339DC2589109200EB3692 /* YubiKitTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YubiKitTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		510339E0258910E900EB3692 /* libYubiKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libYubiKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		510339EB2589130400EB3692 /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		510339ED2589130400EB3692 /* SessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
+		510339EF2589130400EB3692 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		51033A032589143700EB3692 /* YubiKitTests.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YubiKitTests.entitlements; sourceTree = "<group>"; };
+		516329F3258A20A20043CBB5 /* YubiKeyConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YubiKeyConnection.swift; sourceTree = "<group>"; };
+		516329F9258A213C0043CBB5 /* XCTestCase+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extensions.swift"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		510339C625890FA700EB3692 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				510339E1258910E900EB3692 /* libYubiKit.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		510339E82589130400EB3692 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		510339C025890FA700EB3692 = {
+			isa = PBXGroup;
+			children = (
+				51033A032589143700EB3692 /* YubiKitTests.entitlements */,
+				510339DC2589109200EB3692 /* YubiKitTests-Bridging-Header.h */,
+				510339CB25890FA700EB3692 /* HostApp */,
+				510339EC2589130400EB3692 /* Tests */,
+				510339CA25890FA700EB3692 /* Products */,
+				510339DF258910E900EB3692 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		510339CA25890FA700EB3692 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				510339C925890FA700EB3692 /* TestHost.app */,
+				510339EB2589130400EB3692 /* Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		510339CB25890FA700EB3692 /* HostApp */ = {
+			isa = PBXGroup;
+			children = (
+				510339CC25890FA700EB3692 /* HostApp.swift */,
+				510339D025890FA800EB3692 /* Assets.xcassets */,
+				510339D525890FA800EB3692 /* Info.plist */,
+				510339D225890FA800EB3692 /* Preview Content */,
+			);
+			path = HostApp;
+			sourceTree = "<group>";
+		};
+		510339D225890FA800EB3692 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				510339D325890FA800EB3692 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		510339DF258910E900EB3692 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				510339E0258910E900EB3692 /* libYubiKit.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		510339EC2589130400EB3692 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				516329F2258A20840043CBB5 /* Utilities */,
+				510339ED2589130400EB3692 /* SessionTests.swift */,
+				510339EF2589130400EB3692 /* Info.plist */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		516329F2258A20840043CBB5 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				516329F3258A20A20043CBB5 /* YubiKeyConnection.swift */,
+				516329F9258A213C0043CBB5 /* XCTestCase+Extensions.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		510339C825890FA700EB3692 /* TestHost */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 510339D825890FA800EB3692 /* Build configuration list for PBXNativeTarget "TestHost" */;
+			buildPhases = (
+				510339C525890FA700EB3692 /* Sources */,
+				510339C625890FA700EB3692 /* Frameworks */,
+				510339C725890FA700EB3692 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TestHost;
+			productName = YubiKitTests;
+			productReference = 510339C925890FA700EB3692 /* TestHost.app */;
+			productType = "com.apple.product-type.application";
+		};
+		510339EA2589130400EB3692 /* Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 510339F22589130400EB3692 /* Build configuration list for PBXNativeTarget "Tests" */;
+			buildPhases = (
+				510339E72589130400EB3692 /* Sources */,
+				510339E82589130400EB3692 /* Frameworks */,
+				510339E92589130400EB3692 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				510339F12589130400EB3692 /* PBXTargetDependency */,
+			);
+			name = Tests;
+			productName = UnitTests;
+			productReference = 510339EB2589130400EB3692 /* Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		510339C125890FA700EB3692 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1230;
+				LastUpgradeCheck = 1230;
+				TargetAttributes = {
+					510339C825890FA700EB3692 = {
+						CreatedOnToolsVersion = 12.3;
+					};
+					510339EA2589130400EB3692 = {
+						CreatedOnToolsVersion = 12.3;
+						TestTargetID = 510339C825890FA700EB3692;
+					};
+				};
+			};
+			buildConfigurationList = 510339C425890FA700EB3692 /* Build configuration list for PBXProject "YubiKitTests" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 510339C025890FA700EB3692;
+			productRefGroup = 510339CA25890FA700EB3692 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				510339C825890FA700EB3692 /* TestHost */,
+				510339EA2589130400EB3692 /* Tests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		510339C725890FA700EB3692 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				510339D425890FA800EB3692 /* Preview Assets.xcassets in Resources */,
+				510339D125890FA800EB3692 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		510339E92589130400EB3692 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		510339C525890FA700EB3692 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				510339CD25890FA700EB3692 /* HostApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		510339E72589130400EB3692 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				516329F4258A20A20043CBB5 /* YubiKeyConnection.swift in Sources */,
+				516329FA258A213C0043CBB5 /* XCTestCase+Extensions.swift in Sources */,
+				510339EE2589130400EB3692 /* SessionTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		510339F12589130400EB3692 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 510339C825890FA700EB3692 /* TestHost */;
+			targetProxy = 510339F02589130400EB3692 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		510339D625890FA800EB3692 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		510339D725890FA800EB3692 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		510339D925890FA800EB3692 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = YubiKitTests.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"HostApp/Preview Content\"";
+				DEVELOPMENT_TEAM = JQ24ZDH48X;
+				ENABLE_PREVIEWS = YES;
+				HEADER_SEARCH_PATHS = "../YubiKit/**";
+				INFOPLIST_FILE = HostApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.ios.YubiKitTestHost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "YubiKitTests-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		510339DA25890FA800EB3692 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = YubiKitTests.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"HostApp/Preview Content\"";
+				DEVELOPMENT_TEAM = JQ24ZDH48X;
+				ENABLE_PREVIEWS = YES;
+				HEADER_SEARCH_PATHS = "../YubiKit/**";
+				INFOPLIST_FILE = HostApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.ios.YubiKitTestHost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "YubiKitTests-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		510339F32589130400EB3692 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JQ24ZDH48X;
+				HEADER_SEARCH_PATHS = "../YubiKit/**";
+				INFOPLIST_FILE = Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.ios.Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "YubiKitTests-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TestHost.app/TestHost";
+			};
+			name = Debug;
+		};
+		510339F42589130400EB3692 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JQ24ZDH48X;
+				HEADER_SEARCH_PATHS = "../YubiKit/**";
+				INFOPLIST_FILE = Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.ios.Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "YubiKitTests-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TestHost.app/TestHost";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		510339C425890FA700EB3692 /* Build configuration list for PBXProject "YubiKitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				510339D625890FA800EB3692 /* Debug */,
+				510339D725890FA800EB3692 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		510339D825890FA800EB3692 /* Build configuration list for PBXNativeTarget "TestHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				510339D925890FA800EB3692 /* Debug */,
+				510339DA25890FA800EB3692 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		510339F22589130400EB3692 /* Build configuration list for PBXNativeTarget "Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				510339F32589130400EB3692 /* Debug */,
+				510339F42589130400EB3692 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 510339C125890FA700EB3692 /* Project object */;
+}
