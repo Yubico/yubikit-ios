@@ -12,6 +12,8 @@
 		510339D425890FA800EB3692 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 510339D325890FA800EB3692 /* Preview Assets.xcassets */; };
 		510339E1258910E900EB3692 /* libYubiKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 510339E0258910E900EB3692 /* libYubiKit.a */; };
 		510339EE2589130400EB3692 /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510339ED2589130400EB3692 /* SessionTests.swift */; };
+		5105C046258A4A4800278F7F /* OATHTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5105C045258A4A4800278F7F /* OATHTests.swift */; };
+		5105C04D258A541900278F7F /* NSDate+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 5105C04C258A541900278F7F /* NSDate+Utils.m */; };
 		516329F4258A20A20043CBB5 /* YubiKeyConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516329F3258A20A20043CBB5 /* YubiKeyConnection.swift */; };
 		516329FA258A213C0043CBB5 /* XCTestCase+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516329F9258A213C0043CBB5 /* XCTestCase+Extensions.swift */; };
 /* End PBXBuildFile section */
@@ -38,6 +40,9 @@
 		510339ED2589130400EB3692 /* SessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
 		510339EF2589130400EB3692 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		51033A032589143700EB3692 /* YubiKitTests.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YubiKitTests.entitlements; sourceTree = "<group>"; };
+		5105C045258A4A4800278F7F /* OATHTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OATHTests.swift; sourceTree = "<group>"; };
+		5105C04B258A53FF00278F7F /* NSDate+Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDate+Utils.h"; sourceTree = "<group>"; };
+		5105C04C258A541900278F7F /* NSDate+Utils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSDate+Utils.m"; sourceTree = "<group>"; };
 		516329F3258A20A20043CBB5 /* YubiKeyConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YubiKeyConnection.swift; sourceTree = "<group>"; };
 		516329F9258A213C0043CBB5 /* XCTestCase+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -114,6 +119,7 @@
 			children = (
 				516329F2258A20840043CBB5 /* Utilities */,
 				510339ED2589130400EB3692 /* SessionTests.swift */,
+				5105C045258A4A4800278F7F /* OATHTests.swift */,
 				510339EF2589130400EB3692 /* Info.plist */,
 			);
 			path = Tests;
@@ -124,6 +130,8 @@
 			children = (
 				516329F3258A20A20043CBB5 /* YubiKeyConnection.swift */,
 				516329F9258A213C0043CBB5 /* XCTestCase+Extensions.swift */,
+				5105C04B258A53FF00278F7F /* NSDate+Utils.h */,
+				5105C04C258A541900278F7F /* NSDate+Utils.m */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -236,8 +244,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				516329F4258A20A20043CBB5 /* YubiKeyConnection.swift in Sources */,
+				5105C046258A4A4800278F7F /* OATHTests.swift in Sources */,
 				516329FA258A213C0043CBB5 /* XCTestCase+Extensions.swift in Sources */,
 				510339EE2589130400EB3692 /* SessionTests.swift in Sources */,
+				5105C04D258A541900278F7F /* NSDate+Utils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
