@@ -14,6 +14,7 @@
 		510339EE2589130400EB3692 /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510339ED2589130400EB3692 /* SessionTests.swift */; };
 		5105C046258A4A4800278F7F /* OATHTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5105C045258A4A4800278F7F /* OATHTests.swift */; };
 		5105C04D258A541900278F7F /* NSDate+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 5105C04C258A541900278F7F /* NSDate+Utils.m */; };
+		5105C053258B482800278F7F /* ManagementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5105C052258B482800278F7F /* ManagementTests.swift */; };
 		516329F4258A20A20043CBB5 /* YubiKeyConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516329F3258A20A20043CBB5 /* YubiKeyConnection.swift */; };
 		516329FA258A213C0043CBB5 /* XCTestCase+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516329F9258A213C0043CBB5 /* XCTestCase+Extensions.swift */; };
 /* End PBXBuildFile section */
@@ -43,6 +44,7 @@
 		5105C045258A4A4800278F7F /* OATHTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OATHTests.swift; sourceTree = "<group>"; };
 		5105C04B258A53FF00278F7F /* NSDate+Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDate+Utils.h"; sourceTree = "<group>"; };
 		5105C04C258A541900278F7F /* NSDate+Utils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSDate+Utils.m"; sourceTree = "<group>"; };
+		5105C052258B482800278F7F /* ManagementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagementTests.swift; sourceTree = "<group>"; };
 		516329F3258A20A20043CBB5 /* YubiKeyConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YubiKeyConnection.swift; sourceTree = "<group>"; };
 		516329F9258A213C0043CBB5 /* XCTestCase+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -119,6 +121,7 @@
 			children = (
 				516329F2258A20840043CBB5 /* Utilities */,
 				510339ED2589130400EB3692 /* SessionTests.swift */,
+				5105C052258B482800278F7F /* ManagementTests.swift */,
 				5105C045258A4A4800278F7F /* OATHTests.swift */,
 				510339EF2589130400EB3692 /* Info.plist */,
 			);
@@ -243,6 +246,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5105C053258B482800278F7F /* ManagementTests.swift in Sources */,
 				516329F4258A20A20043CBB5 /* YubiKeyConnection.swift in Sources */,
 				5105C046258A4A4800278F7F /* OATHTests.swift in Sources */,
 				516329FA258A213C0043CBB5 /* XCTestCase+Extensions.swift in Sources */,
