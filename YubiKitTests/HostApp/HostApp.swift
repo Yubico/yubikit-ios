@@ -23,6 +23,7 @@ struct HostApp: App {
             Text("Running YubiKit Tests...")
                 .bold()
                 .padding(20)
+            Spacer().frame(height: 150)
         }
     }
 }
