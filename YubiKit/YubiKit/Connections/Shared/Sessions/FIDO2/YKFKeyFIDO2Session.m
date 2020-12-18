@@ -320,7 +320,6 @@ typedef void (^YKFKeyFIDO2SessionClientPinSharedSecretCompletionBlock)
     YKFParameterAssertReturn(rp);
     YKFParameterAssertReturn(user);
     YKFParameterAssertReturn(pubKeyCredParams);
-    YKFParameterAssertReturn(options);
     YKFParameterAssertReturn(completion);
 
     // Attach the PIN authentication if the pinToken is present.

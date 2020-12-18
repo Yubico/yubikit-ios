@@ -17,9 +17,6 @@
 NSString* const YKFKeySessionErrorDomain = @"YubiKeySessionError";
 
 #pragma mark - Error Descriptions
-
-static NSString* const YKFKeySessionErrorStatusErrorDescription = @"Status error returned by the key.";
-
 static NSString* const YKFKeySessionErrorReadTimeoutDescription = @"Unable to read from key. Operation timeout.";
 static NSString* const YKFKeySessionErrorWriteTimeoutDescription = @"Unable to write to the key. Operation timeout.";
 static NSString* const YKFKeySessionErrorTouchTimeoutDescription = @"Operation ended. User didn't touch the key.";
@@ -43,7 +40,7 @@ static NSDictionary *errorMap = nil;
     
     NSString *errorDescription = errorMap[@(code)];
     if (!errorDescription) {
-        errorDescription = YKFKeySessionErrorStatusErrorDescription;
+        errorDescription = [[NSString alloc] initWithFormat:@"Status error 0x%2lX returned by the key.", (unsigned long)code];
     }
     
     return [[YKFKeySessionError alloc] initWithCode:code message:errorDescription];
