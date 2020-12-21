@@ -30,7 +30,7 @@ extension XCTestCase {
             }
             completion(connection, testCompletion)
         }
-        waitForExpectations(timeout: 20.0) { error in
+        waitForExpectations(timeout: 10.0) { error in
             // If we get an error then the expectation has timed out and we need to stop all connections
             if error != nil {
                 YubiKitManager.shared.stopAccessoryConnection()
