@@ -8,9 +8,6 @@
       location = "group:YubiKitTests/YubiKitTests.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:YubiKitFullStackTests/YubiKitFullStackTests.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:YubiKitDemo/YubiKitDemo.xcodeproj">
    </FileRef>
 </Workspace>
