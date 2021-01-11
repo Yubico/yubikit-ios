@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import "YKFKeyFIDO2ClientPinResponse.h"
-#import "YKFCBORDEcoder.h"
+#import "YKFCBORDecoder.h"
 #import "YKFAssert.h"
 
 typedef NS_ENUM(NSUInteger, YKFKeyFIDO2ClientPinResponseKey) {

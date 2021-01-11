@@ -14,7 +14,7 @@
 
 #import "YKFKeyFIDO2GetAssertionResponse.h"
 #import "YKFKeyFIDO2GetAssertionResponse+Private.h"
-#import "YKFCBORDEcoder.h"
+#import "YKFCBORDecoder.h"
 #import "YKFFIDO2Type.h"
 #import "YKFAssert.h"
 
