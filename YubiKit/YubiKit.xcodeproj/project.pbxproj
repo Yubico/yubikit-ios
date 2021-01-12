@@ -113,7 +113,7 @@
 		9578A61521F20BA400349DCF /* YKFFIDO2MakeCredentialAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 9578A61421F20BA400349DCF /* YKFFIDO2MakeCredentialAPDU.m */; };
 		957BDF4F21F5C3A700899B5B /* YKFKeyFIDO2MakeCredentialResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 957BDF4E21F5C3A700899B5B /* YKFKeyFIDO2MakeCredentialResponse.m */; };
 		957BDF5121F5E94700899B5B /* YKFKeyFIDO2MakeCredentialResponse.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 957BDF4D21F5C3A700899B5B /* YKFKeyFIDO2MakeCredentialResponse.h */; };
-		957D869921B825B4004ABF86 /* YKFKeyRawCommandServiceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 957D869821B825B4004ABF86 /* YKFKeyRawCommandServiceTests.m */; };
+		957D869921B825B4004ABF86 /* YKFSmartCardInterfaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 957D869821B825B4004ABF86 /* YKFSmartCardInterfaceTests.m */; };
 		9581395421591DE1008558F3 /* YKFSelectOATHApplicationAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 9581395321591DE1008558F3 /* YKFSelectOATHApplicationAPDU.m */; };
 		9581395921592870008558F3 /* YKFKeyOATHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 9581395821592870008558F3 /* YKFKeyOATHSession.m */; };
 		958491732130286900D7E2A3 /* YKFAccessoryConnectionConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 958491722130286900D7E2A3 /* YKFAccessoryConnectionConfiguration.m */; };
@@ -446,7 +446,7 @@
 		957BDF4D21F5C3A700899B5B /* YKFKeyFIDO2MakeCredentialResponse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyFIDO2MakeCredentialResponse.h; sourceTree = "<group>"; };
 		957BDF4E21F5C3A700899B5B /* YKFKeyFIDO2MakeCredentialResponse.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyFIDO2MakeCredentialResponse.m; sourceTree = "<group>"; };
 		957BDF5021F5D4A300899B5B /* YKFKeyFIDO2MakeCredentialResponse+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFKeyFIDO2MakeCredentialResponse+Private.h"; sourceTree = "<group>"; };
-		957D869821B825B4004ABF86 /* YKFKeyRawCommandServiceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFKeyRawCommandServiceTests.m; sourceTree = "<group>"; };
+		957D869821B825B4004ABF86 /* YKFSmartCardInterfaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFSmartCardInterfaceTests.m; sourceTree = "<group>"; };
 		9581395221591DE1008558F3 /* YKFSelectOATHApplicationAPDU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSelectOATHApplicationAPDU.h; sourceTree = "<group>"; };
 		9581395321591DE1008558F3 /* YKFSelectOATHApplicationAPDU.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFSelectOATHApplicationAPDU.m; sourceTree = "<group>"; };
 		958139572159286F008558F3 /* YKFKeyOATHSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFKeyOATHSession.h; sourceTree = "<group>"; };
@@ -833,7 +833,7 @@
 				95B8547B21E628BE000D6D7A /* YKFCBOREncoderTests.m */,
 				95EF75BD213FE9F200059C79 /* YKFAccessoryConnectionControllerTests.m */,
 				9529CBBE2149105F0041D2F8 /* YKFAccessoryDescriptionTests.m */,
-				957D869821B825B4004ABF86 /* YKFKeyRawCommandServiceTests.m */,
+				957D869821B825B4004ABF86 /* YKFSmartCardInterfaceTests.m */,
 				9529CBB9214903FA0041D2F8 /* YKFAccessoryConnectionConfigurationTests.m */,
 				9529CBC0214927D80041D2F8 /* YKFKeyU2FServiceTests.m */,
 				956884C020AAD98500E0F72C /* YKFNFCOTPServiceTests.m */,
@@ -1374,7 +1374,7 @@
 				9564333620A5C03C007621BD /* YKFOTPTokenParserTests.m in Sources */,
 				956884C120AAD98500E0F72C /* YKFNFCOTPServiceTests.m in Sources */,
 				9529CBC1214927D80041D2F8 /* YKFKeyU2FServiceTests.m in Sources */,
-				957D869921B825B4004ABF86 /* YKFKeyRawCommandServiceTests.m in Sources */,
+				957D869921B825B4004ABF86 /* YKFSmartCardInterfaceTests.m in Sources */,
 				95EF75C3213FEF0500059C79 /* YKFTestCase.m in Sources */,
 				95EF75BE213FE9F200059C79 /* YKFAccessoryConnectionControllerTests.m in Sources */,
 				950C70092298095F00E48458 /* YubiKitDeviceCapabilitiesTests.m in Sources */,
