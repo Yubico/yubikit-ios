@@ -28,7 +28,7 @@ import UIKit
  This is the preffered way of executing raw commands against the key and it should
  be used instead of the PC/SC interface when possible.
  */
-class RawCommandServiceDemoViewController: OtherDemoRootViewController {
+class SmartCardInterfaceDemoViewController: OtherDemoRootViewController {
     
     // MARK: - Outlets
     @IBOutlet var logTextView: UITextView!
