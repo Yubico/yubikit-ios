@@ -41,7 +41,7 @@
 		95340803224CFA9100BB9A0D /* WebAuthnAuthenticateFinishResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95340802224CFA9100BB9A0D /* WebAuthnAuthenticateFinishResponse.swift */; };
 		95340807224E0F2A00BB9A0D /* WebAuthnRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95340806224E0F2A00BB9A0D /* WebAuthnRequest.swift */; };
 		95340809224E3D9E00BB9A0D /* WebAuthnResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95340808224E3D9E00BB9A0D /* WebAuthnResponse.swift */; };
-		953AB4FE21A4107900A1823A /* RawCommandServiceDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 953AB4FD21A4107900A1823A /* RawCommandServiceDemoViewController.swift */; };
+		953AB4FE21A4107900A1823A /* SmartCardInterfaceDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 953AB4FD21A4107900A1823A /* SmartCardInterfaceDemoViewController.swift */; };
 		953AB50121A44F0100A1823A /* RawDemoResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 953AB50021A44F0100A1823A /* RawDemoResponseParser.swift */; };
 		953AB50321A4519400A1823A /* RawDemoSecCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 953AB50221A4519400A1823A /* RawDemoSecCertificate.swift */; };
 		95482973218B596600A3D8FA /* OTPUIResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95482972218B596600A3D8FA /* OTPUIResponder.swift */; };
@@ -115,7 +115,7 @@
 		95340802224CFA9100BB9A0D /* WebAuthnAuthenticateFinishResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnAuthenticateFinishResponse.swift; sourceTree = "<group>"; };
 		95340806224E0F2A00BB9A0D /* WebAuthnRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnRequest.swift; sourceTree = "<group>"; };
 		95340808224E3D9E00BB9A0D /* WebAuthnResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnResponse.swift; sourceTree = "<group>"; };
-		953AB4FD21A4107900A1823A /* RawCommandServiceDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawCommandServiceDemoViewController.swift; sourceTree = "<group>"; };
+		953AB4FD21A4107900A1823A /* SmartCardInterfaceDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartCardInterfaceDemoViewController.swift; sourceTree = "<group>"; };
 		953AB50021A44F0100A1823A /* RawDemoResponseParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDemoResponseParser.swift; sourceTree = "<group>"; };
 		953AB50221A4519400A1823A /* RawDemoSecCertificate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDemoSecCertificate.swift; sourceTree = "<group>"; };
 		95482972218B596600A3D8FA /* OTPUIResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTPUIResponder.swift; sourceTree = "<group>"; };
@@ -240,7 +240,7 @@
 				51DA98532587AFF9002DB82C /* OATH */,
 				955355622203177D00D633F3 /* RawDemoModel */,
 				95EAD56A220872EE00CD7C18 /* OtherDemoRootViewController.swift */,
-				953AB4FD21A4107900A1823A /* RawCommandServiceDemoViewController.swift */,
+				953AB4FD21A4107900A1823A /* SmartCardInterfaceDemoViewController.swift */,
 				955355602203153000D633F3 /* FIDO2DemoViewController.swift */,
 				95C70DDE224A2FE70024E220 /* U2FDemoViewController.swift */,
 			);
@@ -568,7 +568,7 @@
 				95F767E2203455FC00208B88 /* OTPDetailsViewController.swift in Sources */,
 				81FA3C42231D52CB009C22AB /* CustomLogger.swift in Sources */,
 				952C3BFE203C73FB0000A115 /* QRCodeScanWaitingView.swift in Sources */,
-				953AB4FE21A4107900A1823A /* RawCommandServiceDemoViewController.swift in Sources */,
+				953AB4FE21A4107900A1823A /* SmartCardInterfaceDemoViewController.swift in Sources */,
 				95DF4A972199B5D10025A152 /* DemoCustomTabBar.swift in Sources */,
 				95340809224E3D9E00BB9A0D /* WebAuthnResponse.swift in Sources */,
 				9519A50823279FF00087EE8F /* ProgressHudView.swift in Sources */,
