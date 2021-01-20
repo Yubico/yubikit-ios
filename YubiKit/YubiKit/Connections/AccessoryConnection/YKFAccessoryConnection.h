@@ -16,9 +16,9 @@
 #import "YKFAccessoryDescription.h"
 
 #import "YKFConnectionProtocol.h"
-#import "YKFKeyU2FSession.h"
-#import "YKFKeyFIDO2Session.h"
-#import "YKFKeyOATHSession.h"
+#import "YKFU2FSession.h"
+#import "YKFFIDO2Session.h"
+#import "YKFOATHSession.h"
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
-//@property (nonatomic, readonly, nullable) id<YKFKeyFIDO2SessionProtocol> fido2Service;
+//@property (nonatomic, readonly, nullable) id<YKFFIDO2SessionProtocol> fido2Service;
 
 /*!
  @property rawCommandService
@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
-//@property (nonatomic, readonly, nullable) id<YKFKeyRawCommandSessionProtocol> rawCommandService;
+//@property (nonatomic, readonly, nullable) id<YKFRawCommandSessionProtocol> rawCommandService;
 
 /*!
  @method startSession

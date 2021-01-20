@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     pinProtocol:(NSUInteger)pinProtocol
                                         options:(NSDictionary * _Nullable)options NS_DESIGNATED_INITIALIZER;
 
-//- (nullable instancetype)initWithRequest:(YKFKeyFIDO2MakeCredentialRequest *)request NS_DESIGNATED_INITIALIZER;
+//- (nullable instancetype)initWithRequest:(YKFFIDO2MakeCredentialRequest *)request NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

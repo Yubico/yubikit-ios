@@ -19,8 +19,8 @@
 #import "YKFNSMutableDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
 
-static const UInt8 YKFKeyOATHSetCodeAPDUChallengeTag = 0x74;
-static const UInt8 YKFKeyOATHSetCodeAPDUResponseTag = 0x75;
+static const UInt8 YKFOATHSetCodeAPDUChallengeTag = 0x74;
+static const UInt8 YKFOATHSetCodeAPDUResponseTag = 0x75;
 
 @implementation YKFOATHUnlockAPDU
 
@@ -36,7 +36,7 @@ static const UInt8 YKFKeyOATHSetCodeAPDUResponseTag = 0x75;
     // Response (hmac of the select challenge)
     
     NSData *response = [challenge ykf_oathHMACWithKey:keyData];
-    [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUResponseTag data:response];
+    [data ykf_appendEntryWithTag:YKFOATHSetCodeAPDUResponseTag data:response];
         
     // Challenge (random bytes)
     
@@ -45,7 +45,7 @@ static const UInt8 YKFKeyOATHSetCodeAPDUResponseTag = 0x75;
     NSData *randomChallenge = [NSData dataWithBytes:challengeBuffer length:8];
     
     self.expectedChallengeData = [randomChallenge ykf_oathHMACWithKey:keyData];
-    [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUChallengeTag data:randomChallenge];
+    [data ykf_appendEntryWithTag:YKFOATHSetCodeAPDUChallengeTag data:randomChallenge];
         
     return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHValidate p1:0 p2:0 data:data type:YKFAPDUTypeShort];
 }

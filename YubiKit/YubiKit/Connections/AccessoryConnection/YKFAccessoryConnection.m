@@ -22,7 +22,7 @@
 #import "YubiKitDeviceCapabilities.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFAccessoryConnectionConfiguration.h"
-#import "YKFKeyCommandConfiguration.h"
+#import "YKFCommandConfiguration.h"
 #import "YKFAccessoryDescription.h"
 #import "YKFKVOObservation.h"
 #import "YKFBlockMacros.h"
@@ -31,20 +31,20 @@
 #import "YKFAssert.h"
 
 #import "YKFSmartCardInterface.h"
-#import "YKFKeyOATHSession+Private.h"
-#import "YKFKeyU2FSession+Private.h"
-#import "YKFKeyFIDO2Session+Private.h"
-#import "YKFKeyChallengeResponseSession.h"
-#import "YKFKeyChallengeResponseSession+Private.h"
+#import "YKFOATHSession+Private.h"
+#import "YKFU2FSession+Private.h"
+#import "YKFFIDO2Session+Private.h"
+#import "YKFChallengeResponseSession.h"
+#import "YKFChallengeResponseSession+Private.h"
 #import "YKFAccessoryDescription+Private.h"
-#import "YKFKeyManagementSession+Private.h"
-#import "YKFKeyManagementSession.h"
+#import "YKFManagementSession+Private.h"
+#import "YKFManagementSession.h"
 
 #import "EAAccessory+Testing.h"
 #import "EASession+Testing.h"
 
-#import "YKFKeySessionError.h"
-#import "YKFKeySessionError+Private.h"
+#import "YKFSessionError.h"
+#import "YKFSessionError+Private.h"
 
 #pragma mark - Private Block Types
 
@@ -76,7 +76,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 @property (nonatomic) id<YKFEAAccessoryProtocol> accessory;
 @property (nonatomic) id<YKFEASessionProtocol> session;
 
-@property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
+@property (nonatomic) id<YKFConnectionControllerProtocol> connectionController;
 
 // Services
 
@@ -128,8 +128,8 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 - (void)oathSession:(OATHSession _Nonnull)callback {
     [self.currentSession clearSessionState];
-    [YKFKeyOATHSession sessionWithConnectionController:self.connectionController
-                                            completion:^(YKFKeyOATHSession *_Nullable session, NSError * _Nullable error) {
+    [YKFOATHSession sessionWithConnectionController:self.connectionController
+                                            completion:^(YKFOATHSession *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
     }];
@@ -137,8 +137,8 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 - (void)u2fSession:(U2FSession _Nonnull)callback {
     [self.currentSession clearSessionState];
-    [YKFKeyU2FSession sessionWithConnectionController:self.connectionController
-                                            completion:^(YKFKeyU2FSession *_Nullable session, NSError * _Nullable error) {
+    [YKFU2FSession sessionWithConnectionController:self.connectionController
+                                            completion:^(YKFU2FSession *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
     }];
@@ -146,8 +146,8 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 - (void)fido2Session:(FIDO2Session _Nonnull)callback {
     [self.currentSession clearSessionState];
-    [YKFKeyFIDO2Session sessionWithConnectionController:self.connectionController
-                                            completion:^(YKFKeyFIDO2Session *_Nullable session, NSError * _Nullable error) {
+    [YKFFIDO2Session sessionWithConnectionController:self.connectionController
+                                            completion:^(YKFFIDO2Session *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
     }];
@@ -155,8 +155,8 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 - (void)challengeResponseSession:(ChallengeResponseSession _Nonnull)callback {
     [self.currentSession clearSessionState];
-    [YKFKeyChallengeResponseSession sessionWithConnectionController:self.connectionController
-                                                         completion:^(YKFKeyChallengeResponseSession *_Nullable session, NSError * _Nullable error) {
+    [YKFChallengeResponseSession sessionWithConnectionController:self.connectionController
+                                                         completion:^(YKFChallengeResponseSession *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
     }];
@@ -164,8 +164,8 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 - (void)managementSession:(ManagementSession _Nonnull)callback {
     [self.currentSession clearSessionState];
-    [YKFKeyManagementSession sessionWithConnectionController:self.connectionController
-                                                  completion:^(YKFKeyManagementSession *_Nullable session, NSError * _Nullable error) {
+    [YKFManagementSession sessionWithConnectionController:self.connectionController
+                                                  completion:^(YKFManagementSession *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
     }];
@@ -230,7 +230,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     
     [self start];
     
-    YKFKeyCommandConfiguration *configuration = [YKFKeyCommandConfiguration defaultCommandCofiguration];
+    YKFCommandConfiguration *configuration = [YKFCommandConfiguration defaultCommandCofiguration];
     dispatch_semaphore_wait(openSemaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(configuration.commandTimeout * NSEC_PER_SEC)));
     
     observation = nil;
@@ -277,7 +277,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     
     [self stop];
     
-    YKFKeyCommandConfiguration *configuration = [YKFKeyCommandConfiguration defaultCommandCofiguration];
+    YKFCommandConfiguration *configuration = [YKFCommandConfiguration defaultCommandCofiguration];
     dispatch_semaphore_wait(closeSemaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(configuration.commandTimeout * NSEC_PER_SEC)));
     
     observation = nil;
@@ -347,7 +347,6 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 #pragma mark - Session state
 
 - (void)setConnectionState:(YKFAccessoryConnectionState)sessionState {
-    NSLog(@"setConnectionState: %lu", sessionState);
     if (sessionState == _connectionState) {
         return;
     }

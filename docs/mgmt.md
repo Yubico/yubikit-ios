@@ -1,8 +1,8 @@
 ## Using YubiKey Management Service 
 
-This `YKFKeyManagementService`  is using  `YKFKeyRawCommandService`  to communicate with YubiKey. How to implement such service yourself using  `YKFKeyRawCommandService`  read [here](../docs/raw.md)
+This `YKFManagementService`  is using  `YKFRawCommandService`  to communicate with YubiKey. How to implement such service yourself using  `YKFRawCommandService`  read [here](../docs/raw.md)
 
-The `YKFKeyManagementService` provides 2 methods:
+The `YKFManagementService` provides 2 methods:
 1) reading request that provides you `YKFManagementInterfaceConfiguration` YubiKey within reading response. 
 2) writing request that accepts the same  `YKFManagementInterfaceConfiguration` with updated flags on properties that needs to be tweaked (enabled/disabled)
 
@@ -12,8 +12,8 @@ The `YKFKeyManagementService` provides 2 methods:
  #import <YubiKit/YubiKit.h>
   
  ...
- YKFKeyManagementService *service = [[YKFKeyManagementService alloc] init];
- [service readConfigurationWithCompletion:^(YKFKeyManagementReadConfigurationResponse *selectionResponse, NSError *error) {
+ YKFManagementService *service = [[YKFManagementService alloc] init];
+ [service readConfigurationWithCompletion:^(YKFManagementReadConfigurationResponse *selectionResponse, NSError *error) {
      if (error) {
          // Handle the error
          return;
@@ -34,7 +34,7 @@ The `YKFKeyManagementService` provides 2 methods:
 ##### Swift
 
 ```swift
-let service = YKFKeyManagementService()
+let service = YKFManagementService()
 mgtmService.readConfiguration { [weak self] (response, error) in
     guard let self = self else {
         return

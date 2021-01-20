@@ -14,22 +14,22 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFSmartCardInterface.h"
-#import "YKFKeyConnectionControllerProtocol.h"
+#import "YKFConnectionControllerProtocol.h"
 #import "YKFAssert.h"
 #import "YKFNSDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
-#import "YKFKeyAPDUError.h"
+#import "YKFAPDUError.h"
 
 
 #import "YKFAccessoryConnectionController.h"
-#import "YKFKeySessionError.h"
+#import "YKFSessionError.h"
 #import "YKFBlockMacros.h"
 #import "YKFAssert.h"
 #import "YKFLogger.h"
-#import "YKFKeyAPDUError.h"
+#import "YKFAPDUError.h"
 
 #import "YKFAPDU+Private.h"
-#import "YKFKeySessionError+Private.h"
+#import "YKFSessionError+Private.h"
 
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFOATHSendRemainingAPDU.h"
@@ -37,7 +37,7 @@
 
 @interface YKFSmartCardInterface()
 
-@property (nonatomic, readwrite) id<YKFKeyConnectionControllerProtocol> connectionController;
+@property (nonatomic, readwrite) id<YKFConnectionControllerProtocol> connectionController;
 
 - (NSData *)dataFromKeyResponse:(NSData *)response;
 - (UInt16)statusCodeFromKeyResponse:(NSData *)response;
@@ -46,7 +46,7 @@
 
 @implementation YKFSmartCardInterface
 
--(instancetype)initWithConnectionController:(id<YKFKeyConnectionControllerProtocol>)connectionController {
+-(instancetype)initWithConnectionController:(id<YKFConnectionControllerProtocol>)connectionController {
     self = [super init];
     if (self) {
         self.connectionController = connectionController;
@@ -54,7 +54,7 @@
     return self;
 }
 
-- (void)selectApplication:(YKFSelectApplicationAPDU *)apdu completion:(YKFKeySmartCardInterfaceResponseBlock)completion {
+- (void)selectApplication:(YKFSelectApplicationAPDU *)apdu completion:(YKFSmartCardInterfaceResponseBlock)completion {
     [self.connectionController execute:apdu completion:^(NSData *response, NSError *error, NSTimeInterval executionTime) {
         if (error) {
             completion(nil, error);
@@ -62,20 +62,20 @@
         }
         UInt16 statusCode = [self statusCodeFromKeyResponse:response];
         NSData *data = [self dataFromKeyResponse:response];
-        if (statusCode == YKFKeyAPDUErrorCodeNoError) {
+        if (statusCode == YKFAPDUErrorCodeNoError) {
             completion(data, nil);
-        } else if (statusCode == YKFKeyAPDUErrorCodeMissingFile || statusCode == YKFKeyAPDUErrorCodeInsNotSupported) {
-            NSError *error = [YKFKeySessionError errorWithCode:YKFKeySessionErrorMissingApplicationCode];
+        } else if (statusCode == YKFAPDUErrorCodeMissingFile || statusCode == YKFAPDUErrorCodeInsNotSupported) {
+            NSError *error = [YKFSessionError errorWithCode:YKFSessionErrorMissingApplicationCode];
             completion(nil, error);
         } else {
             NSAssert(TRUE, @"The key returned an unexpected SW when selecting application");
-            NSError *error = [YKFKeySessionError errorWithCode:YKFKeySessionErrorUnexpectedStatusCode];
+            NSError *error = [YKFSessionError errorWithCode:YKFSessionErrorUnexpectedStatusCode];
             completion(nil, error);
         }
     }];
 }
 
-- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns  configuration:(YKFKeyCommandConfiguration *)configuration data:(NSMutableData *)data completion:(YKFKeySmartCardInterfaceResponseBlock)completion {
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns  configuration:(YKFCommandConfiguration *)configuration data:(NSMutableData *)data completion:(YKFSmartCardInterfaceResponseBlock)completion {
     [self.connectionController execute:apdu
                          configuration:configuration
                             completion:^(NSData *response, NSError *error, NSTimeInterval executionTime) {
@@ -87,7 +87,7 @@
         [data appendData:[self dataFromKeyResponse:response]];
         UInt16 statusCode = [self statusCodeFromKeyResponse:response];
         
-        if (statusCode >> 8 == YKFKeyAPDUErrorCodeMoreData) {
+        if (statusCode >> 8 == YKFAPDUErrorCodeMoreData) {
             YKFLogInfo(@"Key has more data to send. Requesting for remaining data...");
             UInt16 ins;
             switch (sendRemainingIns) {
@@ -106,21 +106,21 @@
             completion(data, nil);
             return;
         } else {
-            YKFKeySessionError *error = [YKFKeySessionError errorWithCode:statusCode];
+            YKFSessionError *error = [YKFSessionError errorWithCode:statusCode];
             completion(nil, error);
         }
     }];
 }
 
-- (void)executeCommand:(YKFAPDU *)apdu completion:(YKFKeySmartCardInterfaceResponseBlock)completion {
-    [self executeCommand:apdu sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsNormal configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:completion];
+- (void)executeCommand:(YKFAPDU *)apdu completion:(YKFSmartCardInterfaceResponseBlock)completion {
+    [self executeCommand:apdu sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsNormal configuration:[YKFCommandConfiguration defaultCommandCofiguration] completion:completion];
 }
 
-- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns completion:(YKFKeySmartCardInterfaceResponseBlock)completion {
-    [self executeCommand:apdu sendRemainingIns:sendRemainingIns  configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:completion];
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns completion:(YKFSmartCardInterfaceResponseBlock)completion {
+    [self executeCommand:apdu sendRemainingIns:sendRemainingIns  configuration:[YKFCommandConfiguration defaultCommandCofiguration] completion:completion];
 }
 
-- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeySmartCardInterfaceResponseBlock)completion {
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns configuration:(YKFCommandConfiguration *)configuration completion:(YKFSmartCardInterfaceResponseBlock)completion {
     YKFParameterAssertReturn(apdu);
     YKFParameterAssertReturn(completion);
     NSMutableData *data = [NSMutableData new];
@@ -142,8 +142,8 @@
 }
 
 - (UInt16)statusCodeFromKeyResponse:(NSData *)response {
-    YKFParameterAssertReturnValue(response, YKFKeyAPDUErrorCodeWrongLength);
-    YKFAssertReturnValue(response.length >= 2, @"Key response data is too short.", YKFKeyAPDUErrorCodeWrongLength);
+    YKFParameterAssertReturnValue(response, YKFAPDUErrorCodeWrongLength);
+    YKFAssertReturnValue(response.length >= 2, @"Key response data is too short.", YKFAPDUErrorCodeWrongLength);
     
     return [response ykf_getBigEndianIntegerInRange:NSMakeRange([response length] - 2, 2)];
 }

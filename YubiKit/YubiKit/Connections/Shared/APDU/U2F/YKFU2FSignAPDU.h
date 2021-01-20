@@ -15,7 +15,7 @@
 #import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
 
-@class YKFKeyU2FSignRequest;
+@class YKFU2FSignRequest;
 
 NS_ASSUME_NONNULL_BEGIN
 

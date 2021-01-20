@@ -18,12 +18,12 @@
 #ifndef YKFSmartCardInterface_h
 #define YKFSmartCardInterface_h
 
-@class YKFAPDU, YKFKeyCommandConfiguration, YKFSelectApplicationAPDU;
-@protocol YKFKeyConnectionControllerProtocol;
+@class YKFAPDU, YKFCommandConfiguration, YKFSelectApplicationAPDU;
+@protocol YKFConnectionControllerProtocol;
 
-//typedef void (^YKFKeySmartCardInterfaceSelectApplicationResponseBlock)
+//typedef void (^YKFSmartCardInterfaceSelectApplicationResponseBlock)
 //    (NSError* _Nullable error);
-typedef void (^YKFKeySmartCardInterfaceResponseBlock)
+typedef void (^YKFSmartCardInterfaceResponseBlock)
     (NSData* _Nullable data, NSError* _Nullable error);
 
 typedef NS_ENUM(NSUInteger, YKFSmartCardInterfaceSendRemainingIns) {
@@ -41,15 +41,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithConnectionController:(id<YKFKeyConnectionControllerProtocol>)connectionController NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithConnectionController:(id<YKFConnectionControllerProtocol>)connectionController NS_DESIGNATED_INITIALIZER;
 
-- (void)selectApplication:(YKFSelectApplicationAPDU *)apdu completion:(YKFKeySmartCardInterfaceResponseBlock)completion;
+- (void)selectApplication:(YKFSelectApplicationAPDU *)apdu completion:(YKFSmartCardInterfaceResponseBlock)completion;
 
-- (void)executeCommand:(YKFAPDU *)apdu completion:(YKFKeySmartCardInterfaceResponseBlock)completion;
+- (void)executeCommand:(YKFAPDU *)apdu completion:(YKFSmartCardInterfaceResponseBlock)completion;
 
-- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns completion:(YKFKeySmartCardInterfaceResponseBlock)completion;
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns completion:(YKFSmartCardInterfaceResponseBlock)completion;
 
-- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeySmartCardInterfaceResponseBlock)completion;
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns configuration:(YKFCommandConfiguration *)configuration completion:(YKFSmartCardInterfaceResponseBlock)completion;
 
 NS_ASSUME_NONNULL_END
 

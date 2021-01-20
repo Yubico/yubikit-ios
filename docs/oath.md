@@ -3,11 +3,11 @@
 
 The [YKOATH protocol](https://developers.yubico.com/OATH/YKOATH_Protocol.html) is used to manage and use OATH credentials with a YubiKey. The YKOATH protocol is part of the CCID interface of the key. The CCID interface is enabled by default on the YubiKey 5Ci. 
 
-YubiKit provides OATH support through a single shared instance, `oathService` (of type `YKFKeyOATHService`), a property of the `YKFAccessorySession` or `YKNFCSession`. The OATH service is very similar in behavior with the U2F service from the Accessory Session. It will receive requests and dispatch them asynchronously to be executed by the key. The OATH service is available only when the key is connected to the device (or nearby for NFC) and there is an opened session with the key. If the key session is closed or the key is disconnected the `oathService` property is `nil`. 
+YubiKit provides OATH support through a single shared instance, `oathService` (of type `YKFOATHService`), a property of the `YKFAccessorySession` or `YKNFCSession`. The OATH service is very similar in behavior with the U2F service from the Accessory Session. It will receive requests and dispatch them asynchronously to be executed by the key. The OATH service is available only when the key is connected to the device (or nearby for NFC) and there is an opened session with the key. If the key session is closed or the key is disconnected the `oathService` property is `nil`. 
 
 The `sessionState` property on the Accessory or NFC Session can be observed to check the state of the session and take appropriate actions to update the UI or to send requests to the key. 
 
-The OATH Service provides a method for every command from the YOATH protocol to add, remove, list and calculate credentials. For the complete list of methods look at the `YKFKeyOATHService` code level documentation. 
+The OATH Service provides a method for every command from the YOATH protocol to add, remove, list and calculate credentials. For the complete list of methods look at the `YKFOATHService` code level documentation. 
 
 YubiKit provides also a class for defining an OATH Credential, `YKFOATHCredential`, which has a convenience initializer which can receive a credential URL conforming to the [Key URI Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format) and parse the credential parameters from it.
 
@@ -35,7 +35,7 @@ guard let oathService = YubiKitManager.shared.accessorySession.oathService else 
  * Example 1: Adding a credential to the key
  */ 
          
-guard let putRequest = YKFKeyOATHPutRequest(credential: credential) else {
+guard let putRequest = YKFOATHPutRequest(credential: credential) else {
     return
 }
 oathService.execute(putRequest) { (error) in
@@ -50,7 +50,7 @@ oathService.execute(putRequest) { (error) in
  * Example 2: Removing a credential from the key
  */        
  
-guard let deleteRequest = YKFKeyOATHDeleteRequest(credential: credential) else {
+guard let deleteRequest = YKFOATHDeleteRequest(credential: credential) else {
     return
 }
 oathService.execute(deleteRequest) { (error) in
@@ -65,7 +65,7 @@ oathService.execute(deleteRequest) { (error) in
  * Example 3: Calculating a credential with the key
  */        
  
-guard let calculateRequest = YKFKeyOATHCalculateRequest(credential: credential) else {
+guard let calculateRequest = YKFOATHCalculateRequest(credential: credential) else {
     return
 }
 oathService.execute(calculateRequest) { (response, error) in
@@ -113,7 +113,7 @@ NSAssert(url != nil, @"Invalid OATH URL");
 YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:url];
 NSAssert(credential != nil, @"Could not create OATH credential.");
     
-id<YKFKeyOATHServiceProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
+id<YKFOATHServiceProtocol> oathService = YubiKitManager.shared.accessorySession.oathService;
 if (!oathService) {
     return;
 }
@@ -122,7 +122,7 @@ if (!oathService) {
  * Example 1: Adding a credential to the key
  */
  
-YKFKeyOATHPutRequest *putRequest = [[YKFKeyOATHPutRequest alloc] initWithCredential:credential];
+YKFOATHPutRequest *putRequest = [[YKFOATHPutRequest alloc] initWithCredential:credential];
 if (!putRequest) {
     return;
 }
@@ -139,7 +139,7 @@ if (!putRequest) {
  * Example 2: Removing a credential from the key
  */
  
-YKFKeyOATHDeleteRequest *deleteRequest = [[YKFKeyOATHDeleteRequest alloc] initWithCredential:credential];
+YKFOATHDeleteRequest *deleteRequest = [[YKFOATHDeleteRequest alloc] initWithCredential:credential];
 if (!deleteRequest) {
     return;
 }
@@ -156,12 +156,12 @@ if (!deleteRequest) {
  * Example 3: Calculating a credential with the key
  */
     
-YKFKeyOATHCalculateRequest *calculateRequest = [[YKFKeyOATHCalculateRequest alloc] initWithCredential:credential];
+YKFOATHCalculateRequest *calculateRequest = [[YKFOATHCalculateRequest alloc] initWithCredential:credential];
 if (!calculateRequest) {
     return;
 }
     
-[oathService executeCalculateRequest:calculateRequest completion:^(YKFKeyOATHCalculateResponse * _Nullable response, NSError * _Nullable error) {
+[oathService executeCalculateRequest:calculateRequest completion:^(YKFOATHCalculateResponse * _Nullable response, NSError * _Nullable error) {
     if (error) {
         NSLog(@"The calculate request ended in error %@", error.localizedDescription);
         return;
@@ -176,7 +176,7 @@ if (!calculateRequest) {
  * Example 4: Listing credentials from the key
  */
  
-[oathService executeListRequestWithCompletion:^(YKFKeyOATHListResponse * _Nullable response, NSError * _Nullable error) {
+[oathService executeListRequestWithCompletion:^(YKFOATHListResponse * _Nullable response, NSError * _Nullable error) {
     if (error) {
         NSLog(@"The list request ended in error %@", error.localizedDescription);
         return;

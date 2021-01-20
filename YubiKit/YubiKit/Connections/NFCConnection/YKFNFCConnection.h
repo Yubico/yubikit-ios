@@ -15,9 +15,9 @@
 #import <Foundation/Foundation.h>
 #import "YKFNFCTagDescription.h"
 #import "YKFNFCOTPSession.h"
-#import "YKFKeyU2FSession.h"
-#import "YKFKeyFIDO2Session.h"
-#import "YKFKeyOATHSession.h"
+#import "YKFU2FSession.h"
+#import "YKFFIDO2Session.h"
+#import "YKFOATHSession.h"
 #import "YKFConnectionProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -85,7 +85,7 @@ typedef NS_ENUM(NSUInteger, YKFNFCConnectionState) {
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
-//@property (nonatomic, readonly, nullable) id<YKFKeyFIDO2SessionProtocol> fido2Service API_AVAILABLE(ios(13.0));
+//@property (nonatomic, readonly, nullable) id<YKFFIDO2SessionProtocol> fido2Service API_AVAILABLE(ios(13.0));
 
 /*!
  @property rawCommandService
@@ -95,7 +95,7 @@ typedef NS_ENUM(NSUInteger, YKFNFCConnectionState) {
     This property becomes available when the key is connected and the session opened and is nil when
     the session is closed. This property should be accessed based on the session state.
  */
-//@property (nonatomic, readonly, nullable) id<YKFKeyRawCommandSessionProtocol> rawCommandService API_AVAILABLE(ios(13.0));
+//@property (nonatomic, readonly, nullable) id<YKFRawCommandSessionProtocol> rawCommandService API_AVAILABLE(ios(13.0));
 
 /*!
  @method startIso7816Session

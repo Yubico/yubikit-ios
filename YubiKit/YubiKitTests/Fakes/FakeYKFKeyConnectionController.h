@@ -15,12 +15,12 @@
 #import <Foundation/Foundation.h>
 #import "YKFAccessoryConnectionController.h"
 
-@interface FakeYKFKeyConnectionController: NSObject<YKFKeyConnectionControllerProtocol>
+@interface FakeYKFConnectionController: NSObject<YKFConnectionControllerProtocol>
 
 @property (nonatomic) YKFAPDU *executionCommand;
 
-@property (nonatomic) YKFKeyConnectionControllerCommandResponseBlock commandResponseBlock;
-@property (nonatomic) YKFKeyConnectionControllerCompletionBlock operationExecutionBlock;
+@property (nonatomic) YKFConnectionControllerCommandResponseBlock commandResponseBlock;
+@property (nonatomic) YKFConnectionControllerCompletionBlock operationExecutionBlock;
 
 // Response customisation
 

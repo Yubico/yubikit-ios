@@ -15,7 +15,7 @@
 #import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
 
-@class YKFKeyU2FRegisterRequest;
+@class YKFU2FRegisterRequest;
 
 NS_ASSUME_NONNULL_BEGIN
 

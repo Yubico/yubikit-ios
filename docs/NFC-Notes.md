@@ -50,7 +50,7 @@ To add support for NFC YubiKeys in your application, follow these steps:
 Using the FIDO APIs over the NFC session is identical to using the APIs over the accessory (used for the YubiKey 5Ci as an MFi accessory) session. The application builds the requests in the same way and the application can choose to execute requests over the *accessory* or the *NFC* session:
 
 ```swift
-var fido2Service: YKFKeyFIDO2ServiceProtocol? = nil
+var fido2Service: YKFFIDO2ServiceProtocol? = nil
 
 // #1 Use the fido2Service instance from the accessory session              
 fido2Service = YubiKitManager.shared.accessorySession.fido2Service
@@ -71,9 +71,9 @@ The FIDO2 demo from the [YubiKit Demo](./YubiKitDemo) application has a complete
 
 To accommodate the presence of another transport, YubiKit was refactored internally to reuse as much as possible from the existing YubiKit 2.0.x stack. However, some of the refactoring touched the interface of the library, but only in a minimal way.
 
-#### Change #1 - YKFKeySession
+#### Change #1 - YKFSession
 
-The `YKFKeySession` was renamed `YKFAccessorySession`. Before adding support for ISO 7816 Tags, introduced in iOS 13, the only way to execute requests against a security key was to use the YubiKey 5Ci over iAP2 protocol when connected via the Lightning connector. This was the only *key* supported by the library, hence the name `YKFKeySession`. Now the name of the session better reflects the transport of the session and it's consistent with `YKFNFCSession`. If the `keySession` was used by the application to execute requests against the YubiKey 5Ci, the call:
+The `YKFSession` was renamed `YKFAccessorySession`. Before adding support for ISO 7816 Tags, introduced in iOS 13, the only way to execute requests against a security key was to use the YubiKey 5Ci over iAP2 protocol when connected via the Lightning connector. This was the only *key* supported by the library, hence the name `YKFSession`. Now the name of the session better reflects the transport of the session and it's consistent with `YKFNFCSession`. If the `keySession` was used by the application to execute requests against the YubiKey 5Ci, the call:
 
 ```swift
 YubiKitManager.shared.keySession.[u2fService/fido2Service/..].execute..
@@ -104,5 +104,5 @@ YubiKitManager.shared.nfcSession.otpService.requestOTPToken...
 #### Change #3 - Other
 
 - The `YKFNFCReadError` was renamed `YKFNFCError`, so it's no longer specific to the *read* operations.
-- The `YKFKeyDescription` was renamed `YKFAccessoryDescription`.
+- The `YKFDescription` was renamed `YKFAccessoryDescription`.
 

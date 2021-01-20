@@ -14,10 +14,8 @@
             filePath = "Tests/FIDO2Tests.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "185"
-            endingLineNumber = "185"
-            landmarkName = "keyStateChanged(_:)"
-            landmarkType = "7">
+            startingLineNumber = "206"
+            endingLineNumber = "206">
             <Actions>
                <BreakpointActionProxy
                   ActionExtensionID = "Xcode.BreakpointAction.Sound">

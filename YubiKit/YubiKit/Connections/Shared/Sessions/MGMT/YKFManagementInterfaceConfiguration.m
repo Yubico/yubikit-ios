@@ -7,8 +7,8 @@
 //
 
 #import "YKFManagementInterfaceConfiguration.h"
-#import "YKFKeyManagementReadConfigurationResponse.h"
-#import "YKFKeyManagementReadConfigurationResponse+Private.h"
+#import "YKFManagementReadConfigurationResponse.h"
+#import "YKFManagementReadConfigurationResponse+Private.h"
 #import "YKFAssert.h"
 
 @interface YKFManagementInterfaceConfiguration()
@@ -28,7 +28,7 @@
 
 @implementation YKFManagementInterfaceConfiguration
 
-- (nullable instancetype)initWithResponse:(nonnull YKFKeyManagementReadConfigurationResponse *)response {
+- (nullable instancetype)initWithResponse:(nonnull YKFManagementReadConfigurationResponse *)response {
     YKFAssertAbortInit(response);
     self = [super init];
     if (self) {

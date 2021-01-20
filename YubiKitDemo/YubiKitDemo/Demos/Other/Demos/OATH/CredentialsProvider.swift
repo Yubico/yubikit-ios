@@ -62,9 +62,9 @@ class CredentialsProvider: NSObject, ObservableObject, YKFManagerDelegate {
         }
     }
     
-    var session: YKFKeyOATHSession?
+    var session: YKFOATHSession?
 
-    func session(completion: @escaping (_ session: YKFKeyOATHSession?, _ error: Error?) -> Void) {
+    func session(completion: @escaping (_ session: YKFOATHSession?, _ error: Error?) -> Void) {
         if let session = session {
             completion(session, nil)
             return

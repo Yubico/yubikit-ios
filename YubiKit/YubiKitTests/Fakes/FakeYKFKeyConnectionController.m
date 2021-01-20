@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "FakeYKFKeyConnectionController.h"
+#import "FakeYKFConnectionController.h"
 
-@interface FakeYKFKeyConnectionController()
+@interface FakeYKFConnectionController()
 
 @property (nonatomic, assign) NSUInteger commandExecutionSequenceIndex;
 
 @end
 
-@implementation FakeYKFKeyConnectionController
+@implementation FakeYKFConnectionController
 
 - (void)setCommandExecutionResponseDataSequence:(NSArray *)commandExecutionResponseDataSequence {
     _commandExecutionResponseDataSequence = commandExecutionResponseDataSequence;
@@ -32,9 +32,9 @@
     self.commandExecutionSequenceIndex = 0;
 }
 
-#pragma mark - YKFKeyConnectionControllerProtocol
+#pragma mark - YKFConnectionControllerProtocol
 
-- (void)execute:(YKFAPDU *)command completion:(YKFKeyConnectionControllerCommandResponseBlock)completion {
+- (void)execute:(YKFAPDU *)command completion:(YKFConnectionControllerCommandResponseBlock)completion {
     self.executionCommand = command;
     self.commandResponseBlock = completion;
     
@@ -48,7 +48,7 @@
     ++self.commandExecutionSequenceIndex;
 }
 
-- (void)execute:(YKFAPDU *)command configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyConnectionControllerCommandResponseBlock)completion {
+- (void)execute:(YKFAPDU *)command configuration:(YKFCommandConfiguration *)configuration completion:(YKFConnectionControllerCommandResponseBlock)completion {
     self.executionCommand = command;
     self.commandResponseBlock = completion;
     
@@ -62,7 +62,7 @@
     ++self.commandExecutionSequenceIndex;
 }
 
-- (void)dispatchOnSequentialQueue:(YKFKeyConnectionControllerCompletionBlock)block delay:(NSTimeInterval)delay {
+- (void)dispatchOnSequentialQueue:(YKFConnectionControllerCompletionBlock)block delay:(NSTimeInterval)delay {
     self.operationExecutionBlock = block;
     
     if (delay == 0) {
@@ -74,11 +74,11 @@
     }
 }
 
-- (void)dispatchOnSequentialQueue:(nonnull YKFKeyConnectionControllerCompletionBlock)block {
+- (void)dispatchOnSequentialQueue:(nonnull YKFConnectionControllerCompletionBlock)block {
     [self dispatchOnSequentialQueue:block delay:0];
 }
 
-- (void)closeConnectionWithCompletion:(YKFKeyConnectionControllerCompletionBlock)completion {
+- (void)closeConnectionWithCompletion:(YKFConnectionControllerCompletionBlock)completion {
     self.operationExecutionBlock = completion;
     
     dispatch_async(dispatch_get_main_queue(), ^{

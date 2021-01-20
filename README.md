@@ -166,7 +166,31 @@ YubiKit headers are documented and the documentation is available either by read
 
 YubiKit is exposing a simple and easy to use API for operations with YubiKey and set of operations named as servie. Each service hides the complexity of managing the logic of interacting with an external accessory on iOS or communicating over NFC. It exchanges specific binary data to the key. The set of operations are accessible via the implementation of `YKFAccessorySession` or `YKFNFCSession`. A shared single instance becomes available in `YubiKitManager.accessorySession` or `YubiKitManager.nfcSession` when the session with the key is started.
 
-To enable the `YKFAccessorySession` and `YKFNFCSession` to receive events and connect to the YubiKey 5Ci, it needs to be explicitly started using `startSession`. This allows the host application to have a granular control on when the application should listen and connect to the key. When the application no longer requires the presence of the key (e.g. the user successfully authenticated and moved to the main UI of the app), the session can be stopped by calling `stopSession`
+From a connection you can retrieve any of the sessions currently supported in the SDK. The connections are fetched by calling a method with a callback block. Once the session has been established and the corresponding application on the YubiKey has been selected the callback will return the new session.
+
+##### Swift    
+
+```swift
+connection.fido2Session { session, error in
+    guard let session = session else { /* handle error and return */ }
+    session.verifyPin(pin) { error in
+        ...
+    }
+}
+```
+
+##### Objective-C
+
+```objective-c
+#import <YubiKit/YubiKit.h>
+
+[self.connection fido2Session:^(YKFFIDO2Session * _Nullable session, NSError * _Nullable error) {
+    if (error) { /* handle error and return */ }
+    [session verifyPin:pin completion:^(NSError * _Nullable error) {
+        ...
+    }];
+}];
+```
 
 Before starting the key session, the application should verify if the iOS version is supported by the library by looking at the `supportsMFIAccessoryKey` property on `YubiKitDeviceCapabilities`
 
@@ -203,9 +227,9 @@ After the key session was started and a key was connected the session state beco
 
 List of services is documented below with it's own specifics and samples:
 
-- [FIDO](./docs/fido2.md) - Provides FIDO2 operations accessible via the *YKFKeyFIDO2Service*.
+- [FIDO](./docs/fido2.md) - Provides FIDO2 operations accessible via the *YKFFIDO2Session*.
 
-- [U2F](./docs/u2f.md) - Provides U2F operations accessible via the *YKFKeyU2FService*.
+- [U2F](./docs/u2f.md) - Provides U2F operations accessible via the *YKFU2FSession*.
 
 - [OATH](./docs/oath.md) - Allows applications, such as an authenticator app to store OATH TOTP and HOTP secrets on a YubiKey and generate one-time passwords.
 

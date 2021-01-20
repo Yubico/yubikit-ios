@@ -35,35 +35,35 @@
 #import "YKFAccessoryDescription.h"
 
 #import "YKFSelectApplicationAPDU.h"
-#import "YKFKeySessionError.h"
-#import "YKFKeyFIDO2Error.h"
-#import "YKFKeyU2FError.h"
-#import "YKFKeyOATHError.h"
-#import "YKFKeyAPDUError.h"
+#import "YKFSessionError.h"
+#import "YKFFIDO2Error.h"
+#import "YKFU2FError.h"
+#import "YKFOATHError.h"
+#import "YKFAPDUError.h"
 
 #import "YKFSmartCardInterface.h"
 
-#import "YKFKeyU2FSession.h"
-#import "YKFKeyFIDO2Session.h"
-#import "YKFKeyOATHSession.h"
-#import "YKFKeyChallengeResponseSession.h"
-#import "YKFKeyManagementSession.h"
+#import "YKFU2FSession.h"
+#import "YKFFIDO2Session.h"
+#import "YKFOATHSession.h"
+#import "YKFChallengeResponseSession.h"
+#import "YKFManagementSession.h"
 
 #import "YKFSlot.h"
 
-#import "YKFKeyFIDO2MakeCredentialResponse.h"
-#import "YKFKeyFIDO2GetAssertionResponse.h"
-#import "YKFKeyFIDO2GetInfoResponse.h"
+#import "YKFFIDO2MakeCredentialResponse.h"
+#import "YKFFIDO2GetAssertionResponse.h"
+#import "YKFFIDO2GetInfoResponse.h"
 
-#import "YKFKeyU2FSignResponse.h"
-#import "YKFKeyU2FRegisterResponse.h"
+#import "YKFU2FSignResponse.h"
+#import "YKFU2FRegisterResponse.h"
 
 #import "YKFPCSC.h"
 
 #import "YKFNSDataAdditions.h"
 #import "YKFWebAuthnClientData.h"
 
-#import "YKFKeyOATHSelectApplicationResponse.h"
+#import "YKFOATHSelectApplicationResponse.h"
 #import "YKFOATHCredential.h"
 #import "YKFOATHCode.h"
 #import "YKFOATHCredentialTypes.h"

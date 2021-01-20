@@ -26,17 +26,17 @@
 
 #import "YKFSmartCardInterface.h"
 #import "YKFNFCOTPSession+Private.h"
-#import "YKFKeyU2FSession+Private.h"
-#import "YKFKeyFIDO2Session+Private.h"
-#import "YKFKeyOATHSession+Private.h"
-#import "YKFKeyChallengeResponseSession.h"
-#import "YKFKeyChallengeResponseSession+Private.h"
-#import "YKFKeyManagementSession.h"
-#import "YKFKeyManagementSession+Private.h"
+#import "YKFU2FSession+Private.h"
+#import "YKFFIDO2Session+Private.h"
+#import "YKFOATHSession+Private.h"
+#import "YKFChallengeResponseSession.h"
+#import "YKFChallengeResponseSession+Private.h"
+#import "YKFManagementSession.h"
+#import "YKFManagementSession+Private.h"
 #import "YKFNFCTagDescription+Private.h"
 
-#import "YKFKeySessionError.h"
-#import "YKFKeySessionError+Private.h"
+#import "YKFSessionError.h"
+#import "YKFSessionError+Private.h"
 
 @interface YKFNFCConnection()<NFCTagReaderSessionDelegate>
 
@@ -46,7 +46,7 @@
 @property (nonatomic, readwrite) YKFNFCTagDescription *tagDescription API_AVAILABLE(ios(13.0));
 @property (nonatomic, readwrite) YKFNFCOTPSession *otpService API_AVAILABLE(ios(11.0));
 
-@property (nonatomic) id<YKFKeyConnectionControllerProtocol> connectionController;
+@property (nonatomic) id<YKFConnectionControllerProtocol> connectionController;
 
 @property (nonatomic) NSOperationQueue *communicationQueue;
 @property (nonatomic) dispatch_queue_t sharedDispatchQueue;
@@ -83,8 +83,8 @@
 - (void)oathSession:(OATHSession _Nonnull)callback {
     if (@available(iOS 13.0, *)) {
         [self.currentSession clearSessionState];
-        [YKFKeyOATHSession sessionWithConnectionController:self.connectionController
-                                                completion:^(YKFKeyOATHSession *_Nullable session, NSError * _Nullable error) {
+        [YKFOATHSession sessionWithConnectionController:self.connectionController
+                                                completion:^(YKFOATHSession *_Nullable session, NSError * _Nullable error) {
             self.currentSession = session;
             callback(session, error);
         }];
@@ -94,8 +94,8 @@
 - (void)u2fSession:(U2FSession _Nonnull)callback {
     if (@available(iOS 13.0, *)) {
         [self.currentSession clearSessionState];
-        [YKFKeyU2FSession sessionWithConnectionController:self.connectionController
-                                                completion:^(YKFKeyU2FSession *_Nullable session, NSError * _Nullable error) {
+        [YKFU2FSession sessionWithConnectionController:self.connectionController
+                                                completion:^(YKFU2FSession *_Nullable session, NSError * _Nullable error) {
             self.currentSession = session;
             callback(session, error);
         }];
@@ -104,8 +104,8 @@
 
 - (void)fido2Session:(FIDO2Session _Nonnull)callback {
     [self.currentSession clearSessionState];
-    [YKFKeyFIDO2Session sessionWithConnectionController:self.connectionController
-                                            completion:^(YKFKeyFIDO2Session *_Nullable session, NSError * _Nullable error) {
+    [YKFFIDO2Session sessionWithConnectionController:self.connectionController
+                                            completion:^(YKFFIDO2Session *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
     }];
@@ -113,8 +113,8 @@
 
 - (void)challengeResponseSession:(ChallengeResponseSession _Nonnull)callback {
     [self.currentSession clearSessionState];
-    [YKFKeyChallengeResponseSession sessionWithConnectionController:self.connectionController
-                                                         completion:^(YKFKeyChallengeResponseSession *_Nullable session, NSError * _Nullable error) {
+    [YKFChallengeResponseSession sessionWithConnectionController:self.connectionController
+                                                         completion:^(YKFChallengeResponseSession *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
     }];
@@ -122,8 +122,8 @@
 
 - (void)managementSession:(ManagementSession _Nonnull)callback {
     [self.currentSession clearSessionState];
-    [YKFKeyManagementSession sessionWithConnectionController:self.connectionController
-                                                  completion:^(YKFKeyManagementSession *_Nullable session, NSError * _Nullable error) {
+    [YKFManagementSession sessionWithConnectionController:self.connectionController
+                                                  completion:^(YKFManagementSession *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
     }];

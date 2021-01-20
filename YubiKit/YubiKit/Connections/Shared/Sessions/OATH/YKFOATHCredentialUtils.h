@@ -19,7 +19,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class YKFOATHCredential, YKFOATHCredentialTemplate, YKFKeySessionError;
+@class YKFOATHCredential, YKFOATHCredentialTemplate, YKFSessionError;
 
 @protocol YKFOATHCredentialIdentifier
 
@@ -53,8 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)labelFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier;
 + (NSString *)keyFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier;
 
-+ (nullable YKFKeySessionError *)validateCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate;
-+ (nullable YKFKeySessionError *)validateCredential:(YKFOATHCredential *)credential;
++ (nullable YKFSessionError *)validateCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate;
++ (nullable YKFSessionError *)validateCredential:(YKFOATHCredential *)credential;
 
 @end
 

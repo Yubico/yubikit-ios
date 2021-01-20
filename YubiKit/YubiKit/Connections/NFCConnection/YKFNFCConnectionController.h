@@ -14,12 +14,12 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreNFC/CoreNFC.h>
-#import "YKFKeyConnectionControllerProtocol.h"
+#import "YKFConnectionControllerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 API_AVAILABLE(ios(13.0))
-@interface YKFNFCConnectionController: NSObject<YKFKeyConnectionControllerProtocol>
+@interface YKFNFCConnectionController: NSObject<YKFConnectionControllerProtocol>
 
 - (instancetype)initWithNFCTag:(id<NFCISO7816Tag>)tag operationQueue:(NSOperationQueue *)operationQueue;
 

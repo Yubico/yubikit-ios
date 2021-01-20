@@ -10,7 +10,7 @@
 #define YKFManagementInterfaceConfiguration_Private_h
 
 #import "YKFManagementInterfaceConfiguration.h"
-#import "YKFKeyManagementReadConfigurationResponse.h"
+#import "YKFManagementReadConfigurationResponse.h"
 
 
 @interface YKFManagementInterfaceConfiguration()
@@ -24,7 +24,7 @@
 @property (nonatomic, readonly) BOOL usbMaskChanged;
 @property (nonatomic, readonly) BOOL nfcMaskChanged;
 
-- (nullable instancetype)initWithResponse:(nonnull YKFKeyManagementReadConfigurationResponse *)response NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithResponse:(nonnull YKFManagementReadConfigurationResponse *)response NS_DESIGNATED_INITIALIZER;
 
 @end
 

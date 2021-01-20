@@ -13,17 +13,17 @@
 // limitations under the License.
 
 #import "YKFAccessoryConnectionController.h"
-#import "YKFKeyAPDUError.h"
+#import "YKFAPDUError.h"
 #import "YKFLogger.h"
 #import "YKFDispatch.h"
 #import "YKFBlockMacros.h"
 #import "YKFAssert.h"
 
 #import "YKFNSDataAdditions+Private.h"
-#import "YKFKeySessionError+Private.h"
+#import "YKFSessionError+Private.h"
 #import "YKFAPDU+Private.h"
 
-typedef void (^YKFKeyConnectionControllerCommunicationQueueBlock)(NSOperation *operation);
+typedef void (^YKFConnectionControllerCommunicationQueueBlock)(NSOperation *operation);
 
 @interface YKFAccessoryConnectionController()
 
@@ -67,7 +67,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
     return self;
 }
 
-- (void)closeConnectionWithCompletion:(YKFKeyConnectionControllerCompletionBlock)completionBlock {
+- (void)closeConnectionWithCompletion:(YKFConnectionControllerCompletionBlock)completionBlock {
     YKFParameterAssertReturn(completionBlock);
     
     [self cancelAllCommands];
@@ -82,7 +82,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
 
 #pragma mark - Dispatching
 
-- (void)dispatchBlockOnCommunicationQueue:(YKFKeyConnectionControllerCommunicationQueueBlock)block {
+- (void)dispatchBlockOnCommunicationQueue:(YKFConnectionControllerCommunicationQueueBlock)block {
     YKFParameterAssertReturn(block);
     
     NSBlockOperation *operation = [[NSBlockOperation alloc] init];
@@ -156,7 +156,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
 
 #pragma mark - Stream IO
 
-- (BOOL)writeData:(NSData *)data configuration:(YKFKeyCommandConfiguration *)configuration parentOperation:(NSOperation *)operation {
+- (BOOL)writeData:(NSData *)data configuration:(YKFCommandConfiguration *)configuration parentOperation:(NSOperation *)operation {
     YKFAssertOffMainThread();
     
     YKFParameterAssertReturnValue(data, NO);
@@ -189,7 +189,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
     return YES;
 }
 
-- (BOOL)readData:(NSData**)readData configuration:(YKFKeyCommandConfiguration *)configuration parentOperation:(NSOperation *)operation {
+- (BOOL)readData:(NSData**)readData configuration:(YKFCommandConfiguration *)configuration parentOperation:(NSOperation *)operation {
     YKFAssertOffMainThread();
     YKFParameterAssertReturnValue(self.inputStream, NO);
     
@@ -226,11 +226,11 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
 
 #pragma mark - Commands
 
-- (void)execute:(YKFAPDU *)command completion:(YKFKeyConnectionControllerCommandResponseBlock)completion {
-    [self execute:command configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:completion];
+- (void)execute:(YKFAPDU *)command completion:(YKFConnectionControllerCommandResponseBlock)completion {
+    [self execute:command configuration:[YKFCommandConfiguration defaultCommandCofiguration] completion:completion];
 }
 
-- (void)execute:(YKFAPDU *)command configuration:(YKFKeyCommandConfiguration *)configuration completion:(YKFKeyConnectionControllerCommandResponseBlock)completion {
+- (void)execute:(YKFAPDU *)command configuration:(YKFCommandConfiguration *)configuration completion:(YKFConnectionControllerCommandResponseBlock)completion {
     YKFParameterAssertReturn(command);
     YKFParameterAssertReturn(configuration);
     YKFParameterAssertReturn(completion);
@@ -251,7 +251,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
             if (strongSelf.outputStream.streamError) {
                 error = [strongSelf.outputStream.streamError copy];
             } else {
-                error = [YKFKeySessionError errorWithCode:YKFKeySessionErrorWriteTimeoutCode];
+                error = [YKFSessionError errorWithCode:YKFSessionErrorWriteTimeoutCode];
             }
             
             NSTimeInterval executionTime = [[NSDate date] timeIntervalSinceDate: commandStartDate];
@@ -281,7 +281,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
                 if (strongSelf.inputStream.streamError) {
                     error = [strongSelf.inputStream.streamError copy];
                 } else {
-                    error = [YKFKeySessionError errorWithCode:YKFKeySessionErrorReadTimeoutCode];
+                    error = [YKFSessionError errorWithCode:YKFSessionErrorReadTimeoutCode];
                 }
                 
                 NSTimeInterval executionTime = [[NSDate date] timeIntervalSinceDate: commandStartDate];
@@ -310,7 +310,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
     }];
 }
 
-- (void)dispatchOnSequentialQueue:(YKFKeyConnectionControllerCompletionBlock)block delay:(NSTimeInterval)delay {
+- (void)dispatchOnSequentialQueue:(YKFConnectionControllerCompletionBlock)block delay:(NSTimeInterval)delay {
     dispatch_queue_t sharedDispatchQueue = self.communicationQueue.underlyingQueue;
     
     YKFParameterAssertReturn(sharedDispatchQueue);
@@ -342,7 +342,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
     }
 }
 
-- (void)dispatchOnSequentialQueue:(YKFKeyConnectionControllerCompletionBlock)block {
+- (void)dispatchOnSequentialQueue:(YKFConnectionControllerCompletionBlock)block {
     YKFParameterAssertReturn(block);
     [self dispatchOnSequentialQueue:block delay:0];
 }
@@ -382,7 +382,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
     [result getBytes:&headerByte length:1];
     
     // BUG #62 - Workaround for WTX == 0x01 while status is 0x9000 (success).
-    BOOL statusIsSuccess = [result ykf_getBigEndianIntegerInRange:NSMakeRange(result.length - 2, 2)] == YKFKeyAPDUErrorCodeNoError;
+    BOOL statusIsSuccess = [result ykf_getBigEndianIntegerInRange:NSMakeRange(result.length - 2, 2)] == YKFAPDUErrorCodeNoError;
     // ~
     
     return headerByte == 0x01 && !statusIsSuccess;

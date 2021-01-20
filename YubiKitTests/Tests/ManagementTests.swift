@@ -87,8 +87,8 @@ class ManagementTests: XCTestCase {
 }
 
 extension YKFConnectionProtocol {
-    func managementSessionAndConfiguration(completion: @escaping (_ session: YKFKeyManagementSession,
-                                                                  _ response: YKFKeyManagementReadConfigurationResponse) -> Void) {
+    func managementSessionAndConfiguration(completion: @escaping (_ session: YKFManagementSession,
+                                                                  _ response: YKFManagementReadConfigurationResponse) -> Void) {
         self.managementSession { session, error in
             guard let session = session else { XCTAssertTrue(false, "Failed to get Management Session: \(error!)"); return }
             session.readConfiguration { response, error in

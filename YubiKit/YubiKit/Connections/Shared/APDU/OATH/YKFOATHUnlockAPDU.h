@@ -15,7 +15,7 @@
 #import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
 
-@class YKFKeyOATHValidateRequest;
+@class YKFOATHValidateRequest;
 
 NS_ASSUME_NONNULL_BEGIN
 

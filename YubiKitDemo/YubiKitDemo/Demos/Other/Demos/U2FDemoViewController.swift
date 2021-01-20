@@ -71,7 +71,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
         }
     }
 
-    private func executeRegisterRequestWith(session: YKFKeyU2FSession, challenge: String, appId: String, completion: @escaping (String?) -> Void) {
+    private func executeRegisterRequestWith(session: YKFU2FSession, challenge: String, appId: String, completion: @escaping (String?) -> Void) {
         
         self.log(message: "Running the U2F Register...")
         self.log(message: "Touch the key when it's blinking slowly.")
@@ -90,7 +90,7 @@ class U2FDemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func executeSignRequestWith(session: YKFKeyU2FSession, keyHandle: String, challenge: String, appId: String, completion: @escaping (Bool) -> Void) {
+    private func executeSignRequestWith(session: YKFU2FSession, keyHandle: String, challenge: String, appId: String, completion: @escaping (Bool) -> Void) {
         
         self.log(message: "Running U2F Sign...")
         self.log(message: "Touch the key when it's blinking slowly.")
