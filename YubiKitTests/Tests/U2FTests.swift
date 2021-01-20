@@ -39,7 +39,7 @@ class U2FTests: XCTestCase {
 }
 
 extension YKFConnectionProtocol {
-    func u2fTestSession(completion: @escaping (_ session: YKFKeyU2FSession) -> Void) {
+    func u2fTestSession(completion: @escaping (_ session: YKFU2FSession) -> Void) {
         self.u2fSession { session, error in
             guard let session = session else { XCTAssertTrue(false, "Failed to get U2F session"); return }
             completion(session)
@@ -51,7 +51,7 @@ extension YKFConnectionProtocol {
  Extract the keyhandle client side to make the tests self contained. This is normally
  done by the server.
 */
-extension  YKFKeyU2FRegisterResponse {
+extension  YKFU2FRegisterResponse {
     var keyHandle: String? {
         let length = Int(registrationData[66])
         let data = registrationData[67..<67+length] as NSData

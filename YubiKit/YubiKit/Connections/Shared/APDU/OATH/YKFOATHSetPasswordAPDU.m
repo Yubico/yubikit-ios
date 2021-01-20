@@ -19,9 +19,9 @@
 #import "YKFNSMutableDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
 
-static const UInt8 YKFKeyOATHSetCodeAPDUKeyTag = 0x73;
-static const UInt8 YKFKeyOATHSetCodeAPDUChallengeTag = 0x74;
-static const UInt8 YKFKeyOATHSetCodeAPDUResponseTag = 0x75;
+static const UInt8 YKFOATHSetCodeAPDUKeyTag = 0x73;
+static const UInt8 YKFOATHSetCodeAPDUChallengeTag = 0x74;
+static const UInt8 YKFOATHSetCodeAPDUResponseTag = 0x75;
 
 @implementation YKFOATHSetPasswordAPDU
 
@@ -36,20 +36,20 @@ static const UInt8 YKFKeyOATHSetCodeAPDUResponseTag = 0x75;
         NSData *keyData = [[password dataUsingEncoding:NSUTF8StringEncoding] ykf_deriveOATHKeyWithSalt:salt];
         UInt8 algorithm = YKFOATHCredentialTypeTOTP | YKFOATHCredentialAlgorithmSHA1;
         
-        [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUKeyTag headerBytes:@[@(algorithm)] data:keyData];
+        [data ykf_appendEntryWithTag:YKFOATHSetCodeAPDUKeyTag headerBytes:@[@(algorithm)] data:keyData];
         
         // Challenge
         UInt8 challengeBuffer[8];
         arc4random_buf(challengeBuffer, 8);
         NSData *challenge = [NSData dataWithBytes:challengeBuffer length:8];
-        [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUChallengeTag data:challenge];
+        [data ykf_appendEntryWithTag:YKFOATHSetCodeAPDUChallengeTag data:challenge];
         
         // Response
         NSData *response = [challenge ykf_oathHMACWithKey:keyData];
-        [data ykf_appendEntryWithTag:YKFKeyOATHSetCodeAPDUResponseTag data:response];
+        [data ykf_appendEntryWithTag:YKFOATHSetCodeAPDUResponseTag data:response];
     } else {
         // Remove password
-        [data ykf_appendByte:YKFKeyOATHSetCodeAPDUKeyTag];
+        [data ykf_appendByte:YKFOATHSetCodeAPDUKeyTag];
         [data ykf_appendByte:0x00];
     }
         

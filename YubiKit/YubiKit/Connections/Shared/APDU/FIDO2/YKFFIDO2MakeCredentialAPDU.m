@@ -102,7 +102,7 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2MakeCredentialAPDUKey) {
 }
 
 /*
-- (instancetype)initWithRequest:(YKFKeyFIDO2MakeCredentialRequest *)request {
+- (instancetype)initWithRequest:(YKFFIDO2MakeCredentialRequest *)request {
     YKFAssertAbortInit(request)
     YKFAssertAbortInit(request.clientDataHash)
     YKFAssertAbortInit(request.rp)

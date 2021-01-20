@@ -17,9 +17,9 @@
 #import "YKFAssert.h"
 #import "YKFNSDataAdditions+Private.h"
 
-typedef NS_ENUM(NSUInteger, YKFKeyOATHCalculateResponseType) {
-    YKFKeyOATHCalculateResponseTypeFull = 0x75,
-    YKFKeyOATHCalculateResponseTypeTruncated = 0x76
+typedef NS_ENUM(NSUInteger, YKFOATHCalculateResponseType) {
+    YKFOATHCalculateResponseTypeFull = 0x75,
+    YKFOATHCalculateResponseTypeTruncated = 0x76
 };
 
 @interface YKFOATHCode()
@@ -50,7 +50,7 @@ typedef NS_ENUM(NSUInteger, YKFKeyOATHCalculateResponseType) {
         
         UInt8 responseType = bytes[0];
         if (truncate) {
-            YKFAssertAbortInit(responseType == YKFKeyOATHCalculateResponseTypeTruncated);
+            YKFAssertAbortInit(responseType == YKFOATHCalculateResponseTypeTruncated);
         }
         
         YKFAssertAbortInit([responseData ykf_containsRange:NSMakeRange(1, 2)]);

@@ -15,13 +15,13 @@
 #import <Foundation/Foundation.h>
 #import "YKFFIDO2CommandAPDU.h"
 
-@class YKFKeyFIDO2ClientPinRequest;
+@class YKFFIDO2ClientPinRequest;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFFIDO2ClientPinAPDU: YKFFIDO2CommandAPDU
 
-- (nullable instancetype)initWithRequest:(YKFKeyFIDO2ClientPinRequest *)request NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithRequest:(YKFFIDO2ClientPinRequest *)request NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

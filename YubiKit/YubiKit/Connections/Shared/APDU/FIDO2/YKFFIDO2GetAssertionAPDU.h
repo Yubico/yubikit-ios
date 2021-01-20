@@ -15,7 +15,7 @@
 #import <Foundation/Foundation.h>
 #import "YKFFIDO2CommandAPDU.h"
 
-@class YKFKeyFIDO2GetAssertionRequest;
+@class YKFFIDO2GetAssertionRequest;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         pinAuth:(NSData * _Nullable)pinAuth
                                     pinProtocol:(NSUInteger)pinProtocol
                                         options:(NSDictionary * _Nullable)options NS_DESIGNATED_INITIALIZER;
-//- (nullable instancetype)initWithRequest:(YKFKeyFIDO2GetAssertionRequest *)request NS_DESIGNATED_INITIALIZER;
+//- (nullable instancetype)initWithRequest:(YKFFIDO2GetAssertionRequest *)request NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

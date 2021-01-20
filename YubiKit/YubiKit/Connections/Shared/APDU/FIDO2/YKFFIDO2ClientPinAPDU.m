@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import "YKFFIDO2ClientPinAPDU.h"
-#import "YKFKeyFIDO2ClientPinRequest.h"
+#import "YKFFIDO2ClientPinRequest.h"
 #import "YKFCBOREncoder.h"
 #import "YKFCBORType.h"
 #import "YKFAssert.h"
@@ -29,13 +29,13 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2ClientPinAPDUKey) {
 
 @implementation YKFFIDO2ClientPinAPDU
 
-- (instancetype)initWithRequest:(YKFKeyFIDO2ClientPinRequest *)request {
+- (instancetype)initWithRequest:(YKFFIDO2ClientPinRequest *)request {
     YKFAssertAbortInit(request);
     YKFAssertAbortInit(request.subCommand >= 0x01 && request.subCommand <= 0x05)
     
-    if (request.subCommand == YKFKeyFIDO2ClientPinRequestSubCommandGetKeyAgreement) {
+    if (request.subCommand == YKFFIDO2ClientPinRequestSubCommandGetKeyAgreement) {
         YKFAssertAbortInit(request.keyAgreement);
-    } else if (request.subCommand == YKFKeyFIDO2ClientPinRequestSubCommandGetPINToken) {        
+    } else if (request.subCommand == YKFFIDO2ClientPinRequestSubCommandGetPINToken) {        
         YKFAssertAbortInit(request.pinHashEnc);
     }
     

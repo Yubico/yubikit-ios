@@ -14,13 +14,13 @@
 
 #import <XCTest/XCTest.h>
 #import "YKFTestCase.h"
-#import "FakeYKFKeyConnectionController.h"
+#import "FakeYKFConnectionController.h"
 #import "YKFSmartCardInterface.h"
 #import "YKFAPDU+Private.h"
 
 @interface YKFSmartCardInterfaceTests: YKFTestCase
 
-@property (nonatomic) FakeYKFKeyConnectionController *keyConnectionController;
+@property (nonatomic) FakeYKFConnectionController *keyConnectionController;
 @property (nonatomic) YKFSmartCardInterface *smartCardInterface;
 
 
@@ -29,7 +29,7 @@
 @implementation YKFSmartCardInterfaceTests
 
 - (void)setUp {
-    self.keyConnectionController = [[FakeYKFKeyConnectionController alloc] init];
+    self.keyConnectionController = [[FakeYKFConnectionController alloc] init];
     self.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:self.keyConnectionController];
 }
 

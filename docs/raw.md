@@ -14,9 +14,9 @@ It is recommended to use high level APIs when possible because they already prov
 
 ---
 
-For such scenarios YubiKit allows to send raw commands to the key over two channels: using the `YKFKeyRawCommandService` or over a `PC/SC like` interface. 
+For such scenarios YubiKit allows to send raw commands to the key over two channels: using the `YKFRawCommandService` or over a `PC/SC like` interface. 
 
-The `YKFKeyRawCommandService` provides a simple API for sending synchronous and asynchronous requests to the key. In the following example the application executes a request for selecting the PIV application from the card:
+The `YKFRawCommandService` provides a simple API for sending synchronous and asynchronous requests to the key. In the following example the application executes a request for selecting the PIV application from the card:
 
 ##### Objective-C
 
@@ -25,7 +25,7 @@ The `YKFKeyRawCommandService` provides a simple API for sending synchronous and 
   
  ...
 
-id<YKFKeyRawCommandSessionProtocol> rawCommandService =  YubiKitManager.shared.accessorySession.rawCommandService;
+id<YKFRawCommandSessionProtocol> rawCommandService =  YubiKitManager.shared.accessorySession.rawCommandService;
 if (!rawCommandService) {
     // The key is not connected, nearby, or the key session is not started if the rawCommandService is nil.
     return;
@@ -136,7 +136,7 @@ let rawCommandService = YubiKitManager.shared.nfcSession.rawCommandService
 ```
 
 ```objective-c
-id<YKFKeyRawCommandSessionProtocol> rawCommandService =  YubiKitManager.shared.nfcSession.rawCommandService;
+id<YKFRawCommandSessionProtocol> rawCommandService =  YubiKitManager.shared.nfcSession.rawCommandService;
 ```
 
 

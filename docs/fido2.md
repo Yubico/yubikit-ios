@@ -22,11 +22,11 @@ Like in FIDO U2F, the FIDO2 operations can be logically separated in 3 steps:
 
 Steps [1] and [3] are custom to each application. These usually involve some HTTPS calls to the server infrastructure used by the application to get and send data back. The second step is where the application is using YubiKit and the YubiKey.
 
-YubiKit provides FIDO2 support through a single shared instance, `fido2Service` (of type `YKFKeyFIDO2Service`) which is a property of `YKFAccessorySession` or `YKFNFCSession`. The FIDO2 service behaves in a similar way with the other services from the key session. It will receive requests and dispatch them asynchronously to be executed by the key. The FIDO2 service is available only when the key is connected to the device and there is an opened session with the key. If the key session is closed or the key is disconnected the `fido2Service` property is nil. 
+YubiKit provides FIDO2 support through a single shared instance, `fido2Service` (of type `YKFFIDO2Service`) which is a property of `YKFAccessorySession` or `YKFNFCSession`. The FIDO2 service behaves in a similar way with the other services from the key session. It will receive requests and dispatch them asynchronously to be executed by the key. The FIDO2 service is available only when the key is connected to the device and there is an opened session with the key. If the key session is closed or the key is disconnected the `fido2Service` property is nil. 
 
 The `sessionState` property on the key session can be observed to check the state of the session and take appropriate actions to update the UI or to send requests to the key. Because the KVO code can be verbose, a complete example on how to observe this property is provided in the demo application and not here. When the host application prefers a delegate pattern to observe this property, the Demo application provides an example on how to isolate the KVO observation into a separate class and use a delegate to update about changes. The example can be found in the `Examples/Observers` project group.
 
-To get a description of the authenticator, the `YKFKeyFIDO2Service` provides the `[executeGetInfoRequestWithCompletion:]` method which is a high level API for the CTAP2 `authenticatorGetInfo` command. This information can be requested as follows:
+To get a description of the authenticator, the `YKFFIDO2Service` provides the `[executeGetInfoRequestWithCompletion:]` method which is a high level API for the CTAP2 `authenticatorGetInfo` command. This information can be requested as follows:
 
 #### Swift
 
@@ -52,12 +52,12 @@ fido2Service.executeGetInfoRequest { (response, error) in
 #import <YubiKit/YubiKit.h>
 ...
 
-YKFKeyFIDO2Service *fido2Service = YubiKitManager.shared.accessorySession.fido2Service;
+YKFFIDO2Service *fido2Service = YubiKitManager.shared.accessorySession.fido2Service;
 if (!fido2Service) {
     return;
 }
 
-[fido2Service executeGetInfoRequestWithCompletion:^(YKFKeyFIDO2GetInfoResponse *response, NSError *error) {
+[fido2Service executeGetInfoRequestWithCompletion:^(YKFFIDO2GetInfoResponse *response, NSError *error) {
     if (error) {
         // Handle the error
         return;
@@ -69,7 +69,7 @@ if (!fido2Service) {
 Using the FIDO APIs over the NFC session is identical to using the APIs over the accessory (used for the YubiKey 5Ci as an MFi accessory) session. The application builds the requests in the same way and the application can choose to execute requests over the *accessory* or the *NFC* session:
 
 ```swift
-var fido2Service: YKFKeyFIDO2ServiceProtocol? = nil
+var fido2Service: YKFFIDO2ServiceProtocol? = nil
 
 // #1 Use the fido2Service instance from the accessory session              
 fido2Service = YubiKitManager.shared.accessorySession.fido2Service
@@ -90,14 +90,14 @@ A new FIDO2 credential can be created by calling `[executeMakeCredentialRequest:
 
 ```swift
 // Not a resident key.
-let makeCredentialOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: false]	
+let makeCredentialOptions = [YKFFIDO2MakeCredentialRequestOptionRK: false]	
 let alg = YKFFIDO2PublicKeyAlgorithmES256
 	
 guard let fido2Service = YubiKitManager.shared.accessorySession.fido2Service else {           
     return
 }
             
-let makeCredentialRequest = YKFKeyFIDO2MakeCredentialRequest()
+let makeCredentialRequest = YKFFIDO2MakeCredentialRequest()
     
 // Some example data as a hash.	    
 let data = Data(repeating: 0, count: 32)
@@ -140,10 +140,10 @@ fido2Service.execute(makeCredentialRequest) { (response, error) in
 ...
 
 // Not a resident key.
-NSDictionary *makeCredentialOptions = @{YKFKeyFIDO2MakeCredentialRequestOptionRK: @(NO)};
+NSDictionary *makeCredentialOptions = @{YKFFIDO2MakeCredentialRequestOptionRK: @(NO)};
 NSInteger alg = YKFFIDO2PublicKeyAlgorithmES256;
 	
-YKFKeyFIDO2MakeCredentialRequest *makeCredentialRequest = [[YKFKeyFIDO2MakeCredentialRequest alloc] init];
+YKFFIDO2MakeCredentialRequest *makeCredentialRequest = [[YKFFIDO2MakeCredentialRequest alloc] init];
     
 // Some example data as a hash.
 UInt8 *buffer = malloc(32);
@@ -178,12 +178,12 @@ makeCredentialRequest.pubKeyCredParams = @[param];
 // Set the request options.
 makeCredentialRequest.options = makeCredentialOptions;
     
-YKFKeyFIDO2Service *fido2Service = YubiKitManager.shared.accessorySession.fido2Service;
+YKFFIDO2Service *fido2Service = YubiKitManager.shared.accessorySession.fido2Service;
 if (!fido2Service) {
     return;
 }
 
-[fido2Service executeMakeCredentialRequest:makeCredentialRequest completion:^(YKFKeyFIDO2MakeCredentialResponse *response, NSError *error) {
+[fido2Service executeMakeCredentialRequest:makeCredentialRequest completion:^(YKFFIDO2MakeCredentialResponse *response, NSError *error) {
     if (error) {
         // Handle the error here.        
         return;
@@ -192,15 +192,15 @@ if (!fido2Service) {
 }];
 ```
 	
-In FIDO2, during the authentication phase, the Relying Party will ask from the user to approve and provide an assertion from the authenticator (in this case the YubiKey5Ci), after the authenticator was registered as a 2FA method. YubiKit provides the `[executeGetAssertionRequest:completion:]` method on the `YKFKeyFIDO2Service`, which allows to retrieve an assertion from the key:
+In FIDO2, during the authentication phase, the Relying Party will ask from the user to approve and provide an assertion from the authenticator (in this case the YubiKey5Ci), after the authenticator was registered as a 2FA method. YubiKit provides the `[executeGetAssertionRequest:completion:]` method on the `YKFFIDO2Service`, which allows to retrieve an assertion from the key:
 
 #### Swift
 
 ```swift
-let assertionOptions = [YKFKeyFIDO2GetAssertionRequestOptionUP: true,
-                       YKFKeyFIDO2GetAssertionRequestOptionUV: false]
+let assertionOptions = [YKFFIDO2GetAssertionRequestOptionUP: true,
+                       YKFFIDO2GetAssertionRequestOptionUV: false]
 
-let getAssertionRequest = YKFKeyFIDO2GetAssertionRequest()
+let getAssertionRequest = YKFFIDO2GetAssertionRequest()
     
 getAssertionRequest.rpId = "yubico.com"
 getAssertionRequest.clientDataHash = data
@@ -237,10 +237,10 @@ fido2Service.execute(getAssertionRequest) { (response, error) in
 #import <YubiKit/YubiKit.h>
 ...
 	
-YKFKeyFIDO2GetAssertionRequest *getAssertionRequest = [[YKFKeyFIDO2GetAssertionRequest alloc] init];
+YKFFIDO2GetAssertionRequest *getAssertionRequest = [[YKFFIDO2GetAssertionRequest alloc] init];
     
-NSDictionary *assertionOptions = @{YKFKeyFIDO2GetAssertionRequestOptionUP: @(YES),
-                                  YKFKeyFIDO2GetAssertionRequestOptionUV: @(NO)};
+NSDictionary *assertionOptions = @{YKFFIDO2GetAssertionRequestOptionUP: @(YES),
+                                  YKFFIDO2GetAssertionRequestOptionUV: @(NO)};
 
 // Some example data as a hash.	        
 UInt8 *buffer = malloc(32);
@@ -270,11 +270,11 @@ getAssertionRequest.allowList = @[credentialDescriptor];
 	
 // Execute the Get Assertion request.
 	
-YKFKeyFIDO2Service *fido2Service = YubiKitManager.shared.accessorySession.fido2Service;
+YKFFIDO2Service *fido2Service = YubiKitManager.shared.accessorySession.fido2Service;
 if (!fido2Service) {
     return;
 }
-[fido2Service executeGetAssertionRequest:getAssertionRequest completion:^(YKFKeyFIDO2GetAssertionResponse * response, NSError *error) {
+[fido2Service executeGetAssertionRequest:getAssertionRequest completion:^(YKFFIDO2GetAssertionResponse * response, NSError *error) {
     if (error) {
         // Handle the error		
         return;
@@ -287,7 +287,7 @@ The FIDO2 standard defines the ability to set a PIN on the authenticator. In thi
 
 The most common scenario, where PIN verification is required, happens when adding a new credential to the key. This operation requires more privileges so the YubiKey will ask for PIN verification, if any PIN was set on the FIDO2 application.
 
-When the key requires PIN verification for an operation, YubiKit will return the error code `YKFKeyFIDO2ErrorCode.PIN_REQUIRED`. In this particular scenario the application can cache the request, perform the PIN verification and retry the request. This flow is implemented in the `FIDO2ViewController`. 
+When the key requires PIN verification for an operation, YubiKit will return the error code `YKFFIDO2ErrorCode.PIN_REQUIRED`. In this particular scenario the application can cache the request, perform the PIN verification and retry the request. This flow is implemented in the `FIDO2ViewController`. 
 
 To verify the PIN, the FIDO2 Service provides the `[executeVerifyPinRequest:completion:]` method:
 
@@ -301,7 +301,7 @@ guard let fido2Service = accessorySession.fido2Service else {
 }
     
 let pin = "some value"
-guard let verifyPinRequest = YKFKeyFIDO2VerifyPinRequest(pin: pin) else {
+guard let verifyPinRequest = YKFFIDO2VerifyPinRequest(pin: pin) else {
     // The PIN is empty
     return
 }
@@ -318,14 +318,14 @@ fido2Service.execute(verifyPinRequest) { (error) in
 #### Objective-C
 
 ```objective-c
-YKFKeyFIDO2Service *fido2Service = YubiKitManager.shared.accessorySession.fido2Service;
+YKFFIDO2Service *fido2Service = YubiKitManager.shared.accessorySession.fido2Service;
 if (!fido2Service) {
     // The session with the key is closed
     return;
 }
     
 NSString *pin = @"some value";
-YKFKeyFIDO2VerifyPinRequest *verifyPinRequest = [[YKFKeyFIDO2VerifyPinRequest alloc] initWithPin:pin];
+YKFFIDO2VerifyPinRequest *verifyPinRequest = [[YKFFIDO2VerifyPinRequest alloc] initWithPin:pin];
 if (!verifyPinRequest) {
     // The PIN is empty
     return;

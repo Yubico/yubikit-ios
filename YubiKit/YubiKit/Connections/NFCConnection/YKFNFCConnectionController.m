@@ -17,12 +17,12 @@
 #import "YKFBlockMacros.h"
 #import "YKFLogger.h"
 #import "YKFAssert.h"
-#import "YKFKeySessionError.h"
-#import "YKFKeySessionError+Private.h"
+#import "YKFSessionError.h"
+#import "YKFSessionError+Private.h"
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFAPDU+Private.h"
 
-typedef void (^YKFKeyConnectionControllerCommunicationQueueBlock)(NSOperation *operation);
+typedef void (^YKFConnectionControllerCommunicationQueueBlock)(NSOperation *operation);
 
 @interface YKFNFCConnectionController()
 
@@ -47,11 +47,11 @@ typedef void (^YKFKeyConnectionControllerCommunicationQueueBlock)(NSOperation *o
 
 #pragma mark - Commands
 
-- (void)execute:(nonnull YKFAPDU *)command completion:(nonnull YKFKeyConnectionControllerCommandResponseBlock)completion {
-    [self execute:command configuration:[YKFKeyCommandConfiguration defaultCommandCofiguration] completion:completion];
+- (void)execute:(nonnull YKFAPDU *)command completion:(nonnull YKFConnectionControllerCommandResponseBlock)completion {
+    [self execute:command configuration:[YKFCommandConfiguration defaultCommandCofiguration] completion:completion];
 }
 
-- (void)execute:(nonnull YKFAPDU *)command configuration:(nonnull YKFKeyCommandConfiguration *)configuration completion:(nonnull YKFKeyConnectionControllerCommandResponseBlock)completion {
+- (void)execute:(nonnull YKFAPDU *)command configuration:(nonnull YKFCommandConfiguration *)configuration completion:(nonnull YKFConnectionControllerCommandResponseBlock)completion {
     YKFParameterAssertReturn(command);
     YKFParameterAssertReturn(configuration);
     YKFParameterAssertReturn(completion);
@@ -69,7 +69,7 @@ typedef void (^YKFKeyConnectionControllerCommunicationQueueBlock)(NSOperation *o
         
         // Check availability before executing. If the command is queued, the tag may become unavailable at execution time.
         if (!strongSelf.tag.isAvailable) {
-            completion(nil, [YKFKeySessionError errorWithCode:YKFKeySessionErrorConnectionLost], 0);
+            completion(nil, [YKFSessionError errorWithCode:YKFSessionErrorConnectionLost], 0);
             return;
         }
                 
@@ -120,12 +120,12 @@ typedef void (^YKFKeyConnectionControllerCommunicationQueueBlock)(NSOperation *o
     }];
 }
 
-- (void)closeConnectionWithCompletion:(nonnull YKFKeyConnectionControllerCompletionBlock)completion {
+- (void)closeConnectionWithCompletion:(nonnull YKFConnectionControllerCompletionBlock)completion {
     // Does nothing: The NFCISO7816Tag doesn't expose a stream for communication.
     completion();
 }
 
-- (void)dispatchOnSequentialQueue:(YKFKeyConnectionControllerCompletionBlock)block delay:(NSTimeInterval)delay {
+- (void)dispatchOnSequentialQueue:(YKFConnectionControllerCompletionBlock)block delay:(NSTimeInterval)delay {
     dispatch_queue_t sharedDispatchQueue = self.communicationQueue.underlyingQueue;
     
     YKFParameterAssertReturn(sharedDispatchQueue);
@@ -157,7 +157,7 @@ typedef void (^YKFKeyConnectionControllerCommunicationQueueBlock)(NSOperation *o
     }
 }
 
-- (void)dispatchOnSequentialQueue:(YKFKeyConnectionControllerCompletionBlock)block {
+- (void)dispatchOnSequentialQueue:(YKFConnectionControllerCompletionBlock)block {
     YKFParameterAssertReturn(block);
     [self dispatchOnSequentialQueue:block delay:0];
 }
@@ -181,7 +181,7 @@ typedef void (^YKFKeyConnectionControllerCommunicationQueueBlock)(NSOperation *o
 
 #pragma mark - Helpers
 
-- (void)dispatchBlockOnCommunicationQueue:(YKFKeyConnectionControllerCommunicationQueueBlock)block {
+- (void)dispatchBlockOnCommunicationQueue:(YKFConnectionControllerCommunicationQueueBlock)block {
     YKFParameterAssertReturn(block);
     
     NSBlockOperation *operation = [[NSBlockOperation alloc] init];

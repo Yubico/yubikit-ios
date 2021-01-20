@@ -42,7 +42,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     private func runDemo() {}
         /*
         let keyPluggedIn = YubiKitManager.shared.accessorySession.connectionState == .open
-        let fido2Service: YKFKeyFIDO2SessionProtocol
+        let fido2Service: YKFFIDO2SessionProtocol
         if YubiKitDeviceCapabilities.supportsISO7816NFCTags && !keyPluggedIn {
             guard #available(iOS 13.0, *) else {
                 fatalError()
@@ -199,7 +199,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func verify(fido2Service: YKFKeyFIDO2SessionProtocol, pin: String) {
+    private func verify(fido2Service: YKFFIDO2SessionProtocol, pin: String) {
         fido2Service.executeGetPinRetries { [weak self] (retries, error) in
             guard let self = self else {
                 return
@@ -216,7 +216,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
             }
             self.log(message: "PIN retries left: \(retries)")
             
-            guard let verifyPinRequest = YKFKeyFIDO2VerifyPinRequest(pin: pin) else {
+            guard let verifyPinRequest = YKFFIDO2VerifyPinRequest(pin: pin) else {
                 return
             }
             fido2Service.execute(verifyPinRequest) { [weak self] (error) in
@@ -259,8 +259,8 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func set(fido2Service: YKFKeyFIDO2SessionProtocol, pin: String) {
-        guard let setPinRequest = YKFKeyFIDO2SetPinRequest(pin: pin) else {
+    private func set(fido2Service: YKFFIDO2SessionProtocol, pin: String) {
+        guard let setPinRequest = YKFFIDO2SetPinRequest(pin: pin) else {
             return
         }
         fido2Service.execute(setPinRequest) { [weak self] (error) in
@@ -305,10 +305,10 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func change(fido2Service: YKFKeyFIDO2SessionProtocol, to newPin: String, oldPin: String) {
+    private func change(fido2Service: YKFFIDO2SessionProtocol, to newPin: String, oldPin: String) {
         setDemoButtons(enabled: false)
         
-        guard let changePinRequest = YKFKeyFIDO2ChangePinRequest(newPin: newPin, oldPin: oldPin) else {
+        guard let changePinRequest = YKFFIDO2ChangePinRequest(newPin: newPin, oldPin: oldPin) else {
             return
         }
         fido2Service.execute(changePinRequest) { [weak self] (error) in
@@ -329,7 +329,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     
     // MARK: - GetInfo Demo
     
-    private func runGetInfoDemo(fido2Service: YKFKeyFIDO2SessionProtocol) {
+    private func runGetInfoDemo(fido2Service: YKFFIDO2SessionProtocol) {
         setDemoButtons(enabled: false)
                 
         log(message: "Executing Get Info request...")
@@ -352,42 +352,42 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     
     // MARK: - ES256, EdDSA Demos
     
-    private func runECCDemo(fido2Service: YKFKeyFIDO2SessionProtocol) {
+    private func runECCDemo(fido2Service: YKFFIDO2SessionProtocol) {
         setDemoButtons(enabled: false)
         
         log(message: "Executing ECC Demo...")
         log(message: "(!) Touch the key when the LEDs are blinking slowly.")
         
         // Not a resident key (stored on the authenticator) and no PIN required.
-        let makeOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: false]
+        let makeOptions = [YKFFIDO2MakeCredentialRequestOptionRK: false]
         
         // User presence required (touch) but not user verification (PIN).
-        let assertionOptions = [YKFKeyFIDO2GetAssertionRequestOptionUP: true]
+        let assertionOptions = [YKFFIDO2GetAssertionRequestOptionUP: true]
         
         makeFIDO2CredentialWith(fido2Service: fido2Service, algorithm:YKFFIDO2PublicKeyAlgorithmES256, makeOptions: makeOptions, assertionOptions: assertionOptions)
     }
     
-    private func runEdDSADemo(fido2Service: YKFKeyFIDO2SessionProtocol) {
+    private func runEdDSADemo(fido2Service: YKFFIDO2SessionProtocol) {
         setDemoButtons(enabled: false)
         
         log(message: "Executing EdDSA (Ed25519) Demo...")
         log(message: "(!) Touch the key when the LEDs are blinking slowly.")
         
         // Resident key (stored on the authenticator) and no PIN required.
-        let makeOptions = [YKFKeyFIDO2MakeCredentialRequestOptionRK: true]
+        let makeOptions = [YKFFIDO2MakeCredentialRequestOptionRK: true]
         
         // User presence and verification disabled (silent authentication).
-        let assertionOptions = [YKFKeyFIDO2GetAssertionRequestOptionUP: false]
+        let assertionOptions = [YKFFIDO2GetAssertionRequestOptionUP: false]
         
         makeFIDO2CredentialWith(fido2Service: fido2Service, algorithm:YKFFIDO2PublicKeyAlgorithmEdDSA, makeOptions: makeOptions, assertionOptions: assertionOptions)
     }
     
-    private func makeFIDO2CredentialWith(fido2Service: YKFKeyFIDO2SessionProtocol, algorithm: NSInteger, makeOptions: [String: Bool], assertionOptions: [String: Bool]) {
+    private func makeFIDO2CredentialWith(fido2Service: YKFFIDO2SessionProtocol, algorithm: NSInteger, makeOptions: [String: Bool], assertionOptions: [String: Bool]) {
         /*
          1. Setup the Make Credential request.
          */
         
-        let makeCredentialRequest = YKFKeyFIDO2MakeCredentialRequest()
+        let makeCredentialRequest = YKFFIDO2MakeCredentialRequest()
         
         let data = Data(repeating: 0, count: 32)
         makeCredentialRequest.clientDataHash = data
@@ -435,7 +435,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
              3. Setup the Get Assertion request.
              */
             
-            let getAssertionRequest = YKFKeyFIDO2GetAssertionRequest()
+            let getAssertionRequest = YKFFIDO2GetAssertionRequest()
             
             getAssertionRequest.rpId = "yubico.com"
             getAssertionRequest.clientDataHash = data
@@ -456,7 +456,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func getAssertionWith(fido2Service: YKFKeyFIDO2SessionProtocol, request: YKFKeyFIDO2GetAssertionRequest) {
+    private func getAssertionWith(fido2Service: YKFFIDO2SessionProtocol, request: YKFFIDO2GetAssertionRequest) {
 
         fido2Service.execute(request) { [weak self] (response, error) in
             guard let self = self else {
@@ -478,7 +478,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     
     // MARK: - FIDO2 Application Reset
     
-    private func runApplicationReset(fido2Service: YKFKeyFIDO2SessionProtocol) {
+    private func runApplicationReset(fido2Service: YKFFIDO2SessionProtocol) {
         setDemoButtons(enabled: false)
         
         log(message: "(!) The Reset operation must be executed within 5 seconds after the key was powered up. Otherwise the key will return an error.")
@@ -553,7 +553,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
     
     // MARK: - FIDO2 Response Log Helpers
     
-    private func logFIDO2GetInfo(response: YKFKeyFIDO2GetInfoResponse) {
+    private func logFIDO2GetInfo(response: YKFFIDO2GetInfoResponse) {
         log(header: "Get Info response")
         
         log(tag: "Versions", value: response.versions.description)
@@ -573,7 +573,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func logFIDO2MakeCredential(response: YKFKeyFIDO2MakeCredentialResponse) {
+    private func logFIDO2MakeCredential(response: YKFFIDO2MakeCredentialResponse) {
         log(header: "Make credential response")
         
         log(tag: "Authenticator data", value: response.authData.hexDescription())
@@ -590,7 +590,7 @@ class FIDO2DemoViewController: OtherDemoRootViewController {
         }
     }
     
-    private func logFIDO2GetAssertion(response: YKFKeyFIDO2GetAssertionResponse) {
+    private func logFIDO2GetAssertion(response: YKFFIDO2GetAssertionResponse) {
         log(header: "Get Assertion response")
 
         if let credential = response.credential {

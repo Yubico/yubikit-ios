@@ -18,7 +18,7 @@
 #import "YKFOATHCredential.h"
 #import "YKFOATHCredentialTemplate.h"
 #import "YKFOATHCredentialUtils.h"
-#import "YKFKeyOATHError.h"
+#import "YKFOATHError.h"
 
 static NSString* const YKFOATHCredentialValidatorTestsVeryLargeSecret = @"HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ";
 
@@ -32,7 +32,7 @@ static NSString* const YKFOATHCredentialValidatorTestsVeryLargeSecret = @"HXDMVJ
     YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:[NSURL URLWithString:url]];
     XCTAssertNotNil(credential);
     
-    YKFKeySessionError *error = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
+    YKFSessionError *error = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
     XCTAssertNil(error);
 }
 
@@ -41,7 +41,7 @@ static NSString* const YKFOATHCredentialValidatorTestsVeryLargeSecret = @"HXDMVJ
     YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:[NSURL URLWithString:url]];
     XCTAssertNotNil(credential);
     
-    YKFKeySessionError *error = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
+    YKFSessionError *error = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
     XCTAssertNil(error);
 }
 
@@ -52,7 +52,7 @@ static NSString* const YKFOATHCredentialValidatorTestsVeryLargeSecret = @"HXDMVJ
     YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:[NSURL URLWithString:url]];
     XCTAssertNotNil(credential);
 
-    YKFKeySessionError *error = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
+    YKFSessionError *error = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
     XCTAssertNil(error);
 }
 
@@ -65,8 +65,8 @@ static NSString* const YKFOATHCredentialValidatorTestsVeryLargeSecret = @"HXDMVJ
     YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:[NSURL URLWithString:url]];
     XCTAssertNotNil(credential);
     
-    YKFKeySessionError *error = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
-    XCTAssertEqual(error.code, YKFKeyOATHErrorCodeNameTooLong);
+    YKFSessionError *error = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
+    XCTAssertEqual(error.code, YKFOATHErrorCodeNameTooLong);
 }
 
 @end

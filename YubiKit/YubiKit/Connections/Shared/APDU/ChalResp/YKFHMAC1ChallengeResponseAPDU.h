@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
-#import "YKFKeyChalRespSendRequest.h"
+#import "YKFChalRespSendRequest.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFHMAC1ChallengeResponseAPDU : YKFAPDU
 
-- (nullable instancetype)initWithRequest:(YKFKeyChalRespSendRequest *)request NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithRequest:(YKFChalRespSendRequest *)request NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

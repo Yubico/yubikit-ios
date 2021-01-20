@@ -162,7 +162,7 @@ class OATHTests: XCTestCase {
 }
 
 extension YKFConnectionProtocol {
-    func oathTestSession(completion: @escaping (_ session: YKFKeyOATHSession) -> Void) {
+    func oathTestSession(completion: @escaping (_ session: YKFOATHSession) -> Void) {
         self.oathSession { session, error in
             guard let session = session else { XCTAssertTrue(false, "Failed to get OATH session"); return }
             session.reset { error in

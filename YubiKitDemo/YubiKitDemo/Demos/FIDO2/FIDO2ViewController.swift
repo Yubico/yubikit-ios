@@ -14,9 +14,9 @@
 
 import UIKit
 
-class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDelegate, YKFKeyFIDO2SessionKeyStateDelegate {
+class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDelegate, YKFFIDO2SessionKeyStateDelegate {
     
-    func keyStateChanged(_ keyState: YKFKeyFIDO2SessionKeyState) {
+    func keyStateChanged(_ keyState: YKFFIDO2SessionKeyState) {
         if keyState == .touchKey {
             self.statusView?.state = .touchKey
         }
@@ -122,9 +122,9 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
         }
     }
     
-    var session: YKFKeyFIDO2Session?
+    var session: YKFFIDO2Session?
 
-    func session(completion: @escaping (_ session: YKFKeyFIDO2Session?, _ error: Error?) -> Void) {
+    func session(completion: @escaping (_ session: YKFFIDO2Session?, _ error: Error?) -> Void) {
         if let session = session {
             completion(session, nil)
             return
@@ -244,7 +244,7 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
         param.alg = response.pubKeyAlg
         let pubKeyCredParams = [param]
         
-        let options = [YKFKeyFIDO2OptionRK: response.residentKey]
+        let options = [YKFFIDO2OptionRK: response.residentKey]
         
         session { session, error in
             guard let session = session else { completion(.failure(error!)); return }
@@ -255,7 +255,7 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
                                    excludeList: nil,
                                    options: options)  { [self] keyResponse, error in
                 guard error == nil else {
-                    if let error = error as NSError?, error.code == YKFKeyFIDO2ErrorCode.PIN_REQUIRED.rawValue {
+                    if let error = error as NSError?, error.code == YKFFIDO2ErrorCode.PIN_REQUIRED.rawValue {
                         handlePINCode() {
                             makeCredentialOnKey(response: response, completion: completion)
                         }
@@ -397,7 +397,7 @@ class FIDO2ViewController: UIViewController, UITextFieldDelegate, YKFManagerDele
             let clientDataHash = clientData.clientDataHash!
             
             let rpId = response.rpId
-            let options = [YKFKeyFIDO2OptionUP: true]
+            let options = [YKFFIDO2OptionUP: true]
             
             var allowList = [YKFFIDO2PublicKeyCredentialDescriptor]()
             for credentialId in response.allowCredentials {
@@ -515,7 +515,7 @@ extension UIAlertController {
 
 // Wrap the fido2Session() Objective-C method in a more easy to use Swift version
 extension YKFConnectionProtocol {
-    func fido2Session(_ completion: @escaping ((_ result: Result<YKFKeyFIDO2SessionProtocol, Error>) -> Void)) {
+    func fido2Session(_ completion: @escaping ((_ result: Result<YKFFIDO2SessionProtocol, Error>) -> Void)) {
         self.fido2Session { session, error in
             guard error == nil else { completion(.failure(error!)); return }
             guard let session = session else { fatalError() }

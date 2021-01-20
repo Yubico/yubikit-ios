@@ -7,13 +7,13 @@
 //
 
 #import "YKFHMAC1ChallengeResponseAPDU.h"
-#import "YKFKeyChalRespSendRequest.h"
+#import "YKFChalRespSendRequest.h"
 #import "YKFAssert.h"
 #import "YKFAPDUCommandInstruction.h"
 
 @implementation YKFHMAC1ChallengeResponseAPDU
 
-- (instancetype)initWithRequest:(YKFKeyChalRespSendRequest *)request {
+- (instancetype)initWithRequest:(YKFChalRespSendRequest *)request {
     YKFAssertAbortInit(request);
     
     UInt8 slot = request.slot == YKFSlotOne ? 0x30 : 0x38;

@@ -16,10 +16,10 @@
 #import <CommonCrypto/CommonCrypto.h>
 #import "YKFOATHCredentialUtils.h"
 #import "YKFAssert.h"
-#import "YKFKeyOATHError.h"
-#import "YKFKeySessionError.h"
+#import "YKFOATHError.h"
+#import "YKFSessionError.h"
 
-#import "YKFKeySessionError+Private.h"
+#import "YKFSessionError+Private.h"
 #import "YKFOATHCredential.h"
 #import "YKFOATHCredentialTemplate.h"
 #import "YKFOATHCredential+Private.h"
@@ -54,11 +54,11 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
 }
 
 
-+ (YKFKeySessionError *)validateCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate {
++ (YKFSessionError *)validateCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate {
     YKFParameterAssertReturnValue(credentialTemplate, nil);
     
     if ([YKFOATHCredentialUtils keyFromCredentialIdentifier:credentialTemplate].length > YKFOATHCredentialValidatorMaxNameSize) {
-        return [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeNameTooLong];
+        return [YKFOATHError errorWithCode:YKFOATHErrorCodeNameTooLong];
     }
     NSData *credentialSecret = credentialTemplate.secret;
     int shaAlgorithmBlockSize = 0;
@@ -76,16 +76,16 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
             YKFAssertReturnValue(NO, @"Invalid OATH algorithm.", nil);
     }
     if (credentialSecret.length > shaAlgorithmBlockSize) {
-        return [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeSecretTooLong];
+        return [YKFOATHError errorWithCode:YKFOATHErrorCodeSecretTooLong];
     }
     return nil;
 }
 
-+ (YKFKeySessionError *)validateCredential:(YKFOATHCredential *)credential {
++ (YKFSessionError *)validateCredential:(YKFOATHCredential *)credential {
     YKFParameterAssertReturnValue(credential, nil);
     
     if ([YKFOATHCredentialUtils keyFromCredentialIdentifier:credential].length > YKFOATHCredentialValidatorMaxNameSize) {
-        return [YKFKeyOATHError errorWithCode:YKFKeyOATHErrorCodeNameTooLong];
+        return [YKFOATHError errorWithCode:YKFOATHErrorCodeNameTooLong];
     }
     return nil;
 }

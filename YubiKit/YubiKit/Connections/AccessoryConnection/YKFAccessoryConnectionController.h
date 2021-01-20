@@ -15,14 +15,14 @@
 #import <Foundation/Foundation.h>
 #import <ExternalAccessory/ExternalAccessory.h>
 
-#import "YKFKeyCommandConfiguration.h"
-#import "YKFKeyConnectionControllerProtocol.h"
+#import "YKFCommandConfiguration.h"
+#import "YKFConnectionControllerProtocol.h"
 #import "YKFAPDU.h"
 #import "EASession+Testing.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFAccessoryConnectionController : NSObject<YKFKeyConnectionControllerProtocol>
+@interface YKFAccessoryConnectionController : NSObject<YKFConnectionControllerProtocol>
 
 - (nullable instancetype)initWithSession:(id<YKFEASessionProtocol>)session operationQueue:(NSOperationQueue *)operationQueue NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

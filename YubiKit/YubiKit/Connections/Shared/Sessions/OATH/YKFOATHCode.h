@@ -16,7 +16,7 @@
 
 
 /*!
- @class YKFKeyOATHCalculateResponse
+ @class YKFOATHCalculateResponse
  
  @abstract
     Response from Calculate OATH credential request.
