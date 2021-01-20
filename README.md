@@ -189,7 +189,7 @@ connection.fido2Session { session, error in
 ```objective-c
 #import <YubiKit/YubiKit.h>
 
-[self.connection fido2Session:^(YKFKeyFIDO2Session * _Nullable session, NSError * _Nullable error) {
+[self.connection fido2Session:^(YKFFIDO2Session * _Nullable session, NSError * _Nullable error) {
     if (error) { /* handle error and return */ }
     [session verifyPin:pin completion:^(NSError * _Nullable error) {
         ...
@@ -228,9 +228,9 @@ if (YubiKitDeviceCapabilities.supportsISO7816NFCTags) {
 
 List of sessions is documented below with it's own specifics and samples:
 
-- [FIDO](./docs/fido2.md) - Provides FIDO2 operations accessible via the *YKFKeyFIDO2Session*.
+- [FIDO](./docs/fido2.md) - Provides FIDO2 operations accessible via the *YKFFIDO2Session*.
 
-- [U2F](./docs/u2f.md) - Provides U2F operations accessible via the *YKFKeyU2FSession*.
+- [U2F](./docs/u2f.md) - Provides U2F operations accessible via the *YKFU2FSession*.
 
 - [OATH](./docs/oath.md) - Allows applications, such as an authenticator app to store OATH TOTP and HOTP secrets on a YubiKey and generate one-time passwords.
 
