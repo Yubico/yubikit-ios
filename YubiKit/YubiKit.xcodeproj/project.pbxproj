@@ -51,7 +51,7 @@
 		9529CBBD214905770041D2F8 /* FakeEAAccessory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9529CBBC214905770041D2F8 /* FakeEAAccessory.m */; };
 		9529CBBF2149105F0041D2F8 /* YKFAccessoryDescriptionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9529CBBE2149105F0041D2F8 /* YKFAccessoryDescriptionTests.m */; };
 		9529CBC1214927D80041D2F8 /* YKFU2FServiceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9529CBC0214927D80041D2F8 /* YKFU2FServiceTests.m */; };
-		9529CBC421492A3E0041D2F8 /* FakeYKFKeyConnectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9529CBC321492A3E0041D2F8 /* FakeYKFKeyConnectionController.m */; };
+		9529CBC421492A3E0041D2F8 /* FakeYKFConnectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9529CBC321492A3E0041D2F8 /* FakeYKFConnectionController.m */; };
 		952CB9EC220D835F004A7624 /* YKFFIDO2PinAuthKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 952CB9EB220D835F004A7624 /* YKFFIDO2PinAuthKey.m */; };
 		953267F6225B3DB200965E75 /* YKFFIDO2Error.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95B0CAAB21EF53E1009C6A34 /* YKFFIDO2Error.h */; };
 		9533068A2088CB9F00A625C8 /* UIWindowAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 953306892088CB9F00A625C8 /* UIWindowAdditions.m */; };
@@ -356,8 +356,8 @@
 		9529CBBC214905770041D2F8 /* FakeEAAccessory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FakeEAAccessory.m; sourceTree = "<group>"; };
 		9529CBBE2149105F0041D2F8 /* YKFAccessoryDescriptionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFAccessoryDescriptionTests.m; sourceTree = "<group>"; };
 		9529CBC0214927D80041D2F8 /* YKFU2FServiceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFU2FServiceTests.m; sourceTree = "<group>"; };
-		9529CBC221492A3E0041D2F8 /* FakeYKFKeyConnectionController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FakeYKFKeyConnectionController.h; sourceTree = "<group>"; };
-		9529CBC321492A3E0041D2F8 /* FakeYKFKeyConnectionController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FakeYKFKeyConnectionController.m; sourceTree = "<group>"; };
+		9529CBC221492A3E0041D2F8 /* FakeYKFConnectionController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FakeYKFConnectionController.h; sourceTree = "<group>"; };
+		9529CBC321492A3E0041D2F8 /* FakeYKFConnectionController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FakeYKFConnectionController.m; sourceTree = "<group>"; };
 		9529CBC5214AA8A10041D2F8 /* YKFAPDUCommandInstruction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFAPDUCommandInstruction.h; sourceTree = "<group>"; };
 		952CB9EA220D835F004A7624 /* YKFFIDO2PinAuthKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFFIDO2PinAuthKey.h; sourceTree = "<group>"; };
 		952CB9EB220D835F004A7624 /* YKFFIDO2PinAuthKey.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFFIDO2PinAuthKey.m; sourceTree = "<group>"; };
@@ -812,8 +812,8 @@
 				956884C420AADA5A00E0F72C /* FakeNFCNDEFReaderSession.m */,
 				950C700A22980CFE00E48458 /* FakeUIDevice.h */,
 				950C700B22980CFE00E48458 /* FakeUIDevice.m */,
-				9529CBC221492A3E0041D2F8 /* FakeYKFKeyConnectionController.h */,
-				9529CBC321492A3E0041D2F8 /* FakeYKFKeyConnectionController.m */,
+				9529CBC221492A3E0041D2F8 /* FakeYKFConnectionController.h */,
+				9529CBC321492A3E0041D2F8 /* FakeYKFConnectionController.m */,
 				956884CE20AAFE9300E0F72C /* FakeYKFOTPTextParser.h */,
 				956884CF20AAFE9300E0F72C /* FakeYKFOTPTextParser.m */,
 				956884D120AB012200E0F72C /* FakeYKFOTPURIParser.h */,
@@ -1395,7 +1395,7 @@
 				A54DCC0323F2147500E95259 /* YKNSStringAdditionTests.m in Sources */,
 				956884D320AB012200E0F72C /* FakeYKFOTPURIParser.m in Sources */,
 				956884CD20AAFB3F00E0F72C /* FakeYubiKitDeviceCapabilities.m in Sources */,
-				9529CBC421492A3E0041D2F8 /* FakeYKFKeyConnectionController.m in Sources */,
+				9529CBC421492A3E0041D2F8 /* FakeYKFConnectionController.m in Sources */,
 				956884C920AAE70E00E0F72C /* UIDeviceAdditions.m in Sources */,
 				A5016E5C24297FEF005A0C21 /* YKFNSDataAdditionsTests.m in Sources */,
 				95EEEF6321664E4600BE7D7B /* MF_Base32Additions.m in Sources */,
