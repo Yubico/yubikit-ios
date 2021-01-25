@@ -15,7 +15,7 @@ The host application can build the library as a dependency of the application ta
 
 ## **Transitioning to version 4 of the SDK**
 
-Read the [transitioning document](./docs/transition-sdk-4.md) if you already have integrated the previous version of the SDK.
+Read the [transitioning document](./docs/transitioning-sdk-4.md) if you already have integrated the previous version of the SDK.
 
 ## **Getting Started**
 
