@@ -169,9 +169,9 @@ YubiKit headers are documented and the documentation is available either by read
 
 ## Using the Library
 
-YubiKit is exposing a simple and easy to use API for executing operations on the YubiKey. The API is divided into `Connections` and `Sessions`. The supported connections are `YKFAccessoryConnection` and `YKFNFCConnection`. Each session is started by calling `YubiKitManager.shared.startAccessoryConnection()` respectively `YubiKitManager.shared.startNFCConnection()`. Once a YubiKey connects the SDK delivers the new connection via the `YKFManagerDelegate` protocol. Disconnects are also signaled through the protocol.
+YubiKit is exposing a simple and easy to use API for executing operations on the YubiKey. The API is divided into `Connections` and `Sessions`. The supported connections are `YKFAccessoryConnection` and `YKFNFCConnection`. Each session is started by calling `YubiKitManager.shared.startAccessoryConnection()` respectively `YubiKitManager.shared.startNFCConnection()`. Once a YubiKey connects the SDK delivers the new connection via the `YKFManagerDelegate` protocol. Disconnects are also signaled through the protocol. For a easier and a more Swift-like experience you can implement something similar to this example: [YKFManagerDelegate wrapper](./docs/easy-handling-connections.md).
 
-From a connection you can retrieve any of the sessions currently supported in the SDK. The connections are fetched by calling a method with a callback block. Once the session has been established and the corresponding application on the YubiKey has been selected the callback will return the new session.
+From a connection you can retrieve any of the sessions currently supported in the SDK. The connections are fetched by calling a method with a callback block. Once the session has been established and the corresponding application on the YubiKey has been selected the callback will return the new session. For e.g a FIDO2 session it would look like this:
 
 ##### Swift    
 
