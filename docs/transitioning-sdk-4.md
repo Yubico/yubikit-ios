@@ -33,7 +33,6 @@ class YubiKeyConnection: NSObject {
         super.init()
         YubiKitManager.shared.delegate = self
         YubiKitManager.shared.startAccessoryConnection()
-        Thread.sleep(forTimeInterval: 0.5) // Wait for accessory to connect
     }
     
     func connection(completion: @escaping (_ connection: YKFConnectionProtocol) -> Void) {
