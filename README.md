@@ -169,9 +169,9 @@ YubiKit headers are documented and the documentation is available either by read
 
 ## Using the Library
 
-YubiKit is exposing a simple and easy to use API for operations with YubiKey and set of operations named as servie. Each service hides the complexity of managing the logic of interacting with an external accessory on iOS or communicating over NFC. It exchanges specific binary data to the key. The set of operations are accessible via the implementation of `YKFAccessorySession` or `YKFNFCSession`. A shared single instance becomes available in `YubiKitManager.accessorySession` or `YubiKitManager.nfcSession` when the session with the key is started.
+YubiKit is exposing a simple and easy to use API for executing operations on the YubiKey. The API is divided into `Connections` and `Sessions`. The supported connections are `YKFAccessoryConnection` and `YKFNFCConnection`. Each session is started by calling `YubiKitManager.shared.startAccessoryConnection()` respectively `YubiKitManager.shared.startNFCConnection()`. Once a YubiKey connects the SDK delivers the new connection via the `YKFManagerDelegate` protocol. Disconnects are also signaled through the protocol. For a easier and a more Swift-like experience you can implement something similar to this example: [YKFManagerDelegate wrapper](./docs/easy-handling-connections.md).
 
-From a connection you can retrieve any of the sessions currently supported in the SDK. The connections are fetched by calling a method with a callback block. Once the session has been established and the corresponding application on the YubiKey has been selected the callback will return the new session.
+From a connection you can retrieve any of the sessions currently supported in the SDK. The connections are fetched by calling a method with a callback block. Once the session has been established and the corresponding application on the YubiKey has been selected the callback will return the new session. For e.g a FIDO2 session it would look like this:
 
 ##### Swift    
 
@@ -197,9 +197,9 @@ connection.fido2Session { session, error in
 }];
 ```
 
-Before starting the key session, the application should verify if the iOS version is supported by the library by looking at the `supportsMFIAccessoryKey` property on `YubiKitDeviceCapabilities`
+Before initiating the accessory connection, the application should verify that the device running the app supports connecting to the YubiKey over the Lightning port. This can be done by looking at the `supportsMFIAccessoryKey` property on `YubiKitDeviceCapabilities`.
 
-Before calling the APIs for NFC, it is recommended to check for the capabilities of the OS/Device. If the device or the OS does not support a capability **the library will fire an assertion** in debug builds when calling a method without having the required capability. YubiKit provides a handy utility class to check for these capabilities: `YubiKitDeviceCapabilities`:
+The same goes for the NFC connection and similar to the accessory connection the  `YubiKitDeviceCapabilities` has a property `supportsISO7816NFCTags` that indicates wether the device supports connecting to the YubiKey over NFC.
 
 ##### Swift    
 
