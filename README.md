@@ -246,6 +246,8 @@ List of services is documented below with it's own specifics and samples:
 
 - [Management](./docs/mgmt.md) - Provides ability to enable or disable available application on YubiKey
 
+- [SmartCardInterface](./docs/smartcard-interface.md) - Provides ability to enable or disable available application on YubiKey
+
 
 ## Customize the Library
 YubiKit allows customizing some of its behavior by using `YubiKitConfiguration` and `YubiKitExternalLocalization`.
