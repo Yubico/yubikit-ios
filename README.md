@@ -242,8 +242,6 @@ List of sessions is documented below with it's own specifics and samples:
 
 - [SmartCardInterface](./docs/smartcard-interface.md) - Provides low level access to the Yubikey with which you can send custom APDUs to the key
 
-For lower level access to the Yubikey there's also a `YKFSmartCardInterface` with which you can send APDUs to the key.
-
 ## Customize the Library
 YubiKit allows customizing some of its behavior by using `YubiKitConfiguration` and `YubiKitExternalLocalization`.
 <details><summary><strong>Customizing YubiKit Behavior</strong></summary><p>
