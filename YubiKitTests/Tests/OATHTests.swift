@@ -115,9 +115,13 @@ class OATHTests: XCTestCase {
                             guard let session = session else { XCTAssert(false); return }
                             session.unlock(withPassword:"271844") { error in
                                 guard error != nil else { XCTAssert(false); return }
-                                session.listCredentials { credentials, error in
-                                    XCTAssert(error != nil)
-                                    completion()
+                                // Reset OATH on test YubiKey so password is not set when we're done.
+                                // We only do this here since this is the last test in the OATH test suite
+                                // that will run during testing.
+                                session.unlock(withPassword:"271828") { error in
+                                    session.reset() { error in
+                                        completion()
+                                    }
                                 }
                             }
                         }
