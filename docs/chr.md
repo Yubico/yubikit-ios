@@ -26,7 +26,7 @@ connection.challengeResponseSession { session, error in
 ```objective-c
  #import <YubiKit/YubiKit.h>
 
-[self challengeResponseSession:^(YKFChallengeResponseSession * _Nullable session, NSError * _Nullable error) {
+[connection challengeResponseSession:^(YKFChallengeResponseSession * _Nullable session, NSError * _Nullable error) {
     if (session != nil) { /* Handle error */ return; }
     [session sendChallenge:data slot:YKFSlotTwo completion:^(NSData * _Nullable response, NSError * _Nullable error) {
         // Handle response
