@@ -1,48 +1,38 @@
-## Using the HMAC-SHA1 challenge response Service 
+## HMAC-SHA1 challenge response session 
 
-This service usage is not coming as part of list of serviced provided by YubiKitManager singleton, but it's using  `YKFRawCommandService` in implementation to communicate with YubiKey. How to implement such services yourself using  `YKFRawCommandService`  read [here](../docs/raw.md)
-
-The `YKFChallengeResponseService` provides a simple API for sending asynchronous request that exchanges challenge for response from YubiKey.
+The `YKFChallengeResponseSession` provides a simple API for sending asynchronous request that exchanges challenge for response from a YubiKey.
 
 This method also requires to provide a slot on YubiKey (1 or 2). By default all YubiKeys are programmed to have OTP secret on 1st slot (which requires short touch of YubiKey), but it can be swapped/programmed to use 2nd slot (requires long touch). One slot can be used to keep OTP secret or challenge-response secret and it's up to user which slot he would prefer to program for one feature or another.
 
-### Prerequisite
+In order to use the challenge response feature program your YubiKey with some secret. User needs to use  [YubiKey Manager](https://www.yubico.com/products/services-software/download/yubikey-manager/). This is a required one-time operation before using the session.
 
-In order to use challenge-response feature program your YubiKey with some secret. User needs to use  [YubiKey Manager](https://www.yubico.com/products/services-software/download/yubikey-manager/). This is required one-time operation before usage of this service.
+### Communicating with the challenge response session
+
+The  `YKFChallengeResponseSession` is obtained by calling `- (void)challengeResponseSession:(ChallengeResponseSession _Nonnull)callback` on the `YKFConnection`.  The method is guaranteed to either return the session or an error, never both nor neither. Once the connection returns a session the `YKFChallengeResponseSession` exposes the necessary methods to execute the challenge response command.
+
+##### Swift
+
+```swift
+connection.challengeResponseSession { session, error in
+    guard let session = session else { /* Handle error */; return }
+    session.sendChallenge(data, slot: .one) { response, error in
+        // Handle response
+    }
+}
+```
 
 ##### Objective-C
 
 ```objective-c
  #import <YubiKit/YubiKit.h>
-  
- ...
 
- YKFChallengeResponseService *service = [[YKFChallengeResponseService alloc] init];
- // exchange challenge for response (async operation)
-[service sendChallenge:data slot:YKFSlot1 completion:^(NSData *response, NSError *error) {
-    if (error) {
-        // Handle the error
-        return;
-    }
-    // Use the response from the key
+[self challengeResponseSession:^(YKFChallengeResponseSession * _Nullable session, NSError * _Nullable error) {
+    if (session != nil) { /* Handle error */ return; }
+    [session sendChallenge:data slot:YKFSlotTwo completion:^(NSData * _Nullable response, NSError * _Nullable error) {
+        // Handle response
+    }];
 }];
-```    
-	
-##### Swift
+```
 
-```swift
-let service = YKFChallengeResponseService()
-    // Asynchronous command execution. The sendChallenge() can be called from any thread.    
-service.sendChallenge(data, slot:.one) { (response, error) in
-    guard error == nil else {
-        // Handle the error
-        return
-    }
-    assert(response != nil, "The response cannot be nil at this point.")
-    // Use the response from the key
-}
-```    
-
-If method is invoked when there is no connection with YubiKey than method `sendChallenge` will return an error. So it's delegated to user of APIs to make sure that YubiKey is plugged in or tapped over NFC reader when prompted. This can be reached by observing state properties of sessions that has been started by user: the `sessionState` property of `YKFAccessorySession` ( or `iso7816SessionState` property of `NFCSession`). If state is open it means that connection has been established.
-The example of such observer can be found in the Examples/Observers project group of YubiKitDemo project.
-
+### Additional resources
+Read more about the Yubico OTP protocol on the [Yubico developer site](https://developers.yubico.com/OTP/OTPs_Explained.html).
