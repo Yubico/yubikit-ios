@@ -22,7 +22,7 @@ connection.oathSession { session, error in
 
 ```objective-c
 [connection oathSession:^(YKFOATHSession * _Nullable session, NSError * _Nullable error) {
-    if (session != nil) { /* Handle error */ return; }
+    if (session == nil) { /* Handle error */ return; }
     [session listCredentialsWithCompletion:^(NSArray<YKFOATHCredential *> * _Nullable credentials, NSError * _Nullable error) {
         // Do something with the array of credentials
     }];
