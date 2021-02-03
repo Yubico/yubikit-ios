@@ -1,66 +1,30 @@
-## Using YubiKey Management Service 
 
-This `YKFManagementService`  is using  `YKFRawCommandService`  to communicate with YubiKey. How to implement such service yourself using  `YKFRawCommandService`  read [here](../docs/raw.md)
+## Management Session
 
-The `YKFManagementService` provides 2 methods:
-1) reading request that provides you `YKFManagementInterfaceConfiguration` YubiKey within reading response. 
-2) writing request that accepts the same  `YKFManagementInterfaceConfiguration` with updated flags on properties that needs to be tweaked (enabled/disabled)
+The `YKFManagementSession` provides access to the management application on a YubiKey. This allows the iOS application to enable or disable applications and transports on the YubiKey.
 
-##### Objective-C
+### Communicating with the management application on the YubiKey
 
-```objective-c
- #import <YubiKit/YubiKit.h>
-  
- ...
- YKFManagementService *service = [[YKFManagementService alloc] init];
- [service readConfigurationWithCompletion:^(YKFManagementReadConfigurationResponse *selectionResponse, NSError *error) {
-     if (error) {
-         // Handle the error
-         return;
-     }
-     YKFManagementInterfaceConfiguration *configuration = selectionResponse.configuration;
-     
-     if([configuration isSupported:YKFManagementApplicationTypeOTP overTransport:YKFManagementTransportTypeNFC]) {
-        //if OTP/YubiKey/Challenge-response application is supported on the app
-     }
-     
-     if ([configuration isEnabled:YKFManagementApplicationTypeOTP overTransport:YKFManagementTransportTypeNFC]) {
-         //if OTP/YubiKey/Challenge-response application is enabled on the app
-     }
-     
-}];
-```    
-    
-##### Swift
+Communication with the management application is done through the `YKFManagementSession` and the methods it expose. You obtain the session by calling `(void)managementSession:(ManagementSession _Nonnull)callback;` on the `YKFConnection`. The method is guaranteed to either return the session or an error, never both nor neither.
+
+#### Swift
 
 ```swift
-let service = YKFManagementService()
-mgtmService.readConfiguration { [weak self] (response, error) in
-    guard let self = self else {
-        return
-    }
-    
-    if let error = error {
-        // Handle the error
-        return
-    }
-    
-    let configuration = response.configuration
-
-    ...
-    
-    configuration.setEnabled(true, application: .OTP, overTransport: .USB)
-    
-    mgtmService.write(self.configuration, reboot: true) { [weak self] error in
-        if let error = error {
-            // Handle the error
-            return
-        }
-        //successfully updated
+connection.managementSession { session, error in
+    guard let session = session else { /* handle error */ return }
+    session.readConfiguration { response, error in
+        // Handle the response
     }
 }
-```    
+```
 
-If method is invoked when there is no connection with YubiKey than methods of this service will return an error. So it's delegated to user of APIs to make sure that YubiKey is plugged in or tapped over NFC reader when prompted. This can be reached by observing state properties of sessions that has been started by user: the `sessionState` property of `YKFAccessorySession` ( or `iso7816SessionState` property of `NFCSession`). If state is open it means that connection has been established.
-The example of such observer can be found in the Examples/Observers project group of YubiKitDemo project.
+#### Objective-C
 
+```objective-c
+[connection managementSession:^(YKFManagementSession * _Nullable session, NSError * _Nullable error) {
+    if (session == nil) { /* Handle error */ return; }
+    [session readConfigurationWithCompletion:^(YKFManagementReadConfigurationResponse * _Nullable response, NSError * _Nullable error) {
+       // Handle the response
+    }];
+}];
+```
