@@ -188,15 +188,15 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
             completion(nil, error);
             return;
         }
-        YKFOATHCode *response = [[YKFOATHCode alloc] initWithKeyResponseData:result
-                                                                                 requestTimetamp:timestamp
-                                                                                   requestPeriod:credential.period
-                                                                                  truncateResult:!credential.notTruncated];
-        if (!response) {
+        YKFOATHCode *code = [[YKFOATHCode alloc] initWithKeyResponseData:result
+                                                         requestTimetamp:timestamp
+                                                           requestPeriod:credential.period
+                                                          truncateResult:!credential.notTruncated];
+        if (!code) {
             completion(nil, [YKFOATHError errorWithCode:YKFOATHErrorCodeBadCalculationResponse]);
             return;
         }
-        completion(response, nil);
+        completion(code, nil);
     }];
 }
 
@@ -212,7 +212,7 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
             return;
         }
         YKFOATHCalculateAllResponse *response = [[YKFOATHCalculateAllResponse alloc] initWithKeyResponseData:result
-                                                                                                   requestTimetamp:timestamp];
+                                                                                             requestTimetamp:timestamp];
         if (!response) {
             completion(nil, [YKFOATHError errorWithCode:YKFOATHErrorCodeBadCalculateAllResponse]);
             return;
