@@ -44,15 +44,15 @@ typedef void (^YKFOATHSessionCompletionBlock)
     Response block for [executeCalculateRequest:completion:] which provides the result for the execution
     of the Calculate request.
  
- @param response
-    The response of the request when it was successful. In case of error this parameter is nil.
+ @param code
+    The code if the request was successful. In case of error this parameter is nil.
 
  @param error
     In case of a failed request this parameter contains the error. If the request was successful this
     parameter is nil.
  */
 typedef void (^YKFOATHSessionCalculateCompletionBlock)
-    (YKFOATHCode* _Nullable response, NSError* _Nullable error);
+    (YKFOATHCode* _Nullable code, NSError* _Nullable error);
 
 /*!
  @abstract
@@ -74,15 +74,15 @@ typedef void (^YKFOATHSessionListCompletionBlock)
     Response block for [executeCalculateAllRequest:completion:] which provides the result for the execution
     of the Calculate All request.
  
- @param response
-    The response of the request when it was successful. In case of error this parameter is nil.
+ @param credentials
+    The requested calculated credentials if it was successful. In case of error this parameter is nil.
  
  @param error
     In case of a failed request this parameter contains the error. If the request was successful this
     parameter is nil.
  */
 typedef void (^YKFOATHSessionCalculateAllCompletionBlock)
-    (NSArray<YKFOATHCredentialWithCode*>* _Nullable response, NSError* _Nullable error);
+    (NSArray<YKFOATHCredentialWithCode*>* _Nullable credentials, NSError* _Nullable error);
 
 /*!
  @abstract
