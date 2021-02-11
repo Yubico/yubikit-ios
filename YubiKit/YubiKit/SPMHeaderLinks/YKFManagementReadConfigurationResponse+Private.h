@@ -1,0 +1,1 @@
+..//Connections/Shared/Requests/MGMT/YKFManagementReadConfigurationResponse+Private.h
