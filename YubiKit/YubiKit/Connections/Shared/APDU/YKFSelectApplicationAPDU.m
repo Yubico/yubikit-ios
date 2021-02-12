@@ -34,6 +34,9 @@
         case YKFSelectApplicationAPDUNameFIDO2:
             data = [NSData dataWithBytes:(UInt8[]){0xA0, 0x00, 0x00, 0x06, 0x47, 0x2F, 0x00, 0x01} length:8];
             break;
+        case YKFSelectApplicationAPDUNamePIV:
+            data = [NSData dataWithBytes:(UInt8[]){0xA0, 0x00, 0x00, 0x03, 0x08} length:5];
+            break;
         case YKFSelectApplicationAPDUNameOATH:
             data = [NSData dataWithBytes:(UInt8[]){0xA0, 0x00, 0x00, 0x05, 0x27, 0x21, 0x01} length:7];
             break;

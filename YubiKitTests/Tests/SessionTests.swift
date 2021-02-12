@@ -33,6 +33,15 @@ class SessionTests: XCTestCase {
             }
         }
     }
+    
+    func testPIVSession() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivSession { session, error in
+                assert(session != nil)
+                completion()
+            }
+        }
+    }
 
     func testManagementSession() throws {
         runYubiKitTest { connection, completion in

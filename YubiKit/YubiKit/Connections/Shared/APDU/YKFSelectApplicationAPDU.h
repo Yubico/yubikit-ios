@@ -29,6 +29,8 @@ typedef NS_ENUM(NSUInteger, YKFSelectApplicationAPDUName) {
     YKFSelectApplicationAPDUNameFIDO2,
     
     YKFSelectApplicationAPDUNameOATH,
+
+    YKFSelectApplicationAPDUNamePIV,
     
     YKFSelectApplicationAPDUNameU2F
 };

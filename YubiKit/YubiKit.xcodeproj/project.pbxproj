@@ -12,6 +12,7 @@
 		51323C2F251A3BE600579915 /* YKFAccessoryConnectionConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 958491722130286900D7E2A3 /* YKFAccessoryConnectionConfiguration.m */; };
 		5177C45924572D2B00954533 /* YKFOATHUnlockResponse.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9535F0102175FFB600A6D617 /* YKFOATHUnlockResponse.h */; };
 		51A5D2592451D7CD00C7161E /* YKFOATHRenameAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 51A5D2572451D7CD00C7161E /* YKFOATHRenameAPDU.m */; };
+		51ACC2F625D585F70069214B /* YKFPIVSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC2F525D585F70069214B /* YKFPIVSession.m */; };
 		51E1B97B25765454003C1CA4 /* YKFOATHCredentialTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B97A25765454003C1CA4 /* YKFOATHCredentialTemplate.m */; };
 		51E1B9862577993C003C1CA4 /* YKFOATHCredentialUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B9852577993C003C1CA4 /* YKFOATHCredentialUtils.m */; };
 		51E1B9932577EF05003C1CA4 /* YKFOATHCredentialWithCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B9922577EF05003C1CA4 /* YKFOATHCredentialWithCode.m */; };
@@ -297,6 +298,9 @@
 		5176559925405FE400819857 /* YKFConnectionProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFConnectionProtocol.h; sourceTree = "<group>"; };
 		51A5D2572451D7CD00C7161E /* YKFOATHRenameAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFOATHRenameAPDU.m; sourceTree = "<group>"; };
 		51A5D2582451D7CD00C7161E /* YKFOATHRenameAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFOATHRenameAPDU.h; sourceTree = "<group>"; };
+		51ACC2F525D585F70069214B /* YKFPIVSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVSession.m; sourceTree = "<group>"; };
+		51ACC2FB25D5860C0069214B /* YKFPIVSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVSession.h; sourceTree = "<group>"; };
+		51ACC2FC25D587BB0069214B /* YKFPIVSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFPIVSession+Private.h"; sourceTree = "<group>"; };
 		51B48A0B2552D60B00D4C7E8 /* YKFChallengeResponseSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFChallengeResponseSession+Private.h"; sourceTree = "<group>"; };
 		51E1B97A25765454003C1CA4 /* YKFOATHCredentialTemplate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHCredentialTemplate.m; sourceTree = "<group>"; };
 		51E1B98025765547003C1CA4 /* YKFOATHCredentialTemplate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHCredentialTemplate.h; sourceTree = "<group>"; };
@@ -635,6 +639,16 @@
 			path = SmartCardInterface;
 			sourceTree = "<group>";
 		};
+		51ACC2F425D5857F0069214B /* PIV */ = {
+			isa = PBXGroup;
+			children = (
+				51ACC2FB25D5860C0069214B /* YKFPIVSession.h */,
+				51ACC2F525D585F70069214B /* YKFPIVSession.m */,
+				51ACC2FC25D587BB0069214B /* YKFPIVSession+Private.h */,
+			);
+			path = PIV;
+			sourceTree = "<group>";
+		};
 		81311F3723AAF9F400765522 /* ChalResp */ = {
 			isa = PBXGroup;
 			children = (
@@ -944,6 +958,7 @@
 		9581394E21590652008558F3 /* Sessions */ = {
 			isa = PBXGroup;
 			children = (
+				51ACC2F425D5857F0069214B /* PIV */,
 				958D0B62215D106F00942CB9 /* YKFSession.h */,
 				958D0B63215D106F00942CB9 /* YKFSession.m */,
 				51202093255150FF00B0384D /* YKFSessionProtocol+Private.h */,
@@ -1485,6 +1500,7 @@
 				95C29647206268C90091318B /* YKFOTPTextParser.m in Sources */,
 				95885B0820A07ED800828D02 /* YKFQRReaderSession.m in Sources */,
 				951446AD21885962002BB3C5 /* YKFPCSC.m in Sources */,
+				51ACC2F625D585F70069214B /* YKFPIVSession.m in Sources */,
 				816C684B2343126100209342 /* YKFNFCTagDescription.m in Sources */,
 				95BA204821F877BA00EED927 /* YKFFIDO2TouchPoolingAPDU.m in Sources */,
 				9578A61021F1D79400349DCF /* YKFFIDO2Type.m in Sources */,
