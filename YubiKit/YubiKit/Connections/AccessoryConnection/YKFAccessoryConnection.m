@@ -34,6 +34,7 @@
 #import "YKFOATHSession+Private.h"
 #import "YKFU2FSession+Private.h"
 #import "YKFFIDO2Session+Private.h"
+#import "YKFPIVSession+Private.h"
 #import "YKFChallengeResponseSession.h"
 #import "YKFChallengeResponseSession+Private.h"
 #import "YKFAccessoryDescription+Private.h"
@@ -148,6 +149,15 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     [self.currentSession clearSessionState];
     [YKFFIDO2Session sessionWithConnectionController:self.connectionController
                                             completion:^(YKFFIDO2Session *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        callback(session, error);
+    }];
+}
+
+- (void)pivSession:(PIVSession _Nonnull)callback {
+    [self.currentSession clearSessionState];
+    [YKFPIVSession sessionWithConnectionController:self.connectionController
+                                        completion:^(YKFPIVSession *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
     }];
