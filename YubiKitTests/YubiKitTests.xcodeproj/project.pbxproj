@@ -21,6 +21,7 @@
 		510A9DAE2591D6FD0015313E /* U2FTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510A9DAD2591D6FD0015313E /* U2FTests.swift */; };
 		516329F4258A20A20043CBB5 /* YubiKeyConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516329F3258A20A20043CBB5 /* YubiKeyConnection.swift */; };
 		516329FA258A213C0043CBB5 /* XCTestCase+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516329F9258A213C0043CBB5 /* XCTestCase+Extensions.swift */; };
+		51ACC30625D6C8370069214B /* PIVTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC30525D6C8370069214B /* PIVTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		510A9DAD2591D6FD0015313E /* U2FTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = U2FTests.swift; sourceTree = "<group>"; };
 		516329F3258A20A20043CBB5 /* YubiKeyConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YubiKeyConnection.swift; sourceTree = "<group>"; };
 		516329F9258A213C0043CBB5 /* XCTestCase+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extensions.swift"; sourceTree = "<group>"; };
+		51ACC30525D6C8370069214B /* PIVTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PIVTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +133,7 @@
 				510A9D8D258BA73D0015313E /* FIDO2Tests.swift */,
 				5105C052258B482800278F7F /* ManagementTests.swift */,
 				5105C045258A4A4800278F7F /* OATHTests.swift */,
+				51ACC30525D6C8370069214B /* PIVTests.swift */,
 				510339ED2589130400EB3692 /* SessionTests.swift */,
 				510A9DAD2591D6FD0015313E /* U2FTests.swift */,
 				516329F2258A20840043CBB5 /* Utilities */,
@@ -263,6 +266,7 @@
 				5105C046258A4A4800278F7F /* OATHTests.swift in Sources */,
 				510A9DA52590F34B0015313E /* Data+Extensions.swift in Sources */,
 				516329FA258A213C0043CBB5 /* XCTestCase+Extensions.swift in Sources */,
+				51ACC30625D6C8370069214B /* PIVTests.swift in Sources */,
 				510A9DAE2591D6FD0015313E /* U2FTests.swift in Sources */,
 				510A9D942590E4B50015313E /* ChallengeResponseTests.swift in Sources */,
 				510339EE2589130400EB3692 /* SessionTests.swift in Sources */,

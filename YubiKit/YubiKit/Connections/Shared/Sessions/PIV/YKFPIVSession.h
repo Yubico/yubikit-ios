@@ -15,12 +15,17 @@
 #ifndef YKFPIVSession_h
 #define YKFPIVSession_h
 
+typedef void (^YKFPIVSessionCompletionBlock)
+    (NSError* _Nullable error);
+
 @interface YKFPIVSession: NSObject
+
+- (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionCompletionBlock)completion;
 
 /*
  Not available: use only the instance from the YKFAccessorySession.
  */
-- (instancetype)init NS_UNAVAILABLE;
+- (nonnull instancetype)init NS_UNAVAILABLE;
 
 @end
 
