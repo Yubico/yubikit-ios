@@ -47,4 +47,18 @@
     // Do nothing for now
 }
 
+- (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+    
+    NSMutableData *mutableData = [[pin dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+    UInt8 padding = 0xff;
+    for (int i = 0; i <= 8 - mutableData.length; i++) {
+        [mutableData appendBytes:&padding length:1];
+    }
+    
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0x20 p1:0 p2:0x80 data:mutableData type:YKFAPDUTypeExtended];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        completion(error);
+    }];
+}
+
 @end
