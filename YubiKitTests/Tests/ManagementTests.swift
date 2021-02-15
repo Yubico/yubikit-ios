@@ -77,9 +77,10 @@ class ManagementTests: XCTestCase {
     func testReadKeyVersion() {
         runYubiKitTest { connection, completion in
             connection.managementSessionAndConfiguration { session, response in
-                print("🔴 Key responded with version \(response.version.major).\(response.version.minor).\(response.version.micro).")
                 // Only assert major and minor version
-                XCTAssertTrue((response.version.major == 5  && response.version.minor == 2), "Key responded with version \(response.version.major).\(response.version.minor).\(response.version.micro). Expected 5.2.*.")
+                XCTAssert(response.version.major == 5)
+                XCTAssert(response.version.minor == 2 || response.version.minor == 3 || response.version.minor == 4)
+                print("🟢 Got version: \(response.version.major).\(response.version.minor).\(response.version.micro)")
                 completion()
             }
         }
