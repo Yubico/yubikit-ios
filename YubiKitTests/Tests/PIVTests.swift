@@ -33,7 +33,7 @@ class PIVTests: XCTestCase {
             connection.pivTestSession { session in
                 XCTAssertNotNil(session.version)
                 XCTAssert(session.version.major == 5)
-                XCTAssert(session.version.minor == 2 || session.version.minor == 3)
+                XCTAssert(session.version.minor == 2 || session.version.minor == 3 || session.version.minor == 4)
                 print("🟢 Got version: \(session.version.major).\(session.version.minor).\(session.version.micro)")
                 completion()
             }
