@@ -30,6 +30,7 @@ class OATHTests: XCTestCase {
                         XCTAssert(credential.credential.issuer == "test-create-and-calculate")
                         XCTAssert(credential.credential.accountName == "test@yubico.com")
                         XCTAssert(credential.code?.otp == "239396")
+                        print("✅ create and calculate all OATH TOTP credential")
                         completion()
                     }
                 }
@@ -50,6 +51,7 @@ class OATHTests: XCTestCase {
                         XCTAssert(credential.accountName == "test@yubico.com")
                         session.calculate(credential) { code, error in
                             XCTAssert(code?.otp == "726826")
+                            print("✅ create, list and calculate OATH HOTP credential")
                             completion()
                         }
                     }
@@ -72,6 +74,7 @@ class OATHTests: XCTestCase {
                                 guard let credentials = credentials, let credential = credentials.first else {  XCTAssertTrue(false); return }
                                 XCTAssert(credential.issuer == "test-rename-renamed")
                                 XCTAssert(credential.accountName == "renamed@yubico.com")
+                                print("✅ rename OATH credential")
                                 completion()
                             }
                         }
@@ -94,6 +97,7 @@ class OATHTests: XCTestCase {
                                 guard error == nil else { XCTAssert(false); return }
                                 session.listCredentials { credentials, error in
                                     XCTAssert(error == nil)
+                                    print("✅ set OATH password and unlock")
                                     completion()
                                 }
                             }
@@ -120,6 +124,7 @@ class OATHTests: XCTestCase {
                                 // that will run during testing.
                                 session.unlock(withPassword:"271828") { error in
                                     session.reset() { error in
+                                        print("✅ set OATH password and try unlock with wrong password")
                                         completion()
                                     }
                                 }
@@ -151,6 +156,7 @@ class OATHTests: XCTestCase {
                                             guard let session = session else { XCTAssert(false); return }
                                             session.listCredentials { credentials, error in
                                                 XCTAssert(error == nil)
+                                                print("✅ set and remove OATH password")
                                                 completion()
                                             }
                                         }
@@ -171,7 +177,6 @@ extension YKFConnectionProtocol {
             guard let session = session else { XCTAssertTrue(false, "Failed to get OATH session"); return }
             session.reset { error in
                 guard error == nil else { XCTAssertTrue(false, "Failed to reset OATH"); return }
-                print("Reset OATH")
                 completion(session)
             }
         }
