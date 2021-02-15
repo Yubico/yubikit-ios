@@ -27,7 +27,7 @@ class ChallengeResponseTests: XCTestCase {
                     guard let result = result else { XCTAssertTrue(false, "🔴 \(error!)"); return }
                     let exptected = Data([0xd5, 0x49, 0xe8, 0x34, 0x82, 0x75, 0x98, 0xf6, 0xf1, 0x7b, 0xc4, 0xd3, 0xf3, 0x84, 0x65, 0xb1, 0x91, 0x00, 0x29, 0xf7])
                     XCTAssertEqual(result.hexDescription, exptected.hexDescription) // comparing the hex string representation results in better assert messages
-                    print("🟢 Challenge Response successful")
+                    print("✅ Challenge Response successful")
                     completion()
                 }
             }

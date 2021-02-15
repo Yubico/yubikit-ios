@@ -36,6 +36,7 @@ class ManagementTests: XCTestCase {
                             configuration.setEnabled(true, application: .OATH, overTransport: transport)
                             session.write(configuration, reboot: false) { error in
                                 guard error == nil else { XCTAssertTrue(true, "Failed to enable OATH: \(error!)"); return}
+                                print("✅ disabled and enabled OATH")
                                 completion()
                             }
                         }
@@ -65,6 +66,7 @@ class ManagementTests: XCTestCase {
                             configuration.setEnabled(true, application: .U2F, overTransport: transport)
                             session.write(configuration, reboot: false) { error in
                                 guard error == nil else { XCTAssertTrue(true, "Failed to enable U2F: \(error!)"); return}
+                                print("✅ disabled and enabled U2F")
                                 completion()
                             }
                         }
@@ -80,7 +82,7 @@ class ManagementTests: XCTestCase {
                 // Only assert major and minor version
                 XCTAssert(response.version.major == 5)
                 XCTAssert(response.version.minor == 2 || response.version.minor == 3 || response.version.minor == 4)
-                print("🟢 Got version: \(response.version.major).\(response.version.minor).\(response.version.micro)")
+                print("✅ Got version: \(response.version.major).\(response.version.minor).\(response.version.micro)")
                 completion()
             }
         }
