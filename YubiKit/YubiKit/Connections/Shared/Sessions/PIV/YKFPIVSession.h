@@ -15,12 +15,21 @@
 #ifndef YKFPIVSession_h
 #define YKFPIVSession_h
 
+@class YKFVersion;
+
 typedef void (^YKFPIVSessionCompletionBlock)
     (NSError* _Nullable error);
 
+typedef void (^YKFPIVSessionSerialNumberCompletionBlock)
+    (int serialNumber, NSError* _Nullable error);
+
 @interface YKFPIVSession: NSObject
 
+@property (nonatomic, retain, readonly) YKFVersion * _Nonnull version;
+ 
 - (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+
+- (void)getSerialNumberWithCompletion:(nonnull YKFPIVSessionSerialNumberCompletionBlock)completion;
 
 /*
  Not available: use only the instance from the YKFAccessorySession.
