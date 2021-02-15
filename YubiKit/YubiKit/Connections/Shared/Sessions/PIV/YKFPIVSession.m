@@ -17,11 +17,13 @@
 #import "YKFPIVSession+Private.h"
 #import "YKFSmartCardInterface.h"
 #import "YKFSelectApplicationAPDU.h"
+#import "YKFVersion.h"
 
 @interface YKFPIVSession()
 
 @property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
 @property (nonatomic, readonly) BOOL isValid;
+@property (nonatomic, retain, readwrite) YKFVersion * _Nonnull version;
 
 @end
 
@@ -38,13 +40,34 @@
         if (error) {
             completion(nil, error);
         } else {
-            completion(session, nil);
+            YKFAPDU *versionAPDU = [[YKFAPDU alloc] initWithCla:0 ins:0xfd p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
+            [session.smartCardInterface executeCommand:versionAPDU completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+                if (error) {
+                    completion(nil, error);
+                } else {
+                    UInt8 *versionBytes = (UInt8 *)data.bytes;
+                    session.version = [[YKFVersion alloc] initWithBytes:versionBytes[0] minor:versionBytes[1] micro:versionBytes[2]];
+                    completion(session, nil);
+                }
+            }];
         }
     }];
 }
 
 - (void)clearSessionState {
     // Do nothing for now
+}
+
+- (void)getSerialNumberWithCompletion:(nonnull YKFPIVSessionSerialNumberCompletionBlock)completion {
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0xf8 p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (data != nil) {
+            UInt32 serialNumber = CFSwapInt32BigToHost(*(UInt32*)([data bytes]));
+            completion(serialNumber, nil);
+        } else {
+            completion(-1, error);
+        }
+    }];
 }
 
 - (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionCompletionBlock)completion {

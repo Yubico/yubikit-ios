@@ -21,6 +21,32 @@ class PIVTests: XCTestCase {
             connection.pivTestSession { session in
                 session.verifyPin("123456") { error in
                     XCTAssertNil(error)
+                    print("🟢 PIN verified")
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func testVersion() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                XCTAssertNotNil(session.version)
+                XCTAssert(session.version.major == 5)
+                XCTAssert(session.version.minor == 2 || session.version.minor == 3)
+                print("🟢 Got version: \(session.version.major).\(session.version.minor).\(session.version.micro)")
+                completion()
+            }
+        }
+    }
+    
+    func testSerialNumber() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                session.getSerialNumber { serialNumber, error in
+                    XCTAssertNil(error)
+                    XCTAssertTrue(serialNumber > 0)
+                    print("🟢 Got serial number: \(serialNumber)")
                     completion()
                 }
             }
@@ -31,7 +57,7 @@ class PIVTests: XCTestCase {
 extension YKFConnectionProtocol {
     func pivTestSession(completion: @escaping (_ session: YKFPIVSession) -> Void) {
         self.pivSession { session, error in
-            guard let session = session else { XCTAssertTrue(false, "Failed to get OATH session"); return }
+            guard let session = session else { XCTAssertTrue(false, "🔴 Failed to get PIV session"); return }
             completion(session)
         }
     }
