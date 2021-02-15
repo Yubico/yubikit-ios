@@ -24,12 +24,12 @@ class FIDO2Tests: XCTestCase {
                     guard let session = session else { XCTAssertTrue(false, "🔴 Failed to get FIDO2 session: \(error!)"); return }
                     session.reset { error in
                         guard error == nil else { XCTAssertTrue(false, "🔴 Failed to reset FIDO2 session: \(error!)"); return }
-                        print("🟢 FIDO2 reset")
+                        print("✅ FIDO2 reset")
                         completion()
                     }
                 }
             } else {
-                print("🟢 Skipping FIDO2 reset over lightning")
+                print("✅ Skipping FIDO2 reset over lightning")
                 completion()
             }
         }
@@ -40,13 +40,13 @@ class FIDO2Tests: XCTestCase {
             connection.fido2TestSession { session in
                 session.getInfoWithCompletion { response, error in
                     guard let response = response else { XCTAssertTrue(false, "🔴 Failed to get FIDO2 info: \(error!)"); return }
-                    print("🟢 FIDO2 information:")
                     print("🟢 \(response.versions)")
                     print("🟢 \(response.extensions ?? [String]())")
                     print("🟢 \(response.aaguid)")
                     print("🟢 \(response.options ?? [AnyHashable: Any]())")
                     print("🟢 \(response.maxMsgSize)")
                     print("🟢 \(response.pinProtocols ?? [String]())")
+                    print("✅ Got FIDO2 information")
                     completion()
                 }
             }
@@ -57,7 +57,7 @@ class FIDO2Tests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
                 session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
-                    print("🟢 New FIDO2 credential: \(response)")
+                    print("✅ New FIDO2 credential: \(response)")
                     completion()
                 }
             }
@@ -68,7 +68,7 @@ class FIDO2Tests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
                 session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: false]) { response in
-                    print("🟢 Created new FIDO2 credential: \(response)")
+                    print("✅ Created new FIDO2 credential: \(response)")
                     completion()
                 }
             }
@@ -79,9 +79,9 @@ class FIDO2Tests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
                 session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
-                    print("🟢 Created new FIDO2 credential: \(response)")
+                    print("✅ Created new FIDO2 credential: \(response)")
                     session.assertCredential(response: response, options: [YKFFIDO2OptionUP: true]) { response in
-                        print("🟢 Asserted FIDO2 credential: \(response)")
+                        print("✅ Asserted FIDO2 credential: \(response)")
                         completion()
                     }
                 }
@@ -93,9 +93,9 @@ class FIDO2Tests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
                 session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: false]) { response in
-                    print("🟢 Created new FIDO2 credential: \(response)")
+                    print("✅ Created new FIDO2 credential: \(response)")
                     session.assertCredential(response: response, options: [YKFFIDO2OptionUP: true]) { response in
-                        print("🟢 Asserted FIDO2 credential: \(response)")
+                        print("✅ Asserted FIDO2 credential: \(response)")
                         completion()
                     }
                 }
@@ -107,9 +107,9 @@ class FIDO2Tests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
                 session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response in
-                    print("🟢 Created new FIDO2 credential: \(response)")
+                    print("✅ Created new FIDO2 credential: \(response)")
                     session.assertCredential(response: response, options: [YKFFIDO2OptionUP: true]) { response in
-                        print("🟢 Asserted FIDO2 credential: \(response)")
+                        print("✅ Asserted FIDO2 credential: \(response)")
                         completion()
                     }
                 }
@@ -121,9 +121,9 @@ class FIDO2Tests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
                 session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response in
-                    print("🟢 Created new FIDO2 credential: \(response)")
+                    print("✅ Created new FIDO2 credential: \(response)")
                     session.assertCredential(response: response, options: [YKFFIDO2OptionUP: false]) { response in
-                        print("🟢 Asserted FIDO2 credential: \(response)")
+                        print("✅ Asserted FIDO2 credential: \(response)")
                         completion()
                     }
                 }

@@ -21,7 +21,7 @@ class PIVTests: XCTestCase {
             connection.pivTestSession { session in
                 session.verifyPin("123456") { error in
                     XCTAssertNil(error)
-                    print("🟢 PIN verified")
+                    print("✅ PIN verified")
                     completion()
                 }
             }
@@ -34,7 +34,7 @@ class PIVTests: XCTestCase {
                 XCTAssertNotNil(session.version)
                 XCTAssert(session.version.major == 5)
                 XCTAssert(session.version.minor == 2 || session.version.minor == 3 || session.version.minor == 4)
-                print("🟢 Got version: \(session.version.major).\(session.version.minor).\(session.version.micro)")
+                print("✅ Got version: \(session.version.major).\(session.version.minor).\(session.version.micro)")
                 completion()
             }
         }
@@ -46,7 +46,7 @@ class PIVTests: XCTestCase {
                 session.getSerialNumber { serialNumber, error in
                     XCTAssertNil(error)
                     XCTAssertTrue(serialNumber > 0)
-                    print("🟢 Got serial number: \(serialNumber)")
+                    print("✅ Got serial number: \(serialNumber)")
                     completion()
                 }
             }

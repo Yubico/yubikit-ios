@@ -29,7 +29,7 @@ class U2FTests: XCTestCase {
                     print("🔵 touch key")
                     session.sign(withChallenge: challenge, keyHandle: keyHandle, appId: appId) { response, error in
                         guard error == nil else { XCTAssertTrue(false, "🔴 Failed to sign U2F request: \(error!)"); return }
-                        print("🟢 U2F registration and sign successful")
+                        print("✅ U2F registration and sign successful")
                         completion()
                     }
                 }
