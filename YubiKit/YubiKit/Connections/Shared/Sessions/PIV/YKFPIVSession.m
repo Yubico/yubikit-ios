@@ -18,12 +18,15 @@
 #import "YKFSmartCardInterface.h"
 #import "YKFSelectApplicationAPDU.h"
 #import "YKFVersion.h"
+#import "YKFFeature.h"
+#import "YKFPIVSessionFeatures.h"
 
 @interface YKFPIVSession()
 
 @property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
 @property (nonatomic, readonly) BOOL isValid;
-@property (nonatomic, retain, readwrite) YKFVersion * _Nonnull version;
+@property (nonatomic, readwrite) YKFVersion * _Nonnull version;
+@property (nonatomic, readwrite) YKFPIVSessionFeatures * _Nonnull features;
 
 @end
 
@@ -33,6 +36,7 @@
 + (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
                              completion:(YKFPIVSessionCompletion _Nonnull)completion {
     YKFPIVSession *session = [YKFPIVSession new];
+    session.features = [YKFPIVSessionFeatures new];
     session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
     
     YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNamePIV];
@@ -59,6 +63,11 @@
 }
 
 - (void)getSerialNumberWithCompletion:(nonnull YKFPIVSessionSerialNumberCompletionBlock)completion {
+    if (![self.features.serial isSupportedBySession:self]) {
+        completion(-1, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Read serial number not supported by this YubiKey."}]);
+        return;
+    }
+    
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0xf8 p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (data != nil) {

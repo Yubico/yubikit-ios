@@ -11,30 +11,22 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
+#ifndef YKFFeature_h
+#define YKFFeature_h
 
-/*! Class represents firmware version of YubiKey
- */
-@interface YKFVersion : NSObject
+#import "YKFVersion.h"
 
-@property (nonatomic, readonly) UInt8 major;
-@property (nonatomic, readonly) UInt8 minor;
-@property (nonatomic, readonly) UInt8 micro;
+@interface YKFFeature: NSObject
 
-- (instancetype)initWithBytes:(UInt8)major minor:(UInt8)minor micro:(UInt8)micro NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+@property (nonatomic, retain, readonly) NSString * _Nonnull name;
+@property (nonatomic, retain, readonly) YKFVersion * _Nonnull version;
 
-- (NSComparisonResult)compare:(YKFVersion *)version;
+- (instancetype _Nonnull )initWithName:(NSString *_Nonnull)name version:(YKFVersion *_Nonnull)version;
+- (instancetype _Nonnull )initWithName:(NSString *_Nonnull)name versionString:(NSString *_Nonnull)version;
 
-@end
-
-
-@protocol YKFVersionProtocol <NSObject>
-
-@property (readonly) YKFVersion * _Nonnull version;
+- (bool)isSupportedBySession:(nonnull id<YKFVersionProtocol>)session;
 
 @end
 
-NS_ASSUME_NONNULL_END
+#endif /* YKFFeature_h */

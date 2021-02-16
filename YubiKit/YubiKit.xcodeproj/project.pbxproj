@@ -13,6 +13,8 @@
 		5177C45924572D2B00954533 /* YKFOATHUnlockResponse.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9535F0102175FFB600A6D617 /* YKFOATHUnlockResponse.h */; };
 		51A5D2592451D7CD00C7161E /* YKFOATHRenameAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 51A5D2572451D7CD00C7161E /* YKFOATHRenameAPDU.m */; };
 		51ACC2F625D585F70069214B /* YKFPIVSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC2F525D585F70069214B /* YKFPIVSession.m */; };
+		51ACC32025DBBB7E0069214B /* YKFFeature.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC31F25DBBB7E0069214B /* YKFFeature.m */; };
+		51ACC32925DC01DA0069214B /* YKFPIVSessionFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */; };
 		51E1B97B25765454003C1CA4 /* YKFOATHCredentialTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B97A25765454003C1CA4 /* YKFOATHCredentialTemplate.m */; };
 		51E1B9862577993C003C1CA4 /* YKFOATHCredentialUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B9852577993C003C1CA4 /* YKFOATHCredentialUtils.m */; };
 		51E1B9932577EF05003C1CA4 /* YKFOATHCredentialWithCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B9922577EF05003C1CA4 /* YKFOATHCredentialWithCode.m */; };
@@ -301,6 +303,10 @@
 		51ACC2F525D585F70069214B /* YKFPIVSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVSession.m; sourceTree = "<group>"; };
 		51ACC2FB25D5860C0069214B /* YKFPIVSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVSession.h; sourceTree = "<group>"; };
 		51ACC2FC25D587BB0069214B /* YKFPIVSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFPIVSession+Private.h"; sourceTree = "<group>"; };
+		51ACC31E25DBBB590069214B /* YKFFeature.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFFeature.h; sourceTree = "<group>"; };
+		51ACC31F25DBBB7E0069214B /* YKFFeature.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFFeature.m; sourceTree = "<group>"; };
+		51ACC32725DC01C90069214B /* YKFPIVSessionFeatures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVSessionFeatures.h; sourceTree = "<group>"; };
+		51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVSessionFeatures.m; sourceTree = "<group>"; };
 		51B48A0B2552D60B00D4C7E8 /* YKFChallengeResponseSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFChallengeResponseSession+Private.h"; sourceTree = "<group>"; };
 		51E1B97A25765454003C1CA4 /* YKFOATHCredentialTemplate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHCredentialTemplate.m; sourceTree = "<group>"; };
 		51E1B98025765547003C1CA4 /* YKFOATHCredentialTemplate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHCredentialTemplate.h; sourceTree = "<group>"; };
@@ -645,6 +651,8 @@
 				51ACC2FB25D5860C0069214B /* YKFPIVSession.h */,
 				51ACC2F525D585F70069214B /* YKFPIVSession.m */,
 				51ACC2FC25D587BB0069214B /* YKFPIVSession+Private.h */,
+				51ACC32725DC01C90069214B /* YKFPIVSessionFeatures.h */,
+				51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */,
 			);
 			path = PIV;
 			sourceTree = "<group>";
@@ -1057,6 +1065,8 @@
 			children = (
 				81FD3B962404889C004C4FE9 /* YKFVersion.h */,
 				81FD3B972404889C004C4FE9 /* YKFVersion.m */,
+				51ACC31E25DBBB590069214B /* YKFFeature.h */,
+				51ACC31F25DBBB7E0069214B /* YKFFeature.m */,
 				951446A221874CC2002BB3C5 /* YKFCommandConfiguration.h */,
 				951446A321874CC2002BB3C5 /* YKFCommandConfiguration.m */,
 				951EA6F92315B95500E35C8C /* YKFConnectionControllerProtocol.h */,
@@ -1443,6 +1453,7 @@
 				95DD40872099A86A00363FEE /* YKFU2FSignAPDU.m in Sources */,
 				95D7364A21C9119D0039141A /* YKFPCSCErrorMap.m in Sources */,
 				954E2C542211AA5600720D2B /* YKFFIDO2ClientPinAPDU.m in Sources */,
+				51ACC32925DC01DA0069214B /* YKFPIVSessionFeatures.m in Sources */,
 				95D61A072170B26F001E7AC8 /* YKFOATHSelectApplicationResponse.m in Sources */,
 				51E1B97B25765454003C1CA4 /* YKFOATHCredentialTemplate.m in Sources */,
 				95E1B259219EE2D300E349E3 /* YKFKVOObservation.m in Sources */,
@@ -1481,6 +1492,7 @@
 				95F75BAE2175D6D600C13DC5 /* YKFOATHUnlockAPDU.m in Sources */,
 				95C2965A2062A5970091318B /* YubiKitManager.m in Sources */,
 				958491732130286900D7E2A3 /* YKFAccessoryConnectionConfiguration.m in Sources */,
+				51ACC32025DBBB7E0069214B /* YKFFeature.m in Sources */,
 				95C2962C206250D90091318B /* YKFPermissions.m in Sources */,
 				956DBB8421EDEA1D004D6EE3 /* YKFFIDO2Session.m in Sources */,
 				81311F3A23AAFA4A00765522 /* YKFChallengeResponseSession.m in Sources */,
