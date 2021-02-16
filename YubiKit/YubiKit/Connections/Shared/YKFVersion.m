@@ -1,10 +1,16 @@
+// Copyright 2018-2021 Yubico AB
 //
-//  YKFVersion.m
-//  YubiKit
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-//  Created by Irina Makhalova on 2/6/20.
-//  Copyright © 2020 Yubico. All rights reserved.
+// http://www.apache.org/licenses/LICENSE-2.0
 //
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #import "YKFVersion.h"
 
@@ -26,6 +32,18 @@
         self.micro = micro;
     }
     return self;
+}
+
+- (NSComparisonResult)compare:(YKFVersion *)version {
+    NSComparisonResult majorResult = [[NSNumber numberWithUnsignedShort:self.major] compare:[NSNumber numberWithUnsignedShort:version.major]];
+    if (majorResult != NSOrderedSame) {
+        return majorResult;
+    }
+    NSComparisonResult minorResult = [[NSNumber numberWithUnsignedShort:self.minor] compare:[NSNumber numberWithUnsignedShort:version.minor]];
+    if (minorResult != NSOrderedSame) {
+        return minorResult;
+    }
+    return [[NSNumber numberWithUnsignedShort:self.micro] compare:[NSNumber numberWithUnsignedShort:version.micro]];
 }
 
 @end
