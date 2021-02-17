@@ -33,6 +33,8 @@ typedef void (^YKFPIVSessionVerifyPinCompletionBlock)
 @property (nonatomic, readonly) YKFVersion * _Nonnull version;
 @property (nonatomic, readonly) YKFPIVSessionFeatures * _Nonnull features;
 
+- (void)resetWithCompletion:(nonnull YKFPIVSessionCompletionBlock)completion;
+
 - (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionVerifyPinCompletionBlock)completion;
 
 - (void)getSerialNumberWithCompletion:(nonnull YKFPIVSessionSerialNumberCompletionBlock)completion;
