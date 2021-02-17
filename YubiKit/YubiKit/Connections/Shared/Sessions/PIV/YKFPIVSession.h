@@ -25,12 +25,15 @@ typedef void (^YKFPIVSessionCompletionBlock)
 typedef void (^YKFPIVSessionSerialNumberCompletionBlock)
     (int serialNumber, NSError* _Nullable error);
 
+typedef void (^YKFPIVSessionVerifyPinCompletionBlock)
+    (int retries, NSError* _Nullable error);
+
 @interface YKFPIVSession: NSObject <YKFVersionProtocol>
 
 @property (nonatomic, readonly) YKFVersion * _Nonnull version;
 @property (nonatomic, readonly) YKFPIVSessionFeatures * _Nonnull features;
 
-- (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+- (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionVerifyPinCompletionBlock)completion;
 
 - (void)getSerialNumberWithCompletion:(nonnull YKFPIVSessionSerialNumberCompletionBlock)completion;
 

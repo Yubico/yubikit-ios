@@ -17,16 +17,21 @@
 
 #import "YKFVersion.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface YKFFeature: NSObject
 
-@property (nonatomic, retain, readonly) NSString * _Nonnull name;
-@property (nonatomic, retain, readonly) YKFVersion * _Nonnull version;
+@property (nonatomic, readonly) NSString * name;
+@property (nonatomic, readonly) YKFVersion * version;
 
-- (instancetype _Nonnull )initWithName:(NSString *_Nonnull)name version:(YKFVersion *_Nonnull)version;
-- (instancetype _Nonnull )initWithName:(NSString *_Nonnull)name versionString:(NSString *_Nonnull)version;
+- (instancetype)initWithName:(NSString *)name version:(YKFVersion *)version NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithName:(NSString *)name versionString:(NSString *)version NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
-- (bool)isSupportedBySession:(nonnull id<YKFVersionProtocol>)session;
+- (bool)isSupportedBySession:(id<YKFVersionProtocol>)session;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif /* YKFFeature_h */

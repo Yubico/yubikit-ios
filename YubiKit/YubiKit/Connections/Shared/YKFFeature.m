@@ -18,13 +18,13 @@
 
 @interface YKFFeature()
 
-@property (nonatomic, retain, readwrite) NSString * _Nonnull name;
-@property (nonatomic, retain, readwrite) YKFVersion * _Nonnull version;
+@property (nonatomic, readwrite) NSString * name;
+@property (nonatomic, readwrite) YKFVersion * version;
 
 @end
 
-@implementation YKFFeature
 
+@implementation YKFFeature
 
 - (instancetype)initWithName:(NSString *)name version:(YKFVersion *)version {
     self = [super init];
@@ -36,14 +36,15 @@
 }
 
 - (instancetype)initWithName:(NSString *)name versionString:(NSString *)versionString {
-    NSArray *versions = [versionString componentsSeparatedByString:@"."];
-    if (versions.count != 3) {
-        [NSException raise:@"Malformed version string" format:@"%@ is not a valid version string", versionString];
+    self = [super init];
+    if (self) {
+        self.name = name;
+        self.version = [[YKFVersion alloc] initWithString:versionString];
     }
-    return [self initWithName:name version:[[YKFVersion alloc] initWithBytes:[versions[0] intValue] minor:[versions[1] intValue] micro:[versions[2] intValue]]];
+    return self;
 }
 
-- (bool)isSupportedBySession:(nonnull id<YKFVersionProtocol>)session {
+- (bool)isSupportedBySession:(id<YKFVersionProtocol>)session {
     NSComparisonResult comparision = [session.version compare:self.version];
     return (comparision == NSOrderedSame || comparision == NSOrderedDescending);
 }
