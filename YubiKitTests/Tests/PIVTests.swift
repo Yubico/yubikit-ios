@@ -19,9 +19,9 @@ class PIVTests: XCTestCase {
     func testVerifyPIN() throws {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
-                session.verifyPin("123456") { error in
+                session.verifyPin("123456") { retries, error in
                     XCTAssertNil(error)
-                    print("✅ PIN verified")
+                    print("✅ PIN verified \(retries) left")
                     completion()
                 }
             }

@@ -20,6 +20,7 @@
 #import "YKFVersion.h"
 #import "YKFFeature.h"
 #import "YKFPIVSessionFeatures.h"
+#import "YKFSessionError.h"
 
 @interface YKFPIVSession()
 
@@ -28,10 +29,15 @@
 @property (nonatomic, readwrite) YKFVersion * _Nonnull version;
 @property (nonatomic, readwrite) YKFPIVSessionFeatures * _Nonnull features;
 
+- (int)getRetriesFromStatusCode:(int)statusCode;
+
 @end
 
 
 @implementation YKFPIVSession
+
+int currentPinAttempts = 3;
+int maxPinAttempts = 3;
 
 + (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
                              completion:(YKFPIVSessionCompletion _Nonnull)completion {
@@ -79,7 +85,7 @@
     }];
 }
 
-- (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+- (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionVerifyPinCompletionBlock)completion {
     
     NSMutableData *mutableData = [[pin dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
     UInt8 padding = 0xff;
@@ -87,10 +93,41 @@
         [mutableData appendBytes:&padding length:1];
     }
     
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0x20 p1:0 p2:0x80 data:mutableData type:YKFAPDUTypeExtended];
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0x20 p1:0 p2:0x80 data:mutableData type:YKFAPDUTypeShort];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
-        completion(error);
+        if (error == nil) {
+            currentPinAttempts = maxPinAttempts;
+            completion(currentPinAttempts, nil);
+            return;
+        } else {
+            YKFSessionError *sessionError = (YKFSessionError *)error;
+            if ([sessionError isKindOfClass:[YKFSessionError class]]) {
+                int retries = [self getRetriesFromStatusCode:(int)sessionError.code];
+                if (retries >= 0) {
+                    currentPinAttempts = retries;
+                    completion(currentPinAttempts, error);
+                    return;
+                }
+            }
+            completion(-1, error);
+        }
     }];
+}
+
+- (int)getRetriesFromStatusCode:(int)statusCode {
+    if (statusCode == 0x6983) {
+        return 0;
+    }
+    if ([self.version compare:[[YKFVersion alloc] initWithString:@"1.0.4"]] == NSOrderedAscending) {
+        if (statusCode >= 0x6300 && statusCode <= 0x63ff) {
+            return statusCode & 0xff;
+        }
+    } else {
+        if (statusCode >= 0x63c0 && statusCode <= 0x63cf) {
+            return statusCode & 0xf;
+        }
+    }
+    return -1;
 }
 
 @end

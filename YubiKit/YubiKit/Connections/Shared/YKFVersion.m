@@ -34,6 +34,20 @@
     return self;
 }
 
+- (instancetype)initWithString:(NSString *)versionString {
+    self = [super init];
+    if (self) {
+        NSArray *versions = [versionString componentsSeparatedByString:@"."];
+        if (versions.count != 3) {
+            [NSException raise:@"Malformed version string" format:@"%@ is not a valid version string", versionString];
+        }
+        self.major = [versions[0] intValue];
+        self.minor = [versions[1] intValue];
+        self.micro = [versions[2] intValue];
+    }
+    return self;
+}
+
 - (NSComparisonResult)compare:(YKFVersion *)version {
     NSComparisonResult majorResult = [[NSNumber numberWithUnsignedShort:self.major] compare:[NSNumber numberWithUnsignedShort:version.major]];
     if (majorResult != NSOrderedSame) {
