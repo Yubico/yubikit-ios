@@ -28,6 +28,34 @@ class PIVTests: XCTestCase {
         }
     }
     
+    func testVerifyPINRetryCount() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                session.verifyPin("333333") { retries, error in
+                    XCTAssertNotNil(error)
+                    XCTAssert(retries == 2)
+                    print("✅ PIN retry count \(retries)")
+                    session.verifyPin("111111") { retries, error in
+                        XCTAssertNotNil(error)
+                        XCTAssert(retries == 1)
+                        print("✅ PIN retry count \(retries)")
+                        session.verifyPin("444444") { retries, error in
+                            XCTAssertNotNil(error)
+                            XCTAssert(retries == 0)
+                            print("✅ PIN retry count \(retries)")
+                            session.verifyPin("111111") { retries, error in
+                                XCTAssertNotNil(error)
+                                XCTAssert(retries == 0)
+                                print("✅ PIN retry count \(retries)")
+                                completion()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func testVersion() throws {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
@@ -58,7 +86,11 @@ extension YKFConnectionProtocol {
     func pivTestSession(completion: @escaping (_ session: YKFPIVSession) -> Void) {
         self.pivSession { session, error in
             guard let session = session else { XCTAssertTrue(false, "🔴 Failed to get PIV session"); return }
-            completion(session)
+            session.reset { error in
+                guard error == nil else { XCTAssertTrue(false, "🔴 Failed to reset PIV application"); return }
+                print("Reset PIV application")
+                completion(session)
+            }
         }
     }
 }

@@ -29,8 +29,6 @@
 @property (nonatomic, readwrite) YKFVersion * _Nonnull version;
 @property (nonatomic, readwrite) YKFPIVSessionFeatures * _Nonnull features;
 
-- (int)getRetriesFromStatusCode:(int)statusCode;
-
 @end
 
 
@@ -68,7 +66,27 @@ int maxPinAttempts = 3;
     // Do nothing for now
 }
 
-- (void)getSerialNumberWithCompletion:(nonnull YKFPIVSessionSerialNumberCompletionBlock)completion {
+- (void)resetWithCompletion:(YKFPIVSessionCompletionBlock)completion {
+    [self blockPin:0 completion:^(NSError * _Nullable error) {
+        if (error != nil) {
+            completion(error);
+            return;
+        }
+        [self blockPuk:0 completion:^(NSError * _Nullable error) {
+            if (error != nil) {
+                completion(error);
+                return;
+            }
+            YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0xfb p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
+            [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+                completion(error);
+            }];
+        }];
+    }];
+}
+
+
+- (void)getSerialNumberWithCompletion:(YKFPIVSessionSerialNumberCompletionBlock)completion {
     if (![self.features.serial isSupportedBySession:self]) {
         completion(-1, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Read serial number not supported by this YubiKey."}]);
         return;
@@ -86,14 +104,8 @@ int maxPinAttempts = 3;
 }
 
 - (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionVerifyPinCompletionBlock)completion {
-    
-    NSMutableData *mutableData = [[pin dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
-    UInt8 padding = 0xff;
-    for (int i = 0; i <= 8 - mutableData.length; i++) {
-        [mutableData appendBytes:&padding length:1];
-    }
-    
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0x20 p1:0 p2:0x80 data:mutableData type:YKFAPDUTypeShort];
+    NSData *data = [self paddedDataWithPin:pin];
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0x20 p1:0 p2:0x80 data:data type:YKFAPDUTypeShort];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error == nil) {
             currentPinAttempts = maxPinAttempts;
@@ -129,5 +141,64 @@ int maxPinAttempts = 3;
     }
     return -1;
 }
+
+- (void)blockPin:(int)counter completion:(YKFPIVSessionCompletionBlock)completion {
+    [self verifyPin:@"" completion:^(int retries, NSError * _Nullable error) {
+        if (retries == -1 && error != nil) {
+            completion(error);
+            return;
+        }
+        if (retries <= 0 || counter > 15) {
+            completion(nil);
+        } else {
+            [self blockPin:(counter + 1) completion:completion];
+        }
+    }];
+}
+
+- (void)blockPuk:(int)counter completion:(YKFPIVSessionCompletionBlock)completion {
+    [self changeReference:0x2c p2:0x80 valueOne:@"" valueTwo:@"" completion:^(int retries, NSError * _Nullable error) {
+        if (retries == -1 && error != nil) {
+            completion(error);
+            return;
+        }
+        if (retries <= 0 || counter > 15) {
+            completion(nil);
+        } else {
+            [self blockPuk:(counter + 1) completion:completion];
+        }
+    }];
+}
+
+- (void)changeReference:(UInt8)ins p2:(UInt8)p2 valueOne:(NSString *)valueOne valueTwo:(NSString *)valueTwo completion:(nonnull YKFPIVSessionVerifyPinCompletionBlock)completion {
+    NSMutableData *data = [self paddedDataWithPin:valueOne].mutableCopy;
+    [data appendData:[self paddedDataWithPin:valueTwo]];
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:ins p1:0 p2:p2 data:data type:YKFAPDUTypeShort];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error != nil) {
+            int retries = [self getRetriesFromStatusCode:(int)error.code];
+            if (retries >= 0) {
+                if (p2 == 0x80) {
+                    currentPinAttempts = retries;
+                }
+                completion(retries, error);
+            }
+        } else {
+            completion(currentPinAttempts, nil);
+        }
+    }];
+}
+
+- (nonnull NSData *)paddedDataWithPin:(nonnull NSString *)pin {
+    NSMutableData *mutableData = [[pin dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+    UInt8 padding = 0xff;
+    int paddingSize = 8 - (int)mutableData.length;
+    for (int i = 0; i < paddingSize; i++) {
+        [mutableData appendBytes:&padding length:1];
+        NSLog(@"%@", mutableData);
+    }
+    return mutableData;
+}
+
 
 @end
