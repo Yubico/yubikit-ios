@@ -28,6 +28,9 @@ typedef void (^YKFPIVSessionSerialNumberCompletionBlock)
 typedef void (^YKFPIVSessionVerifyPinCompletionBlock)
     (int retries, NSError* _Nullable error);
 
+typedef void (^YKFPIVSessionPinPukMetadataCompletionBlock)
+    (bool isDefault, int retriesTotal, int retriesRemaining, NSError* _Nullable error);
+
 @interface YKFPIVSession: NSObject <YKFVersionProtocol>
 
 @property (nonatomic, readonly) YKFVersion * _Nonnull version;
@@ -38,6 +41,10 @@ typedef void (^YKFPIVSessionVerifyPinCompletionBlock)
 - (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionVerifyPinCompletionBlock)completion;
 
 - (void)getSerialNumberWithCompletion:(nonnull YKFPIVSessionSerialNumberCompletionBlock)completion;
+
+- (void)getPinMetadata:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion;
+
+- (void)getPukMetadata:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion;
 
 /*
  Not available: use only the instance from the YKFAccessorySession.

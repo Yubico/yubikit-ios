@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
+#import <CryptoTokenKit/TKTLVRecord.h>
 #import "YKFPIVSession.h"
 #import "YKFPIVSession+Private.h"
 #import "YKFSmartCardInterface.h"
@@ -21,6 +22,23 @@
 #import "YKFFeature.h"
 #import "YKFPIVSessionFeatures.h"
 #import "YKFSessionError.h"
+#import "YKFNSDataAdditions+Private.h"
+#import "NSArray+TKTLVRecord.h"
+
+// Instructions
+static const NSUInteger YKFPIVInsVerify = 0x20;
+static const NSUInteger YKFPIVInsReset = 0xfb;
+static const NSUInteger YKFPIVInsGetVersion = 0xfd;
+static const NSUInteger YKFPIVInsGetSerial = 0xf8;
+static const NSUInteger YKFPIVInsGetMetadata = 0xf7;
+
+// Tags for parsing responses
+static const NSUInteger YKFPIVTagMetadataIsDefault = 0x05;
+static const NSUInteger YKFPIVTagMetadataRetries = 0x06;
+
+// P2
+static const NSUInteger YKFPIVP2Pin = 0x80;
+static const NSUInteger YKFPIVP2Puk = 0x81;
 
 @interface YKFPIVSession()
 
@@ -30,7 +48,6 @@
 @property (nonatomic, readwrite) YKFPIVSessionFeatures * _Nonnull features;
 
 @end
-
 
 @implementation YKFPIVSession
 
@@ -48,7 +65,7 @@ int maxPinAttempts = 3;
         if (error) {
             completion(nil, error);
         } else {
-            YKFAPDU *versionAPDU = [[YKFAPDU alloc] initWithCla:0 ins:0xfd p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
+            YKFAPDU *versionAPDU = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetVersion p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
             [session.smartCardInterface executeCommand:versionAPDU completion:^(NSData * _Nullable data, NSError * _Nullable error) {
                 if (error) {
                     completion(nil, error);
@@ -77,7 +94,7 @@ int maxPinAttempts = 3;
                 completion(error);
                 return;
             }
-            YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0xfb p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
+            YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsReset p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
             [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
                 completion(error);
             }];
@@ -85,14 +102,13 @@ int maxPinAttempts = 3;
     }];
 }
 
-
 - (void)getSerialNumberWithCompletion:(YKFPIVSessionSerialNumberCompletionBlock)completion {
     if (![self.features.serial isSupportedBySession:self]) {
         completion(-1, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Read serial number not supported by this YubiKey."}]);
         return;
     }
     
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0xf8 p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetSerial p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (data != nil) {
             UInt32 serialNumber = CFSwapInt32BigToHost(*(UInt32*)([data bytes]));
@@ -105,7 +121,7 @@ int maxPinAttempts = 3;
 
 - (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionVerifyPinCompletionBlock)completion {
     NSData *data = [self paddedDataWithPin:pin];
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0x20 p1:0 p2:0x80 data:data type:YKFAPDUTypeShort];
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsVerify p1:0 p2:0x80 data:data type:YKFAPDUTypeShort];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error == nil) {
             currentPinAttempts = maxPinAttempts;
@@ -124,6 +140,34 @@ int maxPinAttempts = 3;
             completion(-1, error);
         }
     }];
+}
+
+- (void)getPinPukMetadata:(UInt8)p2 completion:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion {
+        YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetMetadata p1:0 p2:p2 data:[NSData data] type:YKFAPDUTypeShort];
+    if (![self.features.metadata isSupportedBySession:self]) {
+        completion(0, 0, 0, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Read serial number not supported by this YubiKey."}]);
+        return;
+    }
+    
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error != nil) {
+            completion(0, 0, 0, error);
+        }
+        NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:data];
+        UInt8 isDefault = ((UInt8 *)[records ykfTLVRecordWithTag:YKFPIVTagMetadataIsDefault].value.bytes)[0];
+        UInt8 retriesTotal = ((UInt8 *)[records ykfTLVRecordWithTag:YKFPIVTagMetadataRetries].value.bytes)[0];
+        UInt8 retriesRemaining = ((UInt8 *)[records ykfTLVRecordWithTag:YKFPIVTagMetadataRetries].value.bytes)[1];
+        completion(isDefault, retriesTotal, retriesRemaining, nil);
+    }];
+}
+
+- (void)getPinMetadata:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion {
+    [self getPinPukMetadata:YKFPIVP2Pin completion:completion];
+}
+
+
+- (void)getPukMetadata:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion {
+    [self getPinPukMetadata:YKFPIVP2Puk completion:completion];
 }
 
 - (int)getRetriesFromStatusCode:(int)statusCode {
@@ -199,6 +243,5 @@ int maxPinAttempts = 3;
     }
     return mutableData;
 }
-
 
 @end

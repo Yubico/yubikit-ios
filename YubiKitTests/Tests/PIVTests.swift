@@ -80,6 +80,51 @@ class PIVTests: XCTestCase {
             }
         }
     }
+    
+    func testPinMetadata() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                session.getPinMetadata { isDefault, retries, retriesLeft, error in
+                    XCTAssert(isDefault == true)
+                    XCTAssert(retries == 3)
+                    XCTAssert(retriesLeft == 3)
+                    print("✅ PIN metadata")
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func testPinMetadataRetries() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                session.verifyPin("112233") { retries, error in
+                    XCTAssert(error != nil)
+                    session.getPinMetadata { isDefault, retries, retriesLeft, error in
+                        XCTAssert(isDefault == true)
+                        XCTAssert(retries == 3)
+                        XCTAssert(retriesLeft == 2)
+                        print("✅ PIN metadata retry count")
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+    
+    func testPukMetadata() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                session.getPukMetadata { isDefault, retries, retriesLeft, error in
+                    XCTAssert(isDefault == true)
+                    XCTAssert(retries == 3)
+                    XCTAssert(retriesLeft == 3)
+                    print("✅ PUK metadata")
+                    completion()
+                }
+            }
+        }
+    }
 }
 
 extension YKFConnectionProtocol {
