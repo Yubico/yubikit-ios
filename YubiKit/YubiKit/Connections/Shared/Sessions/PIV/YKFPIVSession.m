@@ -31,6 +31,9 @@ static const NSUInteger YKFPIVInsReset = 0xfb;
 static const NSUInteger YKFPIVInsGetVersion = 0xfd;
 static const NSUInteger YKFPIVInsGetSerial = 0xf8;
 static const NSUInteger YKFPIVInsGetMetadata = 0xf7;
+static const NSUInteger YKFPIVInsChangeReference = 0x24;
+static const NSUInteger YKFPIVInsResetRetry = 0x2c;
+
 
 // Tags for parsing responses
 static const NSUInteger YKFPIVTagMetadataIsDefault = 0x05;
@@ -142,10 +145,28 @@ int maxPinAttempts = 3;
     }];
 }
 
+- (void)setPin:(nonnull NSString *)pin oldPin:(nonnull NSString *)oldPin completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+    [self changeReference:YKFPIVInsChangeReference p2:YKFPIVP2Pin valueOne:oldPin valueTwo:pin completion:^(int retries, NSError * _Nullable error) {
+        completion(error);
+    }];
+}
+
+- (void)setPuk:(nonnull NSString *)puk oldPuk:(nonnull NSString *)oldPuk completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+    [self changeReference:YKFPIVInsChangeReference p2:YKFPIVP2Puk valueOne:oldPuk valueTwo:puk completion:^(int retries, NSError * _Nullable error) {
+        completion(error);
+    }];
+}
+
+- (void)unblockPin:(nonnull NSString *)puk newPin:(nonnull NSString *)newPin completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+    [self changeReference:YKFPIVInsResetRetry p2:YKFPIVP2Pin valueOne:puk valueTwo:newPin completion:^(int retries, NSError * _Nullable error) {
+        completion(error);
+    }];
+}
+
 - (void)getPinPukMetadata:(UInt8)p2 completion:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion {
         YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetMetadata p1:0 p2:p2 data:[NSData data] type:YKFAPDUTypeShort];
     if (![self.features.metadata isSupportedBySession:self]) {
-        completion(0, 0, 0, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Read serial number not supported by this YubiKey."}]);
+        completion(0, 0, 0, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Read metadata not supported by this YubiKey."}]);
         return;
     }
     

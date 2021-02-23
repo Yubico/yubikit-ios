@@ -125,6 +125,76 @@ class PIVTests: XCTestCase {
             }
         }
     }
+    
+    func testSetPin() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                session.setPin("654321", oldPin: "123456") { error in
+                    XCTAssert(error == nil)
+                    session.verifyPin("654321") { retries, error in
+                        XCTAssert(error == nil)
+                        print("✅ Changed pin")
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+    
+    func testUnblockPin() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                session.blockPin(counter: 0) {
+                    session.unblockPin("12345678", newPin: "222222") { error in
+                        XCTAssert(error == nil)
+                        session.verifyPin("222222") { retries, error in
+                            XCTAssert(error == nil)
+                            print("✅ Pin unblocked")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func testSetPukAndUnblock() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                session.setPuk("87654321", oldPuk: "12345678") { error in
+                    XCTAssert(error == nil)
+                    session.blockPin(counter: 0) {
+                        session.unblockPin("87654321", newPin: "222222") { error in
+                            XCTAssert(error == nil)
+                            session.verifyPin("222222") { retries, error in
+                                XCTAssert(error == nil)
+                                print("✅ New puk verified")
+                                completion()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+extension YKFPIVSession {
+    func blockPin(counter: Int, completion: @escaping () -> Void) {
+        self.verifyPin("") { retries, error in
+            guard retries != -1 && error != nil else {
+                XCTAssert(false, "Failed blocking pin with error: \(error!)")
+                completion()
+                return
+            }
+            if retries <= 0 || counter > 15 {
+                print("pin blocked after \(counter + 1) tries")
+                completion()
+                return
+            }
+            self.blockPin(counter: counter + 1, completion: completion)
+        }
+    }
 }
 
 extension YKFConnectionProtocol {
