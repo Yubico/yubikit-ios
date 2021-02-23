@@ -15,6 +15,7 @@
 		51ACC2F625D585F70069214B /* YKFPIVSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC2F525D585F70069214B /* YKFPIVSession.m */; };
 		51ACC32025DBBB7E0069214B /* YKFFeature.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC31F25DBBB7E0069214B /* YKFFeature.m */; };
 		51ACC32925DC01DA0069214B /* YKFPIVSessionFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */; };
+		51ACC33625E50C860069214B /* NSArray+TKTLVRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC33525E50C860069214B /* NSArray+TKTLVRecord.m */; };
 		51E1B97B25765454003C1CA4 /* YKFOATHCredentialTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B97A25765454003C1CA4 /* YKFOATHCredentialTemplate.m */; };
 		51E1B9862577993C003C1CA4 /* YKFOATHCredentialUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B9852577993C003C1CA4 /* YKFOATHCredentialUtils.m */; };
 		51E1B9932577EF05003C1CA4 /* YKFOATHCredentialWithCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B9922577EF05003C1CA4 /* YKFOATHCredentialWithCode.m */; };
@@ -307,6 +308,8 @@
 		51ACC31F25DBBB7E0069214B /* YKFFeature.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFFeature.m; sourceTree = "<group>"; };
 		51ACC32725DC01C90069214B /* YKFPIVSessionFeatures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVSessionFeatures.h; sourceTree = "<group>"; };
 		51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVSessionFeatures.m; sourceTree = "<group>"; };
+		51ACC33425E50C6B0069214B /* NSArray+TKTLVRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+TKTLVRecord.h"; sourceTree = "<group>"; };
+		51ACC33525E50C860069214B /* NSArray+TKTLVRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+TKTLVRecord.m"; sourceTree = "<group>"; };
 		51B48A0B2552D60B00D4C7E8 /* YKFChallengeResponseSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFChallengeResponseSession+Private.h"; sourceTree = "<group>"; };
 		51E1B97A25765454003C1CA4 /* YKFOATHCredentialTemplate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHCredentialTemplate.m; sourceTree = "<group>"; };
 		51E1B98025765547003C1CA4 /* YKFOATHCredentialTemplate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHCredentialTemplate.h; sourceTree = "<group>"; };
@@ -766,6 +769,8 @@
 				95D5E2DB2187159700AA1C11 /* YKFNSMutableDataAdditions.m */,
 				95EA81E52178805D0020595D /* YKFNSStringAdditions.h */,
 				95EA81E62178805D0020595D /* YKFNSStringAdditions.m */,
+				51ACC33425E50C6B0069214B /* NSArray+TKTLVRecord.h */,
+				51ACC33525E50C860069214B /* NSArray+TKTLVRecord.m */,
 			);
 			path = Additions;
 			sourceTree = "<group>";
@@ -1469,6 +1474,7 @@
 				955188302265F4EE001A4191 /* YKFAPDUError.m in Sources */,
 				9581395421591DE1008558F3 /* YKFSelectOATHApplicationAPDU.m in Sources */,
 				95BA204521F7483100EED927 /* YKFFIDO2GetAssertionResponse.m in Sources */,
+				51ACC33625E50C860069214B /* NSArray+TKTLVRecord.m in Sources */,
 				815233FE23B56A6F004D4788 /* YKFChalRespSendRequest.m in Sources */,
 				95081DEE2214255B006CD08C /* YKFRequest.m in Sources */,
 				956991F422C224BC00C5EB02 /* YKFWebAuthnClientData.m in Sources */,
@@ -1650,7 +1656,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1703,7 +1709,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
