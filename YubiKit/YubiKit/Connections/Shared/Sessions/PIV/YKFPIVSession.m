@@ -222,7 +222,7 @@ int maxPinAttempts = 3;
 }
 
 - (void)blockPuk:(int)counter completion:(YKFPIVSessionCompletionBlock)completion {
-    [self changeReference:0x2c p2:0x80 valueOne:@"" valueTwo:@"" completion:^(int retries, NSError * _Nullable error) {
+    [self changeReference:YKFPIVInsResetRetry p2:YKFPIVP2Pin valueOne:@"" valueTwo:@"" completion:^(int retries, NSError * _Nullable error) {
         if (retries == -1 && error != nil) {
             completion(error);
             return;
@@ -260,7 +260,6 @@ int maxPinAttempts = 3;
     int paddingSize = 8 - (int)mutableData.length;
     for (int i = 0; i < paddingSize; i++) {
         [mutableData appendBytes:&padding length:1];
-        NSLog(@"%@", mutableData);
     }
     return mutableData;
 }
