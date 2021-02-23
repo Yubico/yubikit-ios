@@ -40,6 +40,12 @@ typedef void (^YKFPIVSessionPinPukMetadataCompletionBlock)
 
 - (void)verifyPin:(nonnull NSString *)pin completion:(nonnull YKFPIVSessionVerifyPinCompletionBlock)completion;
 
+- (void)setPin:(nonnull NSString *)pin oldPin:(nonnull NSString *)oldPin completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+
+- (void)setPuk:(nonnull NSString *)puk oldPuk:(nonnull NSString *)oldPuk completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+
+- (void)unblockPin:(nonnull NSString *)puk newPin:(nonnull NSString *)newPin completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+
 - (void)getSerialNumberWithCompletion:(nonnull YKFPIVSessionSerialNumberCompletionBlock)completion;
 
 - (void)getPinMetadata:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion;
