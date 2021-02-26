@@ -14,7 +14,7 @@
 
 #import "YKFSessionError.h"
 
-NSString* const YKFSessionErrorDomain = @"YubiKeySessionError";
+NSString* const YKFSessionErrorDomain = @"com.yubico";
 
 #pragma mark - Error Descriptions
 static NSString* const YKFSessionErrorReadTimeoutDescription = @"Unable to read from key. Operation timeout.";

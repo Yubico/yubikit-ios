@@ -17,7 +17,9 @@
 
 #import "YKFVersion.h"
 
-@class YKFPIVSessionFeatures;
+@class YKFPIVSessionFeatures, YKFPIVManagementKeyType;
+
+NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^YKFPIVSessionCompletionBlock)
     (NSError* _Nullable error);
@@ -35,6 +37,8 @@ typedef void (^YKFPIVSessionPinPukMetadataCompletionBlock)
 
 @property (nonatomic, readonly) YKFVersion * _Nonnull version;
 @property (nonatomic, readonly) YKFPIVSessionFeatures * _Nonnull features;
+
+- (void)authenticateWithManagementKeyType:(nonnull YKFPIVManagementKeyType *)managementKeyType managementKey:(nonnull NSData *)managementKey completion:(nonnull YKFPIVSessionCompletionBlock)completion;
 
 - (void)resetWithCompletion:(nonnull YKFPIVSessionCompletionBlock)completion;
 
@@ -56,6 +60,8 @@ typedef void (^YKFPIVSessionPinPukMetadataCompletionBlock)
  Not available: use only the instance from the YKFAccessorySession.
  */
 - (nonnull instancetype)init NS_UNAVAILABLE;
+
+NS_ASSUME_NONNULL_END
 
 @end
 

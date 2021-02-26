@@ -47,6 +47,7 @@
 #import "YKFFIDO2Session.h"
 #import "YKFOATHSession.h"
 #import "YKFPIVSession.h"
+#import "YKFPIVManagementKeyType.h"
 #import "YKFChallengeResponseSession.h"
 #import "YKFManagementSession.h"
 

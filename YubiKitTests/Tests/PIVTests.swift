@@ -16,6 +16,34 @@ import XCTest
 import Foundation
 
 class PIVTests: XCTestCase {
+    func testAuthenticateWithDefaultManagementKey() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                let managementKey = Data([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08])
+                session.authenticate(with: YKFPIVManagementKeyType.tripleDES(), managementKey: managementKey) { error in
+                    XCTAssert(error == nil, "🔴 \(error!)")
+                    print("✅ authenticated")
+                    completion()
+                }
+
+            }
+        }
+    }
+    
+    func testAuthenticateWithWrongManagementKey() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                let managementKey = Data([0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01])
+                session.authenticate(with: YKFPIVManagementKeyType.tripleDES(), managementKey: managementKey) { error in
+                    guard let error = error as NSError? else { XCTFail("🔴 Expected an error but got none"); completion(); return }
+                    XCTAssert(error.code == 0x6982)
+                    print("✅ got expected error: \(error)")
+                    completion()
+                }
+            }
+        }
+    }
+    
     func testVerifyPIN() throws {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in

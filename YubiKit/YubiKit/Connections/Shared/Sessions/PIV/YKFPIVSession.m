@@ -14,6 +14,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CryptoTokenKit/TKTLVRecord.h>
+#import <CommonCrypto/CommonCrypto.h>
 #import "YKFPIVSession.h"
 #import "YKFPIVSession+Private.h"
 #import "YKFSmartCardInterface.h"
@@ -24,8 +25,17 @@
 #import "YKFSessionError.h"
 #import "YKFNSDataAdditions+Private.h"
 #import "NSArray+TKTLVRecord.h"
+#import "YKFPIVManagementKeyType.h"
+#import "YKFAPDU+Private.h"
+#import "YKFPIVError.h"
+#import "YKFSessionError+Private.h"
+
+
+// Special slot for the management key
+static const NSUInteger YKFPIVSlotCardManagement = 0x9b;
 
 // Instructions
+static const NSUInteger YKFPIVInsAuthenticate = 0x87;
 static const NSUInteger YKFPIVInsVerify = 0x20;
 static const NSUInteger YKFPIVInsReset = 0xfb;
 static const NSUInteger YKFPIVInsGetVersion = 0xfd;
@@ -35,9 +45,13 @@ static const NSUInteger YKFPIVInsChangeReference = 0x24;
 static const NSUInteger YKFPIVInsResetRetry = 0x2c;
 
 
-// Tags for parsing responses
+// Tags for parsing responses and preparing reqeusts
 static const NSUInteger YKFPIVTagMetadataIsDefault = 0x05;
 static const NSUInteger YKFPIVTagMetadataRetries = 0x06;
+static const NSUInteger YKFPIVTagDynAuth = 0x7c;
+static const NSUInteger YKFPIVTagAuthWitness = 0x80;
+static const NSUInteger YKFPIVTagChallenge = 0x81;
+static const NSUInteger YKFPIVTagAuthResponse = 0x82;
 
 // P2
 static const NSUInteger YKFPIVP2Pin = 0x80;
@@ -84,6 +98,70 @@ int maxPinAttempts = 3;
 
 - (void)clearSessionState {
     // Do nothing for now
+}
+
+- (void)authenticateWithManagementKeyType:(nonnull YKFPIVManagementKeyType *)managementKeyType managementKey:(nonnull NSData *)managementKey completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+    if (managementKeyType.keyLenght != managementKey.length) {
+        YKFPIVError *error = [[YKFPIVError alloc] initWithCode:YKFPIVErrorCodeBadKeyLength message:[NSString stringWithFormat: @"Magagement key must be %i bytes in length. Used key is %lu long.", managementKeyType.keyLenght, (unsigned long)managementKey.length]];
+        completion(error);
+        return;
+    }
+    
+    TKBERTLVRecord *witness = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagAuthWitness value:[NSData data]];
+    NSData *requestData = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:witness.data].data;
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAuthenticate p1:managementKeyType.value p2:YKFPIVSlotCardManagement data:requestData type:YKFAPDUTypeExtended];
+
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error != nil) {
+            completion(error);
+            return;
+        }
+        TKBERTLVRecord *dynAuthRecord = [TKBERTLVRecord recordFromData:data];
+        if (dynAuthRecord.tag != YKFPIVTagDynAuth) {
+            completion([YKFPIVError errorUnpackingTLVExpected:YKFPIVTagDynAuth got:dynAuthRecord.tag]);
+            return;
+        }
+        TKBERTLVRecord *witnessRecord = [TKBERTLVRecord recordFromData:dynAuthRecord.value];
+        if (witnessRecord.tag != YKFPIVTagAuthWitness) {
+            completion([YKFPIVError errorUnpackingTLVExpected:YKFPIVTagAuthWitness got:witnessRecord.tag]);
+            return;
+        }
+        
+        NSData *decryptedWitness = [witnessRecord.value ykf_decryptedDataWithAlgorithm:[managementKeyType.name ykfCCAlgorithm] key:managementKey];
+        TKBERTLVRecord *decryptedWitnessRecord = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagAuthWitness value:decryptedWitness];
+
+        NSData *challenge = [NSData ykf_randomDataOfSize:managementKeyType.challengeLength];
+        TKBERTLVRecord *challengeRecord = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagChallenge value:challenge];
+
+        NSMutableData *mutableData = [decryptedWitnessRecord.data mutableCopy];
+        [mutableData appendData:challengeRecord.data];
+        TKBERTLVRecord *authTLVS = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:mutableData];
+
+        YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAuthenticate p1:managementKeyType.value p2:YKFPIVSlotCardManagement data:authTLVS.data type:YKFAPDUTypeExtended];
+
+        [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+            if (error != nil) {
+                completion(error);
+                return;
+            }
+            TKBERTLVRecord *dynAuthRecord = [TKBERTLVRecord recordFromData:data];
+            if (dynAuthRecord.tag != YKFPIVTagDynAuth) {
+                completion([YKFPIVError errorUnpackingTLVExpected:YKFPIVTagDynAuth got:dynAuthRecord.tag]);
+                return;
+            }
+            TKBERTLVRecord *encryptedRecord = [TKBERTLVRecord recordFromData:dynAuthRecord.value];
+            if (encryptedRecord.tag != YKFPIVTagAuthResponse) {
+                completion([YKFPIVError errorUnpackingTLVExpected:YKFPIVTagAuthResponse got:encryptedRecord.tag]);
+                return;
+            }
+            NSData *encryptedData = encryptedRecord.value;
+            NSData *expectedData = [challenge ykf_encryptDataWithAlgorithm:[managementKeyType.name ykfCCAlgorithm] key:managementKey];
+            if (![encryptedData isEqual:expectedData]) {
+                return;
+            }
+            completion(nil);
+        }];
+    }];
 }
 
 - (void)resetWithCompletion:(YKFPIVSessionCompletionBlock)completion {
