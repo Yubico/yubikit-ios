@@ -43,6 +43,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface NSData (NSDATA_PIVAdditions)
+
+- (nullable NSData *)ykf_encryptDataWithAlgorithm:(CCAlgorithm)algorithm key:(NSData *)key;
+- (nullable NSData *)ykf_decryptedDataWithAlgorithm:(CCAlgorithm)algorithm key:(NSData *)key;
+- (nullable NSData *)ykf_cryptOperation:(CCOperation)operation algorithm:(CCAlgorithm)algorithm key:(NSData *)key;
+
++ (nullable NSData *)ykf_randomDataOfSize:(size_t)sizeInBytes;
+
+@end
+
 @interface NSData(NSDATA_SizeCheckAdditions)
 
 - (BOOL)ykf_containsIndex:(NSUInteger) index;

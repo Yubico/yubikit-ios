@@ -16,6 +16,8 @@
 		51ACC32025DBBB7E0069214B /* YKFFeature.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC31F25DBBB7E0069214B /* YKFFeature.m */; };
 		51ACC32925DC01DA0069214B /* YKFPIVSessionFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */; };
 		51ACC33625E50C860069214B /* NSArray+TKTLVRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC33525E50C860069214B /* NSArray+TKTLVRecord.m */; };
+		51ACC33C25E553580069214B /* YKFPIVManagementKeyType.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC33B25E553580069214B /* YKFPIVManagementKeyType.m */; };
+		51ACC34B25E7ECA80069214B /* YKFPIVError.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC34A25E7ECA80069214B /* YKFPIVError.m */; };
 		51E1B97B25765454003C1CA4 /* YKFOATHCredentialTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B97A25765454003C1CA4 /* YKFOATHCredentialTemplate.m */; };
 		51E1B9862577993C003C1CA4 /* YKFOATHCredentialUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B9852577993C003C1CA4 /* YKFOATHCredentialUtils.m */; };
 		51E1B9932577EF05003C1CA4 /* YKFOATHCredentialWithCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B9922577EF05003C1CA4 /* YKFOATHCredentialWithCode.m */; };
@@ -310,6 +312,10 @@
 		51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVSessionFeatures.m; sourceTree = "<group>"; };
 		51ACC33425E50C6B0069214B /* NSArray+TKTLVRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+TKTLVRecord.h"; sourceTree = "<group>"; };
 		51ACC33525E50C860069214B /* NSArray+TKTLVRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+TKTLVRecord.m"; sourceTree = "<group>"; };
+		51ACC33B25E553580069214B /* YKFPIVManagementKeyType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVManagementKeyType.m; sourceTree = "<group>"; };
+		51ACC34125E553910069214B /* YKFPIVManagementKeyType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVManagementKeyType.h; sourceTree = "<group>"; };
+		51ACC34925E7EC910069214B /* YKFPIVError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVError.h; sourceTree = "<group>"; };
+		51ACC34A25E7ECA80069214B /* YKFPIVError.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVError.m; sourceTree = "<group>"; };
 		51B48A0B2552D60B00D4C7E8 /* YKFChallengeResponseSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFChallengeResponseSession+Private.h"; sourceTree = "<group>"; };
 		51E1B97A25765454003C1CA4 /* YKFOATHCredentialTemplate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHCredentialTemplate.m; sourceTree = "<group>"; };
 		51E1B98025765547003C1CA4 /* YKFOATHCredentialTemplate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHCredentialTemplate.h; sourceTree = "<group>"; };
@@ -656,6 +662,8 @@
 				51ACC2FC25D587BB0069214B /* YKFPIVSession+Private.h */,
 				51ACC32725DC01C90069214B /* YKFPIVSessionFeatures.h */,
 				51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */,
+				51ACC34125E553910069214B /* YKFPIVManagementKeyType.h */,
+				51ACC33B25E553580069214B /* YKFPIVManagementKeyType.m */,
 			);
 			path = PIV;
 			sourceTree = "<group>";
@@ -1286,6 +1294,8 @@
 				8152341123BAE9D2004D4788 /* YKFChallengeResponseError.m */,
 				81F94D8823F2371200475A70 /* YKFManagementError.h */,
 				81F94D8923F2371200475A70 /* YKFManagementError.m */,
+				51ACC34925E7EC910069214B /* YKFPIVError.h */,
+				51ACC34A25E7ECA80069214B /* YKFPIVError.m */,
 			);
 			path = Errors;
 			sourceTree = "<group>";
@@ -1482,6 +1492,7 @@
 				956DB66B206391C5006B1738 /* YKFQRCodeScanError.m in Sources */,
 				956DBB9421EE2B29004D6EE3 /* YKFFIDO2ResetAPDU.m in Sources */,
 				954E2C512211A34900720D2B /* YKFFIDO2ClientPinRequest.m in Sources */,
+				51ACC34B25E7ECA80069214B /* YKFPIVError.m in Sources */,
 				95C29632206256120091318B /* YKFLogger.m in Sources */,
 				955BCC0A215A463E00C2EA2B /* YKFOATHCredential.m in Sources */,
 				95C296442062656C0091318B /* YKFOTPURIParser.m in Sources */,
@@ -1531,6 +1542,7 @@
 				95DD408E2099A88500363FEE /* YKFSessionError.m in Sources */,
 				81FD3B982404889C004C4FE9 /* YKFVersion.m in Sources */,
 				951446AA2188592C002BB3C5 /* YKFPCSCLayer.m in Sources */,
+				51ACC33C25E553580069214B /* YKFPIVManagementKeyType.m in Sources */,
 				95B58B8B229C03AE00199F8E /* YKFAccessoryConnection+Debugging.m in Sources */,
 				95B0CAAD21EF53E1009C6A34 /* YKFFIDO2Error.m in Sources */,
 				95DD40A72099A8A400363FEE /* YKFAccessoryConnection.m in Sources */,
