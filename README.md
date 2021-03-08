@@ -35,6 +35,7 @@ The YubiKit SDK for iOS is availble Swift Package Manger (SPM). SPM is a depende
 
 3. Click "Next" -> "Next" -> "Finish"
 
+4. If your target project is written in Swift, you need to provide a bridge to the YubiKit library by adding ``#import <YubiKit.h>`` to your bridging header. If a bridging header does not exist within your project, you can add one by following this [documentation](https://developer.apple.com/library/content/documentation/Swift/Conceptual/BuildingCocoaApps/MixandMatch.html).
 
 **[Cocoapods Setup]**
 
