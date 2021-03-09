@@ -18,6 +18,8 @@
 @class YKFFeature;
 
 @interface YKFPIVSessionFeatures : NSObject
+    @property (nonatomic, readonly) YKFFeature * _Nonnull usagePolicy;
+    @property (nonatomic, readonly) YKFFeature * _Nonnull aesKey;
     @property (nonatomic, readonly) YKFFeature * _Nonnull serial;
     @property (nonatomic, readonly) YKFFeature * _Nonnull metadata;
 @end

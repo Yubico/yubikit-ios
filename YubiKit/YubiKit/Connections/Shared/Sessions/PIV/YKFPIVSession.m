@@ -43,6 +43,7 @@ static const NSUInteger YKFPIVInsGetSerial = 0xf8;
 static const NSUInteger YKFPIVInsGetMetadata = 0xf7;
 static const NSUInteger YKFPIVInsChangeReference = 0x24;
 static const NSUInteger YKFPIVInsResetRetry = 0x2c;
+static const NSUInteger YKFPIVInsSetManagementKey = 0xff;
 
 
 // Tags for parsing responses and preparing reqeusts
@@ -98,6 +99,27 @@ int maxPinAttempts = 3;
 
 - (void)clearSessionState {
     // Do nothing for now
+}
+
+- (void)setManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type requiresTouch:(BOOL)requiresTouch completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+    if (requiresTouch && ![self.features.usagePolicy isSupportedBySession:self]) {
+        completion([[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"PIN/Touch policy not supported by this YubiKey."}]);
+        return;
+    }
+    if (type.name != YKFPIVManagementKeyTypeTripleDES && ![self.features.aesKey isSupportedBySession:self]) {
+        completion([[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"AES management key not supported by this YubiKey."}]);
+        return;
+    }
+    TKBERTLVRecord *tlv = [[TKBERTLVRecord alloc] initWithTag:YKFPIVSlotCardManagement value:managementKey];
+    
+    UInt8 typeValue = type.value;
+    NSMutableData *data = [NSMutableData dataWithBytes:&typeValue length:1];
+    [data appendData:tlv.data];
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsSetManagementKey p1:0xff p2:requiresTouch ? 0xfe : 0xff data:data type:YKFAPDUTypeShort];
+
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        completion(error);
+    }];
 }
 
 - (void)authenticateWithManagementKeyType:(nonnull YKFPIVManagementKeyType *)managementKeyType managementKey:(nonnull NSData *)managementKey completion:(nonnull YKFPIVSessionCompletionBlock)completion {

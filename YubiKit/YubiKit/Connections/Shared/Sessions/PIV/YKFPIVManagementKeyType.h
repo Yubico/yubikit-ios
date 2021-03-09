@@ -15,9 +15,12 @@
 #ifndef YKFPIVManagementKeyType_h
 #define YKFPIVManagementKeyType_h
 
-@interface YKFPIVManagementKeyType : NSObject
-
 NS_ASSUME_NONNULL_BEGIN
+
+extern NSString * const YKFPIVManagementKeyTypeTripleDES;
+extern NSString * const YKFPIVManagementKeyTypeAES;
+
+@interface YKFPIVManagementKeyType : NSObject
 
 + (YKFPIVManagementKeyType *)TripleDES;
 + (YKFPIVManagementKeyType *)AES128;

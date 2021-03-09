@@ -16,6 +16,9 @@
 #import "YKFPIVManagementKeyType.h"
 #import <CommonCrypto/CommonCrypto.h>
 
+NSString * const YKFPIVManagementKeyTypeTripleDES = @"DESede";
+NSString * const YKFPIVManagementKeyTypeAES = @"AES";
+
 @interface YKFPIVManagementKeyType()
 
 - (instancetype)initWithName:(NSString *)name value:(UInt8)value keyLength:(int)keyLength challengeLength:(int)challengeLength;
@@ -44,19 +47,19 @@ NSString *name;
 }
 
 + (YKFPIVManagementKeyType *)TripleDES {
-    return [[YKFPIVManagementKeyType alloc] initWithName:@"DESede" value:0x03 keyLength:24 challengeLength:8];
+    return [[YKFPIVManagementKeyType alloc] initWithName:YKFPIVManagementKeyTypeTripleDES value:0x03 keyLength:24 challengeLength:8];
 }
 
 + (YKFPIVManagementKeyType *)AES128 {
-    return [[YKFPIVManagementKeyType alloc] initWithName:@"AES" value:0x08 keyLength:16 challengeLength:16];
+    return [[YKFPIVManagementKeyType alloc] initWithName:YKFPIVManagementKeyTypeAES value:0x08 keyLength:16 challengeLength:16];
 }
 
 + (YKFPIVManagementKeyType *)AES192 {
-    return [[YKFPIVManagementKeyType alloc] initWithName:@"AES" value:0x0a keyLength:24 challengeLength:16];
+    return [[YKFPIVManagementKeyType alloc] initWithName:YKFPIVManagementKeyTypeAES value:0x0a keyLength:24 challengeLength:16];
 }
 
 + (YKFPIVManagementKeyType *)AES256 {
-    return [[YKFPIVManagementKeyType alloc] initWithName:@"AES" value:0x0c keyLength:32 challengeLength:16];
+    return [[YKFPIVManagementKeyType alloc] initWithName:YKFPIVManagementKeyTypeAES value:0x0c keyLength:32 challengeLength:16];
 }
 
 @end
@@ -65,7 +68,7 @@ NSString *name;
 @implementation NSString (CryptoNameMapping)
 
 - (uint32_t)ykfCCAlgorithm {
-    if ([self isEqual:@"DESede"]) {
+    if ([self isEqual:YKFPIVManagementKeyTypeTripleDES]) {
         return kCCAlgorithm3DES;
     } else {
         return kCCAlgorithmAES;
