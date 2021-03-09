@@ -122,16 +122,16 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)authenticateWithManagementKeyType:(nonnull YKFPIVManagementKeyType *)managementKeyType managementKey:(nonnull NSData *)managementKey completion:(nonnull YKFPIVSessionCompletionBlock)completion {
-    if (managementKeyType.keyLenght != managementKey.length) {
-        YKFPIVError *error = [[YKFPIVError alloc] initWithCode:YKFPIVErrorCodeBadKeyLength message:[NSString stringWithFormat: @"Magagement key must be %i bytes in length. Used key is %lu long.", managementKeyType.keyLenght, (unsigned long)managementKey.length]];
+- (void)authenticateWithManagementKey:(nonnull NSData *)managementKey keyType:(nonnull YKFPIVManagementKeyType *)keyType completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+    if (keyType.keyLenght != managementKey.length) {
+        YKFPIVError *error = [[YKFPIVError alloc] initWithCode:YKFPIVErrorCodeBadKeyLength message:[NSString stringWithFormat: @"Magagement key must be %i bytes in length. Used key is %lu long.", keyType.keyLenght, (unsigned long)managementKey.length]];
         completion(error);
         return;
     }
     
     TKBERTLVRecord *witness = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagAuthWitness value:[NSData data]];
     NSData *requestData = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:witness.data].data;
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAuthenticate p1:managementKeyType.value p2:YKFPIVSlotCardManagement data:requestData type:YKFAPDUTypeExtended];
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAuthenticate p1:keyType.value p2:YKFPIVSlotCardManagement data:requestData type:YKFAPDUTypeExtended];
 
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error != nil) {
@@ -149,17 +149,17 @@ int maxPinAttempts = 3;
             return;
         }
         
-        NSData *decryptedWitness = [witnessRecord.value ykf_decryptedDataWithAlgorithm:[managementKeyType.name ykfCCAlgorithm] key:managementKey];
+        NSData *decryptedWitness = [witnessRecord.value ykf_decryptedDataWithAlgorithm:[keyType.name ykfCCAlgorithm] key:managementKey];
         TKBERTLVRecord *decryptedWitnessRecord = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagAuthWitness value:decryptedWitness];
 
-        NSData *challenge = [NSData ykf_randomDataOfSize:managementKeyType.challengeLength];
+        NSData *challenge = [NSData ykf_randomDataOfSize:keyType.challengeLength];
         TKBERTLVRecord *challengeRecord = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagChallenge value:challenge];
 
         NSMutableData *mutableData = [decryptedWitnessRecord.data mutableCopy];
         [mutableData appendData:challengeRecord.data];
         TKBERTLVRecord *authTLVS = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:mutableData];
 
-        YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAuthenticate p1:managementKeyType.value p2:YKFPIVSlotCardManagement data:authTLVS.data type:YKFAPDUTypeExtended];
+        YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAuthenticate p1:keyType.value p2:YKFPIVSlotCardManagement data:authTLVS.data type:YKFAPDUTypeExtended];
 
         [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
             if (error != nil) {
@@ -177,7 +177,7 @@ int maxPinAttempts = 3;
                 return;
             }
             NSData *encryptedData = encryptedRecord.value;
-            NSData *expectedData = [challenge ykf_encryptDataWithAlgorithm:[managementKeyType.name ykfCCAlgorithm] key:managementKey];
+            NSData *expectedData = [challenge ykf_encryptDataWithAlgorithm:[keyType.name ykfCCAlgorithm] key:managementKey];
             if (![encryptedData isEqual:expectedData]) {
                 return;
             }

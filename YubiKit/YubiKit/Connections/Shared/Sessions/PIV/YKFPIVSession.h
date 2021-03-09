@@ -40,7 +40,7 @@ typedef void (^YKFPIVSessionPinPukMetadataCompletionBlock)
 
 - (void)setManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type requiresTouch:(BOOL)requiresTouch completion:(nonnull YKFPIVSessionCompletionBlock)completion;
 
-- (void)authenticateWithManagementKeyType:(nonnull YKFPIVManagementKeyType *)managementKeyType managementKey:(nonnull NSData *)managementKey completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+- (void)authenticateWithManagementKey:(nonnull NSData *)managementKey keyType:(nonnull YKFPIVManagementKeyType *)keyType completion:(nonnull YKFPIVSessionCompletionBlock)completion;
 
 - (void)resetWithCompletion:(nonnull YKFPIVSessionCompletionBlock)completion;
 
