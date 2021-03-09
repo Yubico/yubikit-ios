@@ -172,7 +172,7 @@ class PIVTests: XCTestCase {
     func testUnblockPin() throws {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
-                session.blockPin(counter: 0) {
+                session.blockPin() {
                     session.unblockPin("12345678", newPin: "222222") { error in
                         XCTAssert(error == nil)
                         session.verifyPin("222222") { retries, error in
@@ -191,7 +191,7 @@ class PIVTests: XCTestCase {
             connection.pivTestSession { session in
                 session.setPuk("87654321", oldPuk: "12345678") { error in
                     XCTAssert(error == nil)
-                    session.blockPin(counter: 0) {
+                    session.blockPin() {
                         session.unblockPin("87654321", newPin: "222222") { error in
                             XCTAssert(error == nil)
                             session.verifyPin("222222") { retries, error in
@@ -208,7 +208,11 @@ class PIVTests: XCTestCase {
 }
 
 extension YKFPIVSession {
-    func blockPin(counter: Int, completion: @escaping () -> Void) {
+    func blockPin(completion: @escaping () -> Void) {
+        blockPin(counter:0, completion: completion)
+    }
+    
+    private func blockPin(counter: Int, completion: @escaping () -> Void) {
         self.verifyPin("") { retries, error in
             guard retries != -1 && error != nil else {
                 XCTAssert(false, "Failed blocking pin with error: \(error!)")
