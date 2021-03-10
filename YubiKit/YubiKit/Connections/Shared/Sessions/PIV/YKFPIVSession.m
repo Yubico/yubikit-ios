@@ -291,6 +291,25 @@ int maxPinAttempts = 3;
     [self getPinPukMetadata:YKFPIVP2Puk completion:completion];
 }
 
+- (void)getPinAttempts:(nonnull YKFPIVSessionPinAttemptsCompletionBlock)completion {
+    if ([self.features.metadata isSupportedBySession:self]) {
+        [self getPinMetadata:^(bool isDefault, int retriesTotal, int retriesRemaining, NSError * _Nullable error) {
+            completion(retriesRemaining, error);
+        }];
+    } else {
+        YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsVerify p1:0 p2:YKFPIVP2Pin data:[NSData data] type:YKFAPDUTypeShort];
+        [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+            if (error == nil) {
+                // Already verified, no way to know true count
+                completion(currentPinAttempts, nil);
+                return;
+            }
+            int retries = [self getRetriesFromStatusCode:(int)error.code];
+            completion(retries, retries < 0 ? error : nil);
+        }];
+    }
+}
+
 - (int)getRetriesFromStatusCode:(int)statusCode {
     if (statusCode == 0x6983) {
         return 0;

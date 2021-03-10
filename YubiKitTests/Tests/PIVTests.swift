@@ -126,6 +126,26 @@ class PIVTests: XCTestCase {
         }
     }
     
+    func testGetPINAttempts() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                session.getPinAttempts { retries, error in
+                    XCTAssertNil(error)
+                    XCTAssert(retries == 3)
+                    print("✅ PIN attempts \(retries)")
+                    session.verifyPin("666666") { retries, error in
+                        session.getPinAttempts { retries, error in
+                            XCTAssertNil(error)
+                            XCTAssert(retries == 2)
+                            print("✅ PIN attempts \(retries)")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+        
     func testVersion() throws {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
