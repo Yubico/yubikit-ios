@@ -17,7 +17,7 @@
 
 #import "YKFVersion.h"
 
-@class YKFPIVSessionFeatures, YKFPIVManagementKeyType;
+@class YKFPIVSessionFeatures, YKFPIVManagementKeyType, YKFPIVManagementKeyMetadata;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,6 +35,9 @@ typedef void (^YKFPIVSessionPinPukMetadataCompletionBlock)
 
 typedef void (^YKFPIVSessionPinAttemptsCompletionBlock)
     (int retriesRemaining, NSError* _Nullable error);
+
+typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
+    (YKFPIVManagementKeyMetadata* _Nullable metaData, NSError* _Nullable error);
 
 @interface YKFPIVSession: NSObject <YKFVersionProtocol>
 
@@ -56,6 +59,8 @@ typedef void (^YKFPIVSessionPinAttemptsCompletionBlock)
 - (void)unblockPin:(nonnull NSString *)puk newPin:(nonnull NSString *)newPin completion:(nonnull YKFPIVSessionCompletionBlock)completion;
 
 - (void)getSerialNumberWithCompletion:(nonnull YKFPIVSessionSerialNumberCompletionBlock)completion;
+
+- (void)getManagementKeyMetadata:(nonnull YKFPIVSessionManagementKeyMetadataCompletionBlock)completion;
 
 - (void)getPinMetadata:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion;
 

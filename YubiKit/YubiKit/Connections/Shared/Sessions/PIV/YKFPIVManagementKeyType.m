@@ -62,6 +62,26 @@ NSString *name;
     return [[YKFPIVManagementKeyType alloc] initWithName:YKFPIVManagementKeyTypeAES value:0x0c keyLength:32 challengeLength:16];
 }
 
++ (YKFPIVManagementKeyType *)fromValue:(UInt8)value {
+    switch (value) {
+        case 0x03:
+            return [self TripleDES];
+            break;
+        case 0x08:
+            return [self AES128];
+            break;
+        case 0x0a:
+            return [self AES192];
+            break;
+        case 0x0c:
+            return [self AES256];
+            break;
+        default:
+            return nil;
+            break;
+    }
+}
+
 @end
 
 

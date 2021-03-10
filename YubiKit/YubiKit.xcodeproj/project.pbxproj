@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5110D67625F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 5110D67525F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m */; };
 		5117C10625F692C300F4081A /* FakeYKFConnectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5117C10425F692C300F4081A /* FakeYKFConnectionController.m */; };
 		5121B2212563DE8200300145 /* YKFSmartCardInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 5121B2202563DE8200300145 /* YKFSmartCardInterface.m */; };
 		5121B22D2565238500300145 /* YKFSelectApplicationAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 5121B22C2565238500300145 /* YKFSelectApplicationAPDU.m */; };
@@ -288,6 +289,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5110D67125F8FAAE00467680 /* YKFPIVTouchPolicy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVTouchPolicy.h; sourceTree = "<group>"; };
+		5110D67425F8FD1500467680 /* YKFPIVManagementKeyMetadata.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVManagementKeyMetadata.h; sourceTree = "<group>"; };
+		5110D67525F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVManagementKeyMetadata.m; sourceTree = "<group>"; };
+		5110D68125F8FED500467680 /* YKFPIVManagementKeyMetadata+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFPIVManagementKeyMetadata+Private.h"; sourceTree = "<group>"; };
 		5117C10425F692C300F4081A /* FakeYKFConnectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FakeYKFConnectionController.m; sourceTree = "<group>"; };
 		5117C10525F692C300F4081A /* FakeYKFConnectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FakeYKFConnectionController.h; sourceTree = "<group>"; };
 		51202093255150FF00B0384D /* YKFSessionProtocol+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFSessionProtocol+Private.h"; sourceTree = "<group>"; };
@@ -654,6 +659,10 @@
 				51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */,
 				51ACC34125E553910069214B /* YKFPIVManagementKeyType.h */,
 				51ACC33B25E553580069214B /* YKFPIVManagementKeyType.m */,
+				5110D67125F8FAAE00467680 /* YKFPIVTouchPolicy.h */,
+				5110D67425F8FD1500467680 /* YKFPIVManagementKeyMetadata.h */,
+				5110D68125F8FED500467680 /* YKFPIVManagementKeyMetadata+Private.h */,
+				5110D67525F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m */,
 			);
 			path = PIV;
 			sourceTree = "<group>";
@@ -1458,6 +1467,7 @@
 				95D7364A21C9119D0039141A /* YKFPCSCErrorMap.m in Sources */,
 				954E2C542211AA5600720D2B /* YKFFIDO2ClientPinAPDU.m in Sources */,
 				51ACC32925DC01DA0069214B /* YKFPIVSessionFeatures.m in Sources */,
+				5110D67625F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m in Sources */,
 				95D61A072170B26F001E7AC8 /* YKFOATHSelectApplicationResponse.m in Sources */,
 				51E1B97B25765454003C1CA4 /* YKFOATHCredentialTemplate.m in Sources */,
 				95E1B259219EE2D300E349E3 /* YKFKVOObservation.m in Sources */,

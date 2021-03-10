@@ -29,6 +29,7 @@
 #import "YKFAPDU+Private.h"
 #import "YKFPIVError.h"
 #import "YKFSessionError+Private.h"
+#import "YKFPIVManagementKeyMetadata+Private.h"
 
 
 // Special slot for the management key
@@ -49,6 +50,8 @@ static const NSUInteger YKFPIVInsSetPinPukAttempts = 0xfa;
 
 // Tags for parsing responses and preparing reqeusts
 static const NSUInteger YKFPIVTagMetadataIsDefault = 0x05;
+static const NSUInteger YKFPIVTagMetadataAlgorithm = 0x01;
+static const NSUInteger YKFPIVTagMetadataTouchPolicy = 0x02;
 static const NSUInteger YKFPIVTagMetadataRetries = 0x06;
 static const NSUInteger YKFPIVTagDynAuth = 0x7c;
 static const NSUInteger YKFPIVTagAuthWitness = 0x80;
@@ -274,6 +277,7 @@ int maxPinAttempts = 3;
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error != nil) {
             completion(0, 0, 0, error);
+            return;
         }
         NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:data];
         UInt8 isDefault = ((UInt8 *)[records ykfTLVRecordWithTag:YKFPIVTagMetadataIsDefault].value.bytes)[0];
@@ -282,6 +286,34 @@ int maxPinAttempts = 3;
         completion(isDefault, retriesTotal, retriesRemaining, nil);
     }];
 }
+
+- (void)getManagementKeyMetadata:(nonnull YKFPIVSessionManagementKeyMetadataCompletionBlock)completion {
+    if (![self.features.metadata isSupportedBySession:self]) {
+        completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Read metadata not supported by this YubiKey."}]);
+        return;
+    }
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetMetadata p1:0 p2:YKFPIVSlotCardManagement data:[NSData data] type:YKFAPDUTypeShort];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error != nil) {
+            completion(nil, error);
+            return;
+        }
+        NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:data];
+        TKTLVRecord *algorithmRecord = [records ykfTLVRecordWithTag:YKFPIVTagMetadataAlgorithm];
+        YKFPIVManagementKeyType *keyType;
+        if (algorithmRecord) {
+            keyType = [YKFPIVManagementKeyType fromValue:((UInt8 *)algorithmRecord.value.bytes)[0]];
+        } else {
+            keyType = [YKFPIVManagementKeyType TripleDES];
+        }
+        bool isDefault = ((UInt8 *)[records ykfTLVRecordWithTag:YKFPIVTagMetadataIsDefault].value.bytes)[0] != 0;
+        YKFPIVTouchPolicy touchPolicy = ((UInt8 *)[records ykfTLVRecordWithTag:YKFPIVTagMetadataTouchPolicy].value.bytes)[1];
+        
+        YKFPIVManagementKeyMetadata *metaData = [[YKFPIVManagementKeyMetadata alloc] initWithKeyType:keyType touchPolicy:touchPolicy isDefault:isDefault];
+        completion(metaData, nil);
+    }];
+}
+
 
 - (void)getPinMetadata:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion {
     [self getPinPukMetadata:YKFPIVP2Pin completion:completion];

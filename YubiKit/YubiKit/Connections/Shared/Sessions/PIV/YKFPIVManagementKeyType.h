@@ -26,6 +26,7 @@ extern NSString * const YKFPIVManagementKeyTypeAES;
 + (YKFPIVManagementKeyType *)AES128;
 + (YKFPIVManagementKeyType *)AES192;
 + (YKFPIVManagementKeyType *)AES256;
++ (YKFPIVManagementKeyType * _Nullable)fromValue:(UInt8)value;
 
 @property (nonatomic, readonly) NSString *name;
 @property (nonatomic, readonly) UInt8 value;

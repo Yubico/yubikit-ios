@@ -32,19 +32,15 @@ class PIVTests: XCTestCase {
     
     func testSet3DESManagementKey() throws {
         runYubiKitTest { connection, completion in
-            connection.pivTestSession { session in
-                let defaultManagementKey = Data([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08])
-                session.authenticate(withManagementKey: defaultManagementKey, keyType: .tripleDES()) { error in
+            connection.authenticatedPivTestSession { session in
+                let newManagementKey = Data([0x3e, 0xc9, 0x50, 0xf1, 0xc1, 0x26, 0xb3, 0x14, 0xa8, 0x0e, 0xdd, 0x75, 0x26, 0x94, 0xc3, 0x28, 0x65, 0x6d, 0xb9, 0x6f, 0x1c, 0x65, 0xcc, 0x4f])
+                session.setManagementKey(newManagementKey, type: .tripleDES(), requiresTouch: false) { error in
                     XCTAssert(error == nil, "🔴 \(error!)")
-                    let newManagementKey = Data([0x3e, 0xc9, 0x50, 0xf1, 0xc1, 0x26, 0xb3, 0x14, 0xa8, 0x0e, 0xdd, 0x75, 0x26, 0x94, 0xc3, 0x28, 0x65, 0x6d, 0xb9, 0x6f, 0x1c, 0x65, 0xcc, 0x4f])
-                    session.setManagementKey(newManagementKey, type: .tripleDES(), requiresTouch: false) { error in
+                    print("✅ management key (3DES) changed")
+                    session.authenticate(withManagementKey: newManagementKey, keyType: .tripleDES()) { error in
                         XCTAssert(error == nil, "🔴 \(error!)")
-                        print("✅ management key (3DES) changed")
-                        session.authenticate(withManagementKey: newManagementKey, keyType: .tripleDES()) { error in
-                            XCTAssert(error == nil, "🔴 \(error!)")
-                            print("✅ authenticated with new management key")
-                            completion()
-                        }
+                        print("✅ authenticated with new management key")
+                        completion()
                     }
                 }
             }
@@ -53,19 +49,15 @@ class PIVTests: XCTestCase {
     
     func testSetAESManagementKey() throws {
         runYubiKitTest { connection, completion in
-            connection.pivTestSession { session in
-                let defaultManagementKey = Data([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08])
-                session.authenticate(withManagementKey: defaultManagementKey, keyType: .tripleDES()) { error in
+            connection.authenticatedPivTestSession { session in
+                let aesManagementKey = Data([0xf7, 0xef, 0x78, 0x7b, 0x46, 0xaa, 0x50, 0xde, 0x06, 0x6b, 0xda, 0xde, 0x00, 0xae, 0xe1, 0x7f, 0xc2, 0xb7, 0x10, 0x37, 0x2b, 0x72, 0x2d, 0xe5])
+                session.setManagementKey(aesManagementKey, type: .aes192(), requiresTouch: false) { error in
                     XCTAssert(error == nil, "🔴 \(error!)")
-                    let newManagementKey = Data([0xf7, 0xef, 0x78, 0x7b, 0x46, 0xaa, 0x50, 0xde, 0x06, 0x6b, 0xda, 0xde, 0x00, 0xae, 0xe1, 0x7f, 0xc2, 0xb7, 0x10, 0x37, 0x2b, 0x72, 0x2d, 0xe5])
-                    session.setManagementKey(newManagementKey, type: .aes192(), requiresTouch: false) { error in
+                    print("✅ management key (AES) changed")
+                    session.authenticate(withManagementKey: aesManagementKey, keyType: .aes192()) { error in
                         XCTAssert(error == nil, "🔴 \(error!)")
-                        print("✅ management key (AES) changed")
-                        session.authenticate(withManagementKey: newManagementKey, keyType: .aes192()) { error in
-                            XCTAssert(error == nil, "🔴 \(error!)")
-                            print("✅ authenticated with new management key")
-                            completion()
-                        }
+                        print("✅ authenticated with new management key")
+                        completion()
                     }
                 }
             }
@@ -196,6 +188,51 @@ class PIVTests: XCTestCase {
                     XCTAssertTrue(serialNumber > 0)
                     print("✅ Got serial number: \(serialNumber)")
                     completion()
+                }
+            }
+        }
+    }
+    
+    func testManagementKeyMetadata() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                if !session.features.metadata.isSupported(bySession: session) {
+                    print("Skipping read metadata test since it's not supported by this YubiKey.")
+                    completion()
+                    return
+                }
+                session.getManagementKeyMetadata { metaData, error in
+                    XCTAssertNil(error)
+                    guard let metaData = metaData else { XCTAssert(false); return }
+                    XCTAssert(metaData.isDefault == true)
+                    XCTAssert(metaData.keyType.value == YKFPIVManagementKeyType.tripleDES().value)
+                    XCTAssert(metaData.touchPolicy == .never)
+                    print("✅ Default management key metadata")
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func testAESManagementKeyMetadata() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                if !session.features.metadata.isSupported(bySession: session) {
+                    print("Skipping read metadata test since it's not supported by this YubiKey.")
+                    completion()
+                    return
+                }
+                let aesManagementKey = Data([0xf7, 0xef, 0x78, 0x7b, 0x46, 0xaa, 0x50, 0xde, 0x06, 0x6b, 0xda, 0xde, 0x00, 0xae, 0xe1, 0x7f, 0xc2, 0xb7, 0x10, 0x37, 0x2b, 0x72, 0x2d, 0xe5])
+                session.setManagementKey(aesManagementKey, type: .aes192(), requiresTouch: true) { error in
+                    session.getManagementKeyMetadata { metaData, error in
+                        XCTAssertNil(error)
+                        guard let metaData = metaData else { XCTAssert(false); return }
+                        XCTAssert(metaData.isDefault == false)
+                        XCTAssert(metaData.keyType.value == YKFPIVManagementKeyType.aes192().value)
+                        XCTAssert(metaData.touchPolicy == .always)
+                        print("✅ AES management key metadata")
+                        completion()
+                    }
                 }
             }
         }
