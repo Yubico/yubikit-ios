@@ -63,6 +63,8 @@ typedef void (^YKFPIVSessionPinAttemptsCompletionBlock)
 
 - (void)getPinAttempts:(nonnull YKFPIVSessionPinAttemptsCompletionBlock)completion;
 
+- (void)setPinAttempts:(int)pinAttempts pukAttempts:(int)pukAttempts completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+
 /*
  Not available: use only the instance from the YKFAccessorySession.
  */

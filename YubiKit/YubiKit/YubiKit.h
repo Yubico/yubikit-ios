@@ -43,10 +43,14 @@
 
 #import "YKFSmartCardInterface.h"
 
+#import "YKFFeature.h"
+#import "YKFVersion.h"
+
 #import "YKFU2FSession.h"
 #import "YKFFIDO2Session.h"
 #import "YKFOATHSession.h"
 #import "YKFPIVSession.h"
+#import "YKFPIVSessionFeatures.h"
 #import "YKFPIVManagementKeyType.h"
 #import "YKFChallengeResponseSession.h"
 #import "YKFManagementSession.h"

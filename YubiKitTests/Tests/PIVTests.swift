@@ -126,7 +126,7 @@ class PIVTests: XCTestCase {
         }
     }
     
-    func testGetPINAttempts() throws {
+    func testGetPinAttempts() throws {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
                 session.getPinAttempts { retries, error in
@@ -139,6 +139,36 @@ class PIVTests: XCTestCase {
                             XCTAssert(retries == 2)
                             print("✅ PIN attempts \(retries)")
                             completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func testSetPinPukAttempts() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.verifyPin("123456") { _, error in
+                    session.setPinAttempts(5, pukAttempts: 6) { error in
+                        XCTAssertNil(error)
+                        if session.features.metadata.isSupported(bySession: session) {
+                            session.getPinMetadata { _, retries, _, error in
+                                XCTAssert(retries == 5)
+                                print("✅ Set PIN retry count \(retries)")
+                                session.getPukMetadata { _, retries, _, error in
+                                    XCTAssert(retries == 6)
+                                    print("✅ Set PUK retry count \(retries)")
+                                    completion()
+                                }
+                            }
+                        } else {
+                            session.getPinAttempts { retries, error in
+                                XCTAssertNil(error)
+                                XCTAssert(retries == 5)
+                                print("✅ Set PIN retry count \(retries)")
+                                completion()
+                            }
                         }
                     }
                 }
@@ -298,6 +328,16 @@ extension YKFConnectionProtocol {
             session.reset { error in
                 guard error == nil else { XCTAssertTrue(false, "🔴 Failed to reset PIV application"); return }
                 print("Reset PIV application")
+                completion(session)
+            }
+        }
+    }
+    
+    func authenticatedPivTestSession(completion: @escaping (_ session: YKFPIVSession) -> Void) {
+        self.pivTestSession { session in
+            let defaultManagementKey = Data([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08])
+            session.authenticate(withManagementKey: defaultManagementKey, keyType: .tripleDES()) { error in
+                guard error == nil else { XCTAssertTrue(false, "🔴 Failed to authenticate PIV application"); return }
                 completion(session)
             }
         }

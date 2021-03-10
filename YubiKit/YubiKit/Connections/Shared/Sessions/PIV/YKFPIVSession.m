@@ -44,6 +44,7 @@ static const NSUInteger YKFPIVInsGetMetadata = 0xf7;
 static const NSUInteger YKFPIVInsChangeReference = 0x24;
 static const NSUInteger YKFPIVInsResetRetry = 0x2c;
 static const NSUInteger YKFPIVInsSetManagementKey = 0xff;
+static const NSUInteger YKFPIVInsSetPinPukAttempts = 0xfa;
 
 
 // Tags for parsing responses and preparing reqeusts
@@ -308,6 +309,19 @@ int maxPinAttempts = 3;
             completion(retries, retries < 0 ? error : nil);
         }];
     }
+}
+
+- (void)setPinAttempts:(int)pinAttempts pukAttempts:(int)pukAttempts completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsSetPinPukAttempts p1:pinAttempts p2:pukAttempts data:[NSData data] type:YKFAPDUTypeShort];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error != nil) {
+            completion(error);
+            return;
+        }
+        maxPinAttempts = pinAttempts;
+        currentPinAttempts = pinAttempts;
+        completion(nil);
+    }];
 }
 
 - (int)getRetriesFromStatusCode:(int)statusCode {
