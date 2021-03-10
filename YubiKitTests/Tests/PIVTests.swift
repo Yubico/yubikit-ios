@@ -50,6 +50,11 @@ class PIVTests: XCTestCase {
     func testSetAESManagementKey() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
+                if !session.features.aesKey.isSupported(bySession: session) {
+                    print("Skipping AES management key test since it's not supported by this YubiKey.")
+                    completion()
+                    return
+                }
                 let aesManagementKey = Data([0xf7, 0xef, 0x78, 0x7b, 0x46, 0xaa, 0x50, 0xde, 0x06, 0x6b, 0xda, 0xde, 0x00, 0xae, 0xe1, 0x7f, 0xc2, 0xb7, 0x10, 0x37, 0x2b, 0x72, 0x2d, 0xe5])
                 session.setManagementKey(aesManagementKey, type: .aes192(), requiresTouch: false) { error in
                     XCTAssert(error == nil, "🔴 \(error!)")
@@ -241,6 +246,11 @@ class PIVTests: XCTestCase {
     func testPinMetadata() throws {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
+                if !session.features.metadata.isSupported(bySession: session) {
+                    print("Skipping read metadata test since it's not supported by this YubiKey.")
+                    completion()
+                    return
+                }
                 session.getPinMetadata { isDefault, retries, retriesLeft, error in
                     XCTAssert(isDefault == true)
                     XCTAssert(retries == 3)
@@ -255,6 +265,11 @@ class PIVTests: XCTestCase {
     func testPinMetadataRetries() throws {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
+                if !session.features.metadata.isSupported(bySession: session) {
+                    print("Skipping read metadata test since it's not supported by this YubiKey.")
+                    completion()
+                    return
+                }
                 session.verifyPin("112233") { retries, error in
                     XCTAssert(error != nil)
                     session.getPinMetadata { isDefault, retries, retriesLeft, error in
@@ -272,6 +287,11 @@ class PIVTests: XCTestCase {
     func testPukMetadata() throws {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
+                if !session.features.metadata.isSupported(bySession: session) {
+                    print("Skipping read metadata test since it's not supported by this YubiKey.")
+                    completion()
+                    return
+                }
                 session.getPukMetadata { isDefault, retries, retriesLeft, error in
                     XCTAssert(isDefault == true)
                     XCTAssert(retries == 3)
