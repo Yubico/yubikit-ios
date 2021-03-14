@@ -19,7 +19,7 @@
 
 @interface NSArray(TKTLVRecord)
 
-- (TKTLVRecord  * _Nullable)ykfTLVRecordWithTag:(UInt8)tag;
+- (TKTLVRecord  * _Nullable)ykfTLVRecordWithTag:(UInt64)tag;
 
 @end
 

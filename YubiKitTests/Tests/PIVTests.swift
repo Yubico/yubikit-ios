@@ -16,6 +16,44 @@ import XCTest
 import Foundation
 
 class PIVTests: XCTestCase {
+    func testGenerateRSAKey() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.verifyPin("123456") { retries, error in
+                    session.generateKey(in: .signature, type: .RSA1024) { publicKey, error in
+                        XCTAssert(error == nil, "🔴 \(error!)")
+                        XCTAssertNotNil(publicKey);
+                        let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
+                        XCTAssert(attributes[kSecAttrKeySizeInBits as String] as! Int == 1024)
+                        XCTAssert(attributes[kSecAttrKeyType as String] as! String == kSecAttrKeyTypeRSA as String)
+                        XCTAssert(attributes[kSecAttrKeyClass as String] as! String == kSecAttrKeyClassPublic as String)
+                        print("✅ Generated 1024 RSA key")
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+    
+    func testGenerateECCKey() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.verifyPin("123456") { retries, error in
+                    session.generateKey(in: .signature, type: .ECCP256) { publicKey, error in
+                        XCTAssert(error == nil, "🔴 \(error!)")
+                        XCTAssertNotNil(publicKey);
+                        let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
+                        XCTAssert(attributes[kSecAttrKeySizeInBits as String] as! Int == 256)
+                        XCTAssert(attributes[kSecAttrKeyType as String] as! String == kSecAttrKeyTypeEC as String)
+                        XCTAssert(attributes[kSecAttrKeyClass as String] as! String == kSecAttrKeyClassPublic as String)
+                        print("✅ Generated 256 ECC key")
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+    
     func testAuthenticateWithDefaultManagementKey() throws {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in

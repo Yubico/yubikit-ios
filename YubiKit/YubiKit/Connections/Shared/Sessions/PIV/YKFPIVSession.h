@@ -17,12 +17,30 @@
 
 #import "YKFVersion.h"
 
+typedef NS_ENUM(NSUInteger, YKFPIVSlot) {
+    YKFPIVSlotAuthentication = 0x9a,
+    YKFPIVSlotSignature = 0x9c,
+    YKFPIVSlotKeyManagement = 0x9d,
+    YKFPIVSlotCardAuth = 0x9e,
+    YKFPIVSlotAttestation = 0xf9
+};
+
+typedef NS_ENUM(NSUInteger, YKFPIVKeyType) {
+    YKFPIVKeyTypeRSA1024 = 0x06,
+    YKFPIVKeyTypeRSA2048 = 0x07,
+    YKFPIVKeyTypeECCP256 = 0x11,
+    YKFPIVKeyTypeECCP384 = 0x14
+};
+
 @class YKFPIVSessionFeatures, YKFPIVManagementKeyType, YKFPIVManagementKeyMetadata;
 
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^YKFPIVSessionCompletionBlock)
     (NSError* _Nullable error);
+
+typedef void (^YKFPIVSessionGenerateKeyCompletionBlock)
+    (SecKeyRef _Nullable key, NSError* _Nullable error);
 
 typedef void (^YKFPIVSessionSerialNumberCompletionBlock)
     (int serialNumber, NSError* _Nullable error);
@@ -43,6 +61,8 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 
 @property (nonatomic, readonly) YKFVersion * _Nonnull version;
 @property (nonatomic, readonly) YKFPIVSessionFeatures * _Nonnull features;
+
+- (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionGenerateKeyCompletionBlock)completion;
 
 - (void)setManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type requiresTouch:(BOOL)requiresTouch completion:(nonnull YKFPIVSessionCompletionBlock)completion;
 

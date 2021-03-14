@@ -46,6 +46,7 @@ static const NSUInteger YKFPIVInsChangeReference = 0x24;
 static const NSUInteger YKFPIVInsResetRetry = 0x2c;
 static const NSUInteger YKFPIVInsSetManagementKey = 0xff;
 static const NSUInteger YKFPIVInsSetPinPukAttempts = 0xfa;
+static const NSUInteger YKFPIVInsGenerateAsymetric = 0x47;
 
 
 // Tags for parsing responses and preparing reqeusts
@@ -57,6 +58,7 @@ static const NSUInteger YKFPIVTagDynAuth = 0x7c;
 static const NSUInteger YKFPIVTagAuthWitness = 0x80;
 static const NSUInteger YKFPIVTagChallenge = 0x81;
 static const NSUInteger YKFPIVTagAuthResponse = 0x82;
+static const NSUInteger YKFPIVTagGenAlgorithm = 0x80;
 
 // P2
 static const NSUInteger YKFPIVP2Pin = 0x80;
@@ -103,6 +105,45 @@ int maxPinAttempts = 3;
 
 - (void)clearSessionState {
     // Do nothing for now
+}
+
+- (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionGenerateKeyCompletionBlock)completion {
+    NSMutableData *data = [NSMutableData dataWithBytes:&type length:1];
+    TKBERTLVRecord *tlv = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagGenAlgorithm value:data];
+    TKBERTLVRecord *tlvsContainer = [[TKBERTLVRecord alloc] initWithTag:0xac value:tlv.data];
+    NSData *tlvsData = tlvsContainer.data;
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGenerateAsymetric p1:0 p2:slot data:tlvsData type:YKFAPDUTypeExtended];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:[[TKBERTLVRecord sequenceOfRecordsFromData:data] ykfTLVRecordWithTag:(UInt64)0x7F49].value];
+        SecKeyRef publicKey = nil;
+        CFErrorRef cfError = nil;
+        if (type == YKFPIVKeyTypeECCP256 || type == YKFPIVKeyTypeECCP384) {
+            NSData *eccKeyData = [records ykfTLVRecordWithTag:(UInt64)0x86].value;
+            CFDataRef cfDataRef = CFDataCreate(NULL, eccKeyData.bytes, eccKeyData.length);
+            NSDictionary *attributes = @{(id)kSecAttrKeyType: (id)kSecAttrKeyTypeEC,
+                                         (id)kSecAttrKeyClass: (id)kSecAttrKeyClassPublic};
+            CFDictionaryRef attributesRef = (__bridge CFDictionaryRef)attributes;
+            publicKey = SecKeyCreateWithData(cfDataRef, attributesRef, &cfError);
+        } else if (type == YKFPIVKeyTypeRSA1024 || type == YKFPIVKeyTypeRSA2048) {
+            NSMutableData *modulusData = [NSMutableData dataWithBytes:&(UInt8 *){0x00} length:1];
+            [modulusData appendData:[records ykfTLVRecordWithTag:(UInt64)0x81].value];
+            NSData *exponentData = [records ykfTLVRecordWithTag:(UInt64)0x82].value;
+            NSMutableData *mutableData = [NSMutableData data];
+            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x02 value:modulusData].data];
+            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x02 value:exponentData].data];
+            TKBERTLVRecord *record = [[TKBERTLVRecord alloc] initWithTag:0x30 value:mutableData];
+            NSData *keyData = record.data;
+            NSDictionary *attributes = @{(id)kSecAttrKeyType: (id)kSecAttrKeyTypeRSA,
+                                         (id)kSecAttrKeyClass: (id)kSecAttrKeyClassPublic};
+            CFDictionaryRef attributesRef = (__bridge CFDictionaryRef)attributes;
+            CFDataRef cfKeyDataRef = CFDataCreate(NULL, keyData.bytes, keyData.length);
+            publicKey = SecKeyCreateWithData(cfKeyDataRef, attributesRef, &cfError);
+        } else {
+            completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}]);
+        }
+        NSError *bridgedError = (__bridge NSError *) cfError;
+        completion(publicKey, bridgedError);
+    }];
 }
 
 - (void)setManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type requiresTouch:(BOOL)requiresTouch completion:(nonnull YKFPIVSessionCompletionBlock)completion {

@@ -18,7 +18,7 @@
 
 @implementation NSArray(TKTLVRecord)
 
-- (TKTLVRecord  * _Nullable)ykfTLVRecordWithTag:(UInt8)tag {
+- (TKTLVRecord  * _Nullable)ykfTLVRecordWithTag:(UInt64)tag {
     NSUInteger index = [self indexOfObjectPassingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         TKTLVRecord *record = (TKTLVRecord *)obj;
         return record.tag == tag;
