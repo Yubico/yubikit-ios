@@ -42,6 +42,8 @@ static const NSUInteger YKFPIVInsReset = 0xfb;
 static const NSUInteger YKFPIVInsGetVersion = 0xfd;
 static const NSUInteger YKFPIVInsGetSerial = 0xf8;
 static const NSUInteger YKFPIVInsGetMetadata = 0xf7;
+static const NSUInteger YKFPIVInsGetData = 0xcb;
+static const NSUInteger YKFPIVInsPutData = 0xdb;
 static const NSUInteger YKFPIVInsChangeReference = 0x24;
 static const NSUInteger YKFPIVInsResetRetry = 0x2c;
 static const NSUInteger YKFPIVInsSetManagementKey = 0xff;
@@ -59,6 +61,11 @@ static const NSUInteger YKFPIVTagAuthWitness = 0x80;
 static const NSUInteger YKFPIVTagChallenge = 0x81;
 static const NSUInteger YKFPIVTagAuthResponse = 0x82;
 static const NSUInteger YKFPIVTagGenAlgorithm = 0x80;
+static const NSUInteger YKFPIVTagObjectData = 0x53;
+static const NSUInteger YKFPIVTagObjectId = 0x5c;
+static const NSUInteger YKFPIVTagCertificate = 0x70;
+static const NSUInteger YKFPIVTagCertificateInfo = 0x71;
+static const NSUInteger YKFPIVTagLRC = 0xfe;
 
 // P2
 static const NSUInteger YKFPIVP2Pin = 0x80;
@@ -74,6 +81,25 @@ static const NSUInteger YKFPIVP2Puk = 0x81;
 @end
 
 @implementation YKFPIVSession
+
+- (NSData *)objectIdForSlot:(YKFPIVSlot)slot {
+    switch (slot) {
+        case YKFPIVSlotSignature:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x0a} length:3];
+        case YKFPIVSlotAttestation:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xff, 0x01} length:3];
+        case YKFPIVSlotAuthentication:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x05} length:3];
+        case YKFPIVSlotCardAuth:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x01} length:3];
+        case YKFPIVSlotKeyManagement:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x0b} length:3];
+        default:
+            [NSException raise:@"UnknownObjectId" format:@"No matching object id for this slot."];
+            break;
+    }
+}
+
 
 int currentPinAttempts = 3;
 int maxPinAttempts = 3;
@@ -107,7 +133,7 @@ int maxPinAttempts = 3;
     // Do nothing for now
 }
 
-- (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionGenerateKeyCompletionBlock)completion {
+- (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionReadKeyCompletionBlock)completion {
     NSMutableData *data = [NSMutableData dataWithBytes:&type length:1];
     TKBERTLVRecord *tlv = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagGenAlgorithm value:data];
     TKBERTLVRecord *tlvsContainer = [[TKBERTLVRecord alloc] initWithTag:0xac value:tlv.data];
@@ -139,10 +165,47 @@ int maxPinAttempts = 3;
             CFDataRef cfKeyDataRef = CFDataCreate(NULL, keyData.bytes, keyData.length);
             publicKey = SecKeyCreateWithData(cfKeyDataRef, attributesRef, &cfError);
         } else {
+            [NSException raise:@"UnknownKeyType" format:@"Unknown key type."];
+
             completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}]);
         }
         NSError *bridgedError = (__bridge NSError *) cfError;
         completion(publicKey, bridgedError);
+    }];
+}
+
+- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionCompletionBlock)completion {
+    NSMutableData *mutableData = [NSMutableData data];
+    NSData *certData = (__bridge NSData *)SecCertificateCopyData(certificate);
+    [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagCertificate value:certData].data];
+    [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagCertificateInfo value:certData].data];
+    [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagLRC value:[NSData data]].data];
+    [self putObject:mutableData objectId:[self objectIdForSlot:slot] completion:^(NSError * _Nullable error) {
+        completion(error);
+    }];
+}
+
+- (void)putObject:(NSData *)object objectId:(NSData *)objectId completion:(YKFPIVSessionCompletionBlock)completion  {
+    NSMutableData *mutableData = [NSMutableData data];
+    [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagObjectId value:objectId].data];
+    [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagObjectData value:object].data];
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsPutData p1:0x3f p2:0xff data:mutableData type:YKFAPDUTypeExtended];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        completion(error);
+    }];
+}
+
+- (void)readCertificateFromSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionReadCertCompletionBlock)completion {
+    NSData *data = [self objectIdForSlot:slot];
+    TKBERTLVRecord *tlv = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagObjectId value:data];
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetData p1:0x3f p2:0xff data:tlv.data type:YKFAPDUTypeExtended];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:data];
+        NSData *objectData = [records ykfTLVRecordWithTag:YKFPIVTagObjectData].value;
+        NSData *certificateData = [[TKBERTLVRecord sequenceOfRecordsFromData:objectData] ykfTLVRecordWithTag:YKFPIVTagCertificate].value;
+        CFDataRef cfCertDataRef = CFDataCreate(NULL, certificateData.bytes, certificateData.length);
+        SecCertificateRef certificate = SecCertificateCreateWithData(nil, cfCertDataRef);
+        completion(certificate, error);
     }];
 }
 

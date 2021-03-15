@@ -39,8 +39,11 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^YKFPIVSessionCompletionBlock)
     (NSError* _Nullable error);
 
-typedef void (^YKFPIVSessionGenerateKeyCompletionBlock)
+typedef void (^YKFPIVSessionReadKeyCompletionBlock)
     (SecKeyRef _Nullable key, NSError* _Nullable error);
+
+typedef void (^YKFPIVSessionReadCertCompletionBlock)
+    (SecCertificateRef _Nullable cert, NSError* _Nullable error);
 
 typedef void (^YKFPIVSessionSerialNumberCompletionBlock)
     (int serialNumber, NSError* _Nullable error);
@@ -62,7 +65,11 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 @property (nonatomic, readonly) YKFVersion * _Nonnull version;
 @property (nonatomic, readonly) YKFPIVSessionFeatures * _Nonnull features;
 
-- (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionGenerateKeyCompletionBlock)completion;
+- (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionReadKeyCompletionBlock)completion;
+
+- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionCompletionBlock)completion;
+
+- (void)readCertificateFromSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionReadCertCompletionBlock)completion;
 
 - (void)setManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type requiresTouch:(BOOL)requiresTouch completion:(nonnull YKFPIVSessionCompletionBlock)completion;
 
