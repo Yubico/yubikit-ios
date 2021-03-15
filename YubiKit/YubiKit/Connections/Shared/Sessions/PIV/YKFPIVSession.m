@@ -209,6 +209,12 @@ int maxPinAttempts = 3;
     }];
 }
 
+- (void)deleteCertificateInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+    [self putObject:[NSData data] objectId:[self objectIdForSlot:slot] completion:^(NSError * _Nullable error) {
+        completion(error);
+    }];
+}
+
 - (void)setManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type requiresTouch:(BOOL)requiresTouch completion:(nonnull YKFPIVSessionCompletionBlock)completion {
     if (requiresTouch && ![self.features.usagePolicy isSupportedBySession:self]) {
         completion([[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"PIN/Touch policy not supported by this YubiKey."}]);
