@@ -29,7 +29,7 @@ class PIVTests: XCTestCase {
                         return
                     }
                     session.verifyPin("123456") { retries, error in
-                          session.decryptWithKey(in: .keyManagement, algorithm: SecKeyAlgorithm.rsaEncryptionPKCS1, cipher: encryptedData as Data) { data, error in
+                          session.decryptWithKey(in: .keyManagement, algorithm: SecKeyAlgorithm.rsaEncryptionPKCS1, encrypted: encryptedData as Data) { data, error in
                             guard let data = data else { XCTFail("🔴 Failed to decrypt key: \(error!)"); completion(); return }
                             let decrypted = String(data:data, encoding: .utf8)
                             XCTAssert(decrypted == "Hello World!", "🔴 Got: '\(String(describing: decrypted))', exptected 'Hello World!'.")
@@ -53,7 +53,7 @@ class PIVTests: XCTestCase {
                         return
                     }
                     session.verifyPin("123456") { retries, error in
-                          session.decryptWithKey(in: .keyManagement, algorithm: SecKeyAlgorithm.rsaEncryptionOAEPSHA224, cipher: encryptedData as Data) { data, error in
+                          session.decryptWithKey(in: .keyManagement, algorithm: SecKeyAlgorithm.rsaEncryptionOAEPSHA224, encrypted: encryptedData as Data) { data, error in
                             guard let data = data else { XCTFail("🔴 Failed to decrypt key: \(error!)"); completion(); return }
                             let decrypted = String(data:data, encoding: .utf8)
                             XCTAssert(decrypted == "Hello World!", "🔴 Got: '\(String(describing: decrypted))', exptected 'Hello World!'.")

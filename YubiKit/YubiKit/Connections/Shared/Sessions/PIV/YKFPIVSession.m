@@ -139,9 +139,9 @@ int maxPinAttempts = 3;
     // Do nothing for now
 }
 
-- (void)decryptWithKeyInSlot:(YKFPIVSlot)slot algorithm:(SecKeyAlgorithm)algorithm cipher:(NSData *)cipher completion:(nonnull YKFPIVSessionDecryptCompletionBlock)completion {
+- (void)decryptWithKeyInSlot:(YKFPIVSlot)slot algorithm:(SecKeyAlgorithm)algorithm encrypted:(NSData *)encrypted completion:(nonnull YKFPIVSessionDecryptCompletionBlock)completion {
     YKFPIVKeyType keyType;
-    switch (cipher.length) {
+    switch (encrypted.length) {
         case 1024 / 8:
             keyType = YKFPIVKeyTypeRSA1024;
             break;
@@ -152,7 +152,7 @@ int maxPinAttempts = 3;
             completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Invalid lenght of cipher text."}]);
             return;
     }
-    [self usePrivateKeyInSlot:slot type:keyType message:cipher exponentiation:false completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    [self usePrivateKeyInSlot:slot type:keyType message:encrypted exponentiation:false completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
             return;
