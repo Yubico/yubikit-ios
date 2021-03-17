@@ -16,20 +16,43 @@ import XCTest
 import Foundation
 
 class PIVTests: XCTestCase {
+    
+    func testDecryptRSAKey() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.generateKey(in: .keyManagement, type: .RSA1024) { publicKey, error in
+                    guard let publicKey = publicKey else { XCTFail("🔴 Failed to create keypair: \(error!)"); completion(); return }
+                    let dataToEncrypt = "Hello World!".data(using: .utf8)!
+                    guard let encryptedData = SecKeyCreateEncryptedData(publicKey, SecKeyAlgorithm.rsaEncryptionOAEPSHA224, dataToEncrypt as CFData, nil) else {
+                        XCTFail("🔴 Failed to encrypt data.")
+                        completion()
+                        return
+                    }
+                    session.verifyPin("123456") { retries, error in
+                          session.decryptWithKey(in: .keyManagement, algorithm: SecKeyAlgorithm.rsaEncryptionOAEPSHA224, cipher: encryptedData as Data) { data, error in
+                            guard let data = data else { XCTFail("🔴 Failed to decrypt key: \(error!)"); completion(); return }
+                            let decrypted = String(data:data, encoding: .utf8)
+                            XCTAssert(decrypted == "Hello World!", "🔴 Got: '\(String(describing: decrypted))', exptected 'Hello World!'.")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func testGenerateRSAKey() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
-                session.verifyPin("123456") { retries, error in
-                    session.generateKey(in: .signature, type: .RSA1024) { publicKey, error in
-                        XCTAssert(error == nil, "🔴 \(error!)")
-                        XCTAssertNotNil(publicKey);
-                        let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
-                        XCTAssert(attributes[kSecAttrKeySizeInBits as String] as! Int == 1024)
-                        XCTAssert(attributes[kSecAttrKeyType as String] as! String == kSecAttrKeyTypeRSA as String)
-                        XCTAssert(attributes[kSecAttrKeyClass as String] as! String == kSecAttrKeyClassPublic as String)
-                        print("✅ Generated 1024 RSA key")
-                        completion()
-                    }
+                session.generateKey(in: .signature, type: .RSA1024) { publicKey, error in
+                    XCTAssert(error == nil, "🔴 \(error!)")
+                    XCTAssertNotNil(publicKey);
+                    let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
+                    XCTAssert(attributes[kSecAttrKeySizeInBits as String] as! Int == 1024)
+                    XCTAssert(attributes[kSecAttrKeyType as String] as! String == kSecAttrKeyTypeRSA as String)
+                    XCTAssert(attributes[kSecAttrKeyClass as String] as! String == kSecAttrKeyClassPublic as String)
+                    print("✅ Generated 1024 RSA key")
+                    completion()
                 }
             }
         }
@@ -38,17 +61,15 @@ class PIVTests: XCTestCase {
     func testGenerateECCKey() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
-                session.verifyPin("123456") { retries, error in
-                    session.generateKey(in: .signature, type: .ECCP256) { publicKey, error in
-                        XCTAssert(error == nil, "🔴 \(error!)")
-                        XCTAssertNotNil(publicKey);
-                        let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
-                        XCTAssert(attributes[kSecAttrKeySizeInBits as String] as! Int == 256)
-                        XCTAssert(attributes[kSecAttrKeyType as String] as! String == kSecAttrKeyTypeEC as String)
-                        XCTAssert(attributes[kSecAttrKeyClass as String] as! String == kSecAttrKeyClassPublic as String)
-                        print("✅ Generated 256 ECC key")
-                        completion()
-                    }
+                session.generateKey(in: .signature, type: .ECCP256) { publicKey, error in
+                    XCTAssert(error == nil, "🔴 \(error!)")
+                    XCTAssertNotNil(publicKey);
+                    let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
+                    XCTAssert(attributes[kSecAttrKeySizeInBits as String] as! Int == 256)
+                    XCTAssert(attributes[kSecAttrKeyType as String] as! String == kSecAttrKeyTypeEC as String)
+                    XCTAssert(attributes[kSecAttrKeyClass as String] as! String == kSecAttrKeyClassPublic as String)
+                    print("✅ Generated 256 ECC key")
+                    completion()
                 }
             }
         }
@@ -454,8 +475,6 @@ extension YKFConnectionProtocol {
     func pivTestSession(completion: @escaping (_ session: YKFPIVSession) -> Void) {
         self.pivSession { session, error in
             guard let session = session else { XCTAssertTrue(false, "🔴 Failed to get PIV session"); return }
-//            completion(session)
-//            return
             session.reset { error in
                 guard error == nil else { XCTAssertTrue(false, "🔴 Failed to reset PIV application"); return }
                 print("Reset PIV application")

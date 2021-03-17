@@ -36,8 +36,8 @@
 #pragma mark - Sync commands
 
 - (void)test_WhenRunningSmartCardCommandsAgainstTheKey_CommandsAreForwardedToTheKey {
-    NSData *command = [self dataWithBytes:@[@(0x01), @(0x02)]];
-    NSData *commandResponse = [self dataWithBytes:@[@(0x90), @(0x00)]];
+    NSData *command = [NSData dataWithBytes:@[@(0x01), @(0x02)]];
+    NSData *commandResponse = [NSData dataWithBytes:@[@(0x90), @(0x00)]];
     self.keyConnectionController.commandExecutionResponseDataSequence = @[commandResponse];
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"SmartCardCommands"];
@@ -56,8 +56,8 @@
 }
 
 - (void)test_WhenRunningSmartCardCommandsAgainstTheKey_ErrorCodeIsReturned {
-    NSData *command = [self dataWithBytes:@[@(0x01), @(0x02)]];
-    NSData *commandResponse = [self dataWithBytes:@[@(0x00), @(0x00), @(0x05)]];
+    NSData *command = [NSData dataWithBytes:@[@(0x01), @(0x02)]];
+    NSData *commandResponse = [NSData dataWithBytes:@[@(0x00), @(0x00), @(0x05)]];
     self.keyConnectionController.commandExecutionResponseDataSequence = @[commandResponse];
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"SmartCardStatusCode"];
@@ -75,8 +75,8 @@
 
 
 - (void)test_WhenRunningSmartCardCommandsAgainstTheKey_ResultDataIsReturned {
-    NSData *command = [self dataWithBytes:@[@(0x01), @(0x00)]];
-    NSData *commandResponse = [self dataWithBytes:@[@(0x01), @(0x02), @(0x90), @(0x00)]];
+    NSData *command = [NSData dataWithBytes:@[@(0x01), @(0x00)]];
+    NSData *commandResponse = [NSData dataWithBytes:@[@(0x01), @(0x02), @(0x90), @(0x00)]];
     self.keyConnectionController.commandExecutionResponseDataSequence = @[commandResponse];
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"SmartCardStatusCode"];
@@ -88,7 +88,7 @@
             XCTAssertTrue(NO, @"Got error %@", error);
         }
         XCTAssertEqual(data.length, 2, @"Did not get expected response length");
-        NSData *expectedResult = [self dataWithBytes:@[@(0x01), @(0x02)]];
+        NSData *expectedResult = [NSData dataWithBytes:@[@(0x01), @(0x02)]];
         XCTAssertTrue([data isEqualToData:expectedResult], @"Return data doess not match expected result");
         [expectation fulfill];
     }];

@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2021 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import <XCTest/XCTest.h>
+#ifndef TKTLVRecordAdditions_h
+#define TKTLVRecordAdditions_h
 
-@interface YKFTestCase: XCTestCase
- 
-- (void)waitForTimeInterval:(NSTimeInterval)timeInterval;
+@interface TKTLVRecord(Additions)
 
-@end
-
-
-@interface NSData (TestData)
-    
-+ (NSData *)dataWithBytes:(NSArray *)bytes;
-
-+ (NSData *)dataFromHexString:(NSString *)string;
++ (NSData * _Nullable)valueFromData:(NSData * _Nonnull)data withTag:(UInt64)tag error:(NSError ** _Nullable)error;
 
 @end
+
+#endif /* TKTLVRecordAdditions_h */

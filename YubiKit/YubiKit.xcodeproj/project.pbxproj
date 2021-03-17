@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		5110D67625F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 5110D67525F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m */; };
+		5110D6992600D9C800467680 /* YKFPIVPadding.m in Sources */ = {isa = PBXBuildFile; fileRef = 5110D6982600D9C800467680 /* YKFPIVPadding.m */; };
+		5110D6A02600E00A00467680 /* YKFPIVPaddingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5110D69F2600E00900467680 /* YKFPIVPaddingTests.m */; };
+		5110D6A32600E61400467680 /* YKFPIVPadding.m in Sources */ = {isa = PBXBuildFile; fileRef = 5110D6982600D9C800467680 /* YKFPIVPadding.m */; };
+		5110D6A72601FBC800467680 /* TKTLVRecordAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5110D6A62601FBC800467680 /* TKTLVRecordAdditions.m */; };
 		5117C10625F692C300F4081A /* FakeYKFConnectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5117C10425F692C300F4081A /* FakeYKFConnectionController.m */; };
 		5121B2212563DE8200300145 /* YKFSmartCardInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 5121B2202563DE8200300145 /* YKFSmartCardInterface.m */; };
 		5121B22D2565238500300145 /* YKFSelectApplicationAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 5121B22C2565238500300145 /* YKFSelectApplicationAPDU.m */; };
@@ -293,6 +297,11 @@
 		5110D67425F8FD1500467680 /* YKFPIVManagementKeyMetadata.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVManagementKeyMetadata.h; sourceTree = "<group>"; };
 		5110D67525F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVManagementKeyMetadata.m; sourceTree = "<group>"; };
 		5110D68125F8FED500467680 /* YKFPIVManagementKeyMetadata+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFPIVManagementKeyMetadata+Private.h"; sourceTree = "<group>"; };
+		5110D6982600D9C800467680 /* YKFPIVPadding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVPadding.m; sourceTree = "<group>"; };
+		5110D69C2600D9E400467680 /* YKFPIVPadding+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFPIVPadding+Private.h"; sourceTree = "<group>"; };
+		5110D69F2600E00900467680 /* YKFPIVPaddingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVPaddingTests.m; sourceTree = "<group>"; };
+		5110D6A62601FBC800467680 /* TKTLVRecordAdditions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TKTLVRecordAdditions.m; sourceTree = "<group>"; };
+		5110D6AA2601FBE200467680 /* TKTLVRecordAdditions+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TKTLVRecordAdditions+Private.h"; sourceTree = "<group>"; };
 		5117C10425F692C300F4081A /* FakeYKFConnectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FakeYKFConnectionController.m; sourceTree = "<group>"; };
 		5117C10525F692C300F4081A /* FakeYKFConnectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FakeYKFConnectionController.h; sourceTree = "<group>"; };
 		51202093255150FF00B0384D /* YKFSessionProtocol+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFSessionProtocol+Private.h"; sourceTree = "<group>"; };
@@ -663,6 +672,8 @@
 				5110D67425F8FD1500467680 /* YKFPIVManagementKeyMetadata.h */,
 				5110D68125F8FED500467680 /* YKFPIVManagementKeyMetadata+Private.h */,
 				5110D67525F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m */,
+				5110D6982600D9C800467680 /* YKFPIVPadding.m */,
+				5110D69C2600D9E400467680 /* YKFPIVPadding+Private.h */,
 			);
 			path = PIV;
 			sourceTree = "<group>";
@@ -778,6 +789,8 @@
 				95EA81E62178805D0020595D /* YKFNSStringAdditions.m */,
 				51ACC33425E50C6B0069214B /* NSArray+TKTLVRecord.h */,
 				51ACC33525E50C860069214B /* NSArray+TKTLVRecord.m */,
+				5110D6AA2601FBE200467680 /* TKTLVRecordAdditions+Private.h */,
+				5110D6A62601FBC800467680 /* TKTLVRecordAdditions.m */,
 			);
 			path = Additions;
 			sourceTree = "<group>";
@@ -892,6 +905,7 @@
 				95EF75C2213FEF0500059C79 /* YKFTestCase.m */,
 				950C70082298095F00E48458 /* YubiKitDeviceCapabilitiesTests.m */,
 				A5016E5B24297FEF005A0C21 /* YKFNSDataAdditionsTests.m */,
+				5110D69F2600E00900467680 /* YKFPIVPaddingTests.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -1417,6 +1431,7 @@
 			files = (
 				953A5085213FCDA100929ABB /* FakeEASession.m in Sources */,
 				51323C2F251A3BE600579915 /* YKFAccessoryConnectionConfiguration.m in Sources */,
+				5110D6A32600E61400467680 /* YKFPIVPadding.m in Sources */,
 				950C700C22980CFE00E48458 /* FakeUIDevice.m in Sources */,
 				9564333620A5C03C007621BD /* YKFOTPTokenParserTests.m in Sources */,
 				956884C120AAD98500E0F72C /* YKFNFCOTPServiceTests.m in Sources */,
@@ -1429,6 +1444,7 @@
 				956884D020AAFE9300E0F72C /* FakeYKFOTPTextParser.m in Sources */,
 				5117C10625F692C300F4081A /* FakeYKFConnectionController.m in Sources */,
 				956884C820AAE6F200E0F72C /* YKFNSDataAdditions.m in Sources */,
+				5110D6A02600E00A00467680 /* YKFPIVPaddingTests.m in Sources */,
 				956884C520AADA5A00E0F72C /* FakeNFCNDEFReaderSession.m in Sources */,
 				95885B3120A31EFF00828D02 /* YKFOTPTokenValidatorTests.m in Sources */,
 				95D7364F21CA44EF0039141A /* YKFPCSCTests.m in Sources */,
@@ -1476,6 +1492,7 @@
 				95A456692177639C00AD5A94 /* YKFOATHCalculateAllAPDU.m in Sources */,
 				95EEEF6621676B7F00BE7D7B /* YKFOATHSendRemainingAPDU.m in Sources */,
 				955BCC0F215A9A4D00C2EA2B /* MF_Base32Additions.m in Sources */,
+				5110D6A72601FBC800467680 /* TKTLVRecordAdditions.m in Sources */,
 				95DD658E21663C3C00BA85C9 /* YKFOATHDeleteAPDU.m in Sources */,
 				95C2965420629FD10091318B /* YubiKitDeviceCapabilities.m in Sources */,
 				95C2964D20628EBE0091318B /* YKFNFCOTPSession.m in Sources */,
@@ -1542,6 +1559,7 @@
 				81FD3B982404889C004C4FE9 /* YKFVersion.m in Sources */,
 				951446AA2188592C002BB3C5 /* YKFPCSCLayer.m in Sources */,
 				51ACC33C25E553580069214B /* YKFPIVManagementKeyType.m in Sources */,
+				5110D6992600D9C800467680 /* YKFPIVPadding.m in Sources */,
 				95B58B8B229C03AE00199F8E /* YKFAccessoryConnection+Debugging.m in Sources */,
 				95B0CAAD21EF53E1009C6A34 /* YKFFIDO2Error.m in Sources */,
 				95DD40A72099A8A400363FEE /* YKFAccessoryConnection.m in Sources */,

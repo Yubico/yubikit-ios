@@ -39,6 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^YKFPIVSessionCompletionBlock)
     (NSError* _Nullable error);
 
+typedef void (^YKFPIVSessionDecryptCompletionBlock)
+    (NSData* _Nullable decrypted, NSError* _Nullable error);
+
 typedef void (^YKFPIVSessionReadKeyCompletionBlock)
     (SecKeyRef _Nullable key, NSError* _Nullable error);
 
@@ -64,6 +67,8 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 
 @property (nonatomic, readonly) YKFVersion * _Nonnull version;
 @property (nonatomic, readonly) YKFPIVSessionFeatures * _Nonnull features;
+
+- (void)decryptWithKeyInSlot:(YKFPIVSlot)slot algorithm:(SecKeyAlgorithm)algorithm cipher:(nonnull NSData *)cipher completion:(nonnull YKFPIVSessionDecryptCompletionBlock)completion;
 
 - (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionReadKeyCompletionBlock)completion;
 

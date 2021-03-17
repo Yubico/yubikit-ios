@@ -24,13 +24,34 @@
 
 #pragma mark - Data Construction
 
-- (NSData *)dataWithBytes:(NSArray *)bytes {
+@end
+
+@implementation NSData (TestData)
+
++ (NSData *)dataWithBytes:(NSArray *)bytes {
     NSMutableData *mutableData = [[NSMutableData alloc] initWithCapacity:bytes.count];
     for (NSNumber *byte in bytes) {
         UInt8 byteValue = byte.unsignedCharValue;
         [mutableData appendBytes:&byteValue length:1];
     }
     return [mutableData copy];
+}
+
++ (NSData *)dataFromHexString:(NSString *)string {
+    NSAssert(string.length % 2 == 0, @"String does not have the right format.");
+    NSMutableData* data = [[NSMutableData alloc] init];
+    
+    for (int i = 0; i < string.length; i += 2) {
+        NSString *value = [string substringWithRange:NSMakeRange(i, 2)];
+        NSScanner *scanner = [NSScanner scannerWithString:value];
+        
+        unsigned int scannedValue = 0;
+        [scanner scanHexInt:&scannedValue];
+        
+        UInt8 byteValue = scannedValue;
+        [data appendBytes:&byteValue length:1];
+    }
+    return data;
 }
 
 @end

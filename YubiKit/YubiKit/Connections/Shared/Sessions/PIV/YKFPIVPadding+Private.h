@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2021 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import <XCTest/XCTest.h>
+#ifndef YKFPIVPadding_Private_h
+#define YKFPIVPadding_Private_h
 
-@interface YKFTestCase: XCTestCase
- 
-- (void)waitForTimeInterval:(NSTimeInterval)timeInterval;
+@interface YKFPIVPadding: NSObject
 
-@end
-
-
-@interface NSData (TestData)
-    
-+ (NSData *)dataWithBytes:(NSArray *)bytes;
-
-+ (NSData *)dataFromHexString:(NSString *)string;
++ (NSData *)unpadRSAData:(NSData *)data algorithm:(SecKeyAlgorithm)algorithm error:(NSError **)error;
 
 @end
+
+#endif /* YKFPIVPadding_Private_h */

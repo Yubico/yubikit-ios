@@ -30,6 +30,8 @@
 #import "YKFPIVError.h"
 #import "YKFSessionError+Private.h"
 #import "YKFPIVManagementKeyMetadata+Private.h"
+#import "YKFPIVPadding+Private.h"
+#import "TKTLVRecordAdditions+Private.h"
 
 
 // Special slot for the management key
@@ -59,6 +61,7 @@ static const NSUInteger YKFPIVTagMetadataRetries = 0x06;
 static const NSUInteger YKFPIVTagDynAuth = 0x7c;
 static const NSUInteger YKFPIVTagAuthWitness = 0x80;
 static const NSUInteger YKFPIVTagChallenge = 0x81;
+static const NSUInteger YKFPIVTagExponentiation = 0x85;
 static const NSUInteger YKFPIVTagAuthResponse = 0x82;
 static const NSUInteger YKFPIVTagGenAlgorithm = 0x80;
 static const NSUInteger YKFPIVTagObjectData = 0x53;
@@ -70,6 +73,9 @@ static const NSUInteger YKFPIVTagLRC = 0xfe;
 // P2
 static const NSUInteger YKFPIVP2Pin = 0x80;
 static const NSUInteger YKFPIVP2Puk = 0x81;
+
+typedef void (^YKFPIVSessionDataCompletionBlock)
+    (NSData* _Nullable data, NSError* _Nullable error);
 
 @interface YKFPIVSession()
 
@@ -131,6 +137,56 @@ int maxPinAttempts = 3;
 
 - (void)clearSessionState {
     // Do nothing for now
+}
+
+- (void)decryptWithKeyInSlot:(YKFPIVSlot)slot algorithm:(SecKeyAlgorithm)algorithm cipher:(NSData *)cipher completion:(nonnull YKFPIVSessionDecryptCompletionBlock)completion {
+    YKFPIVKeyType keyType;
+    switch (cipher.length) {
+        case 1024 / 8:
+            keyType = YKFPIVKeyTypeRSA1024;
+            break;
+        case 2048 / 8:
+            keyType = YKFPIVKeyTypeRSA2048;
+            break;
+        default:
+            completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Invalid lenght of cipher text."}]);
+            return;
+    }
+    [self usePrivateKeyInSlot:slot type:keyType message:cipher exponentiation:false completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+            return;
+        }
+        NSError *unpadError = nil;
+        NSData *unpaddedData = [YKFPIVPadding unpadRSAData:data algorithm:algorithm error:&unpadError];
+        if (unpadError) {
+            completion(nil, unpadError);
+            return;
+        }
+        completion(unpaddedData, nil);
+    }];
+}
+
+- (void)usePrivateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type message:(NSData *)message exponentiation:(BOOL)exponentiation completion:(YKFPIVSessionDataCompletionBlock)completion {
+    NSMutableData *recordsData = [NSMutableData data];
+    [recordsData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagAuthResponse value:[NSData data]].data];
+    [recordsData appendData:[[TKBERTLVRecord alloc] initWithTag:exponentiation ? YKFPIVTagExponentiation : YKFPIVTagChallenge value:message].data];
+    NSData *data = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:recordsData].data;
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAuthenticate p1:type p2:slot data:data type:YKFAPDUTypeExtended];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        NSError *tlvError = nil;
+        NSData *recordData = [TKBERTLVRecord valueFromData:data withTag:YKFPIVTagDynAuth error:&tlvError];
+        if (tlvError) {
+            completion(nil, tlvError);
+            return;
+        }
+        NSData *result = [TKBERTLVRecord valueFromData:recordData withTag:YKFPIVTagAuthResponse error:&tlvError];
+        if (tlvError) {
+            completion(nil, tlvError);
+            return;
+        }
+        completion(result, error);
+    }];
 }
 
 - (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionReadKeyCompletionBlock)completion {

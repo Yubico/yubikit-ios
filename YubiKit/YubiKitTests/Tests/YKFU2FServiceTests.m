@@ -45,8 +45,8 @@
 }
 
 - (void)test_WhenExecutingRegisterRequest_RequestIsForwarededToTheKey {
-    NSData *applicationSelectionResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
-    NSData *commandResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+    NSData *applicationSelectionResponse = [NSData dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+    NSData *commandResponse = [NSData dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
     self.keyConnectionController.commandExecutionResponseDataSequence = @[applicationSelectionResponse, commandResponse];
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"U2F"];
@@ -66,8 +66,8 @@
 }
 
 - (void)test_WhenExecutingSignRequest_RequestIsForwarededToTheKey {
-    NSData *applicationSelectionResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
-    NSData *commandResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+    NSData *applicationSelectionResponse = [NSData dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+    NSData *commandResponse = [NSData dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
     self.keyConnectionController.commandExecutionResponseDataSequence = @[applicationSelectionResponse, commandResponse];
 
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"U2F"];
@@ -90,8 +90,8 @@
 #pragma mark - Generic Error Tests
 
 - (void)test_WhenExecutingRegisterRequestWithStatusErrorResponse_ErrorIsReceivedBack {
-    NSData *applicationSelectionResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
-    NSData *errorResponse = [self dataWithBytes:@[@(0x00), @(0x6A), @(0x88)]];
+    NSData *applicationSelectionResponse = [NSData dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+    NSData *errorResponse = [NSData dataWithBytes:@[@(0x00), @(0x6A), @(0x88)]];
     NSUInteger expectedErrorCode = 0x6A88;
     self.keyConnectionController.commandExecutionResponseDataSequence = @[applicationSelectionResponse, errorResponse];
     
@@ -113,8 +113,8 @@
 }
 
 - (void)test_WhenExecutingSignRequestWithStatusErrorResponse_ErrorIsReceivedBack {
-    NSData *applicationSelectionResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
-    NSData *errorResponse = [self dataWithBytes:@[@(0x00), @(0x69), @(0x84)]];
+    NSData *applicationSelectionResponse = [NSData dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+    NSData *errorResponse = [NSData dataWithBytes:@[@(0x00), @(0x69), @(0x84)]];
     NSUInteger expectedErrorCode = 0x6984;
     self.keyConnectionController.commandExecutionResponseDataSequence = @[applicationSelectionResponse, errorResponse];
 
@@ -143,7 +143,7 @@
         @[@(0x00), @(0x6E), @(0x00), @(YKFAPDUErrorCodeCLANotSupported)],
         @[@(0x00), @(0x6F), @(0x00), @(YKFAPDUErrorCodeCommandAborted)]
     ];
-    NSData *applicationSelectionResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+    NSData *applicationSelectionResponse = [NSData dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
     self.keyConnectionController.commandExecutionResponseDataSequence = @[applicationSelectionResponse];
 
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"U2F"];
@@ -153,7 +153,7 @@
         self.session = session;
         
         for (NSArray *statusCode in listOfErrorStatusCodes) {
-            NSData *errorResponse = [self dataWithBytes:@[statusCode[0], statusCode[1], statusCode[2]]];
+            NSData *errorResponse = [NSData dataWithBytes:@[statusCode[0], statusCode[1], statusCode[2]]];
             int expectedErrorCode = [statusCode[3] intValue];
             self.keyConnectionController.commandExecutionResponseDataSequence = @[errorResponse];
             
@@ -181,7 +181,7 @@
     expectation.expectedFulfillmentCount = 2;
     
     for (NSArray *statusCode in listOfErrorStatusCodes) {
-        NSData *errorResponse = [self dataWithBytes:@[statusCode[0], statusCode[1], statusCode[2]]];
+        NSData *errorResponse = [NSData dataWithBytes:@[statusCode[0], statusCode[1], statusCode[2]]];
         int expectedErrorCode = [statusCode[3] intValue];
         self.keyConnectionController.commandExecutionResponseDataSequence = @[errorResponse];
         [YKFU2FSession sessionWithConnectionController:self.keyConnectionController completion:^(YKFU2FSession * _Nullable session, NSError * _Nullable error) {
@@ -200,8 +200,8 @@
 #pragma mark - Mapped Error Tests
 
 - (void)test_WhenExecutingSignRequestWithoutRegistration_MappedErrorIsReceivedBack {
-    NSData *applicationSelectionResponse = [self dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
-    NSData *errorResponse = [self dataWithBytes:@[@(0x00), @(0x6A), @(0x80)]]; // Wrong data code
+    NSData *applicationSelectionResponse = [NSData dataWithBytes:@[@(0x00), @(0x90), @(0x00)]];
+    NSData *errorResponse = [NSData dataWithBytes:@[@(0x00), @(0x6A), @(0x80)]]; // Wrong data code
     NSUInteger expectedErrorCode = YKFU2FErrorCodeU2FSigningUnavailable;
     self.keyConnectionController.commandExecutionResponseDataSequence = @[applicationSelectionResponse, errorResponse];
     
