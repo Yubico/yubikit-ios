@@ -17,7 +17,6 @@
 #import "YKFAccessoryConnectionController.h"
 #import "YKFFIDO2Error.h"
 #import "YKFAPDUError.h"
-#import "YKFCommandConfiguration.h"
 #import "YKFLogger.h"
 #import "YKFBlockMacros.h"
 #import "YKFNSDataAdditions.h"

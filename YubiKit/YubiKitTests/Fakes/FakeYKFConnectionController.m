@@ -48,7 +48,7 @@
     ++self.commandExecutionSequenceIndex;
 }
 
-- (void)execute:(YKFAPDU *)command configuration:(YKFCommandConfiguration *)configuration completion:(YKFConnectionControllerCommandResponseBlock)completion {
+- (void)execute:(YKFAPDU *)command timeout:(NSTimeInterval)timeout completion:(YKFConnectionControllerCommandResponseBlock)completion {
     self.executionCommand = command;
     self.commandResponseBlock = completion;
     

@@ -39,6 +39,9 @@ typedef void (^YKFConnectionControllerCommunicationQueueBlock)(NSOperation *oper
 @implementation YKFAccessoryConnectionController
 
 static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // bytes
+static NSTimeInterval const YKFAccessoryConnectionCommandProbeTime = 0.05;
+static NSTimeInterval const YKFAccessoryConnectionDefaultTimeout = 10.0;
+static NSTimeInterval const YKFAccessoryConnectionCommandTime = 0.002;
 
 - (instancetype)initWithSession:(id<YKFEASessionProtocol>)session operationQueue:(NSOperationQueue *)operationQueue {
     YKFAssertAbortInit(session);
@@ -156,7 +159,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
 
 #pragma mark - Stream IO
 
-- (BOOL)writeData:(NSData *)data configuration:(YKFCommandConfiguration *)configuration parentOperation:(NSOperation *)operation {
+- (BOOL)writeData:(NSData *)data timeout:(NSTimeInterval)timeout parentOperation:(NSOperation *)operation {
     YKFAssertOffMainThread();
     
     YKFParameterAssertReturnValue(data, NO);
@@ -175,9 +178,9 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
             }
         }
         
-        [NSThread sleepForTimeInterval: configuration.commandProbeTime];
-        totalSleepTime += configuration.commandProbeTime;
-        if (totalSleepTime >= configuration.commandTimeout) {
+        [NSThread sleepForTimeInterval: YKFAccessoryConnectionCommandProbeTime];
+        totalSleepTime += YKFAccessoryConnectionCommandProbeTime;
+        if (totalSleepTime >= timeout) {
             return NO;
         }
     }
@@ -189,7 +192,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
     return YES;
 }
 
-- (BOOL)readData:(NSData**)readData configuration:(YKFCommandConfiguration *)configuration parentOperation:(NSOperation *)operation {
+- (BOOL)readData:(NSData**)readData timeout:(NSTimeInterval)timeout parentOperation:(NSOperation *)operation {
     YKFAssertOffMainThread();
     YKFParameterAssertReturnValue(self.inputStream, NO);
     
@@ -198,9 +201,9 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
     
     NSTimeInterval totalSleepTime = 0;
     while (!self.inputStream.hasBytesAvailable && !operation.isCancelled) {
-        [NSThread sleepForTimeInterval: configuration.commandProbeTime];
-        totalSleepTime += configuration.commandProbeTime;
-        if (totalSleepTime >= configuration.commandTimeout) {
+        [NSThread sleepForTimeInterval: YKFAccessoryConnectionCommandProbeTime];
+        totalSleepTime += YKFAccessoryConnectionCommandProbeTime;
+        if (totalSleepTime >= timeout) {
             return NO;
         }
     }
@@ -227,12 +230,11 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
 #pragma mark - Commands
 
 - (void)execute:(YKFAPDU *)command completion:(YKFConnectionControllerCommandResponseBlock)completion {
-    [self execute:command configuration:[YKFCommandConfiguration defaultCommandCofiguration] completion:completion];
+    [self execute:command timeout:YKFAccessoryConnectionDefaultTimeout completion:completion];
 }
 
-- (void)execute:(YKFAPDU *)command configuration:(YKFCommandConfiguration *)configuration completion:(YKFConnectionControllerCommandResponseBlock)completion {
+- (void)execute:(YKFAPDU *)command timeout:(NSTimeInterval)timeout completion:(YKFConnectionControllerCommandResponseBlock)completion {
     YKFParameterAssertReturn(command);
-    YKFParameterAssertReturn(configuration);
     YKFParameterAssertReturn(completion);
     
     YKFLogVerbose(@"AccessoryConnectionController - Execute command...");
@@ -244,7 +246,7 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
         YKFLogVerbose(@"Sent(IAP): %@", [command.ylpApduData ykf_hexadecimalString]);
 
         // 1. Send the command to the key.
-        BOOL success = [strongSelf writeData:command.ylpApduData configuration:configuration parentOperation:operation];
+        BOOL success = [strongSelf writeData:command.ylpApduData timeout:timeout parentOperation:operation];
         
         if (!success && !operation.isCancelled) {
             NSError *error = nil;
@@ -269,12 +271,10 @@ static NSUInteger const YubiKeyConnectionControllerReadBufferSize = 512; // byte
 
         while (keyIsBusyProcesssing) {
             // 2. Wait for the key to process the command.
-            if (configuration.commandTime > 0) {
-                [NSThread sleepForTimeInterval: configuration.commandTime];
-            }
+            [NSThread sleepForTimeInterval: YKFAccessoryConnectionCommandTime];
             
             // 3. Read the command result.
-            success = [strongSelf readData:&commandResult configuration:configuration parentOperation:operation];
+            success = [strongSelf readData:&commandResult timeout:timeout parentOperation:operation];
 
             if ((!success || commandResult.length == 0) && !operation.isCancelled) {
                 NSError *error = nil;

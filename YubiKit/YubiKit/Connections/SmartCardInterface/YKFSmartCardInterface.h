@@ -18,7 +18,7 @@
 #ifndef YKFSmartCardInterface_h
 #define YKFSmartCardInterface_h
 
-@class YKFAPDU, YKFCommandConfiguration, YKFSelectApplicationAPDU;
+@class YKFAPDU, YKFSelectApplicationAPDU;
 @protocol YKFConnectionControllerProtocol;
 
 //typedef void (^YKFSmartCardInterfaceSelectApplicationResponseBlock)
@@ -47,9 +47,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)executeCommand:(YKFAPDU *)apdu completion:(YKFSmartCardInterfaceResponseBlock)completion;
 
+- (void)executeCommand:(YKFAPDU *)apdu timeout:(NSTimeInterval)timeout completion:(YKFSmartCardInterfaceResponseBlock)completion;
+
 - (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns completion:(YKFSmartCardInterfaceResponseBlock)completion;
 
-- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns configuration:(YKFCommandConfiguration *)configuration completion:(YKFSmartCardInterfaceResponseBlock)completion;
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns timeout:(NSTimeInterval)timeout completion:(YKFSmartCardInterfaceResponseBlock)completion;
 
 NS_ASSUME_NONNULL_END
 

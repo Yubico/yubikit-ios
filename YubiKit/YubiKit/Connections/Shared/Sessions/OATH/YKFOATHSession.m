@@ -18,7 +18,6 @@
 #import "YKFOATHError.h"
 #import "YKFAPDUError.h"
 #import "YKFLogger.h"
-#import "YKFCommandConfiguration.h"
 #import "YKFBlockMacros.h"
 #import "YKFAssert.h"
 

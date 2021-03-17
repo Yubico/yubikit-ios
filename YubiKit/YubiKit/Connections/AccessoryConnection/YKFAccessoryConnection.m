@@ -22,7 +22,6 @@
 #import "YubiKitDeviceCapabilities.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFAccessoryConnectionConfiguration.h"
-#import "YKFCommandConfiguration.h"
 #import "YKFAccessoryDescription.h"
 #import "YKFKVOObservation.h"
 #import "YKFBlockMacros.h"
@@ -240,8 +239,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     
     [self start];
     
-    YKFCommandConfiguration *configuration = [YKFCommandConfiguration defaultCommandCofiguration];
-    dispatch_semaphore_wait(openSemaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(configuration.commandTimeout * NSEC_PER_SEC)));
+    dispatch_semaphore_wait(openSemaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10.0 * NSEC_PER_SEC)));
     
     observation = nil;
     
@@ -287,8 +285,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     
     [self stop];
     
-    YKFCommandConfiguration *configuration = [YKFCommandConfiguration defaultCommandCofiguration];
-    dispatch_semaphore_wait(closeSemaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(configuration.commandTimeout * NSEC_PER_SEC)));
+    dispatch_semaphore_wait(closeSemaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10.0 * NSEC_PER_SEC)));
     
     observation = nil;
     

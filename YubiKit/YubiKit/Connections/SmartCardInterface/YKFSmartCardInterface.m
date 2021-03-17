@@ -35,6 +35,9 @@
 #import "YKFOATHSendRemainingAPDU.h"
 #import "YKFSelectApplicationAPDU.h"
 
+
+static NSTimeInterval const YKFSmartCardInterfaceDefaultTimeout = 10.0;
+
 @interface YKFSmartCardInterface()
 
 @property (nonatomic, readwrite) id<YKFConnectionControllerProtocol> connectionController;
@@ -75,9 +78,9 @@
     }];
 }
 
-- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns  configuration:(YKFCommandConfiguration *)configuration data:(NSMutableData *)data completion:(YKFSmartCardInterfaceResponseBlock)completion {
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns  timeout:(NSTimeInterval)timeout data:(NSMutableData *)data completion:(YKFSmartCardInterfaceResponseBlock)completion {
     [self.connectionController execute:apdu
-                         configuration:configuration
+                         timeout:timeout
                             completion:^(NSData *response, NSError *error, NSTimeInterval executionTime) {
         if (error) {
             completion(nil, error);
@@ -100,7 +103,7 @@
             }
             YKFAPDU *sendRemainingApdu = [[YKFAPDU alloc] initWithData:[NSData dataWithBytes:(unsigned char[]){0x00, ins, 0x00, 0x00} length:4]];
             // Queue a new request recursively
-            [self executeCommand:sendRemainingApdu sendRemainingIns:sendRemainingIns configuration:configuration data:data completion:completion];
+            [self executeCommand:sendRemainingApdu sendRemainingIns:sendRemainingIns timeout:timeout data:data completion:completion];
             return;
         } else if (statusCode == 0x9000) {
             completion(data, nil);
@@ -113,18 +116,22 @@
 }
 
 - (void)executeCommand:(YKFAPDU *)apdu completion:(YKFSmartCardInterfaceResponseBlock)completion {
-    [self executeCommand:apdu sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsNormal configuration:[YKFCommandConfiguration defaultCommandCofiguration] completion:completion];
+    [self executeCommand:apdu sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsNormal timeout:YKFSmartCardInterfaceDefaultTimeout completion:completion];
+}
+
+- (void)executeCommand:(YKFAPDU *)apdu timeout:(NSTimeInterval)timeout completion:(YKFSmartCardInterfaceResponseBlock)completion {
+    [self executeCommand:apdu sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsNormal timeout:timeout completion:completion];
 }
 
 - (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns completion:(YKFSmartCardInterfaceResponseBlock)completion {
-    [self executeCommand:apdu sendRemainingIns:sendRemainingIns  configuration:[YKFCommandConfiguration defaultCommandCofiguration] completion:completion];
+    [self executeCommand:apdu sendRemainingIns:sendRemainingIns timeout:YKFSmartCardInterfaceDefaultTimeout completion:completion];
 }
 
-- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns configuration:(YKFCommandConfiguration *)configuration completion:(YKFSmartCardInterfaceResponseBlock)completion {
+- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns timeout:(NSTimeInterval)timeout completion:(YKFSmartCardInterfaceResponseBlock)completion {
     YKFParameterAssertReturn(apdu);
     YKFParameterAssertReturn(completion);
     NSMutableData *data = [NSMutableData new];
-    [self executeCommand:apdu sendRemainingIns:sendRemainingIns configuration:configuration data:data completion:completion];
+    [self executeCommand:apdu sendRemainingIns:sendRemainingIns timeout:timeout data:data completion:completion];
 }
 
 #pragma mark - Helpers

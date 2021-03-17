@@ -173,7 +173,7 @@ int maxPinAttempts = 3;
     [recordsData appendData:[[TKBERTLVRecord alloc] initWithTag:exponentiation ? YKFPIVTagExponentiation : YKFPIVTagChallenge value:message].data];
     NSData *data = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:recordsData].data;
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAuthenticate p1:type p2:slot data:data type:YKFAPDUTypeExtended];
-    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    [self.smartCardInterface executeCommand:apdu timeout:120.0  completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         NSError *tlvError = nil;
         NSData *recordData = [TKBERTLVRecord valueFromData:data withTag:YKFPIVTagDynAuth error:&tlvError];
         if (tlvError) {
@@ -195,13 +195,13 @@ int maxPinAttempts = 3;
     TKBERTLVRecord *tlvsContainer = [[TKBERTLVRecord alloc] initWithTag:0xac value:tlv.data];
     NSData *tlvsData = tlvsContainer.data;
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGenerateAsymetric p1:0 p2:slot data:tlvsData type:YKFAPDUTypeExtended];
-    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    [self.smartCardInterface executeCommand:apdu timeout:120.0 completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:[[TKBERTLVRecord sequenceOfRecordsFromData:data] ykfTLVRecordWithTag:(UInt64)0x7F49].value];
         SecKeyRef publicKey = nil;
         CFErrorRef cfError = nil;
         if (type == YKFPIVKeyTypeECCP256 || type == YKFPIVKeyTypeECCP384) {
             NSData *eccKeyData = [records ykfTLVRecordWithTag:(UInt64)0x86].value;
-            CFDataRef cfDataRef = CFDataCreate(NULL, eccKeyData.bytes, eccKeyData.length);
+            CFDataRef cfDataRef = (__bridge CFDataRef)eccKeyData;
             NSDictionary *attributes = @{(id)kSecAttrKeyType: (id)kSecAttrKeyTypeEC,
                                          (id)kSecAttrKeyClass: (id)kSecAttrKeyClassPublic};
             CFDictionaryRef attributesRef = (__bridge CFDictionaryRef)attributes;
@@ -218,7 +218,7 @@ int maxPinAttempts = 3;
             NSDictionary *attributes = @{(id)kSecAttrKeyType: (id)kSecAttrKeyTypeRSA,
                                          (id)kSecAttrKeyClass: (id)kSecAttrKeyClassPublic};
             CFDictionaryRef attributesRef = (__bridge CFDictionaryRef)attributes;
-            CFDataRef cfKeyDataRef = CFDataCreate(NULL, keyData.bytes, keyData.length);
+            CFDataRef cfKeyDataRef = (__bridge CFDataRef)keyData;
             publicKey = SecKeyCreateWithData(cfKeyDataRef, attributesRef, &cfError);
         } else {
             [NSException raise:@"UnknownKeyType" format:@"Unknown key type."];

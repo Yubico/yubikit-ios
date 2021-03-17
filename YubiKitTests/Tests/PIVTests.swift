@@ -17,7 +17,31 @@ import Foundation
 
 class PIVTests: XCTestCase {
     
-    func testDecryptRSAKey() throws {
+    func testDecryptRSA2048() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.generateKey(in: .keyManagement, type: .RSA2048) { publicKey, error in
+                    guard let publicKey = publicKey else { XCTFail("🔴 Failed to create keypair: \(error!)"); completion(); return }
+                    let dataToEncrypt = "Hello World!".data(using: .utf8)!
+                    guard let encryptedData = SecKeyCreateEncryptedData(publicKey, SecKeyAlgorithm.rsaEncryptionPKCS1, dataToEncrypt as CFData, nil) else {
+                        XCTFail("🔴 Failed to encrypt data.")
+                        completion()
+                        return
+                    }
+                    session.verifyPin("123456") { retries, error in
+                          session.decryptWithKey(in: .keyManagement, algorithm: SecKeyAlgorithm.rsaEncryptionPKCS1, cipher: encryptedData as Data) { data, error in
+                            guard let data = data else { XCTFail("🔴 Failed to decrypt key: \(error!)"); completion(); return }
+                            let decrypted = String(data:data, encoding: .utf8)
+                            XCTAssert(decrypted == "Hello World!", "🔴 Got: '\(String(describing: decrypted))', exptected 'Hello World!'.")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func testDecryptRSA1024() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
                 session.generateKey(in: .keyManagement, type: .RSA1024) { publicKey, error in

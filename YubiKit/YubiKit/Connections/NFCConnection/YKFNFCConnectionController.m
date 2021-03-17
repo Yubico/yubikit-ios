@@ -24,6 +24,8 @@
 
 typedef void (^YKFConnectionControllerCommunicationQueueBlock)(NSOperation *operation);
 
+static NSTimeInterval const YKFNFCConnectionDefaultTimeout = 10.0;
+
 @interface YKFNFCConnectionController()
 
 @property (nonatomic) NSOperationQueue *communicationQueue;
@@ -48,12 +50,11 @@ typedef void (^YKFConnectionControllerCommunicationQueueBlock)(NSOperation *oper
 #pragma mark - Commands
 
 - (void)execute:(nonnull YKFAPDU *)command completion:(nonnull YKFConnectionControllerCommandResponseBlock)completion {
-    [self execute:command configuration:[YKFCommandConfiguration defaultCommandCofiguration] completion:completion];
+    [self execute:command timeout:YKFNFCConnectionDefaultTimeout completion:completion];
 }
 
-- (void)execute:(nonnull YKFAPDU *)command configuration:(nonnull YKFCommandConfiguration *)configuration completion:(nonnull YKFConnectionControllerCommandResponseBlock)completion {
+- (void)execute:(nonnull YKFAPDU *)command timeout:(NSTimeInterval)timeout completion:(nonnull YKFConnectionControllerCommandResponseBlock)completion {
     YKFParameterAssertReturn(command);
-    YKFParameterAssertReturn(configuration);
     YKFParameterAssertReturn(completion);
     
     YKFLogVerbose(@"NFCConnectionController - Execute command...");
@@ -101,7 +102,7 @@ typedef void (^YKFConnectionControllerCommunicationQueueBlock)(NSOperation *oper
         }];
         
         // Lock the async call to enforce the sequential execution using the library dispatch queue.
-        dispatch_semaphore_wait(executionSemaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(configuration.commandTimeout * NSEC_PER_SEC)));
+        dispatch_semaphore_wait(executionSemaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeout * NSEC_PER_SEC)));
         
         // Do not notify if the operation was canceled.
         if (operation.isCancelled) {

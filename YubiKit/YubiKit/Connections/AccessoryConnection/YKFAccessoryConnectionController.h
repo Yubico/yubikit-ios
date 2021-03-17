@@ -15,7 +15,6 @@
 #import <Foundation/Foundation.h>
 #import <ExternalAccessory/ExternalAccessory.h>
 
-#import "YKFCommandConfiguration.h"
 #import "YKFConnectionControllerProtocol.h"
 #import "YKFAPDU.h"
 #import "EASession+Testing.h"

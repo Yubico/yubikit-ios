@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #import "YKFAPDU.h"
-#import "YKFCommandConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +22,7 @@ typedef void (^YKFConnectionControllerCompletionBlock)(void);
 @protocol YKFConnectionControllerProtocol
 
 - (void)execute:(YKFAPDU *)command completion:(YKFConnectionControllerCommandResponseBlock)completion;
-- (void)execute:(YKFAPDU *)command configuration:(YKFCommandConfiguration *)configuration completion:(YKFConnectionControllerCommandResponseBlock)completion;
+- (void)execute:(YKFAPDU *)command timeout:(NSTimeInterval)timeout completion:(YKFConnectionControllerCommandResponseBlock)completion;
 
 - (void)dispatchOnSequentialQueue:(YKFConnectionControllerCompletionBlock)block delay:(NSTimeInterval)delay;
 - (void)dispatchOnSequentialQueue:(YKFConnectionControllerCompletionBlock)block;
