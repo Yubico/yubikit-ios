@@ -21,6 +21,7 @@
     @property (nonatomic, readwrite) YKFFeature * _Nonnull aesKey;
     @property (nonatomic, readwrite) YKFFeature * _Nonnull serial;
     @property (nonatomic, readwrite) YKFFeature * _Nonnull metadata;
+    @property (nonatomic, readwrite) YKFFeature * _Nonnull attestation;
 @end
 
 @implementation YKFPIVSessionFeatures
@@ -32,6 +33,7 @@
         self.aesKey = [[YKFFeature alloc] initWithName:@"AES key" versionString:@"5.4.0"];
         self.serial = [[YKFFeature alloc] initWithName:@"Serial number" versionString:@"5.0.0"];
         self.metadata = [[YKFFeature alloc] initWithName:@"Metadata" versionString:@"5.3.0"];
+        self.attestation = [[YKFFeature alloc] initWithName:@"Attestation" versionString:@"4.3.0"];
     }
     return self;
 }

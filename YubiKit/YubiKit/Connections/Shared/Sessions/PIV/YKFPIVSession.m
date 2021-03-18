@@ -51,6 +51,7 @@ static const NSUInteger YKFPIVInsResetRetry = 0x2c;
 static const NSUInteger YKFPIVInsSetManagementKey = 0xff;
 static const NSUInteger YKFPIVInsSetPinPukAttempts = 0xfa;
 static const NSUInteger YKFPIVInsGenerateAsymetric = 0x47;
+static const NSUInteger YKFPIVInsAttest = 0xf9;
 
 
 // Tags for parsing responses and preparing reqeusts
@@ -189,6 +190,26 @@ int maxPinAttempts = 3;
     }];
 }
 
+- (void)attestKeyInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionAttestKeyCompletionBlock)completion {
+    if (![self.features.attestation isSupportedBySession:self]) {
+        completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Attestation not supported by this YubiKey."}]);
+        return;
+    }
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAttest p1:slot p2:0 data:[NSData data] type:YKFAPDUTypeExtended];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+            return;
+        }
+        CFDataRef cfCertDataRef =  (__bridge CFDataRef)data;
+        SecCertificateRef certificate = SecCertificateCreateWithData(nil, cfCertDataRef);
+        if (certificate) {
+            completion(certificate, nil);
+        } else {
+            completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Failed to parse certificate."}]);        }
+    }];
+}
+
 - (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionReadKeyCompletionBlock)completion {
     NSMutableData *data = [NSMutableData dataWithBytes:&type length:1];
     TKBERTLVRecord *tlv = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagGenAlgorithm value:data];
@@ -259,7 +280,7 @@ int maxPinAttempts = 3;
         NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:data];
         NSData *objectData = [records ykfTLVRecordWithTag:YKFPIVTagObjectData].value;
         NSData *certificateData = [[TKBERTLVRecord sequenceOfRecordsFromData:objectData] ykfTLVRecordWithTag:YKFPIVTagCertificate].value;
-        CFDataRef cfCertDataRef = CFDataCreate(NULL, certificateData.bytes, certificateData.length);
+        CFDataRef cfCertDataRef =  (__bridge CFDataRef)certificateData;
         SecCertificateRef certificate = SecCertificateCreateWithData(nil, cfCertDataRef);
         completion(certificate, error);
     }];

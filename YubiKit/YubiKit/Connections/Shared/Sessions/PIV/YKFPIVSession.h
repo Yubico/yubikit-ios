@@ -42,6 +42,9 @@ typedef void (^YKFPIVSessionCompletionBlock)
 typedef void (^YKFPIVSessionDecryptCompletionBlock)
     (NSData* _Nullable decrypted, NSError* _Nullable error);
 
+typedef void (^YKFPIVSessionAttestKeyCompletionBlock)
+    (SecCertificateRef _Nullable certificate, NSError* _Nullable error);
+
 typedef void (^YKFPIVSessionReadKeyCompletionBlock)
     (SecKeyRef _Nullable key, NSError* _Nullable error);
 
@@ -69,6 +72,8 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 @property (nonatomic, readonly) YKFPIVSessionFeatures * _Nonnull features;
 
 - (void)decryptWithKeyInSlot:(YKFPIVSlot)slot algorithm:(SecKeyAlgorithm)algorithm encrypted:(nonnull NSData *)encrypted completion:(nonnull YKFPIVSessionDecryptCompletionBlock)completion;
+
+- (void)attestKeyInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionAttestKeyCompletionBlock)completion;
 
 - (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionReadKeyCompletionBlock)completion;
 

@@ -22,6 +22,7 @@
     @property (nonatomic, readonly) YKFFeature * _Nonnull aesKey;
     @property (nonatomic, readonly) YKFFeature * _Nonnull serial;
     @property (nonatomic, readonly) YKFFeature * _Nonnull metadata;
+    @property (nonatomic, readonly) YKFFeature * _Nonnull attestation;
 @end
 
 #endif /* YKFPIVSessionFeatures_h */

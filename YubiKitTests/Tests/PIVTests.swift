@@ -98,6 +98,25 @@ class PIVTests: XCTestCase {
             }
         }
     }
+    
+    func testAttestRSAKey() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.generateKey(in: .keyManagement, type: .RSA1024) { key, error in
+                    session.attestKey(in: .keyManagement) { certificate, error in
+                        XCTAssert(error == nil && certificate != nil)
+                        let attestKey = SecCertificateCopyKey(certificate!)
+                        let attestKeyData = SecKeyCopyExternalRepresentation(attestKey!, nil)!
+                        XCTAssertNotNil(attestKeyData)
+                        let keyData = SecKeyCopyExternalRepresentation(key!, nil)!
+                        XCTAssertNotNil(keyData)
+                        XCTAssert((attestKeyData as Data) == (keyData as Data))
+                        completion()
+                    }
+                }
+            }
+        }
+    }
 
     let certificate = SecCertificateCreateWithData(nil, Data(base64Encoded: "MIIBKzCB0qADAgECAhQTuU25u6oazORvKfTleabdQaDUGzAKBggqhkjOPQQDAjAWMRQwEgYDVQQDDAthbW9zLmJ1cnRvbjAeFw0yMTAzMTUxMzU5MjVaFw0yODA1MTcwMDAwMDBaMBYxFDASBgNVBAMMC2Ftb3MuYnVydG9uMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEofwN6S+atSZmzeLK7aSI+mJJwxh0oUBiCOngHLeToYeanrTGvCZQ2AK/R9esnqSxMyBUDp91UO4F6U4c6RTooTAKBggqhkjOPQQDAgNIADBFAiAnj/KUSpW7l5wnenQEbwWudK/7q3WtyrqdB0H1xc258wIhALDLImzu3S+0TT2/ggM95LLWE4Llfa2RQM71bnW6zqqn")! as CFData)!
     
