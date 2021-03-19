@@ -17,6 +17,41 @@
 
 @implementation YKFPIVPadding
 
++ (NSData *)padData:(NSData *)data keyType:(YKFPIVKeyType)keyType algorithm:(SecKeyAlgorithm)algorithm error:(NSError **)error {
+    if (keyType == YKFPIVKeyTypeRSA2048 || keyType == YKFPIVKeyTypeRSA1024) {
+        NSNumber *size = [NSNumber numberWithInt:YKFPIVSizeFromKeyType(keyType) * 8];
+        CFDictionaryRef attributes = (__bridge CFDictionaryRef) (@{(id)kSecAttrKeyType: (id)kSecAttrKeyTypeRSA,
+                                                                   (id)kSecAttrKeySizeInBits: size});
+        
+        SecKeyRef publicKey;
+        SecKeyRef privateKey;
+        SecKeyGeneratePair(attributes, &publicKey, &privateKey);
+        CFErrorRef cfErrorRef = nil;
+        CFDataRef cfDataRef = (__bridge CFDataRef)data;
+        CFDataRef cfEncryptedDataRef = SecKeyCreateEncryptedData(publicKey, algorithm, cfDataRef, &cfErrorRef);
+        CFRelease(publicKey);
+        if (cfErrorRef) {
+            NSError *encryptError = (__bridge NSError *)cfErrorRef;
+            *error = encryptError;
+            return nil;
+        }
+        CFDataRef cfDecryptedDataRef = SecKeyCreateDecryptedData(privateKey, kSecKeyAlgorithmRSAEncryptionRaw, cfEncryptedDataRef, &cfErrorRef);
+        CFRelease(privateKey);
+        if (cfErrorRef) {
+            NSError *decryptError = (__bridge NSError *)cfErrorRef;
+            *error = decryptError;
+            return nil;
+        }
+        NSData *decrypted = (__bridge NSData*)cfDecryptedDataRef;
+        return decrypted;
+    } else if (keyType == YKFPIVKeyTypeECCP256 || keyType == YKFPIVKeyTypeECCP384) {
+        *error = [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"EC padding not implemented."}];
+        return nil;
+    } else {
+        return nil;
+    }
+}
+
 + (NSData *)unpadRSAData:(NSData *)data algorithm:(SecKeyAlgorithm)algorithm error:(NSError **)error {
     NSNumber *size;
     switch (data.length) {

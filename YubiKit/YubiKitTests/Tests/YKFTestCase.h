@@ -27,4 +27,6 @@
 
 + (NSData *)dataFromHexString:(NSString *)string;
 
+- (NSString *)ykf_hexadecimalString;
+
 @end

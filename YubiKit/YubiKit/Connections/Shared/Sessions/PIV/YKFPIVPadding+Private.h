@@ -15,7 +15,12 @@
 #ifndef YKFPIVPadding_Private_h
 #define YKFPIVPadding_Private_h
 
+#import "YKFPIVKeyType.h"
+
 @interface YKFPIVPadding: NSObject
+
+
++ (NSData *)padData:(NSData *)data keyType:(YKFPIVKeyType)keyType algorithm:(SecKeyAlgorithm)algorithm error:(NSError **)error;
 
 + (NSData *)unpadRSAData:(NSData *)data algorithm:(SecKeyAlgorithm)algorithm error:(NSError **)error;
 

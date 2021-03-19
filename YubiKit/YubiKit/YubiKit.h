@@ -54,6 +54,7 @@
 #import "YKFPIVManagementKeyType.h"
 #import "YKFPIVManagementKeyMetadata.h"
 #import "YKFPIVTouchPolicy.h"
+#import "YKFPIVKeyType.h"
 #import "YKFChallengeResponseSession.h"
 #import "YKFManagementSession.h"
 
