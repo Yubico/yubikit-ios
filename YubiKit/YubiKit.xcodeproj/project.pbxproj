@@ -12,6 +12,7 @@
 		5110D6A02600E00A00467680 /* YKFPIVPaddingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5110D69F2600E00900467680 /* YKFPIVPaddingTests.m */; };
 		5110D6A32600E61400467680 /* YKFPIVPadding.m in Sources */ = {isa = PBXBuildFile; fileRef = 5110D6982600D9C800467680 /* YKFPIVPadding.m */; };
 		5110D6A72601FBC800467680 /* TKTLVRecordAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5110D6A62601FBC800467680 /* TKTLVRecordAdditions.m */; };
+		5110D6B12603568800467680 /* YKFPIVKeyType.m in Sources */ = {isa = PBXBuildFile; fileRef = 5110D6B02603568800467680 /* YKFPIVKeyType.m */; };
 		5117C10625F692C300F4081A /* FakeYKFConnectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5117C10425F692C300F4081A /* FakeYKFConnectionController.m */; };
 		5121B2212563DE8200300145 /* YKFSmartCardInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 5121B2202563DE8200300145 /* YKFSmartCardInterface.m */; };
 		5121B22D2565238500300145 /* YKFSelectApplicationAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 5121B22C2565238500300145 /* YKFSelectApplicationAPDU.m */; };
@@ -299,6 +300,8 @@
 		5110D69F2600E00900467680 /* YKFPIVPaddingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVPaddingTests.m; sourceTree = "<group>"; };
 		5110D6A62601FBC800467680 /* TKTLVRecordAdditions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TKTLVRecordAdditions.m; sourceTree = "<group>"; };
 		5110D6AA2601FBE200467680 /* TKTLVRecordAdditions+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TKTLVRecordAdditions+Private.h"; sourceTree = "<group>"; };
+		5110D6AF2603566200467680 /* YKFPIVKeyType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVKeyType.h; sourceTree = "<group>"; };
+		5110D6B02603568800467680 /* YKFPIVKeyType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVKeyType.m; sourceTree = "<group>"; };
 		5117C10425F692C300F4081A /* FakeYKFConnectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FakeYKFConnectionController.m; sourceTree = "<group>"; };
 		5117C10525F692C300F4081A /* FakeYKFConnectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FakeYKFConnectionController.h; sourceTree = "<group>"; };
 		51202093255150FF00B0384D /* YKFSessionProtocol+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFSessionProtocol+Private.h"; sourceTree = "<group>"; };
@@ -669,6 +672,8 @@
 				5110D67525F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m */,
 				5110D6982600D9C800467680 /* YKFPIVPadding.m */,
 				5110D69C2600D9E400467680 /* YKFPIVPadding+Private.h */,
+				5110D6AF2603566200467680 /* YKFPIVKeyType.h */,
+				5110D6B02603568800467680 /* YKFPIVKeyType.m */,
 			);
 			path = PIV;
 			sourceTree = "<group>";
@@ -1519,6 +1524,7 @@
 				95C2965A2062A5970091318B /* YubiKitManager.m in Sources */,
 				958491732130286900D7E2A3 /* YKFAccessoryConnectionConfiguration.m in Sources */,
 				51ACC32025DBBB7E0069214B /* YKFFeature.m in Sources */,
+				5110D6B12603568800467680 /* YKFPIVKeyType.m in Sources */,
 				95C2962C206250D90091318B /* YKFPermissions.m in Sources */,
 				956DBB8421EDEA1D004D6EE3 /* YKFFIDO2Session.m in Sources */,
 				81311F3A23AAFA4A00765522 /* YKFChallengeResponseSession.m in Sources */,

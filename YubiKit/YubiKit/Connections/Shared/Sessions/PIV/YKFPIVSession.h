@@ -16,6 +16,7 @@
 #define YKFPIVSession_h
 
 #import "YKFVersion.h"
+#import "YKFPIVKeyType.h"
 
 typedef NS_ENUM(NSUInteger, YKFPIVSlot) {
     YKFPIVSlotAuthentication = 0x9a,
@@ -23,13 +24,6 @@ typedef NS_ENUM(NSUInteger, YKFPIVSlot) {
     YKFPIVSlotKeyManagement = 0x9d,
     YKFPIVSlotCardAuth = 0x9e,
     YKFPIVSlotAttestation = 0xf9
-};
-
-typedef NS_ENUM(NSUInteger, YKFPIVKeyType) {
-    YKFPIVKeyTypeRSA1024 = 0x06,
-    YKFPIVKeyTypeRSA2048 = 0x07,
-    YKFPIVKeyTypeECCP256 = 0x11,
-    YKFPIVKeyTypeECCP384 = 0x14
 };
 
 @class YKFPIVSessionFeatures, YKFPIVManagementKeyType, YKFPIVManagementKeyMetadata;
@@ -41,6 +35,9 @@ typedef void (^YKFPIVSessionCompletionBlock)
 
 typedef void (^YKFPIVSessionDecryptCompletionBlock)
     (NSData* _Nullable decrypted, NSError* _Nullable error);
+
+typedef void (^YKFPIVSessionCalculateSecretCompletionBlock)
+    (NSData* _Nullable secret, NSError* _Nullable error);
 
 typedef void (^YKFPIVSessionAttestKeyCompletionBlock)
     (SecCertificateRef _Nullable certificate, NSError* _Nullable error);
@@ -72,6 +69,8 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 @property (nonatomic, readonly) YKFPIVSessionFeatures * _Nonnull features;
 
 - (void)decryptWithKeyInSlot:(YKFPIVSlot)slot algorithm:(SecKeyAlgorithm)algorithm encrypted:(nonnull NSData *)encrypted completion:(nonnull YKFPIVSessionDecryptCompletionBlock)completion;
+
+- (void)calculateSecretKeyInSlot:(YKFPIVSlot)slot peerPublicKey:(SecKeyRef)peerPublicKey completion:(nonnull YKFPIVSessionCalculateSecretCompletionBlock)completion;
 
 - (void)attestKeyInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionAttestKeyCompletionBlock)completion;
 

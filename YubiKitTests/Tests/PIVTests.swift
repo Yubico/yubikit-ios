@@ -33,6 +33,7 @@ class PIVTests: XCTestCase {
                             guard let data = data else { XCTFail("🔴 Failed to decrypt key: \(error!)"); completion(); return }
                             let decrypted = String(data:data, encoding: .utf8)
                             XCTAssert(decrypted == "Hello World!", "🔴 Got: '\(String(describing: decrypted))', exptected 'Hello World!'.")
+                            print("✅ Decrypted RSA 2048")
                             completion()
                         }
                     }
@@ -57,6 +58,49 @@ class PIVTests: XCTestCase {
                             guard let data = data else { XCTFail("🔴 Failed to decrypt key: \(error!)"); completion(); return }
                             let decrypted = String(data:data, encoding: .utf8)
                             XCTAssert(decrypted == "Hello World!", "🔴 Got: '\(String(describing: decrypted))', exptected 'Hello World!'.")
+                            print("✅ Decrypted RSA 1024")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func testSharedSecretEC256() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.generateKey(in: .signature, type: .ECCP256) { publicKey, error in
+                    let attributes: [String: Any] = [kSecAttrKeySizeInBits as String: 256,
+                                                     kSecAttrKeyType as String: kSecAttrKeyTypeEC,
+                                                     kSecAttrKeyClass as String: kSecAttrKeyClassPublic]
+                    let peerPublicKey = SecKeyCreateRandomKey(attributes as CFDictionary, nil)!
+                    session.verifyPin("123456") { retries, error in
+                        session.calculateSecretKey(in: .signature, peerPublicKey: peerPublicKey) { secret, error in
+                            XCTAssertNil(error, "🔴 \(error!)")
+                            XCTAssertNotNil(secret)
+                            print("✅ Created shared secret ECCP256")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func testSharedSecretEC384() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.generateKey(in: .signature, type: .ECCP384) { publicKey, error in
+                    let attributes: [String: Any] = [kSecAttrKeySizeInBits as String: 384,
+                                                     kSecAttrKeyType as String: kSecAttrKeyTypeEC,
+                                                     kSecAttrKeyClass as String: kSecAttrKeyClassPublic]
+                    let peerPublicKey = SecKeyCreateRandomKey(attributes as CFDictionary, nil)!
+                    session.verifyPin("123456") { retries, error in
+                        session.calculateSecretKey(in: .signature, peerPublicKey: peerPublicKey) { secret, error in
+                            XCTAssertNil(error, "🔴 \(error!)")
+                            XCTAssertNotNil(secret)
+                            print("✅ Created shared secret ECCP384")
                             completion()
                         }
                     }

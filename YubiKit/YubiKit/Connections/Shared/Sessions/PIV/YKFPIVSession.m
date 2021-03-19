@@ -175,6 +175,10 @@ int maxPinAttempts = 3;
     NSData *data = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:recordsData].data;
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAuthenticate p1:type p2:slot data:data type:YKFAPDUTypeExtended];
     [self.smartCardInterface executeCommand:apdu timeout:120.0  completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+            return;
+        }
         NSError *tlvError = nil;
         NSData *recordData = [TKBERTLVRecord valueFromData:data withTag:YKFPIVTagDynAuth error:&tlvError];
         if (tlvError) {
@@ -187,6 +191,26 @@ int maxPinAttempts = 3;
             return;
         }
         completion(result, error);
+    }];
+}
+
+- (void)calculateSecretKeyInSlot:(YKFPIVSlot)slot peerPublicKey:(SecKeyRef)peerPublicKey completion:(nonnull YKFPIVSessionCalculateSecretCompletionBlock)completion {
+    YKFPIVKeyType keyType = YKFPIVKeyTypeFromKey(peerPublicKey);
+    if (keyType != YKFPIVKeyTypeECCP256 && keyType != YKFPIVKeyTypeECCP384) {
+        completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Calculate secret only supported for EC keys."}]);
+        return;
+    }
+    CFErrorRef cfError = nil;
+    NSData *externalRepresentation = (__bridge NSData*)SecKeyCopyExternalRepresentation(peerPublicKey, &cfError);
+    if (cfError) {
+        NSError *error = (__bridge NSError *) cfError;
+        completion(nil, error);
+        return;
+    }
+    NSMutableData *data = [NSMutableData data];
+    [data appendData:[externalRepresentation subdataWithRange:NSMakeRange(0, 1 + 2 * YKFPIVSizeFromKeyType(keyType))]];
+    [self usePrivateKeyInSlot:slot type:keyType message:data exponentiation:true completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        completion(data, error);
     }];
 }
 
