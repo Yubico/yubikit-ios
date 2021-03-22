@@ -14,14 +14,15 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFPIVPadding+Private.h"
+#import <CommonCrypto/CommonDigest.h>
 
 @implementation YKFPIVPadding
 
 + (NSData *)padData:(NSData *)data keyType:(YKFPIVKeyType)keyType algorithm:(SecKeyAlgorithm)algorithm error:(NSError **)error {
     if (keyType == YKFPIVKeyTypeRSA2048 || keyType == YKFPIVKeyTypeRSA1024) {
-        NSNumber *size = [NSNumber numberWithInt:YKFPIVSizeFromKeyType(keyType) * 8];
+        NSNumber *keySize = [NSNumber numberWithInt:YKFPIVSizeFromKeyType(keyType) * 8];
         CFDictionaryRef attributes = (__bridge CFDictionaryRef) (@{(id)kSecAttrKeyType: (id)kSecAttrKeyTypeRSA,
-                                                                   (id)kSecAttrKeySizeInBits: size});
+                                                                   (id)kSecAttrKeySizeInBits: keySize});
         
         SecKeyRef publicKey;
         SecKeyRef privateKey;
@@ -45,9 +46,43 @@
         NSData *decrypted = (__bridge NSData*)cfDecryptedDataRef;
         return decrypted;
     } else if (keyType == YKFPIVKeyTypeECCP256 || keyType == YKFPIVKeyTypeECCP384) {
-        *error = [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"EC padding not implemented."}];
+        int keySize = YKFPIVSizeFromKeyType(keyType);
+        NSMutableData *hash = nil;
+        if (algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA256) {
+            hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA256_DIGEST_LENGTH];
+            CC_SHA256(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
+        }
+        if (algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA512) {
+            hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA512_DIGEST_LENGTH];
+            CC_SHA512(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
+        }
+        if (algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA1) {
+            hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA1_DIGEST_LENGTH];
+            CC_SHA1(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
+        }
+        if (algorithm == kSecKeyAlgorithmECDSASignatureDigestX962) {
+            hash = [data mutableCopy];
+        }
+        if (hash.length == keySize) {
+            return hash;
+        }
+        if (hash.length > keySize) {
+            return [hash subdataWithRange:NSMakeRange(0, keySize)];
+        }
+        if (hash.length < keySize) {
+            NSMutableData *paddedHash = [NSMutableData data];
+            UInt8 padding = 0x00;
+            int paddingSize = keySize - (int)hash.length;
+            for (int i = 0; i < paddingSize; i++) {
+                [paddedHash appendBytes:&padding length:1];
+            }
+            [paddedHash appendData:hash];
+            return paddedHash;
+        }
+        *error = [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"EC padding algorithm not supported."}];
         return nil;
     } else {
+        *error = [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}];
         return nil;
     }
 }
