@@ -116,8 +116,7 @@ class PIVTests: XCTestCase {
             connection.authenticatedPivTestSession { session in
                 session.generateKey(in: .signature, type: .ECCP256) { yubiKeyPublicKey, error in
                     let attributes: [String: Any] = [kSecAttrKeySizeInBits as String: 256,
-                                                     kSecAttrKeyType as String: kSecAttrKeyTypeEC,
-                                                     kSecPrivateKeyAttrs as String: [kSecAttrIsPermanent as String: false]]
+                                                     kSecAttrKeyType as String: kSecAttrKeyTypeEC]
                     var publicKey: SecKey?
                     var privateKey: SecKey?
                     SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
@@ -143,8 +142,7 @@ class PIVTests: XCTestCase {
             connection.authenticatedPivTestSession { session in
                 session.generateKey(in: .signature, type: .ECCP384) { yubiKeyPublicKey, error in
                     let attributes: [String: Any] = [kSecAttrKeySizeInBits as String: 384,
-                                                     kSecAttrKeyType as String: kSecAttrKeyTypeEC,
-                                                     kSecAttrKeyClass as String: kSecAttrKeyClassPublic]
+                                                     kSecAttrKeyType as String: kSecAttrKeyTypeEC]
                     var publicKey: SecKey?
                     var privateKey: SecKey?
                     SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
