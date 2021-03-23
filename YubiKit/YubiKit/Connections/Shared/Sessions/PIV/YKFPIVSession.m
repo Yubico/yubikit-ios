@@ -140,6 +140,17 @@ int maxPinAttempts = 3;
     // Do nothing for now
 }
 
+- (void)signWithKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)keyType algorithm:(SecKeyAlgorithm)algorithm message:(nonnull NSData *)message completion:(nonnull YKFPIVSessionSignCompletionBlock)completion {
+    NSError *padError = nil;
+    NSData *payload = [YKFPIVPadding padData:message keyType:keyType algorithm:algorithm error:&padError];
+    if (padError != nil) {
+        completion(nil, padError);
+    }
+    return [self usePrivateKeyInSlot:slot type:keyType message:payload exponentiation:false completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        completion(data, error);
+    }];
+}
+
 - (void)decryptWithKeyInSlot:(YKFPIVSlot)slot algorithm:(SecKeyAlgorithm)algorithm encrypted:(NSData *)encrypted completion:(nonnull YKFPIVSessionDecryptCompletionBlock)completion {
     YKFPIVKeyType keyType;
     switch (encrypted.length) {

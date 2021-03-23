@@ -17,6 +17,50 @@ import Foundation
 
 class PIVTests: XCTestCase {
     
+    func testSignECCP256() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.generateKey(in: .signature, type: .ECCP256) { publicKey, error in
+                    session.verifyPin("123456") { retries, error in
+                        let message = "Hello world!".data(using: .utf8)!
+                        session.signWithKey(in: .signature, type: .ECCP256, algorithm: .ecdsaSignatureMessageX962SHA256, message: message) { signature, error in
+                            guard let signature = signature else { XCTFail("🔴 Failed to sign message: \(error!)"); completion(); return }
+                            var error: Unmanaged<CFError>?
+                            let result = SecKeyVerifySignature(publicKey!, SecKeyAlgorithm.ecdsaSignatureMessageX962SHA256, message as CFData, signature as CFData, &error);
+                            if let error = error {
+                                XCTFail((error.takeRetainedValue() as Error).localizedDescription); completion(); return
+                            }
+                            XCTAssertTrue(result)
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func testSignRSA1024() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.generateKey(in: .signature, type: .RSA1024) { publicKey, error in
+                    session.verifyPin("123456") { retries, error in
+                        let message = "Hello world!".data(using: .utf8)!
+                        session.signWithKey(in: .signature, type: .RSA1024, algorithm: .rsaSignatureMessagePKCS1v15SHA512, message: message) { signature, error in
+                            guard let signature = signature else { XCTFail("🔴 Failed to sign message: \(error!)"); completion(); return }
+                            var error: Unmanaged<CFError>?
+                            let result = SecKeyVerifySignature(publicKey!, SecKeyAlgorithm.rsaSignatureMessagePKCS1v15SHA512, message as CFData, signature as CFData, &error);
+                            if let error = error {
+                                XCTFail((error.takeRetainedValue() as Error).localizedDescription); completion(); return
+                            }
+                            XCTAssertTrue(result)
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func testDecryptRSA2048() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
@@ -78,6 +122,9 @@ class PIVTests: XCTestCase {
                     session.verifyPin("123456") { retries, error in
                         session.calculateSecretKey(in: .signature, peerPublicKey: peerPublicKey) { secret, error in
                             XCTAssertNil(error, "🔴 \(error!)")
+                            
+                            // gör samma sak fast i mjuvara åt andra hållet
+                            
                             XCTAssertNotNil(secret)
                             print("✅ Created shared secret ECCP256")
                             completion()

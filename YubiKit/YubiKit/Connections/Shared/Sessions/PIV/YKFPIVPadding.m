@@ -29,38 +29,51 @@
         SecKeyGeneratePair(attributes, &publicKey, &privateKey);
         CFErrorRef cfErrorRef = nil;
         CFDataRef cfDataRef = (__bridge CFDataRef)data;
-        CFDataRef cfEncryptedDataRef = SecKeyCreateEncryptedData(publicKey, algorithm, cfDataRef, &cfErrorRef);
+        CFDataRef cfSignedDataRef = SecKeyCreateSignature(privateKey, algorithm, cfDataRef, &cfErrorRef);
+        CFRelease(privateKey);
+        if (cfErrorRef) {
+            NSError *encryptError = (__bridge NSError *)cfErrorRef;
+            *error = encryptError;
+            return nil;
+        }
+        CFDataRef cfEncryptedDataRef = SecKeyCreateEncryptedData(publicKey, kSecKeyAlgorithmRSAEncryptionRaw, cfSignedDataRef, &cfErrorRef);
         CFRelease(publicKey);
         if (cfErrorRef) {
             NSError *encryptError = (__bridge NSError *)cfErrorRef;
             *error = encryptError;
             return nil;
         }
-        CFDataRef cfDecryptedDataRef = SecKeyCreateDecryptedData(privateKey, kSecKeyAlgorithmRSAEncryptionRaw, cfEncryptedDataRef, &cfErrorRef);
-        CFRelease(privateKey);
-        if (cfErrorRef) {
-            NSError *decryptError = (__bridge NSError *)cfErrorRef;
-            *error = decryptError;
-            return nil;
-        }
-        NSData *decrypted = (__bridge NSData*)cfDecryptedDataRef;
-        return decrypted;
+        NSData *encrypted = (__bridge NSData*)cfEncryptedDataRef;
+        return encrypted;
     } else if (keyType == YKFPIVKeyTypeECCP256 || keyType == YKFPIVKeyTypeECCP384) {
         int keySize = YKFPIVSizeFromKeyType(keyType);
         NSMutableData *hash = nil;
-        if (algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA256) {
+        if (algorithm == kSecKeyAlgorithmECDSASignatureMessageX962SHA224) {
+            hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA256_DIGEST_LENGTH];
+            CC_SHA224(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
+        }
+        if (algorithm == kSecKeyAlgorithmECDSASignatureMessageX962SHA256) {
             hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA256_DIGEST_LENGTH];
             CC_SHA256(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
         }
-        if (algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA512) {
+        if (algorithm == kSecKeyAlgorithmECDSASignatureMessageX962SHA384) {
+            hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA512_DIGEST_LENGTH];
+            CC_SHA384(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
+        }
+
+        if (algorithm == kSecKeyAlgorithmECDSASignatureMessageX962SHA512) {
             hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA512_DIGEST_LENGTH];
             CC_SHA512(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
         }
-        if (algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA1) {
+        if (algorithm == kSecKeyAlgorithmECDSASignatureMessageX962SHA1) {
             hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA1_DIGEST_LENGTH];
             CC_SHA1(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
         }
-        if (algorithm == kSecKeyAlgorithmECDSASignatureDigestX962) {
+        if (algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA1 ||
+            algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA224 ||
+            algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA256 ||
+            algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA384 ||
+            algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA512) {
             hash = [data mutableCopy];
         }
         if (hash.length == keySize) {

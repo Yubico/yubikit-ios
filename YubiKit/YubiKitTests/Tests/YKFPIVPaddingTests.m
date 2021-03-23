@@ -27,7 +27,7 @@
 - (void)testPadSHA256ECCP256Data {
     NSData *data = [@"Hello world!" dataUsingEncoding:NSUTF8StringEncoding];
     NSError *error = nil;
-    NSData *result = [YKFPIVPadding padData:data keyType:YKFPIVKeyTypeECCP256 algorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA256 error:&error];
+    NSData *result = [YKFPIVPadding padData:data keyType:YKFPIVKeyTypeECCP256 algorithm:kSecKeyAlgorithmECDSASignatureMessageX962SHA256 error:&error];
     NSData *expected = [NSData dataFromHexString:@"c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"];
     XCTAssert([expected isEqualToData:result]);
 }
@@ -35,7 +35,7 @@
 - (void)testPadSHA256ECCP384Data {
     NSData *data = [@"Hello world!" dataUsingEncoding:NSUTF8StringEncoding];
     NSError *error = nil;
-    NSData *result = [YKFPIVPadding padData:data keyType:YKFPIVKeyTypeECCP384 algorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA256 error:&error];
+    NSData *result = [YKFPIVPadding padData:data keyType:YKFPIVKeyTypeECCP384 algorithm:kSecKeyAlgorithmECDSASignatureMessageX962SHA256 error:&error];
     NSData *expected = [NSData dataFromHexString:@"00000000000000000000000000000000c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"];
     XCTAssert([expected isEqualToData:result]);
 }
@@ -43,7 +43,7 @@
 - (void)testPadSHA1ECCP256Data {
     NSData *data = [@"Hello world!" dataUsingEncoding:NSUTF8StringEncoding];
     NSError *error = nil;
-    NSData *result = [YKFPIVPadding padData:data keyType:YKFPIVKeyTypeECCP256 algorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA1 error:&error];
+    NSData *result = [YKFPIVPadding padData:data keyType:YKFPIVKeyTypeECCP256 algorithm:kSecKeyAlgorithmECDSASignatureMessageX962SHA1 error:&error];
     NSData *expected = [NSData dataFromHexString:@"000000000000000000000000d3486ae9136e7856bc42212385ea797094475802"];
     XCTAssert([expected isEqualToData:result]);
 }
@@ -51,7 +51,7 @@
 - (void)testPadSHA512ECCP256Data {
     NSData *data = [@"Hello world!" dataUsingEncoding:NSUTF8StringEncoding];
     NSError *error = nil;
-    NSData *result = [YKFPIVPadding padData:data keyType:YKFPIVKeyTypeECCP256 algorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA512 error:&error];
+    NSData *result = [YKFPIVPadding padData:data keyType:YKFPIVKeyTypeECCP256 algorithm:kSecKeyAlgorithmECDSASignatureMessageX962SHA512 error:&error];
     NSData *expected = [NSData dataFromHexString:@"f6cde2a0f819314cdde55fc227d8d7dae3d28cc556222a0a8ad66d91ccad4aad"];
     XCTAssert([expected isEqualToData:result]);
 }
@@ -59,7 +59,7 @@
 - (void)testPadSHA512ECCP384Data {
     NSData *data = [@"Hello world!" dataUsingEncoding:NSUTF8StringEncoding];
     NSError *error = nil;
-    NSData *result = [YKFPIVPadding padData:data keyType:YKFPIVKeyTypeECCP384 algorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA512 error:&error];
+    NSData *result = [YKFPIVPadding padData:data keyType:YKFPIVKeyTypeECCP384 algorithm:kSecKeyAlgorithmECDSASignatureMessageX962SHA512 error:&error];
     NSData *expected = [NSData dataFromHexString:@"f6cde2a0f819314cdde55fc227d8d7dae3d28cc556222a0a8ad66d91ccad4aad6094f517a2182360c9aacf6a3dc32316"];
     XCTAssert([expected isEqualToData:result]);
 }
@@ -67,7 +67,7 @@
 - (void)testPreHashedECCP256Data {
     NSData *preHashed = [NSData dataFromHexString:@"c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"];
     NSError *error = nil;
-    NSData *result = [YKFPIVPadding padData:preHashed keyType:YKFPIVKeyTypeECCP256 algorithm:kSecKeyAlgorithmECDSASignatureDigestX962 error:&error];
+    NSData *result = [YKFPIVPadding padData:preHashed keyType:YKFPIVKeyTypeECCP256 algorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA256 error:&error];
     NSData *expected = [NSData dataFromHexString:@"c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"];
     XCTAssert([expected isEqualToData:result]);
 }
@@ -75,16 +75,17 @@
 - (void)testPadRSAPKCS1Data {
     NSData *data = [@"Hello World!" dataUsingEncoding:NSUTF8StringEncoding];
     NSError *error = nil;
-    NSData *padded = [YKFPIVPadding padData:data keyType:YKFPIVKeyTypeRSA1024 algorithm:kSecKeyAlgorithmRSAEncryptionPKCS1 error:&error];
-    NSData *trailingData = [NSData dataFromHexString:@"0048656c6c6f20576f726c6421"];
-    NSData *resultTrailingData = [padded subdataWithRange:NSMakeRange(128 - 13, 13)];
-    XCTAssertEqualObjects(trailingData, resultTrailingData);
-    NSData *beginData = [NSData dataFromHexString:@"0002"];
-    NSData *resultBeginData = [padded subdataWithRange:NSMakeRange(0, 2)];
-    XCTAssertEqualObjects(beginData, resultBeginData);
-    NSData *unpadded = [YKFPIVPadding unpadRSAData:padded algorithm:kSecKeyAlgorithmRSAEncryptionPKCS1 error:&error];
-    NSString *result = [[NSString alloc] initWithData:unpadded encoding:NSUTF8StringEncoding];
-    XCTAssert([result isEqual:@"Hello World!"]);
+    NSData *padded = [YKFPIVPadding padData:data keyType:YKFPIVKeyTypeRSA1024 algorithm:kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA512 error:&error];
+    NSData *expected = [NSData dataFromHexString:@"0001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff003051300d060960864801650304020305000440861844d6704e8573fec34d967e20bcfef3d424cf48be04e6dc08f2bd58c729743371015ead891cc3cf1c9d34b49264b510751b1ff9e537937bc46b5d6ff4ecc8"];
+    XCTAssert([padded isEqualToData:expected]);
+}
+
+- (void)testPadSHA256ECCP384DigestData {
+    NSData *hash = [@"Hello world!" dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error = nil;
+    NSData *result = [YKFPIVPadding padData:hash keyType:YKFPIVKeyTypeECCP384 algorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA256 error:&error];
+    NSData *expected = [NSData dataFromHexString:@"00000000000000000000000000000000000000000000000000000000000000000000000048656c6c6f20776f726c6421"];
+    XCTAssert([expected isEqualToData:result]);
 }
 
 - (void)testUnpadRSAEncryptionPKCS1PaddedData {
