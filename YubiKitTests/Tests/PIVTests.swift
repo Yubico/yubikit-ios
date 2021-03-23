@@ -114,18 +114,22 @@ class PIVTests: XCTestCase {
     func testSharedSecretEC256() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
-                session.generateKey(in: .signature, type: .ECCP256) { publicKey, error in
+                session.generateKey(in: .signature, type: .ECCP256) { yubiKeyPublicKey, error in
                     let attributes: [String: Any] = [kSecAttrKeySizeInBits as String: 256,
                                                      kSecAttrKeyType as String: kSecAttrKeyTypeEC,
-                                                     kSecAttrKeyClass as String: kSecAttrKeyClassPublic]
-                    let peerPublicKey = SecKeyCreateRandomKey(attributes as CFDictionary, nil)!
+                                                     kSecPrivateKeyAttrs as String: [kSecAttrIsPermanent as String: false]]
+                    var publicKey: SecKey?
+                    var privateKey: SecKey?
+                    SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
+                    guard let peerPublicKey = publicKey, let peerPrivateKey = privateKey else { return }
                     session.verifyPin("123456") { retries, error in
                         session.calculateSecretKey(in: .signature, peerPublicKey: peerPublicKey) { secret, error in
                             XCTAssertNil(error, "🔴 \(error!)")
-                            
-                            // gör samma sak fast i mjuvara åt andra hållet
-                            
-                            XCTAssertNotNil(secret)
+                            let yubiKeySecret = secret! as Data
+                            // Calculate shared secret using iOS security framework
+                            let attributes: [String: Any] = [SecKeyKeyExchangeParameter.requestedSize.rawValue as String: 32]
+                            let softwareSecret = SecKeyCopyKeyExchangeResult(peerPrivateKey, .ecdhKeyExchangeStandard, yubiKeyPublicKey!, attributes as CFDictionary, nil)! as Data
+                            XCTAssert(softwareSecret == yubiKeySecret)
                             print("✅ Created shared secret ECCP256")
                             completion()
                         }
@@ -138,15 +142,22 @@ class PIVTests: XCTestCase {
     func testSharedSecretEC384() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
-                session.generateKey(in: .signature, type: .ECCP384) { publicKey, error in
+                session.generateKey(in: .signature, type: .ECCP384) { yubiKeyPublicKey, error in
                     let attributes: [String: Any] = [kSecAttrKeySizeInBits as String: 384,
                                                      kSecAttrKeyType as String: kSecAttrKeyTypeEC,
                                                      kSecAttrKeyClass as String: kSecAttrKeyClassPublic]
-                    let peerPublicKey = SecKeyCreateRandomKey(attributes as CFDictionary, nil)!
+                    var publicKey: SecKey?
+                    var privateKey: SecKey?
+                    SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
+                    guard let peerPublicKey = publicKey, let peerPrivateKey = privateKey else { return }
                     session.verifyPin("123456") { retries, error in
                         session.calculateSecretKey(in: .signature, peerPublicKey: peerPublicKey) { secret, error in
                             XCTAssertNil(error, "🔴 \(error!)")
-                            XCTAssertNotNil(secret)
+                            let yubiKeySecret = secret! as Data
+                            // Calculate shared secret using iOS security framework
+                            let attributes: [String: Any] = [SecKeyKeyExchangeParameter.requestedSize.rawValue as String: 32]
+                            let softwareSecret = SecKeyCopyKeyExchangeResult(peerPrivateKey, .ecdhKeyExchangeStandard, yubiKeyPublicKey!, attributes as CFDictionary, nil)! as Data
+                            XCTAssert(softwareSecret == yubiKeySecret)
                             print("✅ Created shared secret ECCP384")
                             completion()
                         }
