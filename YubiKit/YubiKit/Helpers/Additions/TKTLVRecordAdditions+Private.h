@@ -14,6 +14,7 @@
 
 #ifndef TKTLVRecordAdditions_h
 #define TKTLVRecordAdditions_h
+#import <CryptoTokenKit/TKTLVRecord.h>
 
 @interface TKTLVRecord(Additions)
 
