@@ -127,8 +127,7 @@ class PIVTests: XCTestCase {
                             XCTAssertNil(error, "🔴 \(error!)")
                             let yubiKeySecret = secret! as Data
                             // Calculate shared secret using iOS security framework
-                            let attributes: [String: Any] = [SecKeyKeyExchangeParameter.requestedSize.rawValue as String: 32]
-                            let softwareSecret = SecKeyCopyKeyExchangeResult(peerPrivateKey, .ecdhKeyExchangeStandard, yubiKeyPublicKey!, attributes as CFDictionary, nil)! as Data
+                            let softwareSecret = SecKeyCopyKeyExchangeResult(peerPrivateKey, .ecdhKeyExchangeStandard, yubiKeyPublicKey!, [String: Any]() as CFDictionary, nil)! as Data
                             XCTAssert(softwareSecret == yubiKeySecret)
                             print("✅ Created shared secret ECCP256")
                             completion()
@@ -155,8 +154,7 @@ class PIVTests: XCTestCase {
                             XCTAssertNil(error, "🔴 \(error!)")
                             let yubiKeySecret = secret! as Data
                             // Calculate shared secret using iOS security framework
-                            let attributes: [String: Any] = [SecKeyKeyExchangeParameter.requestedSize.rawValue as String: 32]
-                            let softwareSecret = SecKeyCopyKeyExchangeResult(peerPrivateKey, .ecdhKeyExchangeStandard, yubiKeyPublicKey!, attributes as CFDictionary, nil)! as Data
+                            let softwareSecret = SecKeyCopyKeyExchangeResult(peerPrivateKey, .ecdhKeyExchangeStandard, yubiKeyPublicKey!, [String: Any]() as CFDictionary, nil)! as Data
                             XCTAssert(softwareSecret == yubiKeySecret)
                             print("✅ Created shared secret ECCP384")
                             completion()
