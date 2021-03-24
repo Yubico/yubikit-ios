@@ -46,6 +46,7 @@ static const NSUInteger YKFPIVInsGetSerial = 0xf8;
 static const NSUInteger YKFPIVInsGetMetadata = 0xf7;
 static const NSUInteger YKFPIVInsGetData = 0xcb;
 static const NSUInteger YKFPIVInsPutData = 0xdb;
+static const NSUInteger YKFPIVInsImportKey = 0xfe;
 static const NSUInteger YKFPIVInsChangeReference = 0x24;
 static const NSUInteger YKFPIVInsResetRetry = 0x2c;
 static const NSUInteger YKFPIVInsSetManagementKey = 0xff;
@@ -284,6 +285,49 @@ int maxPinAttempts = 3;
         NSError *bridgedError = (__bridge NSError *) cfError;
         completion(publicKey, bridgedError);
     }];
+}
+
+- (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+    CFErrorRef cfError = nil;
+    NSData *data = (__bridge NSData*)SecKeyCopyExternalRepresentation(key, &cfError);
+    if (cfError) {
+        NSError *error = (__bridge NSError *) cfError;
+        completion(error);
+        return;
+    }
+    YKFPIVKeyType keyType = YKFPIVKeyTypeFromKey(key);
+    switch (keyType) {
+        case YKFPIVKeyTypeRSA1024:
+        case YKFPIVKeyTypeRSA2048:
+        {
+            NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:[TKBERTLVRecord recordFromData:data].value];
+            NSData *primeOne = records[4].value;
+            NSData *primeTwo = records[5].value;
+            NSData *exponentOne = records[6].value;
+            NSData *exponentTwo = records[7].value;
+            NSData *coefficient = records[8].value;
+            
+            int length = YKFPIVSizeFromKeyType(keyType) / 2;
+            NSMutableData *mutableData = [NSMutableData data];
+            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x01 value:[primeOne ykf_toLength:length]].data];
+            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x02 value:[primeTwo ykf_toLength:length]].data];
+            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x03 value:[exponentOne ykf_toLength:length]].data];
+            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x04 value:[exponentTwo ykf_toLength:length]].data];
+            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x05 value:[coefficient ykf_toLength:length]].data];
+            YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsImportKey p1:keyType p2:slot data:mutableData type:YKFAPDUTypeExtended];
+            [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+                completion(error);
+            }];
+            break;
+        }
+        case YKFPIVKeyTypeECCP256:
+        case YKFPIVKeyTypeECCP384:
+            completion([[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Not implemented yet."}]);
+            break;
+        default:
+            completion([[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}]);
+            break;
+    }
 }
 
 - (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionCompletionBlock)completion {

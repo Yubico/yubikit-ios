@@ -51,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSData *)ykf_randomDataOfSize:(size_t)sizeInBytes;
 
+- (NSData *)ykf_toLength:(int)length;
+
 @end
 
 @interface NSData(NSDATA_SizeCheckAdditions)

@@ -237,6 +237,23 @@
     return [NSData dataWithBytesNoCopy:buff length:sizeInBytes freeWhenDone:YES];
 }
 
+- (NSData *)ykf_toLength:(int)length {
+    if (self.length == length) {
+        return self;
+    } else if (self.length > length) {
+        return [self subdataWithRange:NSMakeRange(self.length - length, length)];
+    } else {
+        NSMutableData *paddedData = [NSMutableData data];
+        UInt8 padding = 0x00;
+        int paddingSize = length - (int)self.length;
+        for (int i = 0; i < paddingSize; i++) {
+            [paddedData appendBytes:&padding length:1];
+        }
+        [paddedData appendData:self];
+        return paddedData;
+    }
+}
+
 @end
 
 #pragma mark - Marshalling

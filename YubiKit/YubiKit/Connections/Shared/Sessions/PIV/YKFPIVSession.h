@@ -81,6 +81,8 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 
 - (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionReadKeyCompletionBlock)completion;
 
+- (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+
 - (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionCompletionBlock)completion;
 
 - (void)readCertificateFromSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionReadCertCompletionBlock)completion;
