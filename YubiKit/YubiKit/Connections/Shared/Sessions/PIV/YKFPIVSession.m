@@ -296,6 +296,7 @@ int maxPinAttempts = 3;
         return;
     }
     YKFPIVKeyType keyType = YKFPIVKeyTypeFromKey(key);
+    NSMutableData *mutableData = [NSMutableData data];
     switch (keyType) {
         case YKFPIVKeyTypeRSA1024:
         case YKFPIVKeyTypeRSA2048:
@@ -308,26 +309,31 @@ int maxPinAttempts = 3;
             NSData *coefficient = records[8].value;
             
             int length = YKFPIVSizeFromKeyType(keyType) / 2;
-            NSMutableData *mutableData = [NSMutableData data];
             [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x01 value:[primeOne ykf_toLength:length]].data];
             [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x02 value:[primeTwo ykf_toLength:length]].data];
             [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x03 value:[exponentOne ykf_toLength:length]].data];
             [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x04 value:[exponentTwo ykf_toLength:length]].data];
             [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x05 value:[coefficient ykf_toLength:length]].data];
-            YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsImportKey p1:keyType p2:slot data:mutableData type:YKFAPDUTypeExtended];
-            [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
-                completion(error);
-            }];
             break;
         }
         case YKFPIVKeyTypeECCP256:
         case YKFPIVKeyTypeECCP384:
-            completion([[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Not implemented yet."}]);
+        {
+            int keyLength = YKFPIVSizeFromKeyType(keyType);
+            NSData *privateKey = [data subdataWithRange:NSMakeRange(1 + 2 * keyLength, keyLength)];
+            TKTLVRecord *record = [[TKBERTLVRecord alloc] initWithTag:0x06 value:privateKey];
+            [mutableData appendData:record.data];
             break;
+        }
         default:
             completion([[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}]);
-            break;
+            return;
     }
+    
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsImportKey p1:keyType p2:slot data:mutableData type:YKFAPDUTypeExtended];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        completion(error);
+    }];
 }
 
 - (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionCompletionBlock)completion {

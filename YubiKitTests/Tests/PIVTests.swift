@@ -163,6 +163,120 @@ class PIVTests: XCTestCase {
         }
     }
     
+    func testPutRSA1024Key() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                let attributes: [String: Any] = [kSecAttrKeySizeInBits as String: 1024,
+                                                 kSecAttrKeyType as String: kSecAttrKeyTypeRSA]
+                var publicKey: SecKey?
+                var privateKey: SecKey?
+                SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
+                session.putKey(in: .keyManagement, key: privateKey!) { error in
+                    guard error == nil else { XCTFail("🔴 \(error!)"); completion(); return }
+                    let dataToEncrypt = "Hello World!".data(using: .utf8)!
+                    guard let encryptedData = SecKeyCreateEncryptedData(publicKey!, SecKeyAlgorithm.rsaEncryptionPKCS1, dataToEncrypt as CFData, nil) as Data? else {
+                        XCTFail("🔴 Failed to encrypt data.")
+                        completion()
+                        return
+                    }
+                    session.verifyPin("123456") { retries, error in
+                        session.decryptWithKey(in: .keyManagement, algorithm: .rsaEncryptionPKCS1, encrypted: encryptedData) { decryptedData, error in
+                            XCTAssert(dataToEncrypt == decryptedData)
+                            print("✅ RSA 1024 key imported to YubiKey")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func testPutRSA2048Key() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                let attributes: [String: Any] = [kSecAttrKeySizeInBits as String: 2048,
+                                                 kSecAttrKeyType as String: kSecAttrKeyTypeRSA]
+                var publicKey: SecKey?
+                var privateKey: SecKey?
+                SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
+                session.putKey(in: .keyManagement, key: privateKey!) { error in
+                    guard error == nil else { XCTFail("🔴 \(error!)"); completion(); return }
+                    let dataToEncrypt = "Hello World!".data(using: .utf8)!
+                    guard let encryptedData = SecKeyCreateEncryptedData(publicKey!, SecKeyAlgorithm.rsaEncryptionPKCS1, dataToEncrypt as CFData, nil) as Data? else {
+                        XCTFail("🔴 Failed to encrypt data.")
+                        completion()
+                        return
+                    }
+                    session.verifyPin("123456") { retries, error in
+                        session.decryptWithKey(in: .keyManagement, algorithm: .rsaEncryptionPKCS1, encrypted: encryptedData) { decryptedData, error in
+                            XCTAssert(dataToEncrypt == decryptedData)
+                            print("✅ RSA 2048 key imported to YubiKey")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func testPutECCP256Key() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                let attributes: [String: Any] = [kSecAttrKeySizeInBits as String: 256,
+                                                 kSecAttrKeyType as String: kSecAttrKeyTypeEC]
+                var publicKey: SecKey?
+                var privateKey: SecKey?
+                SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
+                session.putKey(in: .signature, key: privateKey!) { error in
+                    guard error == nil else { XCTFail("🔴 \(error!)"); completion(); return }
+                    session.verifyPin("123456") { retries, error in
+                        let message = "Hello world!".data(using: .utf8)!
+                        session.signWithKey(in: .signature, type: .ECCP256, algorithm: .ecdsaSignatureMessageX962SHA256, message: message) { signature, error in
+                            guard let signature = signature else { XCTFail("🔴 Failed to sign message: \(error!)"); completion(); return }
+                            var error: Unmanaged<CFError>?
+                            let result = SecKeyVerifySignature(publicKey!, SecKeyAlgorithm.ecdsaSignatureMessageX962SHA256, message as CFData, signature as CFData, &error);
+                            if let error = error {
+                                XCTFail((error.takeRetainedValue() as Error).localizedDescription); completion(); return
+                            }
+                            XCTAssertTrue(result)
+                            print("✅ ECCP256 key imported to YubiKey")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    func testPutECCP384Key() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                let attributes: [String: Any] = [kSecAttrKeySizeInBits as String: 384,
+                                                 kSecAttrKeyType as String: kSecAttrKeyTypeEC]
+                var publicKey: SecKey?
+                var privateKey: SecKey?
+                SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
+                session.putKey(in: .signature, key: privateKey!) { error in
+                    guard error == nil else { XCTFail("🔴 \(error!)"); completion(); return }
+                    session.verifyPin("123456") { retries, error in
+                        let message = "Hello world!".data(using: .utf8)!
+                        session.signWithKey(in: .signature, type: .ECCP384, algorithm: .ecdsaSignatureMessageX962SHA256, message: message) { signature, error in
+                            guard let signature = signature else { XCTFail("🔴 Failed to sign message: \(error!)"); completion(); return }
+                            var error: Unmanaged<CFError>?
+                            let result = SecKeyVerifySignature(publicKey!, SecKeyAlgorithm.ecdsaSignatureMessageX962SHA256, message as CFData, signature as CFData, &error);
+                            if let error = error {
+                                XCTFail((error.takeRetainedValue() as Error).localizedDescription); completion(); return
+                            }
+                            XCTAssertTrue(result)
+                            print("✅ ECCP256 key imported to YubiKey")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func testGenerateRSAKey() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
