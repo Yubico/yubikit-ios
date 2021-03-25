@@ -18,6 +18,20 @@
 #import "YKFVersion.h"
 #import "YKFPIVKeyType.h"
 
+typedef NS_ENUM(NSUInteger, YKFPIVTouchPolicy) {
+    YKFPIVTouchPolicyDefault = 0x0,
+    YKFPIVTouchPolicyNever = 0x1,
+    YKFPIVTouchPolicyAlways = 0x2,
+    YKFPIVTouchPolicyCached = 0x3
+};
+
+typedef NS_ENUM(NSUInteger, YKFPIVPinPolicy) {
+    YKFPIVPinPolicyDefault = 0x0,
+    YKFPIVPinPolicyNever = 0x1,
+    YKFPIVPinPolicyOnce = 0x2,
+    YKFPIVPinPolicyAlways = 0x3
+};
+
 typedef NS_ENUM(NSUInteger, YKFPIVSlot) {
     YKFPIVSlotAuthentication = 0x9a,
     YKFPIVSlotSignature = 0x9c,
@@ -47,6 +61,9 @@ typedef void (^YKFPIVSessionAttestKeyCompletionBlock)
 
 typedef void (^YKFPIVSessionReadKeyCompletionBlock)
     (SecKeyRef _Nullable key, NSError* _Nullable error);
+
+typedef void (^YKFPIVSessionPutKeyCompletionBlock)
+    (YKFPIVKeyType keyType, NSError* _Nullable error);
 
 typedef void (^YKFPIVSessionReadCertCompletionBlock)
     (SecCertificateRef _Nullable cert, NSError* _Nullable error);
@@ -81,7 +98,9 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 
 - (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionReadKeyCompletionBlock)completion;
 
-- (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+- (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion;
+
+- (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion;
 
 - (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionCompletionBlock)completion;
 

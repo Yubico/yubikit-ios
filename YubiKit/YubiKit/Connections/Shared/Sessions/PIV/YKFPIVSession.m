@@ -71,6 +71,8 @@ static const NSUInteger YKFPIVTagObjectId = 0x5c;
 static const NSUInteger YKFPIVTagCertificate = 0x70;
 static const NSUInteger YKFPIVTagCertificateInfo = 0x71;
 static const NSUInteger YKFPIVTagLRC = 0xfe;
+static const NSUInteger YKFPIVTagPinPolicy = 0xaa;
+static const NSUInteger YKFPIVTagTouchPolicy = 0xab;
 
 // P2
 static const NSUInteger YKFPIVP2Pin = 0x80;
@@ -287,12 +289,12 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+- (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion {
     CFErrorRef cfError = nil;
     NSData *data = (__bridge NSData*)SecKeyCopyExternalRepresentation(key, &cfError);
     if (cfError) {
         NSError *error = (__bridge NSError *) cfError;
-        completion(error);
+        completion(YKFPIVKeyTypeUnknown, error);
         return;
     }
     YKFPIVKeyType keyType = YKFPIVKeyTypeFromKey(key);
@@ -326,14 +328,25 @@ int maxPinAttempts = 3;
             break;
         }
         default:
-            completion([[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}]);
+            completion(YKFPIVKeyTypeUnknown, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}]);
             return;
+    }
+    
+    if (pinPolicy != YKFPIVPinPolicyDefault) {
+        [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagPinPolicy value:[NSData dataWithBytes:&pinPolicy length:1]].value];
+    }
+    if (touchPolicy != YKFPIVTouchPolicyDefault) {
+        [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagTouchPolicy value:[NSData dataWithBytes:&touchPolicy length:1]].value];
     }
     
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsImportKey p1:keyType p2:slot data:mutableData type:YKFAPDUTypeExtended];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
-        completion(error);
+        completion(keyType, error);
     }];
+}
+
+- (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion {
+    [self putKeyInSlot:slot key:key pinPolicy:YKFPIVPinPolicyDefault touchPolicy:YKFPIVTouchPolicyDefault completion:completion];
 }
 
 - (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionCompletionBlock)completion {

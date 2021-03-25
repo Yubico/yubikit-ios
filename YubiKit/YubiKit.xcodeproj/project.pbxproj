@@ -291,7 +291,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		5110D67125F8FAAE00467680 /* YKFPIVTouchPolicy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVTouchPolicy.h; sourceTree = "<group>"; };
 		5110D67425F8FD1500467680 /* YKFPIVManagementKeyMetadata.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVManagementKeyMetadata.h; sourceTree = "<group>"; };
 		5110D67525F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVManagementKeyMetadata.m; sourceTree = "<group>"; };
 		5110D68125F8FED500467680 /* YKFPIVManagementKeyMetadata+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFPIVManagementKeyMetadata+Private.h"; sourceTree = "<group>"; };
@@ -666,7 +665,6 @@
 				51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */,
 				51ACC34125E553910069214B /* YKFPIVManagementKeyType.h */,
 				51ACC33B25E553580069214B /* YKFPIVManagementKeyType.m */,
-				5110D67125F8FAAE00467680 /* YKFPIVTouchPolicy.h */,
 				5110D67425F8FD1500467680 /* YKFPIVManagementKeyMetadata.h */,
 				5110D68125F8FED500467680 /* YKFPIVManagementKeyMetadata+Private.h */,
 				5110D67525F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m */,

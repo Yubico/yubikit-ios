@@ -171,8 +171,9 @@ class PIVTests: XCTestCase {
                 var publicKey: SecKey?
                 var privateKey: SecKey?
                 SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
-                session.putKey(in: .keyManagement, key: privateKey!) { error in
+                session.putKey(in: .keyManagement, key: privateKey!, pinPolicy: .always, touchPolicy: .never) { keyType, error in
                     guard error == nil else { XCTFail("🔴 \(error!)"); completion(); return }
+                    XCTAssert(keyType == .RSA1024)
                     let dataToEncrypt = "Hello World!".data(using: .utf8)!
                     guard let encryptedData = SecKeyCreateEncryptedData(publicKey!, SecKeyAlgorithm.rsaEncryptionPKCS1, dataToEncrypt as CFData, nil) as Data? else {
                         XCTFail("🔴 Failed to encrypt data.")
@@ -199,8 +200,9 @@ class PIVTests: XCTestCase {
                 var publicKey: SecKey?
                 var privateKey: SecKey?
                 SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
-                session.putKey(in: .keyManagement, key: privateKey!) { error in
+                session.putKey(in: .keyManagement, key: privateKey!) { keyType, error in
                     guard error == nil else { XCTFail("🔴 \(error!)"); completion(); return }
+                    XCTAssert(keyType == .RSA2048)
                     let dataToEncrypt = "Hello World!".data(using: .utf8)!
                     guard let encryptedData = SecKeyCreateEncryptedData(publicKey!, SecKeyAlgorithm.rsaEncryptionPKCS1, dataToEncrypt as CFData, nil) as Data? else {
                         XCTFail("🔴 Failed to encrypt data.")
@@ -227,8 +229,9 @@ class PIVTests: XCTestCase {
                 var publicKey: SecKey?
                 var privateKey: SecKey?
                 SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
-                session.putKey(in: .signature, key: privateKey!) { error in
+                session.putKey(in: .signature, key: privateKey!, pinPolicy: .never, touchPolicy: .cached) { keyType, error in
                     guard error == nil else { XCTFail("🔴 \(error!)"); completion(); return }
+                    XCTAssert(keyType == .ECCP256)
                     session.verifyPin("123456") { retries, error in
                         let message = "Hello world!".data(using: .utf8)!
                         session.signWithKey(in: .signature, type: .ECCP256, algorithm: .ecdsaSignatureMessageX962SHA256, message: message) { signature, error in
@@ -256,8 +259,9 @@ class PIVTests: XCTestCase {
                 var publicKey: SecKey?
                 var privateKey: SecKey?
                 SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
-                session.putKey(in: .signature, key: privateKey!) { error in
+                session.putKey(in: .signature, key: privateKey!) { keyType, error in
                     guard error == nil else { XCTFail("🔴 \(error!)"); completion(); return }
+                    XCTAssert(keyType == .ECCP384)
                     session.verifyPin("123456") { retries, error in
                         let message = "Hello world!".data(using: .utf8)!
                         session.signWithKey(in: .signature, type: .ECCP384, algorithm: .ecdsaSignatureMessageX962SHA256, message: message) { signature, error in

@@ -15,7 +15,7 @@
 #ifndef YKFPIVManagementKeyMetadata_h
 #define YKFPIVManagementKeyMetadata_h
 
-#import "YKFPIVTouchPolicy.h"
+#import "YKFPIVSession.h"
 
 @class YKFPIVManagementKeyType;
 
