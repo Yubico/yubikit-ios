@@ -284,7 +284,7 @@ class PIVTests: XCTestCase {
     func testGenerateRSAKey() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
-                session.generateKey(in: .signature, type: .RSA1024) { publicKey, error in
+                session.generateKey(in: .signature, type: .RSA1024, pinPolicy: .always, touchPolicy: .cached) { publicKey, error in
                     XCTAssert(error == nil, "🔴 \(error!)")
                     XCTAssertNotNil(publicKey);
                     let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
@@ -298,7 +298,24 @@ class PIVTests: XCTestCase {
         }
     }
     
-    func testGenerateECCKey() throws {
+    func testGenerateECCP384Key() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.generateKey(in: .signature, type: .ECCP384) { publicKey, error in
+                    XCTAssert(error == nil, "🔴 \(error!)")
+                    XCTAssertNotNil(publicKey);
+                    let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
+                    XCTAssert(attributes[kSecAttrKeySizeInBits as String] as! Int == 384)
+                    XCTAssert(attributes[kSecAttrKeyType as String] as! String == kSecAttrKeyTypeEC as String)
+                    XCTAssert(attributes[kSecAttrKeyClass as String] as! String == kSecAttrKeyClassPublic as String)
+                    print("✅ Generated 256 ECC key")
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func testGenerateECCP256Key() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
                 session.generateKey(in: .signature, type: .ECCP256) { publicKey, error in

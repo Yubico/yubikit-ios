@@ -248,7 +248,11 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionReadKeyCompletionBlock)completion {
+- (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy completion:(nonnull YKFPIVSessionReadKeyCompletionBlock)completion {
+    NSError *error = [self checkKeySupport:type pinPolicy:pinPolicy touchPolicy:touchPolicy generateKey:YES];
+    if (error) {
+        completion(nil, error);
+    }
     NSMutableData *data = [NSMutableData dataWithBytes:&type length:1];
     TKBERTLVRecord *tlv = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagGenAlgorithm value:data];
     TKBERTLVRecord *tlvsContainer = [[TKBERTLVRecord alloc] initWithTag:0xac value:tlv.data];
@@ -289,7 +293,49 @@ int maxPinAttempts = 3;
     }];
 }
 
+- (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type completion:(nonnull YKFPIVSessionReadKeyCompletionBlock)completion {
+    [self generateKeyInSlot:slot type:type pinPolicy:YKFPIVPinPolicyDefault touchPolicy:YKFPIVTouchPolicyDefault completion:completion];
+}
+
+- (NSError * _Nullable)checkKeySupport:(YKFPIVKeyType)keyType pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy generateKey:(bool)generateKey {
+    
+    NSString *errorMessage = nil;
+    if (keyType == YKFPIVKeyTypeECCP384) {
+        if (![self.features.p384 isSupportedBySession:self]) {
+            errorMessage = self.features.p384.name;
+        }
+    }
+    if (pinPolicy != YKFPIVPinPolicyDefault || touchPolicy != YKFPIVTouchPolicyDefault) {
+        if (![self.features.usagePolicy isSupportedBySession:self]) {
+            errorMessage = self.features.usagePolicy.name;
+        }
+    }
+    if (generateKey && (keyType == YKFPIVKeyTypeRSA1024 || keyType == YKFPIVKeyTypeRSA2048)) {
+        YKFVersion *upUntil = [[YKFVersion alloc] initWithString:@"4.2.6"];
+        YKFVersion *from = [[YKFVersion alloc] initWithString:@"4.3.5"];
+        NSComparisonResult upUntilComparision = [upUntil compare:self.version];
+        NSComparisonResult fromComparision = [from compare:self.version];
+        
+        if (!(upUntilComparision == NSOrderedSame || upUntilComparision == NSOrderedAscending ||
+            fromComparision == NSOrderedSame || fromComparision == NSOrderedDescending)) {
+            errorMessage = @"RSA key generation";
+        }
+    }
+    
+    if (errorMessage) {
+        return [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"%@ not supported by this YubiKey.", errorMessage]}];
+    }
+    
+    return nil;
+}
+
 - (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion {
+    YKFPIVKeyType keyType = YKFPIVKeyTypeFromKey(key);
+    NSError *error = [self checkKeySupport:keyType pinPolicy:pinPolicy touchPolicy:touchPolicy generateKey:NO];
+    if (error) {
+        completion(keyType, error);
+    }
+
     CFErrorRef cfError = nil;
     NSData *data = (__bridge NSData*)SecKeyCopyExternalRepresentation(key, &cfError);
     if (cfError) {
@@ -297,7 +343,6 @@ int maxPinAttempts = 3;
         completion(YKFPIVKeyTypeUnknown, error);
         return;
     }
-    YKFPIVKeyType keyType = YKFPIVKeyTypeFromKey(key);
     NSMutableData *mutableData = [NSMutableData data];
     switch (keyType) {
         case YKFPIVKeyTypeRSA1024:

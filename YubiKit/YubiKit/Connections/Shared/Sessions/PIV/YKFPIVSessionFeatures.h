@@ -23,6 +23,8 @@
     @property (nonatomic, readonly) YKFFeature * _Nonnull serial;
     @property (nonatomic, readonly) YKFFeature * _Nonnull metadata;
     @property (nonatomic, readonly) YKFFeature * _Nonnull attestation;
+    @property (nonatomic, readonly) YKFFeature * _Nonnull p384;
+    @property (nonatomic, readonly) YKFFeature * _Nonnull touchCached;
 @end
 
 #endif /* YKFPIVSessionFeatures_h */

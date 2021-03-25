@@ -22,6 +22,9 @@
     @property (nonatomic, readwrite) YKFFeature * _Nonnull serial;
     @property (nonatomic, readwrite) YKFFeature * _Nonnull metadata;
     @property (nonatomic, readwrite) YKFFeature * _Nonnull attestation;
+    @property (nonatomic, readwrite) YKFFeature * _Nonnull p384;
+    @property (nonatomic, readwrite) YKFFeature * _Nonnull touchCached;
+    @property (nonatomic, readwrite) YKFFeature * _Nonnull rsaGeneration;
 @end
 
 @implementation YKFPIVSessionFeatures
@@ -34,6 +37,8 @@
         self.serial = [[YKFFeature alloc] initWithName:@"Serial number" versionString:@"5.0.0"];
         self.metadata = [[YKFFeature alloc] initWithName:@"Metadata" versionString:@"5.3.0"];
         self.attestation = [[YKFFeature alloc] initWithName:@"Attestation" versionString:@"4.3.0"];
+        self.p384 = [[YKFFeature alloc] initWithName:@"Curve P384" versionString:@"4.0.0"];
+        self.touchCached = [[YKFFeature alloc] initWithName:@"Cached touch policy" versionString:@"4.3.0"];
     }
     return self;
 }
