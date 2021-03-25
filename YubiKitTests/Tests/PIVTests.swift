@@ -123,7 +123,7 @@ class PIVTests: XCTestCase {
                     guard let peerPublicKey = publicKey, let peerPrivateKey = privateKey else { return }
                     session.verifyPin("123456") { retries, error in
                         session.calculateSecretKey(in: .signature, peerPublicKey: peerPublicKey) { secret, error in
-                            XCTAssertNil(error, "🔴 \(error!)")
+                            guard error == nil else { XCTFail("\(error!)"); completion(); return }
                             let yubiKeySecret = secret! as Data
                             // Calculate shared secret using iOS security framework
                             let softwareSecret = SecKeyCopyKeyExchangeResult(peerPrivateKey, .ecdhKeyExchangeStandard, yubiKeyPublicKey!, [String: Any]() as CFDictionary, nil)! as Data
@@ -149,7 +149,7 @@ class PIVTests: XCTestCase {
                     guard let peerPublicKey = publicKey, let peerPrivateKey = privateKey else { return }
                     session.verifyPin("123456") { retries, error in
                         session.calculateSecretKey(in: .signature, peerPublicKey: peerPublicKey) { secret, error in
-                            XCTAssertNil(error, "🔴 \(error!)")
+                            guard error == nil else { XCTFail("\(error!)"); completion(); return }
                             let yubiKeySecret = secret! as Data
                             // Calculate shared secret using iOS security framework
                             let softwareSecret = SecKeyCopyKeyExchangeResult(peerPrivateKey, .ecdhKeyExchangeStandard, yubiKeyPublicKey!, [String: Any]() as CFDictionary, nil)! as Data
@@ -285,7 +285,7 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
                 session.generateKey(in: .signature, type: .RSA1024, pinPolicy: .always, touchPolicy: .cached) { publicKey, error in
-                    XCTAssert(error == nil, "🔴 \(error!)")
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     XCTAssertNotNil(publicKey);
                     let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
                     XCTAssert(attributes[kSecAttrKeySizeInBits as String] as! Int == 1024)
@@ -302,7 +302,7 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
                 session.generateKey(in: .signature, type: .ECCP384) { publicKey, error in
-                    XCTAssert(error == nil, "🔴 \(error!)")
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     XCTAssertNotNil(publicKey);
                     let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
                     XCTAssert(attributes[kSecAttrKeySizeInBits as String] as! Int == 384)
@@ -319,7 +319,7 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
                 session.generateKey(in: .signature, type: .ECCP256) { publicKey, error in
-                    XCTAssert(error == nil, "🔴 \(error!)")
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     XCTAssertNotNil(publicKey);
                     let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
                     XCTAssert(attributes[kSecAttrKeySizeInBits as String] as! Int == 256)
@@ -357,10 +357,10 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
                 session.put(self.certificate, in: .authentication) { error in
-                    XCTAssertNil(error)
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     print("✅ Put certificate")
                     session.readCertificate(from: .authentication) { cert, error in
-                        XCTAssertNil(error)
+                        guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         print("✅ Read certificate")
                         completion()
                     }
@@ -373,10 +373,10 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
                 session.put(self.certificate, in: .authentication) { error in
-                    XCTAssertNil(error)
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     print("✅ Put certificate")
                     session.deleteCertificate(in: .authentication) { error in
-                        XCTAssertNil(error)
+                        guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         print("✅ Delete certificate")
                         completion()
                     }
@@ -390,7 +390,7 @@ class PIVTests: XCTestCase {
             connection.pivTestSession { session in
                 let managementKey = Data([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08])
                 session.authenticate(withManagementKey: managementKey, keyType: .tripleDES()) { error in
-                    XCTAssert(error == nil, "🔴 \(error!)")
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     print("✅ authenticated")
                     completion()
                 }
@@ -404,10 +404,10 @@ class PIVTests: XCTestCase {
             connection.authenticatedPivTestSession { session in
                 let newManagementKey = Data([0x3e, 0xc9, 0x50, 0xf1, 0xc1, 0x26, 0xb3, 0x14, 0xa8, 0x0e, 0xdd, 0x75, 0x26, 0x94, 0xc3, 0x28, 0x65, 0x6d, 0xb9, 0x6f, 0x1c, 0x65, 0xcc, 0x4f])
                 session.setManagementKey(newManagementKey, type: .tripleDES(), requiresTouch: false) { error in
-                    XCTAssert(error == nil, "🔴 \(error!)")
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     print("✅ management key (3DES) changed")
                     session.authenticate(withManagementKey: newManagementKey, keyType: .tripleDES()) { error in
-                        XCTAssert(error == nil, "🔴 \(error!)")
+                        guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         print("✅ authenticated with new management key")
                         completion()
                     }
@@ -426,10 +426,10 @@ class PIVTests: XCTestCase {
                 }
                 let aesManagementKey = Data([0xf7, 0xef, 0x78, 0x7b, 0x46, 0xaa, 0x50, 0xde, 0x06, 0x6b, 0xda, 0xde, 0x00, 0xae, 0xe1, 0x7f, 0xc2, 0xb7, 0x10, 0x37, 0x2b, 0x72, 0x2d, 0xe5])
                 session.setManagementKey(aesManagementKey, type: .aes192(), requiresTouch: false) { error in
-                    XCTAssert(error == nil, "🔴 \(error!)")
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     print("✅ management key (AES) changed")
                     session.authenticate(withManagementKey: aesManagementKey, keyType: .aes192()) { error in
-                        XCTAssert(error == nil, "🔴 \(error!)")
+                        guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         print("✅ authenticated with new management key")
                         completion()
                     }
@@ -456,7 +456,7 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
                 session.verifyPin("123456") { retries, error in
-                    XCTAssertNil(error)
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     print("✅ PIN verified \(retries) left")
                     completion()
                 }
@@ -496,12 +496,12 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
                 session.getPinAttempts { retries, error in
-                    XCTAssertNil(error)
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     XCTAssert(retries == 3)
                     print("✅ PIN attempts \(retries)")
                     session.verifyPin("666666") { retries, error in
                         session.getPinAttempts { retries, error in
-                            XCTAssertNil(error)
+                            guard error == nil else { XCTFail("\(error!)"); completion(); return }
                             XCTAssert(retries == 2)
                             print("✅ PIN attempts \(retries)")
                             completion()
@@ -517,7 +517,7 @@ class PIVTests: XCTestCase {
             connection.authenticatedPivTestSession { session in
                 session.verifyPin("123456") { _, error in
                     session.setPinAttempts(5, pukAttempts: 6) { error in
-                        XCTAssertNil(error)
+                        guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         if session.features.metadata.isSupported(bySession: session) {
                             session.getPinMetadata { _, retries, _, error in
                                 XCTAssert(retries == 5)
@@ -530,7 +530,7 @@ class PIVTests: XCTestCase {
                             }
                         } else {
                             session.getPinAttempts { retries, error in
-                                XCTAssertNil(error)
+                                guard error == nil else { XCTFail("\(error!)"); completion(); return }
                                 XCTAssert(retries == 5)
                                 print("✅ Set PIN retry count \(retries)")
                                 completion()
@@ -598,8 +598,9 @@ class PIVTests: XCTestCase {
                 }
                 let aesManagementKey = Data([0xf7, 0xef, 0x78, 0x7b, 0x46, 0xaa, 0x50, 0xde, 0x06, 0x6b, 0xda, 0xde, 0x00, 0xae, 0xe1, 0x7f, 0xc2, 0xb7, 0x10, 0x37, 0x2b, 0x72, 0x2d, 0xe5])
                 session.setManagementKey(aesManagementKey, type: .aes192(), requiresTouch: true) { error in
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     session.getManagementKeyMetadata { metaData, error in
-                        XCTAssertNil(error)
+                        guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         guard let metaData = metaData else { XCTAssert(false); return }
                         XCTAssert(metaData.isDefault == false)
                         XCTAssert(metaData.keyType.value == YKFPIVManagementKeyType.aes192().value)
@@ -621,6 +622,7 @@ class PIVTests: XCTestCase {
                     return
                 }
                 session.getPinMetadata { isDefault, retries, retriesLeft, error in
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     XCTAssert(isDefault == true)
                     XCTAssert(retries == 3)
                     XCTAssert(retriesLeft == 3)
@@ -662,6 +664,7 @@ class PIVTests: XCTestCase {
                     return
                 }
                 session.getPukMetadata { isDefault, retries, retriesLeft, error in
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     XCTAssert(isDefault == true)
                     XCTAssert(retries == 3)
                     XCTAssert(retriesLeft == 3)
@@ -676,9 +679,9 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
                 session.setPin("654321", oldPin: "123456") { error in
-                    XCTAssert(error == nil)
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     session.verifyPin("654321") { retries, error in
-                        XCTAssert(error == nil)
+                        guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         print("✅ Changed pin")
                         completion()
                     }
@@ -692,7 +695,7 @@ class PIVTests: XCTestCase {
             connection.pivTestSession { session in
                 session.blockPin() {
                     session.unblockPin("12345678", newPin: "222222") { error in
-                        XCTAssert(error == nil)
+                        guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         session.verifyPin("222222") { retries, error in
                             XCTAssert(error == nil)
                             print("✅ Pin unblocked")
@@ -708,12 +711,12 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
                 session.setPuk("87654321", oldPuk: "12345678") { error in
-                    XCTAssert(error == nil)
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     session.blockPin() {
                         session.unblockPin("87654321", newPin: "222222") { error in
-                            XCTAssert(error == nil)
+                            guard error == nil else { XCTFail("\(error!)"); completion(); return }
                             session.verifyPin("222222") { retries, error in
-                                XCTAssert(error == nil)
+                                guard error == nil else { XCTFail("\(error!)"); completion(); return }
                                 print("✅ New puk verified")
                                 completion()
                             }
@@ -733,7 +736,7 @@ extension YKFPIVSession {
     private func blockPin(counter: Int, completion: @escaping () -> Void) {
         self.verifyPin("") { retries, error in
             guard retries != -1 && error != nil else {
-                XCTAssert(false, "Failed blocking pin with error: \(error!)")
+                XCTFail("Failed blocking pin with error: \(error!)")
                 completion()
                 return
             }
