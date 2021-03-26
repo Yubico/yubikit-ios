@@ -99,19 +99,24 @@ typedef void (^YKFOATHSessionCalculateAllCompletionBlock)
 typedef void (^YKFOATHSelectApplicationCompletionBlock)
     (YKFOATHSelectApplicationResponse* _Nullable response, NSError* _Nullable error);
 
-/**
- * ---------------------------------------------------------------------------------------------------------------------
- * @name OATH Service Protocol
- * ---------------------------------------------------------------------------------------------------------------------
- */
-
 NS_ASSUME_NONNULL_BEGIN
 
-/*!
- @abstract
-    Defines the interface for YKFOATHService.
+/**
+ * ---------------------------------------------------------------------------------------------------------------------
+ * @name OATH Session
+ * ---------------------------------------------------------------------------------------------------------------------
  */
-@protocol YKFOATHSessionProtocol<NSObject>
+
+/*!
+ @class YKFOATHSession
+ 
+ @abstract
+    Provides the interface for executing OATH requests with the key.
+ @discussion
+    The OATH session is mantained by the YKFConnection which controls its lifecycle. The application must not
+    create one.
+ */
+@interface YKFOATHSession: NSObject
 
 @property (nonatomic, readonly) YKFVersion* version;
 
@@ -300,30 +305,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)unlockWithPassword:(NSString *)password completion:(YKFOATHSessionCompletionBlock)completion;
 
-@end
-
-NS_ASSUME_NONNULL_END
-
-/**
- * ---------------------------------------------------------------------------------------------------------------------
- * @name OATH Service
- * ---------------------------------------------------------------------------------------------------------------------
- */
-
-NS_ASSUME_NONNULL_BEGIN
-
-/*!
- @class YKFOATHService
- 
- @abstract
-    Provides the interface for executing OATH requests with the key.
-@discussion
-    The OATH service is mantained by the key session which controls its lifecycle. The application must not
-    create one. It has to use only the single shared instance from YKFAccessorySession and sync its usage with
-    the session state.
- */
-@interface YKFOATHSession: NSObject<YKFOATHSessionProtocol>
-
 /*
  Not available: use only the instance from the YKFAccessorySession.
  */
@@ -332,4 +313,3 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
-

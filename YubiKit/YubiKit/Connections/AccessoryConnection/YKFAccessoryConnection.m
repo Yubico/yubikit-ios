@@ -89,7 +89,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 // Behaviour
 
-@property (nonatomic) id<YKFAccessoryConnectionConfigurationProtocol> configuration;
+@property (nonatomic) YKFAccessoryConnectionConfiguration* configuration;
 @property (nonatomic) NSString *currentKeyProtocol; // The protocol used to create a communication session with the key.
 
 // Flags

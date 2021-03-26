@@ -74,17 +74,21 @@ typedef NS_ENUM(NSUInteger, YKFU2FSessionKeyState) {
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
- * @name U2F Service Protocol
+ * @name U2F Session
  * ---------------------------------------------------------------------------------------------------------------------
  */
 
 NS_ASSUME_NONNULL_BEGIN
 
 /*!
+ @class YKFU2FSession
+ 
  @abstract
-    Defines the interface for YKFU2FService.
+    Provides the interface for sending U2F requests to the YubiKey.
+ @discussion
+    The U2F session is mantained by the YKFConnection which controls its lifecycle. The application must not create one.
  */
-@protocol YKFU2FSessionProtocol<NSObject>
+@interface YKFU2FSession: NSObject
 
 /*!
  @property keyState
@@ -171,29 +175,6 @@ NS_ASSUME_NONNULL_BEGIN
                 keyHandle:(NSString *)keyHandle
                     appId:(NSString *)appId
                 completion:(YKFU2FSessionSignCompletionBlock)completion;
-
-@end
-
-NS_ASSUME_NONNULL_END
-
-/**
- * ---------------------------------------------------------------------------------------------------------------------
- * @name U2F Service
- * ---------------------------------------------------------------------------------------------------------------------
- */
-
-NS_ASSUME_NONNULL_BEGIN
-
-/*!
- @class YKFU2FService
- 
- @abstract
-    Provides the interface for sending U2F requests to the YubiKey.
- @discussion
-    The U2F service is mantained by the key session which controls its lifecycle. The application must not create one.
-    It has to use only the single shared instance from YKFAccessorySession and sync its usage with the session state.
- */
-@interface YKFU2FSession: NSObject<YKFU2FSessionProtocol>
 
 /*
  Not available: use only the shared instance from the YKFAccessorySession.

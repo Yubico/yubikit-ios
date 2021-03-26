@@ -27,15 +27,12 @@ typedef NS_ENUM(NSUInteger, YKFPermissionAuthorizationStatus) {
     YKFPermissionAuthorizationStatusAuthorized
 };
 
-@protocol YKFPermissionsProtocol<NSObject>
+@interface YKFPermissions: NSObject
 
 @property (nonatomic, assign, readonly) YKFPermissionAuthorizationStatus videoCaptureAuthorizationStatus;
 
 - (void)requestVideoCaptureAuthorization:(void (^)(BOOL))completion;
 
-@end
-
-@interface YKFPermissions : NSObject<YKFPermissionsProtocol>
 @end
 
 NS_ASSUME_NONNULL_END

@@ -13,7 +13,7 @@
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
- * @name Challenge-Response Service Response Blocks
+ * @name Challenge-Response session Response Blocks
  * ---------------------------------------------------------------------------------------------------------------------
  */
 
@@ -42,9 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*!
 @abstract
-   Defines the interface for YKFChallengeResponseService.
+   Defines the interface for YKFChallengeResponseSession.
 */
-@protocol YKFChallengeResponseSessionProtocol<NSObject>
+@interface YKFChallengeResponseSession: NSObject
 
 /*!
 @method sendChallenge:slot:completion:
@@ -67,20 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
    This method is thread safe and can be invoked from any thread (main or a background thread).
 */
 - (void)sendChallenge:(NSData *)challenge slot:(YKFSlot) slot completion:(YKFChallengeResponseSessionResponseBlock)completion;
-
-@end
-
-NS_ASSUME_NONNULL_END
-
-/**
- * ---------------------------------------------------------------------------------------------------------------------
- * @name Challenge-response Command Service
- * ---------------------------------------------------------------------------------------------------------------------
- */
-
-NS_ASSUME_NONNULL_BEGIN
-
-@interface YKFChallengeResponseSession: NSObject<YKFChallengeResponseSessionProtocol>
 
 - (nonnull instancetype)init NS_UNAVAILABLE;
 

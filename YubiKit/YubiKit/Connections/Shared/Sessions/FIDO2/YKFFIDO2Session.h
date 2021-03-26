@@ -170,15 +170,21 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2SessionKeyState) {
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
- * @name YKFFIDO2ServiceProtocol
+ * @name YKFFIDO2Session
  * ---------------------------------------------------------------------------------------------------------------------
  */
 
 /*!
+ @class YKFFIDO2Session
+ 
  @abstract
-    Defines the interface for YKFFIDO2Service.
+    Provides the interface for executing FIDO2/CTAP2 requests with the key.
+ @discussion
+    The FIDO2 service is mantained by the key session which controls its lifecycle. The application must not
+    create one. It has to use only the single shared instance from YKFAccessorySession and sync its usage with
+    the session state.
  */
-@protocol YKFFIDO2SessionProtocol<NSObject>
+@interface YKFFIDO2Session: NSObject
 
 /*!
  @abstract
@@ -475,26 +481,6 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2SessionKeyState) {
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
 - (void)resetWithCompletion:(YKFFIDO2SessionCompletionBlock)completion;
-
-@end
-
-/**
- * ---------------------------------------------------------------------------------------------------------------------
- * @name YKFFIDO2Service
- * ---------------------------------------------------------------------------------------------------------------------
- */
-
-/*!
- @class YKFFIDO2Service
- 
- @abstract
-    Provides the interface for executing FIDO2/CTAP2 requests with the key.
- @discussion
-    The FIDO2 service is mantained by the key session which controls its lifecycle. The application must not
-    create one. It has to use only the single shared instance from YKFAccessorySession and sync its usage with
-    the session state.
- */
-@interface YKFFIDO2Session: NSObject<YKFFIDO2SessionProtocol>
 
 /*
  Not available: use only the shared instance from the YKFAccessorySession.

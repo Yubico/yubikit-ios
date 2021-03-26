@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @abstract
    Defines the interface for YKFManagementSessionProtocol.
 */
-@protocol YKFManagementSessionProtocol<NSObject>
+@interface YKFManagementSession : NSObject
 
 /*!
 @method readConfigurationWithCompletion:
@@ -78,16 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 - (void)writeConfiguration:(YKFManagementInterfaceConfiguration*) configuration reboot: (BOOL) reboot completion: (nonnull YKFManagementSessionWriteCompletionBlock) completion;
 
-@end
-
-NS_ASSUME_NONNULL_END
-
-NS_ASSUME_NONNULL_BEGIN
-
-@interface YKFManagementSession : NSObject<YKFManagementSessionProtocol>
-
 - (instancetype)init NS_UNAVAILABLE;
-
 
 @end
 

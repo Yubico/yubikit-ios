@@ -29,7 +29,7 @@
 @property (nonatomic) AVCaptureSession *captureSession;
 @property (nonatomic) AVCaptureVideoPreviewLayer *previewLayer;
 
-@property (nonatomic) id<YKFPermissionsProtocol> permissions;
+@property (nonatomic) YKFPermissions* permissions;
 
 @property (nonatomic) YKFQRCodeScanOverlayView *controlsOverlayView;
 

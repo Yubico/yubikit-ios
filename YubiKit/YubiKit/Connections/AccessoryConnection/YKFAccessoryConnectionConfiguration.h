@@ -18,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol YKFAccessoryConnectionConfigurationProtocol <NSObject>
+@interface YKFAccessoryConnectionConfiguration : NSObject
 
 /// Returns YES if the accessory is a YubiKey.
 - (BOOL)allowsAccessory:(nonnull id<YKFEAAccessoryProtocol>)accessory;
@@ -26,9 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// Returns the known session protocol found in the protocols array received from an accessory.
 - (nullable NSString *)keyProtocolForAccessory:(nonnull id<YKFEAAccessoryProtocol>)accessory;
 
-@end
-
-@interface YKFAccessoryConnectionConfiguration : NSObject<YKFAccessoryConnectionConfigurationProtocol>
 @end
 
 NS_ASSUME_NONNULL_END
