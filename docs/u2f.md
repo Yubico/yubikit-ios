@@ -6,7 +6,7 @@ The `YKFU2FSession` provides access to the U2F application on a YubiKey.
 
 ### Communicating with the U2F application on the YubiKey
 
-Communication with the U2F application is done through the `YKFU2FSession` and the methods it expose. You obtain the session by calling `- (void)u2fSession:(U2FSession _Nonnull)callback` on the `YKFConnection`. The method is guaranteed to either return the session or an error, never both nor neither.
+Communication with the U2F application is done through the `YKFU2FSession` and the methods it expose. You obtain the session by calling `- (void)u2fSession:(YKFU2FSessionCallback _Nonnull)callback` on a `YKFConnectionProtocol`. The method is guaranteed to either return the session or an error, never both nor neither.
 
 #### Swift
 

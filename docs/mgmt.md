@@ -5,7 +5,7 @@ The `YKFManagementSession` provides access to the management application on a Yu
 
 ### Communicating with the management application on the YubiKey
 
-Communication with the management application is done through the `YKFManagementSession` and the methods it expose. You obtain the session by calling `(void)managementSession:(ManagementSession _Nonnull)callback;` on the `YKFConnection`. The method is guaranteed to either return the session or an error, never both nor neither.
+Communication with the management application is done through the `YKFManagementSession` and the methods it expose. You obtain the session by calling `(void)managementSession:(YKFManagementSessionCallback _Nonnull)callback;` on a `YKFConnectionProtocol`. The method is guaranteed to either return the session or an error, never both nor neither.
 
 #### Swift
 

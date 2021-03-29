@@ -236,6 +236,8 @@ List of sessions is documented below with it's own specifics and samples:
 
 - [OTP](./docs/otp.md) - Provides implementation classes to obtain YubiKey OTP via accessory (5Ci) or NFC.
 
+- [PIV](./docs/piv.md) - Provides PIV operations accessible via the *YKFPIVSession*.
+
 - [Challenge-response](./docs/chr.md) - Provides a method to use HMAC-SHA1 challenge-response.
 
 - [Management](./docs/mgmt.md) - Provides ability to enable or disable available application on YubiKey

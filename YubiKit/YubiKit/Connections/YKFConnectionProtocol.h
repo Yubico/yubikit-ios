@@ -16,23 +16,23 @@
 
 @protocol YKFConnectionProtocol<NSObject>
 
-typedef void (^OATHSession)(YKFOATHSession *_Nullable, NSError* _Nullable);
-- (void)oathSession:(OATHSession _Nonnull)callback;
+typedef void (^YKFOATHSessionCallback)(YKFOATHSession *_Nullable, NSError* _Nullable);
+- (void)oathSession:(YKFOATHSessionCallback _Nonnull)callback;
 
-typedef void (^U2FSession)(YKFU2FSession *_Nullable, NSError* _Nullable);
-- (void)u2fSession:(U2FSession _Nonnull)callback;
+typedef void (^YKFU2FSessionCallback)(YKFU2FSession *_Nullable, NSError* _Nullable);
+- (void)u2fSession:(YKFU2FSessionCallback _Nonnull)callback;
 
-typedef void (^FIDO2Session)(YKFFIDO2Session *_Nullable, NSError* _Nullable);
-- (void)fido2Session:(FIDO2Session _Nonnull)callback;
+typedef void (^YKFFIDO2SessionCallback)(YKFFIDO2Session *_Nullable, NSError* _Nullable);
+- (void)fido2Session:(YKFFIDO2SessionCallback _Nonnull)callback;
 
-typedef void (^PIVSession)(YKFPIVSession *_Nullable, NSError* _Nullable);
-- (void)pivSession:(PIVSession _Nonnull)callback;
+typedef void (^YKFPIVSessionCallback)(YKFPIVSession *_Nullable, NSError* _Nullable);
+- (void)pivSession:(YKFPIVSessionCallback _Nonnull)callback;
 
-typedef void (^ChallengeResponseSession)(YKFChallengeResponseSession *_Nullable, NSError* _Nullable);
-- (void)challengeResponseSession:(ChallengeResponseSession _Nonnull)callback;
+typedef void (^YKFChallengeResponseSessionCallback)(YKFChallengeResponseSession *_Nullable, NSError* _Nullable);
+- (void)challengeResponseSession:(YKFChallengeResponseSessionCallback _Nonnull)callback;
 
-typedef void (^ManagementSession)(YKFManagementSession *_Nullable, NSError* _Nullable);
-- (void)managementSession:(ManagementSession _Nonnull)callback;
+typedef void (^YKFManagementSessionCallback)(YKFManagementSession *_Nullable, NSError* _Nullable);
+- (void)managementSession:(YKFManagementSessionCallback _Nonnull)callback;
 
 @property (nonatomic, readonly) YKFSmartCardInterface *_Nullable smartCardInterface;
 

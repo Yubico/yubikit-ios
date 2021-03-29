@@ -8,7 +8,7 @@ In order to use the challenge response feature program your YubiKey with some se
 
 ### Communicating with the challenge response session
 
-The  `YKFChallengeResponseSession` is obtained by calling `- (void)challengeResponseSession:(ChallengeResponseSession _Nonnull)callback` on the `YKFConnection`.  The method is guaranteed to either return the session or an error, never both nor neither. Once the connection returns a session the `YKFChallengeResponseSession` exposes the necessary methods to execute the challenge response command.
+The  `YKFChallengeResponseSession` is obtained by calling `- (void)challengeResponseSession:(YKFChallengeResponseSessionCallback _Nonnull)callback` on a `YKFConnectionProtocol`.  The method is guaranteed to either return the session or an error, never both nor neither. Once the connection returns a session the `YKFChallengeResponseSession` exposes the necessary methods to execute the challenge response command.
 
 ##### Swift
 

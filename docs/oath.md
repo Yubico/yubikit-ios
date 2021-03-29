@@ -5,7 +5,7 @@ The `YKFOATHSession` provides access to the OATH application on a YubiKey, for m
 
 ### Communicating with the OATH application on the YubiKey
 
-Communication with the OATH application is done through the `YKFOATHSession` and the methods it expose. You obtain the session by calling `- (void)oathSession:(OATHSession _Nonnull)callback` on the `YKFConnection`. The method is guaranteed to either return the session or an error, never both nor neither.
+Communication with the OATH application is done through the `YKFOATHSession` and the methods it expose. You obtain the session by calling `- (void)oathSession:(YKFOATHSessionCallback _Nonnull)callback` on a `YKFConnectionProtocol`. The method is guaranteed to either return the session or an error, never both nor neither.
 
 #### Swift
 

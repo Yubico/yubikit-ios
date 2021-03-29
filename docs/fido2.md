@@ -4,7 +4,7 @@ The `YKFFIDO2Session` provides access to the FIDO2 application on a YubiKey.
 
 ### Communicating with the FIDO2 application on the YubiKey
 
-Communication with the FIDO2 application is done through the `YKFFIDO2Session` and the methods it expose. You obtain the session by calling `-(void)fide2Session:(FIDO2Session _Nonnull)callback` on the `YKFConnection`. The method is guaranteed to either return the session or an error, never both nor neither.
+Communication with the FIDO2 application is done through the `YKFFIDO2Session` and the methods it expose. You obtain the session by calling `-(void)fide2Session:(YKFFIDO2SessionCallback _Nonnull)callback` on a `YKFConnectionProtocol`. The method is guaranteed to either return the session or an error, never both nor neither.
 
 #### Swift
 

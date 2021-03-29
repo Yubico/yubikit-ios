@@ -126,7 +126,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     return [[YKFSmartCardInterface alloc] initWithConnectionController:self.connectionController];
 }
 
-- (void)oathSession:(OATHSession _Nonnull)callback {
+- (void)oathSession:(YKFOATHSessionCallback _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFOATHSession sessionWithConnectionController:self.connectionController
                                             completion:^(YKFOATHSession *_Nullable session, NSError * _Nullable error) {
@@ -135,7 +135,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     }];
 }
 
-- (void)u2fSession:(U2FSession _Nonnull)callback {
+- (void)u2fSession:(YKFU2FSessionCallback _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFU2FSession sessionWithConnectionController:self.connectionController
                                             completion:^(YKFU2FSession *_Nullable session, NSError * _Nullable error) {
@@ -144,7 +144,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     }];
 }
 
-- (void)fido2Session:(FIDO2Session _Nonnull)callback {
+- (void)fido2Session:(YKFFIDO2SessionCallback _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFFIDO2Session sessionWithConnectionController:self.connectionController
                                             completion:^(YKFFIDO2Session *_Nullable session, NSError * _Nullable error) {
@@ -153,7 +153,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     }];
 }
 
-- (void)pivSession:(PIVSession _Nonnull)callback {
+- (void)pivSession:(YKFPIVSessionCallback _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFPIVSession sessionWithConnectionController:self.connectionController
                                         completion:^(YKFPIVSession *_Nullable session, NSError * _Nullable error) {
@@ -162,7 +162,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     }];
 }
 
-- (void)challengeResponseSession:(ChallengeResponseSession _Nonnull)callback {
+- (void)challengeResponseSession:(YKFChallengeResponseSessionCallback _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFChallengeResponseSession sessionWithConnectionController:self.connectionController
                                                          completion:^(YKFChallengeResponseSession *_Nullable session, NSError * _Nullable error) {
@@ -171,7 +171,7 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     }];
 }
 
-- (void)managementSession:(ManagementSession _Nonnull)callback {
+- (void)managementSession:(YKFManagementSessionCallback _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFManagementSession sessionWithConnectionController:self.connectionController
                                                   completion:^(YKFManagementSession *_Nullable session, NSError * _Nullable error) {
