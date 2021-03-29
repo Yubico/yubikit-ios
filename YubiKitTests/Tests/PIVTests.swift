@@ -359,7 +359,7 @@ class PIVTests: XCTestCase {
                 session.put(self.certificate, in: .authentication) { error in
                     guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     print("✅ Put certificate")
-                    session.readCertificate(from: .authentication) { cert, error in
+                    session.getCertificateIn(.authentication) { cert, error in
                         guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         print("✅ Read certificate")
                         completion()
@@ -389,7 +389,7 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
                 let managementKey = Data([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08])
-                session.authenticate(withManagementKey: managementKey, keyType: .tripleDES()) { error in
+                session.authenticate(withManagementKey: managementKey, type: .tripleDES()) { error in
                     guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     print("✅ authenticated")
                     completion()
@@ -406,7 +406,7 @@ class PIVTests: XCTestCase {
                 session.setManagementKey(newManagementKey, type: .tripleDES(), requiresTouch: false) { error in
                     guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     print("✅ management key (3DES) changed")
-                    session.authenticate(withManagementKey: newManagementKey, keyType: .tripleDES()) { error in
+                    session.authenticate(withManagementKey: newManagementKey, type: .tripleDES()) { error in
                         guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         print("✅ authenticated with new management key")
                         completion()
@@ -428,7 +428,7 @@ class PIVTests: XCTestCase {
                 session.setManagementKey(aesManagementKey, type: .aes192(), requiresTouch: false) { error in
                     guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     print("✅ management key (AES) changed")
-                    session.authenticate(withManagementKey: aesManagementKey, keyType: .aes192()) { error in
+                    session.authenticate(withManagementKey: aesManagementKey, type: .aes192()) { error in
                         guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         print("✅ authenticated with new management key")
                         completion()
@@ -442,7 +442,7 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
                 let managementKey = Data([0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01])
-                session.authenticate(withManagementKey: managementKey, keyType: .tripleDES()) { error in
+                session.authenticate(withManagementKey: managementKey, type: .tripleDES()) { error in
                     guard let error = error as NSError? else { XCTFail("🔴 Expected an error but got none"); completion(); return }
                     XCTAssert(error.code == 0x6982)
                     print("✅ got expected error: \(error)")
@@ -694,7 +694,7 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
                 session.blockPin() {
-                    session.unblockPin("12345678", newPin: "222222") { error in
+                    session.unblockPin(withPuk: "12345678", newPin: "222222") { error in
                         guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         session.verifyPin("222222") { retries, error in
                             XCTAssert(error == nil)
@@ -713,7 +713,7 @@ class PIVTests: XCTestCase {
                 session.setPuk("87654321", oldPuk: "12345678") { error in
                     guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     session.blockPin() {
-                        session.unblockPin("87654321", newPin: "222222") { error in
+                        session.unblockPin(withPuk: "87654321", newPin: "222222") { error in
                             guard error == nil else { XCTFail("\(error!)"); completion(); return }
                             session.verifyPin("222222") { retries, error in
                                 guard error == nil else { XCTFail("\(error!)"); completion(); return }
@@ -765,7 +765,7 @@ extension YKFConnectionProtocol {
     func authenticatedPivTestSession(completion: @escaping (_ session: YKFPIVSession) -> Void) {
         self.pivTestSession { session in
             let defaultManagementKey = Data([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08])
-            session.authenticate(withManagementKey: defaultManagementKey, keyType: .tripleDES()) { error in
+            session.authenticate(withManagementKey: defaultManagementKey, type: .tripleDES()) { error in
                 guard error == nil else { XCTAssertTrue(false, "🔴 Failed to authenticate PIV application"); return }
                 completion(session)
             }

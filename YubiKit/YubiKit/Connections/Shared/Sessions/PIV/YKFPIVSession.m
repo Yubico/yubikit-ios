@@ -415,7 +415,7 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)readCertificateFromSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionReadCertCompletionBlock)completion {
+- (void)getCertificateInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionReadCertCompletionBlock)completion {
     NSData *data = [self objectIdForSlot:slot];
     TKBERTLVRecord *tlv = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagObjectId value:data];
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetData p1:0x3f p2:0xff data:tlv.data type:YKFAPDUTypeExtended];
@@ -456,7 +456,7 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)authenticateWithManagementKey:(nonnull NSData *)managementKey keyType:(nonnull YKFPIVManagementKeyType *)keyType completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+- (void)authenticateWithManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)keyType completion:(nonnull YKFPIVSessionCompletionBlock)completion {
     if (keyType.keyLenght != managementKey.length) {
         YKFPIVError *error = [[YKFPIVError alloc] initWithCode:YKFPIVErrorCodeBadKeyLength message:[NSString stringWithFormat: @"Magagement key must be %i bytes in length. Used key is %lu long.", keyType.keyLenght, (unsigned long)managementKey.length]];
         completion(error);
@@ -591,7 +591,7 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)unblockPin:(nonnull NSString *)puk newPin:(nonnull NSString *)newPin completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+- (void)unblockPinWithPuk:(nonnull NSString *)puk newPin:(nonnull NSString *)newPin completion:(nonnull YKFPIVSessionCompletionBlock)completion {
     [self changeReference:YKFPIVInsResetRetry p2:YKFPIVP2Pin valueOne:puk valueTwo:newPin completion:^(int retries, NSError * _Nullable error) {
         completion(error);
     }];
@@ -617,7 +617,7 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)getManagementKeyMetadata:(nonnull YKFPIVSessionManagementKeyMetadataCompletionBlock)completion {
+- (void)getManagementKeyMetadataWithCompletion:(nonnull YKFPIVSessionManagementKeyMetadataCompletionBlock)completion {
     if (![self.features.metadata isSupportedBySession:self]) {
         completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Read metadata not supported by this YubiKey."}]);
         return;
@@ -645,18 +645,18 @@ int maxPinAttempts = 3;
 }
 
 
-- (void)getPinMetadata:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion {
+- (void)getPinMetadataWithCompletion:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion {
     [self getPinPukMetadata:YKFPIVP2Pin completion:completion];
 }
 
 
-- (void)getPukMetadata:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion {
+- (void)getPukMetadataWithCompletion:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion {
     [self getPinPukMetadata:YKFPIVP2Puk completion:completion];
 }
 
-- (void)getPinAttempts:(nonnull YKFPIVSessionPinAttemptsCompletionBlock)completion {
+- (void)getPinAttemptsWithCompletion:(nonnull YKFPIVSessionPinAttemptsCompletionBlock)completion {
     if ([self.features.metadata isSupportedBySession:self]) {
-        [self getPinMetadata:^(bool isDefault, int retriesTotal, int retriesRemaining, NSError * _Nullable error) {
+        [self getPinMetadataWithCompletion:^(bool isDefault, int retriesTotal, int retriesRemaining, NSError * _Nullable error) {
             completion(retriesRemaining, error);
         }];
     } else {

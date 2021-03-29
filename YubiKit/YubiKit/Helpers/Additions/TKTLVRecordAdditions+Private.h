@@ -18,7 +18,7 @@
 
 @interface TKTLVRecord(Additions)
 
-+ (NSData * _Nullable)valueFromData:(NSData * _Nonnull)data withTag:(UInt64)tag error:(NSError ** _Nullable)error;
++ (NSData * _Nullable)valueFromData:(NSData * _Nonnull)data withTag:(UInt64)tag error:(NSError *_Nullable* _Nullable)error;
 
 @end
 

@@ -18,7 +18,7 @@
 
 @implementation TKTLVRecord(Additions)
 
-+ (NSData * _Nullable)valueFromData:(NSData *_Nonnull)data withTag:(UInt64)tag error:(NSError ** _Nullable)error {
++ (NSData * _Nullable)valueFromData:(NSData * _Nonnull)data withTag:(UInt64)tag error:(NSError *_Nullable* _Nullable)error {
     TKTLVRecord *record = [self recordFromData:data];
     if (!record) {
         *error = [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Data is not in a valid TLV format."}];
