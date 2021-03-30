@@ -329,7 +329,7 @@ int maxPinAttempts = 3;
     return nil;
 }
 
-- (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion {
+- (void)putKey:(SecKeyRef)key inSlot:(YKFPIVSlot)slot pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion {
     YKFPIVKeyType keyType = YKFPIVKeyTypeFromKey(key);
     NSError *error = [self checkKeySupport:keyType pinPolicy:pinPolicy touchPolicy:touchPolicy generateKey:NO];
     if (error) {
@@ -390,8 +390,8 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion {
-    [self putKeyInSlot:slot key:key pinPolicy:YKFPIVPinPolicyDefault touchPolicy:YKFPIVTouchPolicyDefault completion:completion];
+- (void)putKey:(SecKeyRef)key inSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion {
+    [self putKey:key inSlot:slot pinPolicy:YKFPIVPinPolicyDefault touchPolicy:YKFPIVTouchPolicyDefault completion:completion];
 }
 
 - (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionCompletionBlock)completion {

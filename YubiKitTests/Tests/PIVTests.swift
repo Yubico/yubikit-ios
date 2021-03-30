@@ -171,7 +171,7 @@ class PIVTests: XCTestCase {
                 var publicKey: SecKey?
                 var privateKey: SecKey?
                 SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
-                session.putKey(in: .keyManagement, key: privateKey!, pinPolicy: .always, touchPolicy: .never) { keyType, error in
+                session.putKey(privateKey!, inSlot: .keyManagement, pinPolicy: .always, touchPolicy: .never) { keyType, error in
                     guard error == nil else { XCTFail("🔴 \(error!)"); completion(); return }
                     XCTAssert(keyType == .RSA1024)
                     let dataToEncrypt = "Hello World!".data(using: .utf8)!
@@ -200,7 +200,7 @@ class PIVTests: XCTestCase {
                 var publicKey: SecKey?
                 var privateKey: SecKey?
                 SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
-                session.putKey(in: .keyManagement, key: privateKey!) { keyType, error in
+                session.putKey(privateKey!, inSlot: .keyManagement) { keyType, error in
                     guard error == nil else { XCTFail("🔴 \(error!)"); completion(); return }
                     XCTAssert(keyType == .RSA2048)
                     let dataToEncrypt = "Hello World!".data(using: .utf8)!
@@ -229,7 +229,7 @@ class PIVTests: XCTestCase {
                 var publicKey: SecKey?
                 var privateKey: SecKey?
                 SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
-                session.putKey(in: .signature, key: privateKey!, pinPolicy: .never, touchPolicy: .cached) { keyType, error in
+                session.putKey(privateKey!, inSlot: .signature, pinPolicy: .never, touchPolicy: .cached) { keyType, error in
                     guard error == nil else { XCTFail("🔴 \(error!)"); completion(); return }
                     XCTAssert(keyType == .ECCP256)
                     session.verifyPin("123456") { retries, error in
@@ -259,7 +259,7 @@ class PIVTests: XCTestCase {
                 var publicKey: SecKey?
                 var privateKey: SecKey?
                 SecKeyGeneratePair(attributes as CFDictionary, &publicKey, &privateKey);
-                session.putKey(in: .signature, key: privateKey!) { keyType, error in
+                session.putKey(privateKey!, inSlot: .signature) { keyType, error in
                     guard error == nil else { XCTFail("🔴 \(error!)"); completion(); return }
                     XCTAssert(keyType == .ECCP384)
                     session.verifyPin("123456") { retries, error in
@@ -356,7 +356,7 @@ class PIVTests: XCTestCase {
     func testPutAndReadCertificate() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
-                session.put(self.certificate, in: .authentication) { error in
+                session.putCertificate(self.certificate, inSlot: .authentication) { error in
                     guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     print("✅ Put certificate")
                     session.getCertificateIn(.authentication) { cert, error in
@@ -372,7 +372,7 @@ class PIVTests: XCTestCase {
     func testPutAndDeleteCertificate() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
-                session.put(self.certificate, in: .authentication) { error in
+                session.putCertificate(self.certificate, inSlot: .authentication) { error in
                     guard error == nil else { XCTFail("\(error!)"); completion(); return }
                     print("✅ Put certificate")
                     session.deleteCertificate(in: .authentication) { error in

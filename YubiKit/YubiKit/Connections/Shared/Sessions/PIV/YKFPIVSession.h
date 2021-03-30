@@ -219,6 +219,7 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 /// @abstract Import a private key into a slot.
 /// @discussion This method requires authentication.
 /// @param key The private key to import.
+/// @param slot The slot to write the key to.
 /// @param pinPolicy The PIN policy for using the private key.
 /// @param touchPolicy The touch policy for using the private key.
 /// @param completion The completion handler that gets called once the YubiKey has finished processing the
@@ -228,11 +229,13 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 ///       KeyType P348 requires P384 support, available on YubiKey 4 or later.
 ///       PinPolicy or TouchPolicy other than default require support for usage policy, available on YubiKey 4 or later.
 ///       This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion;
+- (void)putKey:(SecKeyRef)key inSlot:(YKFPIVSlot)slot pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion
+        NS_SWIFT_NAME(putKey(_:inSlot:pinPolicy:touchPolicy:completion:));
 
 /// @abstract Import a private key into a slot.
 /// @discussion This method requires authentication.
 /// @param key The private key to import.
+/// @param slot The slot to write the key to.
 /// @param completion The completion handler that gets called once the YubiKey has finished processing the
 ///                   request and contains the key type of the imported key. This handler is executed on a
 ///                    background queue.
@@ -240,7 +243,8 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 ///       KeyType P348 requires P384 support, available on YubiKey 4 or later.
 ///       PinPolicy or TouchPolicy other than default require support for usage policy, available on YubiKey 4 or later.
 ///       This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)putKeyInSlot:(YKFPIVSlot)slot key:(SecKeyRef)key completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion;
+- (void)putKey:(SecKeyRef)key inSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion
+        NS_SWIFT_NAME(putKey(_:inSlot:completion:));
 
 /// @abstract Writes an X.509 certificate to a slot on the YubiKey.
 /// @discussion This method requires authentication.
@@ -254,7 +258,8 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 ///        PinPolicy or TouchPolicy other than default require support for usage policy, available on YubiKey 4 or later.
 ///        TouchPolicy.CACHED requires support for touch cached, available on YubiKey 4.3 or later.
 ///        This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionCompletionBlock)completion;
+- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionCompletionBlock)completion
+        NS_SWIFT_NAME(putCertificate(_:inSlot:completion:));
 
 /// @abstract Reads the X.509 certificate stored in the specified slot on the YubiKey.
 /// @param slot The slot where the certificate is stored.
