@@ -515,7 +515,7 @@ extension UIAlertController {
 
 // Wrap the fido2Session() Objective-C method in a more easy to use Swift version
 extension YKFConnectionProtocol {
-    func fido2Session(_ completion: @escaping ((_ result: Result<YKFFIDO2SessionProtocol, Error>) -> Void)) {
+    func fido2Session(_ completion: @escaping ((_ result: Result<YKFFIDO2Session, Error>) -> Void)) {
         self.fido2Session { session, error in
             guard error == nil else { completion(.failure(error!)); return }
             guard let session = session else { fatalError() }

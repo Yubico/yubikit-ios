@@ -13,6 +13,9 @@
 // limitations under the License.
 #import <Foundation/Foundation.h>
 
+#ifndef YKFVersion_h
+#define YKFVersion_h
+
 NS_ASSUME_NONNULL_BEGIN
 
 /*! Class represents firmware version of YubiKey
@@ -39,3 +42,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif /* YKFVersion_h */
