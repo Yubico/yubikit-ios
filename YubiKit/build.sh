@@ -46,7 +46,7 @@ rm -Rf $BUILD_OUTPUT
 # Build Debug Universal (ARM + Intel)
 
 xcodebuild build \
-    ARCHS="armv7 armv7s arm64" \
+    ARCHS="arm64" \
     -project $FRAMEWORK.xcodeproj \
     -target $FRAMEWORK \
     -sdk iphoneos \
@@ -56,7 +56,7 @@ xcodebuild build \
     SYMROOT=$DEBUG_BUILD
 
 xcodebuild build \
-    ARCHS="i386 x86_64" \
+    ARCHS="x86_64" \
     -project $FRAMEWORK.xcodeproj \
     -target $FRAMEWORK \
     -sdk iphonesimulator \
@@ -74,7 +74,7 @@ lipo -create \
 # Build Release
 
 xcodebuild archive \
-    ARCHS="armv7 armv7s arm64" \
+    ARCHS="arm64" \
     -project $FRAMEWORK.xcodeproj \
     -scheme $FRAMEWORK \
     -sdk iphoneos \
@@ -83,7 +83,7 @@ xcodebuild archive \
     SYMROOT=$RELEASE_BUILD
 
 xcodebuild build \
-    ARCHS="i386 x86_64" \
+    ARCHS="x86_64" \
     -project $FRAMEWORK.xcodeproj \
     -target $FRAMEWORK \
     -sdk iphonesimulator \
@@ -127,9 +127,7 @@ cp -RL ../LICENSE $LIBRARY_RELEASES/$FRAMEWORK
 # Copy documentation
 
 cp -RL ../README.md $LIBRARY_RELEASES/$FRAMEWORK
-cp -RL ../Guidelines.md $LIBRARY_RELEASES/$FRAMEWORK
 cp -RL ../Changelog.md $LIBRARY_RELEASES/$FRAMEWORK
-cp -RL ../QuickStart.md $LIBRARY_RELEASES/$FRAMEWORK
 cp -RL ../docassets $LIBRARY_RELEASES/$FRAMEWORK
 
 # Remove the temporary build output
