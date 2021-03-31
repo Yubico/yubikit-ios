@@ -27,3 +27,5 @@ connection.pivSession { session, error in
     }];
 }];
 ```
+
+Additional sample code for the `YKFPIVSession` can be found in the [full stack tests](../YubiKitTests/Tests/PIVTests.swift).
