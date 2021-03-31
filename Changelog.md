@@ -8,20 +8,21 @@ integrate and also align better with Yubico's other SDKs in regards of naming co
 
 - Replaced KVO with a delegate protocol for monitoring changes in the YubiKey connection status.
 
-- YKFNFCConnection and YKFAccessoryConnection now represent the NFC and Accessory connections to the YubiKey.
+- `YKFNFCConnection` and `YKFAccessoryConnection` now represent the NFC and Accessory connections to the YubiKey.
 
-- The two YKFConnections provide the different YKFSessions used to communicate with the applications on
-    the YubiKey, i.e YKFOATHSession, YKFPIVSession.
+- The two `YKFConnections` provide the different `YKFSessions` used to communicate with the applications on
+    the YubiKey, i.e `YKFOATHSession`, `YKFPIVSession`.
 
-- Replaced YKFRawCommandService with YKFSmartCardInterface, which adds functionality for automatically handling multipart responses from the YubiKey and improves error handling.
+- Replaced `YKFRawCommandService` with `YKFSmartCardInterface`, which adds functionality for automatically handling multipart 
+  responses from the YubiKey and improves error handling.
 
-- Added YKFPIVSession which allows the  SDK to easily communicate with the PIV application on the YubiKey.
+- Added `YKFPIVSession` which allows the  SDK to easily communicate with the PIV application on the YubiKey.
 
 - Rewrote the full stack tests to provide greater test coverage and a [good source of sample code](./YubiKitTests/Tests/).
 
 - iOS deployment target bumped to 11.
 
-- Deprecated YKFPCSC and YKFPCSCLayer.
+- Deprecated `YKFPCSC` and `YKFPCSCLayer`.
 ---
 
 ## 3.2.0
