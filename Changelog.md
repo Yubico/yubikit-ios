@@ -22,7 +22,7 @@ integrate and also align better with Yubico's other SDKs in regards of naming co
 
 - iOS deployment target bumped to 11.
 
-- Deprecated `YKFPCSC` and `YKFPCSCLayer`.
+- `YKFPCSC` and `YKFPCSCLayer` marked for future deprecation.
 ---
 
 ## 3.2.0

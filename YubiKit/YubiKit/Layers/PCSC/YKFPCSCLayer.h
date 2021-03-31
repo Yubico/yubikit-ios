@@ -13,7 +13,8 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFAccessoryConnection.h"
+
+@class YKFAccessoryConnection;
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------

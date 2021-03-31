@@ -25,6 +25,9 @@
 #import "YKFAccessoryConnection+Private.h"
 #import "YKFNSDataAdditions+Private.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+
 static NSString* const YKFPCSCLayerReaderName = @"YubiKey";
 static const NSTimeInterval YKFPCSCCommandTimeout = 600;
 
@@ -332,3 +335,5 @@ static id<YKFPCSCLayerProtocol> staticFakePCSCLayer;
 #endif
 
 @end
+
+#pragma clang diagnostic pop
