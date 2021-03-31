@@ -4,7 +4,7 @@ The `YKFPIVSession` provides access to the PIV application on a YubiKey. This al
 
 ### Communicating with the PIV application on the YubiKey
 
-Communication with the PIV application is done through the `YKFPIVSession` and the methods it expose. You obtain the session by calling `(void)pivSession:(YKFPIVSessionCallback _Nonnull)callback;` on a `YKFConnectionProcotol`. The method is guaranteed to either return the session or an error, never both nor neither.
+Communication with the PIV application is done through the `YKFPIVSession` and the methods it exposes. You obtain the session by calling `(void)pivSession:(YKFPIVSessionCallback _Nonnull)callback;` on a `YKFConnectionProcotol`. The method is guaranteed to either return the session or an error, never both or neither.
 
 #### Swift
 
