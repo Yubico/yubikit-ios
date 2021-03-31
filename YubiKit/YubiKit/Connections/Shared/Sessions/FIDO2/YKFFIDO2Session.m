@@ -141,7 +141,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)verifyPin:(NSString *)pin completion:(YKFFIDO2SessionCompletionBlock)completion {
+- (void)verifyPin:(NSString *)pin completion:(YKFFIDO2SessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(pin);
     YKFParameterAssertReturn(completion);
 
@@ -201,7 +201,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
 //        strongSelf.applicationSelected = NO; // Force also an application re-selection.
 }
 
-- (void)changePin:(nonnull NSString *)oldPin to:(nonnull NSString *)newPin completion:(nonnull YKFFIDO2SessionCompletionBlock)completion {
+- (void)changePin:(nonnull NSString *)oldPin to:(nonnull NSString *)newPin completion:(nonnull YKFFIDO2SessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(oldPin);
     YKFParameterAssertReturn(newPin);
     YKFParameterAssertReturn(completion);
@@ -252,7 +252,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)setPin:(nonnull NSString *)pin completion:(nonnull YKFFIDO2SessionCompletionBlock)completion {
+- (void)setPin:(nonnull NSString *)pin completion:(nonnull YKFFIDO2SessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(pin);
     YKFParameterAssertReturn(completion);
 
@@ -438,7 +438,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     }];
 }
 
-- (void)resetWithCompletion:(YKFFIDO2SessionCompletionBlock)completion {
+- (void)resetWithCompletion:(YKFFIDO2SessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
     YKFAPDU *apdu = [[YKFFIDO2ResetAPDU alloc] init];

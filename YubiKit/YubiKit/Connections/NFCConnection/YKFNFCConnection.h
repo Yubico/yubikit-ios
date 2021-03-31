@@ -38,67 +38,27 @@ typedef NS_ENUM(NSUInteger, YKFNFCConnectionState) {
 
 /*!
  @property sessionState
- 
- @abstract
-    This property allows to check and observe the state of the connection with the YubiKey.
- 
- NOTE:
-    This is a KVO compliant property. Observe it to get updates when the key is connected.
+ @abstract This property allows to check and observe the state of the connection with the YubiKey.
+ @note This is a KVO compliant property. Observe it to get updates when the key is connected.
  */
 @property (nonatomic, assign, readonly) YKFNFCConnectionState nfcConnectionState;
 
 /*!
  @property sessionError
-  @abstract
-    This property allows to check errors encountered during NFCSession.
-  NOTE:
-    The property is available when key gets disconnected, state is closed and session is invalidated
+ @abstract This property allows to check errors encountered during NFCSession.
+ @note The property is available when key gets disconnected, state is closed and session is invalidated
  */
 @property (nonatomic, readonly, nullable) NSError *nfcConnectionError;
 
 /*!
  @property tagDescription
- 
- @returns
-    The description of the discovered tag.
- 
- NOTE:
-    This property becomes available when the tag is discovered and is nil when the tas is lost.
+ @returns The description of the discovered tag.
+ @note This property becomes available when the tag is discovered and is nil when the tas is lost.
  */
 @property (nonatomic, readonly, nullable) YKFNFCTagDescription *tagDescription API_AVAILABLE(ios(13.0));
 
-
 /*!
- @property otpService
- 
- @abstract
-    The shared object to interact with the OTP application from the YubiKey. This property is
-    always available and handles its own NFC NDEF session.
- */
-@property (nonatomic, readonly) id<YKFNFCOTPSessionProtocol> otpService API_AVAILABLE(ios(11.0));
-
-/*!
- @property fido2Service
- 
- @abstract
-    The shared object to interact with the FIDO2 application from the YubiKey.
-    This property becomes available when the key is connected and the session opened and is nil when
-    the session is closed. This property should be accessed based on the session state.
- */
-//@property (nonatomic, readonly, nullable) id<YKFFIDO2SessionProtocol> fido2Service API_AVAILABLE(ios(13.0));
-
-/*!
- @property rawCommandService
- 
- @abstract
-    The shared object which provides an interface to send raw commands to the YubiKey.
-    This property becomes available when the key is connected and the session opened and is nil when
-    the session is closed. This property should be accessed based on the session state.
- */
-//@property (nonatomic, readonly, nullable) id<YKFRawCommandSessionProtocol> rawCommandService API_AVAILABLE(ios(13.0));
-
-/*!
- @method startIso7816Session
+ @method start
  
  @abstract
     To allow the session to connect and interract with the YubiKey, the session needs to be started.
@@ -106,7 +66,7 @@ typedef NS_ENUM(NSUInteger, YKFNFCConnectionState) {
 - (void)start API_AVAILABLE(ios(13.0));
 
 /*!
- @method stopIso7816Session
+ @method stop
  
  @abstract
     Closes the communication with the key and disables the key connection events.

@@ -21,7 +21,7 @@ class ChallengeResponseTests: XCTestCase {
     func testChallengeResponse() {
         runYubiKitTest { connection, completion in
             connection.challengeResponseSession { session, error in
-                guard let session = session else { XCTAssertTrue(false, "🔴 Failed to get Challenge Response session"); return }
+                guard let session = session else { XCTAssertTrue(false, "🔴 Failed to get Challenge Response session: \(error!)"); completion(); return }
                 let data = Data([0x49, 0x50, 0x51, 0x52, 0x53, 0x54])
                 session.sendChallenge(data, slot: .two) { result, error in
                     guard let result = result else { XCTAssertTrue(false, "🔴 \(error!)"); return }

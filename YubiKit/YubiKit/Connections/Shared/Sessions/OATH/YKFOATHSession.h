@@ -36,7 +36,7 @@
     In case of a failed request this parameter contains the error. If the request was successful
     this parameter is nil.
  */
-typedef void (^YKFOATHSessionCompletionBlock)
+typedef void (^YKFOATHSessionGenericCompletionBlock)
     (NSError* _Nullable error);
 
 /*!
@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note:
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)putCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate requiresTouch:(BOOL)requiresTouch completion:(YKFOATHSessionCompletionBlock)completion;
+- (void)putCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate requiresTouch:(BOOL)requiresTouch completion:(YKFOATHSessionGenericCompletionBlock)completion;
 
 /*!
  @method deleteCredential:completion:
@@ -158,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)deleteCredential:(YKFOATHCredential *)credential completion:(YKFOATHSessionCompletionBlock)completion;
+- (void)deleteCredential:(YKFOATHCredential *)credential completion:(YKFOATHSessionGenericCompletionBlock)completion;
 
 /*!
  @method renameCredential:newIssuer:newAccount:completion:
@@ -187,7 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)renameCredential:(YKFOATHCredential *)credential
                newIssuer:(NSString*)newIssuer
               newAccount:(NSString*)newAccount
-              completion:(YKFOATHSessionCompletionBlock)completion;
+              completion:(YKFOATHSessionGenericCompletionBlock)completion;
 
 /*!
  @method calculateCredential:completion:
@@ -259,7 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)resetWithCompletion:(YKFOATHSessionCompletionBlock)completion;
+- (void)resetWithCompletion:(YKFOATHSessionGenericCompletionBlock)completion;
 
 /*!
  @method setPassword:completion:
@@ -280,7 +280,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)setPassword:(NSString *)password completion:(YKFOATHSessionCompletionBlock)completion;
+- (void)setPassword:(NSString *)password completion:(YKFOATHSessionGenericCompletionBlock)completion;
 
 /*!
  @method unlockWithPassword:completion:
@@ -303,7 +303,7 @@ NS_ASSUME_NONNULL_BEGIN
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)unlockWithPassword:(NSString *)password completion:(YKFOATHSessionCompletionBlock)completion;
+- (void)unlockWithPassword:(NSString *)password completion:(YKFOATHSessionGenericCompletionBlock)completion;
 
 /*
  Not available: use only the instance from the YKFAccessorySession.

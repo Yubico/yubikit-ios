@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// @abstract Generic response block which provides an error if the execution failed.
 /// @param error An error object that indicates why the request failed, or nil if the request was successful.
-typedef void (^YKFPIVSessionCompletionBlock)
+typedef void (^YKFPIVSessionGenericCompletionBlock)
     (NSError* _Nullable error);
 
 /// @abstract Response block for [signWithKeyInSlot:type:algorithm:message:completion:] which provides the
@@ -258,7 +258,7 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 ///        PinPolicy or TouchPolicy other than default require support for usage policy, available on YubiKey 4 or later.
 ///        TouchPolicy.CACHED requires support for touch cached, available on YubiKey 4.3 or later.
 ///        This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionCompletionBlock)completion
+- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionGenericCompletionBlock)completion
         NS_SWIFT_NAME(putCertificate(_:inSlot:completion:));
 
 /// @abstract Reads the X.509 certificate stored in the specified slot on the YubiKey.
@@ -274,7 +274,7 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 ///                   This handler is executed on a background queue.
 /// @note This does NOT delete any corresponding private key.
 ///       This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)deleteCertificateInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+- (void)deleteCertificateInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion;
 
 /// @abstract Set a new management key.
 /// @discussion This method requires authentication.
@@ -285,7 +285,7 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 ///                   This handler is executed on a background queue.
 /// @note Setting requriesTouch to true requires support for usage policy, available in YubiKey 4 or later.
 ///       This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)setManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type requiresTouch:(BOOL)requiresTouch completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+- (void)setManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type requiresTouch:(BOOL)requiresTouch completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion;
 
 /// @abstract Authenticate with the Management Key.
 /// @param managementKey The management key as NSData.
@@ -293,13 +293,13 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 /// @param completion The completion handler that gets called once the YubiKey has finished processing the request.
 ///                   This handler is executed on a background queue.
 /// @note: This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)authenticateWithManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+- (void)authenticateWithManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion;
 
 /// @abstract Resets the PIV application to just-installed state.
 /// @param completion The completion handler that gets called once the YubiKey has finished processing the request.
 ///                   This handler is executed on a background queue.
 /// @note: This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)resetWithCompletion:(nonnull YKFPIVSessionCompletionBlock)completion;
+- (void)resetWithCompletion:(nonnull YKFPIVSessionGenericCompletionBlock)completion;
 
 /// @abstract Authenticate with pin.
 /// @param pin The UTF8 encoded pin. Default pin code is 123456.
@@ -316,7 +316,7 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 /// @param completion The completion handler that gets called once the YubiKey has finished processing the request.
 ///                   This handler is executed on a background queue.
 /// @note: This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)setPin:(nonnull NSString *)pin oldPin:(nonnull NSString *)oldPin completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+- (void)setPin:(nonnull NSString *)pin oldPin:(nonnull NSString *)oldPin completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion;
 
 /// @abstract Set a new puk code for the YubiKey.
 /// @param puk The new UTF8 encoded puk.
@@ -324,7 +324,7 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 /// @param completion The completion handler that gets called once the YubiKey has finished processing the request.
 ///                   This handler is executed on a background queue.
 /// @note: This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)setPuk:(nonnull NSString *)puk oldPuk:(nonnull NSString *)oldPuk completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+- (void)setPuk:(nonnull NSString *)puk oldPuk:(nonnull NSString *)oldPuk completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion;
 
 /// @abstract Set a new puk code for the YubiKey.
 /// @param puk The UTF8 encoded puk.
@@ -332,7 +332,7 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 /// @param completion The completion handler that gets called once the YubiKey has finished processing the request.
 ///                   This handler is executed on a background queue.
 /// @note: This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)unblockPinWithPuk:(nonnull NSString *)puk newPin:(nonnull NSString *)newPin completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+- (void)unblockPinWithPuk:(nonnull NSString *)puk newPin:(nonnull NSString *)newPin completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion;
 
 /// @abstract Get the serial number from the YubiKey.
 /// @param completion The completion handler that gets called once the YubiKey has finished processing the request.
@@ -381,7 +381,7 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 /// @param completion The completion handler that gets called once the YubiKey has finished processing the request.
 ///                   This handler is executed on a background queue.
 /// @note This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)setPinAttempts:(int)pinAttempts pukAttempts:(int)pukAttempts completion:(nonnull YKFPIVSessionCompletionBlock)completion;
+- (void)setPinAttempts:(int)pinAttempts pukAttempts:(int)pukAttempts completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion;
 
 /// Not available. Use only the instance from the YKFAccessoryConnection or YKFNFCConnection.
 - (nonnull instancetype)init NS_UNAVAILABLE;

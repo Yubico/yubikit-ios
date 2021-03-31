@@ -394,7 +394,7 @@ int maxPinAttempts = 3;
     [self putKey:key inSlot:slot pinPolicy:YKFPIVPinPolicyDefault touchPolicy:YKFPIVTouchPolicyDefault completion:completion];
 }
 
-- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionCompletionBlock)completion {
+- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionGenericCompletionBlock)completion {
     NSMutableData *mutableData = [NSMutableData data];
     NSData *certData = (__bridge NSData *)SecCertificateCopyData(certificate);
     [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagCertificate value:certData].data];
@@ -405,7 +405,7 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)putObject:(NSData *)object objectId:(NSData *)objectId completion:(YKFPIVSessionCompletionBlock)completion  {
+- (void)putObject:(NSData *)object objectId:(NSData *)objectId completion:(YKFPIVSessionGenericCompletionBlock)completion  {
     NSMutableData *mutableData = [NSMutableData data];
     [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagObjectId value:objectId].data];
     [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagObjectData value:object].data];
@@ -429,13 +429,13 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)deleteCertificateInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+- (void)deleteCertificateInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion {
     [self putObject:[NSData data] objectId:[self objectIdForSlot:slot] completion:^(NSError * _Nullable error) {
         completion(error);
     }];
 }
 
-- (void)setManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type requiresTouch:(BOOL)requiresTouch completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+- (void)setManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type requiresTouch:(BOOL)requiresTouch completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion {
     if (requiresTouch && ![self.features.usagePolicy isSupportedBySession:self]) {
         completion([[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"PIN/Touch policy not supported by this YubiKey."}]);
         return;
@@ -456,7 +456,7 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)authenticateWithManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)keyType completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+- (void)authenticateWithManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)keyType completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion {
     if (keyType.keyLenght != managementKey.length) {
         YKFPIVError *error = [[YKFPIVError alloc] initWithCode:YKFPIVErrorCodeBadKeyLength message:[NSString stringWithFormat: @"Magagement key must be %i bytes in length. Used key is %lu long.", keyType.keyLenght, (unsigned long)managementKey.length]];
         completion(error);
@@ -520,7 +520,7 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)resetWithCompletion:(YKFPIVSessionCompletionBlock)completion {
+- (void)resetWithCompletion:(YKFPIVSessionGenericCompletionBlock)completion {
     [self blockPin:0 completion:^(NSError * _Nullable error) {
         if (error != nil) {
             completion(error);
@@ -579,19 +579,19 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)setPin:(nonnull NSString *)pin oldPin:(nonnull NSString *)oldPin completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+- (void)setPin:(nonnull NSString *)pin oldPin:(nonnull NSString *)oldPin completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion {
     [self changeReference:YKFPIVInsChangeReference p2:YKFPIVP2Pin valueOne:oldPin valueTwo:pin completion:^(int retries, NSError * _Nullable error) {
         completion(error);
     }];
 }
 
-- (void)setPuk:(nonnull NSString *)puk oldPuk:(nonnull NSString *)oldPuk completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+- (void)setPuk:(nonnull NSString *)puk oldPuk:(nonnull NSString *)oldPuk completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion {
     [self changeReference:YKFPIVInsChangeReference p2:YKFPIVP2Puk valueOne:oldPuk valueTwo:puk completion:^(int retries, NSError * _Nullable error) {
         completion(error);
     }];
 }
 
-- (void)unblockPinWithPuk:(nonnull NSString *)puk newPin:(nonnull NSString *)newPin completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+- (void)unblockPinWithPuk:(nonnull NSString *)puk newPin:(nonnull NSString *)newPin completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion {
     [self changeReference:YKFPIVInsResetRetry p2:YKFPIVP2Pin valueOne:puk valueTwo:newPin completion:^(int retries, NSError * _Nullable error) {
         completion(error);
     }];
@@ -673,7 +673,7 @@ int maxPinAttempts = 3;
     }
 }
 
-- (void)setPinAttempts:(int)pinAttempts pukAttempts:(int)pukAttempts completion:(nonnull YKFPIVSessionCompletionBlock)completion {
+- (void)setPinAttempts:(int)pinAttempts pukAttempts:(int)pukAttempts completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion {
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsSetPinPukAttempts p1:pinAttempts p2:pukAttempts data:[NSData data] type:YKFAPDUTypeShort];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error != nil) {
@@ -702,7 +702,7 @@ int maxPinAttempts = 3;
     return -1;
 }
 
-- (void)blockPin:(int)counter completion:(YKFPIVSessionCompletionBlock)completion {
+- (void)blockPin:(int)counter completion:(YKFPIVSessionGenericCompletionBlock)completion {
     [self verifyPin:@"" completion:^(int retries, NSError * _Nullable error) {
         if (retries == -1 && error != nil) {
             completion(error);
@@ -716,7 +716,7 @@ int maxPinAttempts = 3;
     }];
 }
 
-- (void)blockPuk:(int)counter completion:(YKFPIVSessionCompletionBlock)completion {
+- (void)blockPuk:(int)counter completion:(YKFPIVSessionGenericCompletionBlock)completion {
     [self changeReference:YKFPIVInsResetRetry p2:YKFPIVP2Pin valueOne:@"" valueTwo:@"" completion:^(int retries, NSError * _Nullable error) {
         if (retries == -1 && error != nil) {
             completion(error);

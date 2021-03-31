@@ -93,27 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly, getter=isKeyConnected) BOOL keyConnected;
 
 /*!
- @property fido2Service
- 
- @abstract
-    The shared object to interact with the FIDO2 application from the YubiKey.
-    This property becomes available when the key is connected and the session opened and is nil when
-    the session is closed. This property should be accessed based on the session state.
- */
-//@property (nonatomic, readonly, nullable) id<YKFFIDO2SessionProtocol> fido2Service;
-
-/*!
- @property rawCommandService
- 
- @abstract
-    The shared object which provides an interface to send raw commands to the YubiKey.
-    This property becomes available when the key is connected and the session opened and is nil when
-    the session is closed. This property should be accessed based on the session state.
- */
-//@property (nonatomic, readonly, nullable) id<YKFRawCommandSessionProtocol> rawCommandService;
-
-/*!
- @method startSession
+ @method start
  
  @abstract
     To allow the session to connect and interract with the YubiKey, the session needs to be started. Calling this
@@ -129,13 +109,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)start;
 
 /*!
- @method startSessionSync
+ @method startSynchronous
  
  @abstract
     Starts the session and blocks the execution of the calling thread until the session is started or the operation times out.
  
  @discussion
-    This method should be used only when the application communicates with the key over the Raw Command service and
+    This method should be used only when the application communicates with the key over the YKFSmartCardInterface and
     a certain operation requires to bulk multiple key requests over a temporary opened connection with the key.
 
  @warning
@@ -148,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)startSynchronous;
 
 /*!
- @method stopSession
+ @method stop
  
  @abstract
     Closes the communication with the key and disables the key connection events. After calling this method the session will
@@ -158,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stop;
 
 /*!
- @method stopSessionSync
+ @method stopSynchronous
  
  @abstract
     Stops the session and blocks the execution of the calling thread until the session is stopped or the operation times out.
@@ -185,15 +165,6 @@ NS_ASSUME_NONNULL_BEGIN
     requests to the key.
  */
 - (void)cancelCommands;
-
-
-/**
- * ---------------------------------------------------------------------------------------------------------------------
- * @name YKFAccessorySession
- * ---------------------------------------------------------------------------------------------------------------------
- */
-
-
 
 /*
  Not available: use the shared single instance from YubiKitManager.

@@ -16,24 +16,51 @@
 
 @protocol YKFConnectionProtocol<NSObject>
 
-typedef void (^YKFOATHSessionCallback)(YKFOATHSession *_Nullable, NSError* _Nullable);
-- (void)oathSession:(YKFOATHSessionCallback _Nonnull)callback;
+typedef void (^YKFOATHSessionCompletionBlock)(YKFOATHSession *_Nullable, NSError* _Nullable);
 
-typedef void (^YKFU2FSessionCallback)(YKFU2FSession *_Nullable, NSError* _Nullable);
-- (void)u2fSession:(YKFU2FSessionCallback _Nonnull)callback;
+/// @abstract Returns a YKFOATHSession for interacting with the OATH application on the YubiKey.
+/// @param completion The completion handler that gets called once the application is selected on
+///                   the YubiKey. This handler is executed on a background thread.
+- (void)oathSession:(YKFOATHSessionCompletionBlock _Nonnull)completion;
 
-typedef void (^YKFFIDO2SessionCallback)(YKFFIDO2Session *_Nullable, NSError* _Nullable);
-- (void)fido2Session:(YKFFIDO2SessionCallback _Nonnull)callback;
+typedef void (^YKFU2FSessionCompletionBlock)(YKFU2FSession *_Nullable, NSError* _Nullable);
 
-typedef void (^YKFPIVSessionCallback)(YKFPIVSession *_Nullable, NSError* _Nullable);
-- (void)pivSession:(YKFPIVSessionCallback _Nonnull)callback;
+/// @abstract Returns a YKFU2FSession for interacting with the U2F application on the YubiKey.
+/// @param completion The completion handler that gets called once the application is selected on
+///                   the YubiKey. This handler is executed on a background thread.
+- (void)u2fSession:(YKFU2FSessionCompletionBlock _Nonnull)completion;
 
-typedef void (^YKFChallengeResponseSessionCallback)(YKFChallengeResponseSession *_Nullable, NSError* _Nullable);
-- (void)challengeResponseSession:(YKFChallengeResponseSessionCallback _Nonnull)callback;
+typedef void (^YKFFIDO2SessionCompletionBlock)(YKFFIDO2Session *_Nullable, NSError* _Nullable);
 
-typedef void (^YKFManagementSessionCallback)(YKFManagementSession *_Nullable, NSError* _Nullable);
-- (void)managementSession:(YKFManagementSessionCallback _Nonnull)callback;
+/// @abstract Returns a YKFOATHSession for interacting with the OATH application on the YubiKey.
+/// @param completion The completion handler that gets called once the application is selected on
+///                   the YubiKey. This handler is executed on a background thread.
+- (void)fido2Session:(YKFFIDO2SessionCompletionBlock _Nonnull)completion;
 
+typedef void (^YKFPIVSessionCompletionBlock)(YKFPIVSession *_Nullable, NSError* _Nullable);
+
+/// @abstract Returns a YKFPIVSession for interacting with the PIV application on the YubiKey.
+/// @param completion The completion handler that gets called once the application is selected on
+///                   the YubiKey. This handler is executed on a background thread.
+- (void)pivSession:(YKFPIVSessionCompletionBlock _Nonnull)completion;
+
+typedef void (^YKFChallengeResponseSessionCompletionBlock)(YKFChallengeResponseSession *_Nullable, NSError* _Nullable);
+
+/// @abstract Returns a YKFChallengeResponseSession for interacting with the Challenge Response application on the YubiKey.
+/// @param completion The completion handler that gets called once the application is selected on
+///                   the YubiKey. This handler is executed on a background thread.
+- (void)challengeResponseSession:(YKFChallengeResponseSessionCompletionBlock _Nonnull)completion;
+
+typedef void (^YKFManagementSessionCompletion)(YKFManagementSession *_Nullable, NSError* _Nullable);
+
+/// @abstract Returns a YKFManagementSession for interacting with the Management application on the YubiKey.
+/// @param completion The completion handler that gets called once the application is selected on
+///                   the YubiKey. This handler is executed on a background thread.
+- (void)managementSession:(YKFManagementSessionCompletion _Nonnull)completion;
+
+/// @abstract The smart card interface to the YubiKey.
+/// @discussion Use this for communicating with the YubiKey by sending APDUs to the it. Only use this
+///             when none of the supplied sessions can be used.
 @property (nonatomic, readonly) YKFSmartCardInterface *_Nullable smartCardInterface;
 
 @end

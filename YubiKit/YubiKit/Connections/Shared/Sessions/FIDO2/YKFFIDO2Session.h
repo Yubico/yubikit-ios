@@ -69,7 +69,7 @@ extern NSString* const YKFFIDO2OptionUP;
     In case of a failed request this parameter contains the error. If the request was successful
     this parameter is nil.
  */
-typedef void (^YKFFIDO2SessionCompletionBlock)
+typedef void (^YKFFIDO2SessionGenericCompletionBlock)
     (NSError* _Nullable error);
 
 /*!
@@ -247,7 +247,7 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2SessionKeyState) {
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)verifyPin:(NSString *)pin completion:(YKFFIDO2SessionCompletionBlock)completion;
+- (void)verifyPin:(NSString *)pin completion:(YKFFIDO2SessionGenericCompletionBlock)completion;
 
 /*!
  @method clearUserVerification
@@ -275,7 +275,7 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2SessionKeyState) {
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)setPin:(NSString *)pin completion:(YKFFIDO2SessionCompletionBlock)completion;
+- (void)setPin:(NSString *)pin completion:(YKFFIDO2SessionGenericCompletionBlock)completion;
 
 /*!
  @method executeChangePinRequest:completion:
@@ -295,7 +295,7 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2SessionKeyState) {
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)changePin:(NSString *)oldPin to:(NSString *)newPin completion:(YKFFIDO2SessionCompletionBlock)completion;
+- (void)changePin:(NSString *)oldPin to:(NSString *)newPin completion:(YKFFIDO2SessionGenericCompletionBlock)completion;
 
 /*!
  @method executeGetPinRetriesWithCompletion:
@@ -480,7 +480,7 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2SessionKeyState) {
  @note
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
-- (void)resetWithCompletion:(YKFFIDO2SessionCompletionBlock)completion;
+- (void)resetWithCompletion:(YKFFIDO2SessionGenericCompletionBlock)completion;
 
 /*
  Not available: use only the shared instance from the YKFAccessorySession.

@@ -99,7 +99,7 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
 
 #pragma mark - Credential Add/Delete
 
-- (void)putCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate requiresTouch:(BOOL)requiresTouch completion:(YKFOATHSessionCompletionBlock)completion {
+- (void)putCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate requiresTouch:(BOOL)requiresTouch completion:(YKFOATHSessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(credentialTemplate);
     YKFParameterAssertReturn(completion);
     
@@ -117,7 +117,7 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
     }];
 }
 
-- (void)deleteCredential:(YKFOATHCredential *)credential completion:(YKFOATHSessionCompletionBlock)completion {
+- (void)deleteCredential:(YKFOATHCredential *)credential completion:(YKFOATHSessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(credential);
     YKFParameterAssertReturn(completion);
 
@@ -137,7 +137,7 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
 - (void)renameCredential:(nonnull YKFOATHCredential *)credential
                newIssuer:(nonnull NSString*)newIssuer
               newAccount:(nonnull NSString*)newAccount
-              completion:(YKFOATHSessionCompletionBlock)completion {
+              completion:(YKFOATHSessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(credential);
     YKFParameterAssertReturn(newIssuer);
     YKFParameterAssertReturn(newAccount);
@@ -243,7 +243,7 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
 
 #pragma mark - Reset
 
-- (void)resetWithCompletion:(YKFOATHSessionCompletionBlock)completion {
+- (void)resetWithCompletion:(YKFOATHSessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     if (!self.isValid) {
         completion([YKFSessionError errorWithCode:YKFSessionErrorInvalidSessionStateStatusCode]);
@@ -271,7 +271,7 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
 
 #pragma mark - OATH Authentication
 
-- (void)setPassword:(NSString *)password completion:(YKFOATHSessionCompletionBlock)completion {
+- (void)setPassword:(NSString *)password completion:(YKFOATHSessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(password);
     YKFParameterAssertReturn(completion);
     // Check if the session is valid since we need the cached select application response later
@@ -286,7 +286,7 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
     }];
 }
 
-- (void)unlockWithPassword:(NSString *)password completion:(YKFOATHSessionCompletionBlock)completion {
+- (void)unlockWithPassword:(NSString *)password completion:(YKFOATHSessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(password);
     YKFParameterAssertReturn(completion);
     if (!self.isValid) {

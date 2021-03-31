@@ -45,7 +45,6 @@
 @property (nonatomic, readwrite) NSError *nfcConnectionError;
 
 @property (nonatomic, readwrite) YKFNFCTagDescription *tagDescription API_AVAILABLE(ios(13.0));
-@property (nonatomic, readwrite) YKFNFCOTPSession *otpService API_AVAILABLE(ios(11.0));
 
 @property (nonatomic) id<YKFConnectionControllerProtocol> connectionController;
 
@@ -65,10 +64,6 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        if (@available(iOS 11, *)) {
-            // Init with defaults
-            self.otpService = [[YKFNFCOTPSession alloc] initWithTokenParser:nil session:nil];
-        }
         [self setupCommunicationQueue];
     }
     return self;
@@ -81,7 +76,7 @@
     return [[YKFSmartCardInterface alloc] initWithConnectionController:self.connectionController];
 }
 
-- (void)oathSession:(YKFOATHSessionCallback _Nonnull)callback {
+- (void)oathSession:(YKFOATHSessionCompletionBlock _Nonnull)callback {
     if (@available(iOS 13.0, *)) {
         [self.currentSession clearSessionState];
         [YKFOATHSession sessionWithConnectionController:self.connectionController
@@ -92,7 +87,7 @@
     }
 }
 
-- (void)u2fSession:(YKFU2FSessionCallback _Nonnull)callback {
+- (void)u2fSession:(YKFU2FSessionCompletionBlock _Nonnull)callback {
     if (@available(iOS 13.0, *)) {
         [self.currentSession clearSessionState];
         [YKFU2FSession sessionWithConnectionController:self.connectionController
@@ -103,7 +98,7 @@
     }
 }
 
-- (void)fido2Session:(YKFFIDO2SessionCallback _Nonnull)callback {
+- (void)fido2Session:(YKFFIDO2SessionCompletionBlock _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFFIDO2Session sessionWithConnectionController:self.connectionController
                                             completion:^(YKFFIDO2Session *_Nullable session, NSError * _Nullable error) {
@@ -112,7 +107,7 @@
     }];
 }
 
-- (void)pivSession:(YKFPIVSessionCallback _Nonnull)callback {
+- (void)pivSession:(YKFPIVSessionCompletionBlock _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFPIVSession sessionWithConnectionController:self.connectionController
                                         completion:^(YKFPIVSession *_Nullable session, NSError * _Nullable error) {
@@ -121,7 +116,7 @@
     }];
 }
 
-- (void)challengeResponseSession:(YKFChallengeResponseSessionCallback _Nonnull)callback {
+- (void)challengeResponseSession:(YKFChallengeResponseSessionCompletionBlock _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFChallengeResponseSession sessionWithConnectionController:self.connectionController
                                                          completion:^(YKFChallengeResponseSession *_Nullable session, NSError * _Nullable error) {
@@ -130,7 +125,7 @@
     }];
 }
 
-- (void)managementSession:(YKFManagementSessionCallback _Nonnull)callback {
+- (void)managementSession:(YKFManagementSessionCompletion _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFManagementSession sessionWithConnectionController:self.connectionController
                                                   completion:^(YKFManagementSession *_Nullable session, NSError * _Nullable error) {
