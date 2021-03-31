@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
  NOTE:
     This is a KVO compliant property. Observe it to get updates when the key is connected.
  */
-@property (nonatomic, assign, readonly) YKFAccessoryConnectionState connectionState;
+@property (nonatomic, assign, readonly) YKFAccessoryConnectionState connectionState __deprecated;
 
 /*!
  @property accessoryDescription
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
  NOTE:
     This property becomes available when the key is connected and is nil when the key is disconnected.
  */
-@property (nonatomic, readonly, nullable) YKFAccessoryDescription *accessoryDescription;
+@property (nonatomic, readonly, nullable) YKFAccessoryDescription *accessoryDescription __deprecated;
 
 /*!
  @property isKeyConnected
@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
  @returns
     YES if the key is connected to the device.
  */
-@property (nonatomic, assign, readonly, getter=isKeyConnected) BOOL keyConnected;
+@property (nonatomic, assign, readonly, getter=isKeyConnected) BOOL keyConnected __deprecated;
 
 /*!
  @method start
@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
  @returns
     YES if the session was started, otherwise NO.
  */
-- (BOOL)startSynchronous;
+- (BOOL)startSynchronous __deprecated;
 
 /*!
  @method stop
@@ -154,7 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
  @returns
     YES if the session was stopped, otherwise NO.
  */
-- (BOOL)stopSynchronous;
+- (BOOL)stopSynchronous __deprecated;
 
 /*!
  @method cancelCommands
@@ -172,29 +172,5 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
-
-/*!
- @constant YKFAccessorySessionStatePropertyKey
- 
- @abstract
-    Helper property name to setup KVO paths in ObjC. For Swift there is a better built-in language support for composing keypaths.
- */
-extern NSString* const YKFAccessoryConnectionStatePropertyKey;
-
-/*!
- @constant YKFAccessorySessionU2FServicePropertyKey
- 
- @abstract
-    Helper property name to setup KVO paths in ObjC. For Swift there is a better built-in language support for composing keypaths.
- */
-extern NSString* const YKFAccessoryConnectionU2FServicePropertyKey;
-
-/*!
- @constant YKFAccessorySessionFIDO2ServicePropertyKey
- 
- @abstract
-    Helper property name to setup KVO paths in ObjC. For Swift there is a better built-in language support for composing keypaths.
- */
-extern NSString* const YKFAccessoryConnectionFIDO2ServicePropertyKey;
 
 NS_ASSUME_NONNULL_END

@@ -31,13 +31,13 @@
 SInt64 YKFSCardEstablishContext(UInt32 scope,
                                 const void *reserved1,
                                 const void *reserved2,
-                                SInt32 *context);
+                                SInt32 *context) __deprecated;
 /*!
  @abstract
     Adapted version of SCardReleaseContext for YubiKit.
     For more details of the original API check SCardReleaseContext on https://pcsclite.apdu.fr/api/group__API.html
  */
-SInt64 YKFSCardReleaseContext(SInt32 context);
+SInt64 YKFSCardReleaseContext(SInt32 context) __deprecated;
 
 /*!
  @abstract
@@ -53,7 +53,7 @@ SInt64 YKFSCardConnect(SInt32 context,
                        UInt32 shareMode,
                        UInt32 preferredProtocols,
                        SInt32 *card,
-                       UInt32 *activeProtocol);
+                       UInt32 *activeProtocol) __deprecated;
 
 /*!
  @abstract
@@ -68,7 +68,7 @@ SInt64 YKFSCardReconnect(SInt32 card,
                          UInt32 shareMode,
                          UInt32 preferredProtocols,
                          UInt32 initialization,
-                         UInt32 *activeProtocol);
+                         UInt32 *activeProtocol) __deprecated;
 
 /*!
  @abstract
@@ -80,14 +80,14 @@ SInt64 YKFSCardReconnect(SInt32 card,
     connected to the device.
  */
 SInt64 YKFSCardDisconnect(SInt32 card,
-                          UInt32 disposition);
+                          UInt32 disposition) __deprecated;
 
 /*!
  @abstract
     Adapted version of SCardBeginTransaction for YubiKit.
     For more details of the original API check SCardBeginTransaction on https://pcsclite.apdu.fr/api/group__API.html
  */
-SInt64 YKFSCardBeginTransaction(SInt32 card);
+SInt64 YKFSCardBeginTransaction(SInt32 card) __deprecated;
 
 /*!
  @abstract
@@ -95,7 +95,7 @@ SInt64 YKFSCardBeginTransaction(SInt32 card);
     For more details of the original API check SCardEndTransaction on https://pcsclite.apdu.fr/api/group__API.html
  */
 SInt64 YKFSCardEndTransaction(SInt32 card,
-                              UInt32 disposition);
+                              UInt32 disposition) __deprecated;
 
 /*!
  @abstract
@@ -108,7 +108,7 @@ SInt64 YKFSCardStatus(SInt32 card,
                       UInt32 *state,
                       UInt32 *protocol,
                       unsigned char *atr,
-                      UInt32 *atrLength);
+                      UInt32 *atrLength) __deprecated;
 
 /*!
  @abstract
@@ -121,7 +121,7 @@ SInt64 YKFSCardStatus(SInt32 card,
 SInt64 YKFSCardGetStatusChange(SInt32 context,
                                UInt32 timeout,
                                YKF_SCARD_READERSTATE *readerStates,
-                               UInt32 readers);
+                               UInt32 readers) __deprecated;
 
 /*!
  @abstract
@@ -134,7 +134,7 @@ SInt64 YKFSCardTransmit(SInt32 card,
                         UInt32 sendLength,
                         YKF_SCARD_IO_REQUEST *recvPci,
                         unsigned char *recvBuffer,
-                        UInt32 *recvLength);
+                        UInt32 *recvLength) __deprecated;
 
 /*!
  @abstract
@@ -144,7 +144,7 @@ SInt64 YKFSCardTransmit(SInt32 card,
 SInt64 YKFSCardListReaders(SInt32 context,
                            const char *groups,
                            char *readers,
-                           UInt32 *readersLength);
+                           UInt32 *readersLength) __deprecated;
 
 
 /*!
@@ -152,7 +152,7 @@ SInt64 YKFSCardListReaders(SInt32 context,
     Adapted version of SCardCancel for YubiKit.
     For more details of the original API check SCardCancel on https://pcsclite.apdu.fr/api/group__API.html
  */
-SInt64 YKFSCardCancel(SInt32 context);
+SInt64 YKFSCardCancel(SInt32 context) __deprecated;
 
 /*!
  @abstract
@@ -162,10 +162,10 @@ SInt64 YKFSCardCancel(SInt32 context);
 SInt64 YKFSCardGetAttrib(SInt32 card,
                          UInt32 attrId,
                          UInt8 *attr,
-                         UInt32 *attrLength);
+                         UInt32 *attrLength) __deprecated;
 
 /*!
  @abstract
     Return a description of the PC/SC error code.
  */
-const char* YKFPCSCStringifyError(const SInt64 pcscError);
+const char* YKFPCSCStringifyError(const SInt64 pcscError) __deprecated;

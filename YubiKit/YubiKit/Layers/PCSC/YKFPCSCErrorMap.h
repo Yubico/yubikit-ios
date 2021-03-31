@@ -16,6 +16,6 @@
 
 @interface YKFPCSCErrorMap: NSObject
 
-- (nullable NSString *)errorForCode:(SInt64)code;
+- (nullable NSString *)errorForCode:(SInt64)code __deprecated;
 
 @end

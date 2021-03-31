@@ -53,8 +53,6 @@ typedef void (^YKFAccessorySessionDispatchBlock)(void);
 #pragma mark - Constants
 
 NSString* const YKFAccessoryConnectionStatePropertyKey = @"sessionState";
-NSString* const YKFAccessoryConnectionU2FServicePropertyKey = @"u2fService";
-NSString* const YKFAccessoryConnectionFIDO2ServicePropertyKey = @"fido2Service";
 
 static NSTimeInterval const YubiAccessorySessionStartDelay = 0.05; // seconds
 static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // seconds

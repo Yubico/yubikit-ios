@@ -20,6 +20,8 @@ integrate and also align better with Yubico's other SDKs in regards of naming co
 - Rewrote the full stack tests to provide greater test coverage and a [good source of sample code](./YubiKitTests/Tests/).
 
 - iOS deployment target bumped to 11.
+
+- Deprecated YKFPCSC and YKFPCSCLayer.
 ---
 
 ## 3.2.0
