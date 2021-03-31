@@ -1,6 +1,28 @@
 # YubiKit Changelog
 
-#### 3.2.0 (3.1.0 -> 3.2.0)
+## 4.0.0
+
+This release breaks backwards compatibility with previous versions of the SDK. The reason for this is to make the SDK easier to
+integrate and also align better with Yubico's other SDKs in regards of naming conventions and concepts. Read the
+[transition guide](./docs/transitioning-sdk-4.md) for more details.
+
+- Replaced KVO with a delegate protocol for monitoring changes in the YubiKey connection status.
+
+- YKFNFCConnection and YKFAccessoryConnection now represent the NFC and Accessory connections to the YubiKey.
+
+- The two YKFConnections provide the different YKFSessions used to communicate with the applications on
+    the YubiKey, i.e YKFOATHSession, YKFPIVSession.
+
+- Replaced YKFRawCommandService with YKFSmartCardInterface, which adds functionality for automatically handling multipart responses from the YubiKey and improves error handling.
+
+- Added YKFPIVSession which allows the  SDK to easily communicate with the PIV application on the YubiKey.
+
+- Rewrote the full stack tests to provide greater test coverage and a [good source of sample code](./YubiKitTests/Tests/).
+
+- iOS deployment target bumped to 11.
+---
+
+## 3.2.0
 
 - Support for Swift Package Manager
 
@@ -11,7 +33,7 @@
 - Improved Base32 decoding
 ---
 
-#### 3.1.0 (3.0.0 -> 3.1.0)
+## 3.1.0
 
 - Raw commands service `YKFRawCommandService` now allows to specify timeouts on each command using `YKFCommandConfiguration` in case if user wants to speed up communication with YubiKey or getting timeouts on execution of specific command. 
 
@@ -28,19 +50,19 @@
 - Improvements in YubiKitDemo application: U2F and FIDO2 in Other demo section now support NFC-Enabled YubiKeys.
 ---
 
-#### 3.0.0 (3.0.0-Preview2 -> 3.0.0)
+## 3.0.0
 
 - Improvements to NFC API: ability to customize NFC alert message at any point of time it's visible, an error in case if NFC session was closed without successful invalidation (including cancellation), allows to handle multiple tags during one open nfc session and do not close session if key was removed from NFC reader.
 
 - Added ability for application to subscribe for logger events and customize/create it's own logger (e.g. sent logs to the file)
 ---
 
-#### 3.0.0-Preview2 [3.0.0-Preview1 -> 3.0.0-Preview2]
+## 3.0.0-Preview2
 
 - Adds support for OATH protocol over NFC on devices running iOS 13 or newer. Also wraps and simplifies raw APDU communication with NFC-Enabled YubiKeys.
 ---
 
-#### 3.0.0-Preview1 [2.0.1 -> 3.0.0-Preview1]
+## 3.0.0-Preview1
 
 `BREAKING CHANGES`: 
 - See `Refactoring Changes` section under [NFC-Notes](./docs/NFC-Notes.md)
@@ -57,7 +79,7 @@
 
 ---
 
-#### 2.0.1 [2.0.0 -> 2.0.1]
+## 2.0.1
 
 - Fixed an edge case for CCID when the WTX responses are concatenated with the payload. This issue mostly affects the calculation of OATH credentials with touch.
 
@@ -67,7 +89,7 @@
 
 ---
 
-#### 2.0.0 [2.0.0 RC1 -> 2.0.0]
+## 2.0.0
 
 - The internal CBOR encoder used by the FIDO2 API is now sorting the map keys according to canonical CBOR rules when the keys are text strings. This fixes a bug with the order of the keys in the `webauthnAttestationObject` returned by the `YKFFIDO2MakeCredentialResponse`.
 
@@ -89,7 +111,7 @@
 
 ---
 
-#### 2.0.0 RC1 [2.0.0 B8 -> 2.0.0 RC1]
+## 2.0.0 RC1
 
 - The `YKFFIDO2MakeCredentialResponse` has two new properties: `ctapAttestationObject` and `webauthnAttestationObject`: 
 	- The `ctapAttestationObject` is identical to the `rawResponse` from the key. This attestation format follows the [CTAP2 specifications](https://fidoalliance.org/specs/fido-v2.0-ps-20190130/fido-client-to-authenticator-protocol-v2.0-ps-20190130.html#responses) for packing the attestation object from the authenticator. In this format the top level CBOR map is using numeric keys for `authData`, `fmt` and `attStmt`.
@@ -117,7 +139,7 @@
 
 ---
 
-#### 2.0.0 B8 [2.0.0 B7 -> 2.0.0 B8]
+## 2.0.0 B8
 
 - The YubiKit Demo application was updated to Xcode 10.2 and Swift 5. This version (or newer) of Xcode is required to compile and run the application.
 
@@ -139,7 +161,7 @@
 
 ---
 
-#### 2.0.0 B7 [2.0.0 B6 -> 2.0.0 B7]
+## 2.0.0 B7
 
 - This version adds compatibility with the hardware Rev2 of the YubiKey 5Ci. This includes support for CTAP2/FIDO2 requests against the key with some limitations (PIN authentication not supported yet by the library). Note that this new functionality is not supported by the hardware Rev1 devices. To determine the hardware revision, run the demo application (wireless debugging enabled) and insert the key. The application will show in the console logs the information about the accessory, including the hardware revision.
 
@@ -151,7 +173,7 @@
 
 ---
 
-#### 2.0.0 B6 [2.0.0 B5 -> 2.0.0 B6]
+## 2.0.0 B6
 
 - Updated the PC/SC interface to receive pre-allocated buffers, similar to the original PC/SC API. This new implementation adds support for ask-for-size and optional buffers. Removed the `A` suffix from some of the methods and refer in the API header documentation to the PCSCLite documentation which is more concise and cross-platform.
 
@@ -165,7 +187,7 @@
 
 ---
 
-#### 2.0.0 B5 [2.0.0 B4 -> 2.0.0 B5]
+## 2.0.0 B5
 
 - The `YKFRawCommandService` provides the ability to execute sync commands against the key. 
 The `YKFSession` provides the ability to check if the key is connected to the device regardless of the session state. New APIs for opening and closing synchronously the session have been added to ease the development when using the raw interface.
@@ -176,7 +198,7 @@ The `YKFSession` provides the ability to check if the key is connected to the de
 
 ---
 
-#### 2.0.0 B4 [2.0.0 B3 -> 2.0.0 B4]
+## 2.0.0 B4
 
 - The library provides the possibility to run raw commands against the YubiKey 5Ci. To allow this, a new service, `YKFRawCommandService` was introduced. This service allows to execute custom built APDU commands when the host application needs a very specific interaction with the key.
 
@@ -188,7 +210,7 @@ The `YKFSession` provides the ability to check if the key is connected to the de
 
 ---
 
-#### 2.0.0 B3 [2.0.0 B2 -> 2.0.0 B3]
+## 2.0.0 B3
 
 - The `YKFSession` is exposing a new service for OATH credentials, `oathService`. The OATH service allows to interact with the OATH application from the key by using the [YOATH protocol](https://developers.yubico.com/OATH/YKOATH_Protocol.html). For a complete description of the new functionality check the *Readme.md* file and the header documentation for `YKFOATHService`.
 
@@ -198,7 +220,7 @@ The `YKFSession` provides the ability to check if the key is connected to the de
 
 ---
 
-#### 2.0.0 B2 [2.0.0 B1 -> 2.0.0 B2]
+## 2.0.0 B2
 
 - The `YKFSession` has a new property, `keyDescription`, which provides a list of properties about the connected key, like firmware version, device name, etc. For the complete list of properties check `YKFDescription`.
 
@@ -208,7 +230,7 @@ The `YKFSession` provides the ability to check if the key is connected to the de
 
 ---
 
-#### 2.0.0 B1 [1.1.1 -> 2.0.0 B1]
+## 2.0.0 B1
 
 - This release is a major update which adds initial support for YubiKeys with lightning connector. 
 
@@ -216,7 +238,7 @@ The `YKFSession` provides the ability to check if the key is connected to the de
 
 ---
 
-#### 1.1.1 [1.1.0 -> 1.1.1]
+## 1.1.1
 
 - This is a minor update which adds support for a new default URI format when reading the OTP over NFC. This update is required to allow the applications to support future YubiKey firmware revisions. 
 
@@ -224,7 +246,7 @@ The `YKFSession` provides the ability to check if the key is connected to the de
 
 ---
 
-#### 1.1.0 [1.0.0 -> 1.1.0]
+## 1.1.0
 
 This version has a few improvements on the NFC APIs and to the demo application:
 
@@ -236,7 +258,7 @@ This version has a few improvements on the NFC APIs and to the demo application:
 
 ---
 
-#### 1.0.0 [1.0.0 RC2 -> 1.0.0]
+## 1.0.0
 
 This version does a few changes to the library interface. The provided interface should  provide from now on a final API for capabilities check, NFC and QR code scanning:
 
@@ -246,13 +268,13 @@ This version does a few changes to the library interface. The provided interface
  
 ---
 
-#### 1.0.0 RC2 [1.0.0 RC1 -> 1.0.0 RC2]
+## 1.0.0 RC2
 
 - Exposing the cancel user action from the NFC OS action sheet which is returned as an error by CoreNFC APIs: `NFCReaderError.readerSessionInvalidationErrorUserCanceled`
 
 ---
 
-#### 1.0.0 RC1
+## 1.0.0 RC1
 
 Initial release with support for: 
 
