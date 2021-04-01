@@ -33,6 +33,7 @@
 #import "YKFPIVPadding+Private.h"
 #import "TKTLVRecordAdditions+Private.h"
 
+NSString* const YKFPIVErrorDomain = @"com.yubico.piv";
 
 // Special slot for the management key
 static const NSUInteger YKFPIVSlotCardManagement = 0x9b;
@@ -164,7 +165,7 @@ int maxPinAttempts = 3;
             keyType = YKFPIVKeyTypeRSA2048;
             break;
         default:
-            completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Invalid lenght of cipher text."}]);
+            completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeInvalidCipherTextLength userInfo:@{NSLocalizedDescriptionKey: @"Invalid lenght of cipher text."}]);
             return;
     }
     [self usePrivateKeyInSlot:slot type:keyType message:encrypted exponentiation:false completion:^(NSData * _Nullable data, NSError * _Nullable error) {
@@ -211,7 +212,7 @@ int maxPinAttempts = 3;
 - (void)calculateSecretKeyInSlot:(YKFPIVSlot)slot peerPublicKey:(SecKeyRef)peerPublicKey completion:(nonnull YKFPIVSessionCalculateSecretCompletionBlock)completion {
     YKFPIVKeyType keyType = YKFPIVKeyTypeFromKey(peerPublicKey);
     if (keyType != YKFPIVKeyTypeECCP256 && keyType != YKFPIVKeyTypeECCP384) {
-        completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Calculate secret only supported for EC keys."}]);
+        completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Calculate secret only supported for EC keys."}]);
         return;
     }
     CFErrorRef cfError = nil;
@@ -230,7 +231,7 @@ int maxPinAttempts = 3;
 
 - (void)attestKeyInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionAttestKeyCompletionBlock)completion {
     if (![self.features.attestation isSupportedBySession:self]) {
-        completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Attestation not supported by this YubiKey."}]);
+        completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Attestation not supported by this YubiKey."}]);
         return;
     }
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAttest p1:slot p2:0 data:[NSData data] type:YKFAPDUTypeExtended];
@@ -244,7 +245,7 @@ int maxPinAttempts = 3;
         if (certificate) {
             completion(certificate, nil);
         } else {
-            completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Failed to parse certificate."}]);        }
+            completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeDataParseError userInfo:@{NSLocalizedDescriptionKey: @"Failed to parse certificate."}]);        }
     }];
 }
 
@@ -286,7 +287,7 @@ int maxPinAttempts = 3;
         } else {
             [NSException raise:@"UnknownKeyType" format:@"Unknown key type."];
 
-            completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}]);
+            completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeUnknownKeyType userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}]);
         }
         NSError *bridgedError = (__bridge NSError *) cfError;
         completion(publicKey, bridgedError);
@@ -323,7 +324,7 @@ int maxPinAttempts = 3;
     }
     
     if (errorMessage) {
-        return [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"%@ not supported by this YubiKey.", errorMessage]}];
+        return [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"%@ not supported by this YubiKey.", errorMessage]}];
     }
     
     return nil;
@@ -373,7 +374,7 @@ int maxPinAttempts = 3;
             break;
         }
         default:
-            completion(YKFPIVKeyTypeUnknown, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}]);
+            completion(YKFPIVKeyTypeUnknown, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeUnknownKeyType userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}]);
             return;
     }
     
@@ -437,11 +438,11 @@ int maxPinAttempts = 3;
 
 - (void)setManagementKey:(nonnull NSData *)managementKey type:(nonnull YKFPIVManagementKeyType *)type requiresTouch:(BOOL)requiresTouch completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion {
     if (requiresTouch && ![self.features.usagePolicy isSupportedBySession:self]) {
-        completion([[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"PIN/Touch policy not supported by this YubiKey."}]);
+        completion([[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"PIN/Touch policy not supported by this YubiKey."}]);
         return;
     }
     if (type.name != YKFPIVManagementKeyTypeTripleDES && ![self.features.aesKey isSupportedBySession:self]) {
-        completion([[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"AES management key not supported by this YubiKey."}]);
+        completion([[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"AES management key not supported by this YubiKey."}]);
         return;
     }
     TKBERTLVRecord *tlv = [[TKBERTLVRecord alloc] initWithTag:YKFPIVSlotCardManagement value:managementKey];
@@ -541,7 +542,7 @@ int maxPinAttempts = 3;
 
 - (void)getSerialNumberWithCompletion:(YKFPIVSessionSerialNumberCompletionBlock)completion {
     if (![self.features.serial isSupportedBySession:self]) {
-        completion(-1, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Read serial number not supported by this YubiKey."}]);
+        completion(-1, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Read serial number not supported by this YubiKey."}]);
         return;
     }
     
@@ -600,7 +601,7 @@ int maxPinAttempts = 3;
 - (void)getPinPukMetadata:(UInt8)p2 completion:(nonnull YKFPIVSessionPinPukMetadataCompletionBlock)completion {
         YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetMetadata p1:0 p2:p2 data:[NSData data] type:YKFAPDUTypeShort];
     if (![self.features.metadata isSupportedBySession:self]) {
-        completion(0, 0, 0, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Read metadata not supported by this YubiKey."}]);
+        completion(0, 0, 0, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Read metadata not supported by this YubiKey."}]);
         return;
     }
     
@@ -619,7 +620,7 @@ int maxPinAttempts = 3;
 
 - (void)getManagementKeyMetadataWithCompletion:(nonnull YKFPIVSessionManagementKeyMetadataCompletionBlock)completion {
     if (![self.features.metadata isSupportedBySession:self]) {
-        completion(nil, [[NSError alloc] initWithDomain:@"com.yubico.piv" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Read metadata not supported by this YubiKey."}]);
+        completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Read metadata not supported by this YubiKey."}]);
         return;
     }
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetMetadata p1:0 p2:YKFPIVSlotCardManagement data:[NSData data] type:YKFAPDUTypeShort];
