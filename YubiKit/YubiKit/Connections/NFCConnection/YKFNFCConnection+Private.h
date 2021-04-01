@@ -15,9 +15,7 @@
 #ifndef YKFNFCConnection_Private_h
 #define YKFNFCConnection_Private_h
 
-
-#endif /* YKFNFCConnection_Private_h */
-
+@class YKFNFCConnection;
 
 @protocol YKFNFCConnectionDelegate <NSObject>
 
@@ -31,3 +29,5 @@
 @property(nonatomic, weak) id<YKFNFCConnectionDelegate> _Nullable delegate;
 
 @end
+
+#endif /* YKFNFCConnection_Private_h */
