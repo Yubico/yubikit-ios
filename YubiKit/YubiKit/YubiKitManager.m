@@ -15,23 +15,27 @@
 #import <ExternalAccessory/ExternalAccessory.h>
 
 #import "YubiKitManager.h"
-#import "YKFAccessorySessionConfiguration.h"
+#import "YKFAccessoryConnectionConfiguration.h"
 
-#import "YKFNFCOTPService+Private.h"
-#import "YKFAccessorySession+Private.h"
+#import "YKFNFCOTPSession+Private.h"
+#import "YKFAccessoryConnection+Private.h"
+#import "YKFNFCConnection+Private.h"
 
-@interface YubiKitManager()
+@interface YubiKitManager()<YKFAccessoryConnectionDelegate, YKFNFCConnectionDelegate>
 
-@property (nonatomic, readwrite) id<YKFNFCSessionProtocol> nfcSession NS_AVAILABLE_IOS(11.0);
-@property (nonatomic, readwrite) id<YKFAccessorySessionProtocol> accessorySession;
+@property (nonatomic, readwrite) YKFNFCConnection *nfcSession NS_AVAILABLE_IOS(11.0);
+@property (nonatomic, readwrite) YKFAccessoryConnection *accessorySession;
+@property (nonatomic, readwrite) YKFNFCOTPSession *otpSession NS_AVAILABLE_IOS(11.0);
 
 @end
 
 @implementation YubiKitManager
 
-static id<YubiKitManagerProtocol> sharedInstance;
+@synthesize delegate;
 
-+ (id<YubiKitManagerProtocol>)shared {
+static YubiKitManager *sharedInstance;
+
++ (YubiKitManager *)shared {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedInstance = [[YubiKitManager alloc] initOnce];
@@ -43,15 +47,59 @@ static id<YubiKitManagerProtocol> sharedInstance;
     self = [super init];
     if (self) {
         if (@available(iOS 11, *)) {
-            self.nfcSession = [[YKFNFCSession alloc] init];
+            YKFNFCConnection *nfcConnection = [[YKFNFCConnection alloc] init];
+            nfcConnection.delegate = self;
+            self.nfcSession = nfcConnection;
         }
        
-        YKFAccessorySessionConfiguration *configuration = [[YKFAccessorySessionConfiguration alloc] init];
+        YKFAccessoryConnectionConfiguration *configuration = [[YKFAccessoryConnectionConfiguration alloc] init];
         EAAccessoryManager *accessoryManager = [EAAccessoryManager sharedAccessoryManager];
+        YKFAccessoryConnection *accessoryConnection = [[YKFAccessoryConnection alloc] initWithAccessoryManager:accessoryManager configuration:configuration];
+        accessoryConnection.delegate = self;
+        self.accessorySession = accessoryConnection;
         
-        self.accessorySession = [[YKFAccessorySession alloc] initWithAccessoryManager:accessoryManager configuration:configuration];
+        if (@available(iOS 11.0, *)) {
+            self.otpSession = [[YKFNFCOTPSession alloc] initWithTokenParser:nil session:nil];
+        }
     }
     return self;
+}
+
+//- (void)setDelegate:(id<YKFManagerDelegate>)delegate {
+//    self.delegate = delegate;
+//}
+
+- (void)startAccessoryConnection {
+    [self.accessorySession start];
+}
+
+- (void)stopAccessoryConnection {
+    [self.accessorySession stop];
+}
+
+- (void)startNFCConnection API_AVAILABLE(ios(13.0)) {
+    [self.nfcSession start];
+}
+
+- (void)stopNFCConnection API_AVAILABLE(ios(13.0)) {
+    [self.nfcSession stop];
+}
+
+- (void)didConnectAccessory:(YKFAccessoryConnection *_Nonnull)connection {
+    [self.delegate didConnectAccessory:connection];
+}
+
+- (void)didDisconnectAccessory:(YKFAccessoryConnection *_Nonnull)connection error:(NSError * _Nullable)error {
+    [self.delegate didDisconnectAccessory:connection error:error];
+}
+
+
+- (void)didConnectNFC:(YKFNFCConnection *_Nonnull)connection {
+    [self.delegate didConnectNFC:connection];
+}
+
+- (void)didDisconnectNFC:(YKFNFCConnection *_Nonnull)connection error:(NSError * _Nullable)error {
+    [self.delegate didDisconnectNFC:connection error:error];
 }
 
 @end

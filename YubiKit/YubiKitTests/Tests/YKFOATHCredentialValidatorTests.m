@@ -16,8 +16,9 @@
 
 #import "YKFTestCase.h"
 #import "YKFOATHCredential.h"
-#import "YKFOATHCredentialValidator.h"
-#import "YKFKeyOATHError.h"
+#import "YKFOATHCredentialTemplate.h"
+#import "YKFOATHCredentialUtils.h"
+#import "YKFOATHError.h"
 
 static NSString* const YKFOATHCredentialValidatorTestsVeryLargeSecret = @"HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZHXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ";
 
@@ -28,19 +29,19 @@ static NSString* const YKFOATHCredentialValidatorTestsVeryLargeSecret = @"HXDMVJ
 
 - (void)test_WhenValidatorReceivesValidTOTPCredential_NoErrorIsReturned {
     NSString *url = @"otpauth://totp/ACME:john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&issuer=ACME&algorithm=SHA1&digits=6&period=30";
-    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:[NSURL URLWithString:url]];
     XCTAssertNotNil(credential);
     
-    YKFKeySessionError *error = [YKFOATHCredentialValidator validateCredential:credential includeSecret:YES];
+    YKFSessionError *error = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
     XCTAssertNil(error);
 }
 
 - (void)test_WhenValidatorReceivesValidHOTPCredential_NoErrorIsReturned {
     NSString *url = @"otpauth://hotp/ACME:john@example.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&issuer=ACME&algorithm=SHA1&digits=6&counter=123";
-    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:[NSURL URLWithString:url]];
     XCTAssertNotNil(credential);
     
-    YKFKeySessionError *error = [YKFOATHCredentialValidator validateCredential:credential includeSecret:YES];
+    YKFSessionError *error = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
     XCTAssertNil(error);
 }
 
@@ -48,10 +49,10 @@ static NSString* const YKFOATHCredentialValidatorTestsVeryLargeSecret = @"HXDMVJ
     NSString *urlFormat = @"otpauth://hotp/ACME:john@example.com?secret=%@&issuer=ACME&algorithm=SHA256&digits=6&counter=123";
     NSString *url = [NSString stringWithFormat:urlFormat, YKFOATHCredentialValidatorTestsVeryLargeSecret];
     
-    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:[NSURL URLWithString:url]];
     XCTAssertNotNil(credential);
 
-    YKFKeySessionError *error = [YKFOATHCredentialValidator validateCredential:credential includeSecret:NO];
+    YKFSessionError *error = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
     XCTAssertNil(error);
 }
 
@@ -61,11 +62,11 @@ static NSString* const YKFOATHCredentialValidatorTestsVeryLargeSecret = @"HXDMVJ
     NSString *urlFormat = @"otpauth://hotp/ACME:john_with_too_long_name_which_does_not_really_fit_in_the_key@example.com?secret=%@&issuer=ACME&algorithm=SHA1&digits=6&counter=123";
     NSString *url = [NSString stringWithFormat:urlFormat, YKFOATHCredentialValidatorTestsVeryLargeSecret];
     
-    YKFOATHCredential *credential = [[YKFOATHCredential alloc] initWithURL:[NSURL URLWithString:url]];
+    YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:[NSURL URLWithString:url]];
     XCTAssertNotNil(credential);
     
-    YKFKeySessionError *error = [YKFOATHCredentialValidator validateCredential:credential includeSecret:YES];
-    XCTAssertEqual(error.code, YKFKeyOATHErrorCodeNameTooLong);
+    YKFSessionError *error = [YKFOATHCredentialUtils validateCredentialTemplate:credential];
+    XCTAssertEqual(error.code, YKFOATHErrorCodeNameTooLong);
 }
 
 @end

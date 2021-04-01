@@ -14,6 +14,7 @@
 
 #import "YKFAccessoryConnectionController.h"
 #import "YubiKitManager.h"
+#import "YKFSmartCardInterface.h"
 #import "YKFPCSCLayer.h"
 #import "YKFPCSCErrors.h"
 #import "YKFPCSCTypes.h"
@@ -21,10 +22,14 @@
 #import "YKFBlockMacros.h"
 #import "YKFPCSCErrorMap.h"
 #import "YKFLogger.h"
-#import "YKFAccessorySession+Private.h"
+#import "YKFAccessoryConnection+Private.h"
 #import "YKFNSDataAdditions+Private.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+
 static NSString* const YKFPCSCLayerReaderName = @"YubiKey";
+static const NSTimeInterval YKFPCSCCommandTimeout = 600;
 
 // YK5 ATR
 static const UInt8 YKFPCSCAtrSize = 23;
@@ -36,10 +41,14 @@ static const UInt8 YKFPCSCAtr[] = {0x3b, 0xfd, 0x13, 0x00, 0x00, 0x81, 0x31, 0xf
 static const NSUInteger YKFPCSCLayerContextLimit = 10;
 static const NSUInteger YKFPCSCLayerCardLimitPerContext = 10;
 
+@interface YubiKitManager()
+@property (nonatomic, readonly, nonnull) YKFNFCConnection *nfcSession NS_AVAILABLE_IOS(11.0);
+@property (nonatomic, readonly, nonnull) YKFAccessoryConnection *accessorySession;
+@end
 
 @interface YKFPCSCLayer()
 
-@property (nonatomic) id<YKFAccessorySessionProtocol> accessorySession;
+@property (nonatomic) YKFAccessoryConnection *accessorySession;
 @property (nonatomic) YKFPCSCErrorMap *errorMap;
 
 // Maps a context value to a list of card values
@@ -78,7 +87,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
     return sharedInstance;
 }
 
-- (instancetype)initWithAccessorySession:(id<YKFAccessorySessionProtocol>)session {
+- (instancetype)initWithAccessorySession:(YKFAccessoryConnection *)session {
     YKFAssertAbortInit(session);
     
     self = [super init];
@@ -95,7 +104,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 
 - (SInt32)cardState {
     if (self.accessorySession.isKeyConnected) {
-        if (self.accessorySession.sessionState == YKFAccessorySessionStateOpen) {
+        if (self.accessorySession.connectionState == YKFAccessoryConnectionStateOpen) {
             return YKF_SCARD_SPECIFICMODE;
         }
         return YKF_SCARD_SWALLOWED;
@@ -149,7 +158,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
         return YKF_SCARD_E_NO_SMARTCARD;
     }
     
-    BOOL sessionOpened = [self.accessorySession startSessionSync];
+    BOOL sessionOpened = [self.accessorySession startSynchronous];
     return sessionOpened ? YKF_SCARD_S_SUCCESS : YKF_SCARD_F_WAITED_TOO_LONG;
 }
 
@@ -158,7 +167,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
         return YKF_SCARD_E_NO_SMARTCARD;
     }
     
-    BOOL sessionClosed = [self.accessorySession stopSessionSync];
+    BOOL sessionClosed = [self.accessorySession stopSynchronous];
     return sessionClosed ? YKF_SCARD_S_SUCCESS : YKF_SCARD_F_WAITED_TOO_LONG;
 }
 
@@ -171,7 +180,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 }
 
 - (SInt64)transmit:(NSData *)commandData response:(NSData **)response {
-    YKFAssertReturnValue(self.accessorySession.sessionState == YKFAccessorySessionStateOpen, @"Session is closed. Cannot send command.", YKF_SCARD_E_READER_UNAVAILABLE);
+    YKFAssertReturnValue(self.accessorySession.connectionState == YKFAccessoryConnectionStateOpen, @"Session is closed. Cannot send command.", YKF_SCARD_E_READER_UNAVAILABLE);
     YKFAssertReturnValue(commandData.length, @"The command data is empty.", YKF_SCARD_E_INVALID_PARAMETER);
     
     YKFAPDU *command = [[YKFAPDU alloc] initWithData:commandData];
@@ -179,11 +188,19 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 
     __block NSData *responseData = nil;
     
-    [self.accessorySession.rawCommandService executeSyncCommand:command completion:^(NSData *resp, NSError *error) {
-        if (!error && resp) {
-            responseData = resp;
-        }
-    }];
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    
+    YKFSmartCardInterface *smartCard = YubiKitManager.shared.accessorySession.smartCardInterface;
+    
+    if (smartCard) {
+        [smartCard executeCommand:command completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+            responseData = data;
+            dispatch_semaphore_signal(semaphore);
+        }];
+    }
+    
+    dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(YKFPCSCCommandTimeout * NSEC_PER_SEC));
+    dispatch_semaphore_wait(semaphore, timeout);
     
     if (responseData) {
         *response = responseData;
@@ -318,3 +335,5 @@ static id<YKFPCSCLayerProtocol> staticFakePCSCLayer;
 #endif
 
 @end
+
+#pragma clang diagnostic pop

@@ -15,6 +15,9 @@
 #import <Foundation/Foundation.h>
 #import "YKFPCSCLayer.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 @interface FakeYKFPCSCLayer: NSObject<YKFPCSCLayerProtocol>
 
 @property (nonatomic) BOOL addCardToContextResponse;
@@ -42,3 +45,5 @@
 @property (nonatomic) NSString *stringifyErrorResponse;
 
 @end
+
+#pragma clang diagnostic pop

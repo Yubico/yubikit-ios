@@ -18,7 +18,15 @@
  
 - (void)waitForTimeInterval:(NSTimeInterval)timeInterval;
 
-/// Builds a data with an array of bytes
-- (NSData *)dataWithBytes:(NSArray *)bytes;
+@end
+
+
+@interface NSData (TestData)
+    
++ (NSData *)dataWithBytes:(NSArray *)bytes;
+
++ (NSData *)dataFromHexString:(NSString *)string;
+
+- (NSString *)ykf_hexadecimalString;
 
 @end

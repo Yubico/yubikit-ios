@@ -15,19 +15,18 @@ Most of the time the OTP value is not important for the user so displaying it do
 
 One way of intercepting the keyboard input is to use `UIKeyCommand`. Key commands are usually used to intercept key combinations from the external keyboard and they can be attached to any `UIResponder`. The most common UIResponders are `UIView` and `UIViewController`. These fundamental classes of UIKit have the ability to `becomeFirstResponder` and they provide a property called `keyCommands` which can return a list of commands which will be triggered when the user is pressing a certain key combination on the external keyboard. An `UIKeyCommand` doesn't have to be a key combination. A certain character can be detected if the key command is created without modifiers. An example of such responder, `OTPUIResponder`, is implemented in the YubiKit Demo application. In the OTP demo the application will intercept the keyboard input using the `OTPUIResponder` to read the OTP from the YubiKey.
 
-Sometimes the UX may involve some guiding steps for the user to plugin or to touch the key. In such a scenario YubiKit can be used to determine if the key is plugged in, in the same way as it's done in the FIDO2 demo, by observing the `sessionState` on `YKFAccessorySession` or  `iso7816SessionState` on `NFCSession`.
+Sometimes the UX may involve some guiding steps for the user to plugin or to touch the key. In such a scenario YubiKit can be used to determine if the key is plugged in by implementing the `YKFManagerDelegate` protocol.
 
 ## Reading OTPs from NFC-Enabled YubiKeys
 
-To request a NFC scan for an OTP token call `requestOTPToken:` on the `nfcReaderSession` instance from `YubiKitManager`:
+To request a NFC scan for an OTP token call `requestOTPToken:` on the `otpSession` instance from `YubiKitManager`:
 
 ##### Swift
 
 ```swift
-YubiKitManager.shared.nfcReaderSession.requestOTPToken { [weak self] (token, error) in
-    if let value = token?.value {
-        // Start using the token value
-        ...                
+YubiKitManager.shared.otpSession.requestOTPToken { token, error in
+    guard let token = token else { /* Handle error */ return }
+        // Use the token value
     }	
 }
 ```
@@ -37,13 +36,11 @@ YubiKitManager.shared.nfcReaderSession.requestOTPToken { [weak self] (token, err
 ```objective-c
 #import <YubiKit/YubiKit.h>
 ...
-[YubiKitManager.shared.nfcReaderSession requestOTPToken:^(id<YKFOTPTokenProtocol> token, NSError *error) {
-    NSString *tokenValue = token.value;
-    // Start using the token value
-    ...
+[YubiKitManager.shared.otpSession requestOTPToken:^(id<YKFOTPTokenProtocol> token, NSError *error) {
+    if token == nil { /* Handle error */ return; }
+    // Use the token value
 }];
 ```	
-
 
 The `YKFOTPToken` contains the details of the scanned OTP token. The detailed documentation of all the properties is available in the header files provided with the library.
 
@@ -105,73 +102,6 @@ YubiKitConfiguration.customOTPURIParser = CustomURIParser()
 ...
 YubiKitConfiguration.customOTPURIParser = [[CustomURIParser alloc] init];
 ```
----
 
-To allow the library to be linked with older projects, some of the APIs in YubiKit use availability annotations. One example is the presence of the NFC APIs available only from iOS 11. If the host application needs to run on older devices, by compiling the project for older versions of iOS, and still provide new features for users with newer devices, you can use `@available/#available` before calling the APIs which require iOS 11 and above.
-
-##### Swift
-
-```swift
-if #available(iOS 11.0, *) {
-    // Call the NFC APIs	
-}
-```
-
-##### Objective-C
-
-```objective-c
-#import <YubiKit/YubiKit.h>
-...
-if (@available(iOS 11.0, *)) {
-    // Call the NFC APIs                
-}
-```
----
-
-**Note:**
-To use *@available* in Obj-C the project needs to be compiled with Xcode 9 or newer.
-
-## Putting everything together
-
-##### Swift
-
-```swift
-func requestOTPToken() {
-    guard YubiKitDeviceCapabilities.supportsNFCScanning else {
-        // The device does not support NFC reading
-        return
-    }
-    
-    if #available(iOS 11.0, *) {
-        YubiKitManager.shared.nfcReaderSession.requestOTPToken { [weak self] (token, error) in
-            guard error == nil else {
-                // Process the error
-                return
-            }
-            // Process the token
-        }
-    }
-}
-```
-
-##### Objective-C
-
-```objective-c
-#import <YubiKit/YubiKit.h>
-...
-- (void)requestOTPToken {
-    if (!YubiKitDeviceCapabilities.supportsNFCScanning) {
-        // The device does not support NFC reading
-        return;
-    }    
-    if (@available(iOS 11.0, *)) {
-        [YubiKitManager.shared.nfcReaderSession requestOTPToken:^(id<YKFOTPTokenProtocol> token, NSError *error) {
-            if (error != nil) {
-                // Process the error
-                return;
-            }
-            // Process the token
-        }];
-    }
-}
-```
+### Additional resources
+Read more about Yubico OTP on the [Yubico developer site](https://developers.yubico.com/OTP//).

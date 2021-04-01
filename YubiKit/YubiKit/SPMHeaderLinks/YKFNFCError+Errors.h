@@ -1,1 +1,1 @@
-..//Sessions/NFCSession/YKFNFCError+Errors.h
+..//Connections/NFCConnection/YKFNFCError+Errors.h

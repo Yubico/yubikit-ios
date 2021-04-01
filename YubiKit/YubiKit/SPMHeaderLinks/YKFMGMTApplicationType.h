@@ -1,1 +1,0 @@
-..//Sessions/Shared/Services/YKFMGMTApplicationType.h

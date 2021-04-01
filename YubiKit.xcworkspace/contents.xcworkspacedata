@@ -5,7 +5,7 @@
       location = "group:YubiKit/YubiKit.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:YubiKitFullStackTests/YubiKitFullStackTests.xcodeproj">
+      location = "group:YubiKitTests/YubiKitTests.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:YubiKitDemo/YubiKitDemo.xcodeproj">

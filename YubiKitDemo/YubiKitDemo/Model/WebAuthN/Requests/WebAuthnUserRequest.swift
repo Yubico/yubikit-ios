@@ -38,8 +38,8 @@ class WebAuthnUserRequest: WebAuthnRequest {
     
     override var jsonData: Data? {
         get {
-            assert(username.count >= minUsernameLenght)
-            assert(password.count >= minPasswordLength)
+//            assert(username.count >= minUsernameLenght)
+//            assert(password.count >= minPasswordLength)
             
             let jsonDictionary = [
                 "namespace": namespace,

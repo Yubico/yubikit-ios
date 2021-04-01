@@ -178,6 +178,84 @@
 
 @end
 
+#pragma mark - PIV
+
+@implementation NSData(NSDATA_PIVAdditions)
+
+- (NSData *)ykf_encryptDataWithAlgorithm:(CCAlgorithm)algorithm key:(NSData *)key {
+    return [self ykf_cryptOperation:kCCEncrypt algorithm:algorithm key:key];
+}
+
+- (NSData *)ykf_decryptedDataWithAlgorithm:(CCAlgorithm)algorithm key:(NSData *)key {
+    return [self ykf_cryptOperation:kCCDecrypt algorithm:algorithm key:key];
+}
+
+- (NSData *)ykf_cryptOperation:(CCOperation)operation algorithm:(CCAlgorithm)algorithm key:(NSData *)key {
+    if (!key.length) {
+        return nil;
+    }
+    
+    int blockSize;
+    
+    switch (algorithm) {
+        case kCCAlgorithm3DES:
+            blockSize = kCCBlockSize3DES;
+            break;
+        case kCCAlgorithmAES:
+            blockSize = kCCBlockSizeAES128;
+            break;
+        default:
+            return nil;
+            break;
+    }
+
+    size_t outLength;
+    NSMutableData *outData = [NSMutableData dataWithLength:self.length + blockSize];
+    
+    CCCryptorRef ccRef = NULL;
+    CCCryptorCreate(operation, algorithm, kCCOptionECBMode, key.bytes, key.length, NULL, &ccRef);
+    if (!ccRef) {
+        return nil;
+    }
+    CCCryptorStatus cryptStatus = CCCryptorUpdate(ccRef, self.bytes, self.length, outData.mutableBytes, outData.length, &outLength);
+    CCCryptorRelease(ccRef);
+    
+    if(cryptStatus == kCCSuccess) {
+        outData.length = outLength;
+        return outData;
+    }
+    return nil;
+}
+
++ (nullable NSData *)ykf_randomDataOfSize:(size_t)sizeInBytes {
+    void *buff = malloc(sizeInBytes);
+    if (buff == NULL) {
+        return nil;
+    }
+    arc4random_buf(buff, sizeInBytes);
+
+    return [NSData dataWithBytesNoCopy:buff length:sizeInBytes freeWhenDone:YES];
+}
+
+- (NSData *)ykf_toLength:(int)length {
+    if (self.length == length) {
+        return self;
+    } else if (self.length > length) {
+        return [self subdataWithRange:NSMakeRange(self.length - length, length)];
+    } else {
+        NSMutableData *paddedData = [NSMutableData data];
+        UInt8 padding = 0x00;
+        int paddingSize = length - (int)self.length;
+        for (int i = 0; i < paddingSize; i++) {
+            [paddedData appendBytes:&padding length:1];
+        }
+        [paddedData appendData:self];
+        return paddedData;
+    }
+}
+
+@end
+
 #pragma mark - Marshalling
 
 @implementation NSData(NSData_Marshalling)

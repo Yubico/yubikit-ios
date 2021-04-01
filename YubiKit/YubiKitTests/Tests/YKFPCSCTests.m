@@ -17,6 +17,9 @@
 #import "YKFPCSC.h"
 #import "FakeYKFPCSCLayer.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 @interface YKFPCSCTests: YKFTestCase
 
 @property (nonatomic) FakeYKFPCSCLayer *pcscLayer;
@@ -442,3 +445,6 @@
 }
 
 @end
+
+#pragma clang diagnostic pop
+

@@ -193,7 +193,7 @@
 
 - (void)test_WhenConnectionControllerReadsDelayedResponse_ControllerWaitsForResult {
     
-    NSData *inputData = [self dataWithBytes:@[@(0x01), @(0x00), @(0x00)]];
+    NSData *inputData = [NSData dataWithBytes:@[@(0x01), @(0x00), @(0x00)]];
     self.eaSession = [[FakeEASession alloc] initWithInputData:inputData accessory:nil protocol:@"YLP"];
     
     YKFAccessoryConnectionController *connectionController = [[YKFAccessoryConnectionController alloc] initWithSession:self.eaSession operationQueue:self.operationQueue];

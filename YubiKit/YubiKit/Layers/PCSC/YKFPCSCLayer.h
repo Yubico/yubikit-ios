@@ -13,7 +13,8 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFAccessorySession.h"
+
+@class YKFAccessoryConnection;
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
@@ -21,47 +22,48 @@
  * ---------------------------------------------------------------------------------------------------------------------
  */
 
+__deprecated
 @protocol YKFPCSCLayerProtocol<NSObject>
 
-@property (nonatomic, readonly) SInt32 cardState;
-@property (nonatomic, readonly, nullable) NSString *cardSerial;
-@property (nonatomic, readonly, nonnull) NSData *cardAtr;
+@property (nonatomic, readonly) SInt32 cardState __deprecated;
+@property (nonatomic, readonly, nullable) NSString *cardSerial __deprecated;
+@property (nonatomic, readonly, nonnull) NSData *cardAtr __deprecated;
 
-@property (nonatomic, readonly) SInt64 statusChange;
+@property (nonatomic, readonly) SInt64 statusChange __deprecated;
 
-@property (nonatomic, readonly, nullable) NSString *deviceFriendlyName;
-@property (nonatomic, readonly, nullable) NSString *deviceModelName;
-@property (nonatomic, readonly, nullable) NSString *deviceVendorName;
+@property (nonatomic, readonly, nullable) NSString *deviceFriendlyName __deprecated;
+@property (nonatomic, readonly, nullable) NSString *deviceModelName __deprecated;
+@property (nonatomic, readonly, nullable) NSString *deviceVendorName __deprecated;
 
 /*!
  Connects to the card. In the YubiKit context this opens the session with the key.
  */
-- (SInt64)connectCard;
+- (SInt64)connectCard __deprecated;
 
 /*!
   Reconnects to the card. In the YubiKit context this reopens the session with the key.
  */
-- (SInt64)reconnectCard;
+- (SInt64)reconnectCard __deprecated;
 
 /*!
  Disconnects the card. In the YubiKit context this closes the session with the key.
  */
-- (SInt64)disconnectCard;
+- (SInt64)disconnectCard __deprecated;
 
 /*!
  Sends some data the card. In the YubiKit context this sends the data to the key.
  */
-- (SInt64)transmit:(nonnull NSData *)commandData response:(NSData *_Nonnull*_Nullable)response;
+- (SInt64)transmit:(nonnull NSData *)commandData response:(NSData *_Nonnull*_Nullable)response __deprecated;
 
 /*!
  Returns the list of available readers. In the YubiKit context this returns the key name as a reader.
  */
-- (SInt64)listReaders:(NSString *_Nonnull*_Nullable)yubikeyReaderName;
+- (SInt64)listReaders:(NSString *_Nonnull*_Nullable)yubikeyReaderName __deprecated;
 
 /*!
  Used by YKFPCSCStringifyError to create a human readable error from a defined code.
  */
-- (nullable NSString *)stringifyError:(SInt64)errorCode;
+- (nullable NSString *)stringifyError:(SInt64)errorCode __deprecated;
 
 /*
  Context and Card Tracking
@@ -73,7 +75,7 @@
  @returns
     YES if the layer can store more contexts or no if the limit was exeeded (max 10).
  */
-- (BOOL)addContext:(SInt32)context;
+- (BOOL)addContext:(SInt32)context __deprecated;
 
 /*!
  @abstract
@@ -81,7 +83,7 @@
  @return
     YES if the context was removed.
  */
-- (BOOL)removeContext:(SInt32)context;
+- (BOOL)removeContext:(SInt32)context __deprecated;
 
 /*!
  @abstract
@@ -89,7 +91,7 @@
  @return
     YES if success.
  */
-- (BOOL)addCard:(SInt32)card toContext:(SInt32)context;
+- (BOOL)addCard:(SInt32)card toContext:(SInt32)context __deprecated;
 
 /*!
  @abstract
@@ -97,25 +99,25 @@
  @return
     YES if success.
  */
-- (BOOL)removeCard:(SInt32)card;
+- (BOOL)removeCard:(SInt32)card __deprecated;
 
 /*!
  @return
     YES if the context is known by the layer, i.e. it was added using [addContext:].
  */
-- (BOOL)contextIsValid:(SInt32)context;
+- (BOOL)contextIsValid:(SInt32)context __deprecated;
 
 /*!
  @return
     YES if the card is known by the layer, i.e. it was added using [addCard:toContext:].
  */
-- (BOOL)cardIsValid:(SInt32)card;
+- (BOOL)cardIsValid:(SInt32)card __deprecated;
 
 /*!
  @return
     The context associated with the card if any. If no context is found returns 0.
  */
-- (SInt32)contextForCard:(SInt32)card;
+- (SInt32)contextForCard:(SInt32)card __deprecated;
 
 @end
 
@@ -124,13 +126,13 @@
  * @name YKFPCSCLayer
  * ---------------------------------------------------------------------------------------------------------------------
  */
-
+__deprecated
 @interface YKFPCSCLayer: NSObject<YKFPCSCLayerProtocol>
 
 /*!
  Returns the shared instance of the layer.
  */
-@property (class, nonatomic, readonly, nonnull) id<YKFPCSCLayerProtocol> shared;
+@property (class, nonatomic, readonly, nonnull) id<YKFPCSCLayerProtocol> shared __deprecated;
 
 /*!
  @abstract
@@ -140,7 +142,7 @@
  @param session
     The session to be used by the layer when communicating with the key.
  */
-- (nullable instancetype)initWithAccessorySession:(nonnull id<YKFAccessorySessionProtocol>)session NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithAccessorySession:(nonnull YKFAccessoryConnection *)session NS_DESIGNATED_INITIALIZER __deprecated;
 
 /*
  Not available: use [initWithAccessorySession:]
