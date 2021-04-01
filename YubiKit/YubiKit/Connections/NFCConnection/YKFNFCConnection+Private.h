@@ -15,7 +15,7 @@
 #ifndef YKFNFCConnection_Private_h
 #define YKFNFCConnection_Private_h
 
-@class YKFNFCConnection;
+#import "YKFNFCConnection.h"
 
 @protocol YKFNFCConnectionDelegate <NSObject>
 
