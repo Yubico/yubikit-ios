@@ -38,6 +38,28 @@ class OATHTests: XCTestCase {
         }
     }
     
+    func testCreateListAndCalculateTOTP() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSession { session in
+                let url = URL(string: "otpauth://totp/Yubico:test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-create-and-calculate&algorithm=SHA1&digits=6&counter=30")!
+                let template = YKFOATHCredentialTemplate(url: url)!
+                session.put(template, requiresTouch: false) { error in
+                    guard error == nil else { XCTAssertTrue(false); return }
+                    session.listCredentials { credentials, error in
+                        guard let credential = credentials?.first else { XCTAssertTrue(false); return }
+                        XCTAssert(credential.issuer == "test-create-and-calculate")
+                        XCTAssert(credential.accountName == "test@yubico.com")
+                        session.calculate(credential, timestamp: Date(timeIntervalSince1970: 0)) { code, error in
+                            XCTAssert(code?.otp == "239396")
+                            print("✅ create, list and calculate OATH HOTP credential")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func testCreateListAndCalculateHOTP() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSession { session in

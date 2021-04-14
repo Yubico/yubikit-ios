@@ -170,16 +170,21 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
 #pragma mark - Credential Calculation
 
 - (void)calculateCredential:(YKFOATHCredential *)credential completion:(YKFOATHSessionCalculateCompletionBlock)completion {
+    NSDate *timestamp = [NSDate date];
+    [self calculateCredential:credential timestamp:timestamp completion:completion];
+}
+
+- (void)calculateCredential:(YKFOATHCredential *)credential timestamp:(NSDate *)timestamp completion:(YKFOATHSessionCalculateCompletionBlock)completion {
     YKFParameterAssertReturn(credential);
     YKFParameterAssertReturn(completion);
-    
+    YKFParameterAssertReturn(timestamp);
+
     YKFSessionError *credentialError = [YKFOATHCredentialUtils validateCredential:credential];
     if (credentialError) {
         completion(nil, credentialError);
         return;
     }
     
-    NSDate *timestamp = [NSDate date];
     YKFAPDU *apdu = [[YKFOATHCalculateAPDU alloc] initWithCredential:credential timestamp:timestamp];
     
     [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
@@ -198,6 +203,7 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
         completion(code, nil);
     }];
 }
+
 
 - (void)calculateAllWithCompletion:(YKFOATHSessionCalculateAllCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
