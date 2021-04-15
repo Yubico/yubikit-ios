@@ -206,9 +206,13 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
 
 
 - (void)calculateAllWithCompletion:(YKFOATHSessionCalculateAllCompletionBlock)completion {
+    NSDate *timestamp = [NSDate date];
+    [self calculateAllWithTimestamp:timestamp completion:completion];
+}
+
+- (void)calculateAllWithTimestamp:(NSDate *)timestamp completion:(YKFOATHSessionCalculateAllCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
-    NSDate *timestamp = [NSDate date];
     YKFAPDU *apdu = [[YKFOATHCalculateAllAPDU alloc] initWithTimestamp:timestamp];
     
     [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {

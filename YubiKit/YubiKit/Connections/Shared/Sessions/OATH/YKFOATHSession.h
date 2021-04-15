@@ -249,6 +249,26 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)calculateAllWithCompletion:(YKFOATHSessionCalculateAllCompletionBlock)completion;
 
 /*!
+ @method calculateAllWithTimestamp:completion:
+ 
+ @abstract
+    Sends to the key an OATH Calculate All request to calculate all stored credentials on the key.
+    The request is performed asynchronously on a background execution queue.
+ 
+ @param timestamp
+    The timestamp used when calculating the OTP.
+ 
+ @param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread. If the intention is to update the UI, dispatch the results
+    on the main thread to avoid an UIKit assertion.
+ 
+ @note
+    This method is thread safe and can be invoked from any thread (main or a background thread).
+ */
+- (void)calculateAllWithTimestamp:(NSDate *)timestamp completion:(YKFOATHSessionCalculateAllCompletionBlock)completion;
+
+/*!
  @method listCredentialsWithCompletion:
  
  @abstract
