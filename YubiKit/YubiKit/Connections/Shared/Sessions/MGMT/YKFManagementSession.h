@@ -42,6 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 */
 @interface YKFManagementSession : NSObject
 
+/// @abstract This property provides the version of the currently connected YubiKey.
+@property (nonatomic, readonly) YKFVersion *version;
+
 /*!
 @method readConfigurationWithCompletion:
 
