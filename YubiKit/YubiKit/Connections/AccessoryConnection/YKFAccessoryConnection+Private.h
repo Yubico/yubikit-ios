@@ -29,6 +29,7 @@ typedef void (^YKFAccessoryConnectionStateChangeBlock)(YKFAccessoryConnectionSta
 
 @interface YKFAccessoryConnection()
 
+@property (nonatomic, readonly) YKFAccessoryConnectionState state;
 @property(nonatomic, weak) id<YKFAccessoryConnectionDelegate> _Nullable delegate;
 
 /*

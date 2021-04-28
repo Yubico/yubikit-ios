@@ -93,7 +93,9 @@
  
  @abstract
     The delegate must conform to the YKFManagerDelegate protocol. Setting this delegate will allow you
-    to get notifications when a connection to the YubiKey is established or broken.
+    to get notifications when a connection to the YubiKey is established or broken. If a connection is
+    already established when the delegate is assigned the didConnect delegate methods will be called
+    immediately.
  */
 @property(nonatomic, weak) id<YKFManagerDelegate> _Nullable delegate;
 

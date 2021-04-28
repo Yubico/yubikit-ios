@@ -42,8 +42,8 @@ static const NSUInteger YKFPCSCLayerContextLimit = 10;
 static const NSUInteger YKFPCSCLayerCardLimitPerContext = 10;
 
 @interface YubiKitManager()
-@property (nonatomic, readonly, nonnull) YKFNFCConnection *nfcSession NS_AVAILABLE_IOS(11.0);
-@property (nonatomic, readonly, nonnull) YKFAccessoryConnection *accessorySession;
+@property (nonatomic, readonly, nonnull) YKFNFCConnection *nfcConnection NS_AVAILABLE_IOS(11.0);
+@property (nonatomic, readonly, nonnull) YKFAccessoryConnection *accessoryConnection;
 @end
 
 @interface YKFPCSCLayer()
@@ -82,7 +82,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
 #endif
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedInstance = [[YKFPCSCLayer alloc] initWithAccessorySession:YubiKitManager.shared.accessorySession];
+        sharedInstance = [[YKFPCSCLayer alloc] initWithAccessorySession:YubiKitManager.shared.accessoryConnection];
     });
     return sharedInstance;
 }
@@ -190,7 +190,7 @@ static id<YKFPCSCLayerProtocol> sharedInstance;
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
-    YKFSmartCardInterface *smartCard = YubiKitManager.shared.accessorySession.smartCardInterface;
+    YKFSmartCardInterface *smartCard = YubiKitManager.shared.accessoryConnection.smartCardInterface;
     
     if (smartCard) {
         [smartCard executeCommand:command completion:^(NSData * _Nullable data, NSError * _Nullable error) {

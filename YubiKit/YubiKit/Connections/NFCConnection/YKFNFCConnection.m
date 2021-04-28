@@ -69,6 +69,10 @@
     return self;
 }
 
+- (YKFNFCConnectionState)state {
+    return _nfcConnectionState;
+}
+
 - (YKFSmartCardInterface *)smartCardInterface {
     if (!self.connectionController) {
         return nil;
@@ -269,6 +273,8 @@
         return;
     }
     
+    self.nfcConnectionState = state;
+
     switch (state) {
         case YKFNFCConnectionStateClosed:
             [self.delegate didDisconnectNFC:self error:self.nfcConnectionError];
@@ -301,7 +307,6 @@
             break;
     }
     
-    self.nfcConnectionState = state;
 }
 
 #pragma mark - Tag availability observation

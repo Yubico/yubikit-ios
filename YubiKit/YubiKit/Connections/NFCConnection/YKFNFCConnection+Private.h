@@ -26,6 +26,7 @@
 
 @interface YKFNFCConnection()
 
+@property (nonatomic, readonly) YKFNFCConnectionState state;
 @property(nonatomic, weak) id<YKFNFCConnectionDelegate> _Nullable delegate;
 
 @end

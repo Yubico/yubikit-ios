@@ -23,15 +23,15 @@
 
 @interface YubiKitManager()<YKFAccessoryConnectionDelegate, YKFNFCConnectionDelegate>
 
-@property (nonatomic, readwrite) YKFNFCConnection *nfcSession NS_AVAILABLE_IOS(11.0);
-@property (nonatomic, readwrite) YKFAccessoryConnection *accessorySession;
-@property (nonatomic, readwrite) YKFNFCOTPSession *otpSession NS_AVAILABLE_IOS(11.0);
+@property (nonatomic, readwrite) YKFNFCConnection *nfcConnection;
+@property (nonatomic, readwrite) YKFAccessoryConnection *accessoryConnection;
+@property (nonatomic, readwrite) YKFNFCOTPSession *otpSession;
 
 @end
 
 @implementation YubiKitManager
 
-@synthesize delegate;
+id<YKFManagerDelegate> _delegate;
 
 static YubiKitManager *sharedInstance;
 
@@ -49,14 +49,14 @@ static YubiKitManager *sharedInstance;
         if (@available(iOS 11, *)) {
             YKFNFCConnection *nfcConnection = [[YKFNFCConnection alloc] init];
             nfcConnection.delegate = self;
-            self.nfcSession = nfcConnection;
+            self.nfcConnection = nfcConnection;
         }
        
         YKFAccessoryConnectionConfiguration *configuration = [[YKFAccessoryConnectionConfiguration alloc] init];
         EAAccessoryManager *accessoryManager = [EAAccessoryManager sharedAccessoryManager];
         YKFAccessoryConnection *accessoryConnection = [[YKFAccessoryConnection alloc] initWithAccessoryManager:accessoryManager configuration:configuration];
         accessoryConnection.delegate = self;
-        self.accessorySession = accessoryConnection;
+        self.accessoryConnection = accessoryConnection;
         
         if (@available(iOS 11.0, *)) {
             self.otpSession = [[YKFNFCOTPSession alloc] initWithTokenParser:nil session:nil];
@@ -65,24 +65,33 @@ static YubiKitManager *sharedInstance;
     return self;
 }
 
-//- (void)setDelegate:(id<YKFManagerDelegate>)delegate {
-//    self.delegate = delegate;
-//}
+- (void)setDelegate:(id<YKFManagerDelegate>)delegate {
+    _delegate = delegate;
+    if (self.accessoryConnection.state == YKFAccessoryConnectionStateOpen) {
+        [self.delegate didConnectAccessory:self.accessoryConnection];
+    } else if (self.nfcConnection.state == YKFNFCConnectionStateOpen) {
+        [self.delegate didConnectNFC:self.nfcConnection];
+    }
+}
+
+-(id<YKFManagerDelegate>)delegate {
+    return _delegate;
+}
 
 - (void)startAccessoryConnection {
-    [self.accessorySession start];
+    [self.accessoryConnection start];
 }
 
 - (void)stopAccessoryConnection {
-    [self.accessorySession stop];
+    [self.accessoryConnection stop];
 }
 
 - (void)startNFCConnection API_AVAILABLE(ios(13.0)) {
-    [self.nfcSession start];
+    [self.nfcConnection start];
 }
 
 - (void)stopNFCConnection API_AVAILABLE(ios(13.0)) {
-    [self.nfcSession stop];
+    [self.nfcConnection stop];
 }
 
 - (void)didConnectAccessory:(YKFAccessoryConnection *_Nonnull)connection {
