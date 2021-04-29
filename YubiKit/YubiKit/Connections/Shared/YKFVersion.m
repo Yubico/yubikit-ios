@@ -24,6 +24,17 @@
 
 @implementation YKFVersion
 
+- (instancetype)initWithData:(NSData *)data {
+    self = [super init];
+    if (self) {
+        UInt8 *bytes = (UInt8 *)data.bytes;
+        self.major = bytes[0];
+        self.minor = bytes[1];
+        self.micro = bytes[2];
+    }
+    return self;
+}
+
 - (instancetype)initWithBytes:(UInt8)major minor:(UInt8)minor micro:(UInt8)micro {
     self = [super init];
     if (self) {
@@ -58,6 +69,10 @@
         return minorResult;
     }
     return [[NSNumber numberWithUnsignedShort:self.micro] compare:[NSNumber numberWithUnsignedShort:version.micro]];
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%i.%i.%i.", self.major, self.minor, self.micro];
 }
 
 @end

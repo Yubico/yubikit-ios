@@ -1,14 +1,19 @@
+// Copyright 2018-2021 Yubico AB
 //
-//  YKFManagementConfiguration.m
-//  YubiKit
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-//  Created by Irina Makhalova on 2/4/20.
-//  Copyright © 2020 Yubico. All rights reserved.
+// http://www.apache.org/licenses/LICENSE-2.0
 //
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
 
 #import "YKFManagementInterfaceConfiguration.h"
-#import "YKFManagementReadConfigurationResponse.h"
-#import "YKFManagementReadConfigurationResponse+Private.h"
+#import "YKFManagementDeviceInfo+Private.h"
+#import "YKFManagementDeviceInfo.h"
 #import "YKFAssert.h"
 
 @interface YKFManagementInterfaceConfiguration()
@@ -28,26 +33,16 @@
 
 @implementation YKFManagementInterfaceConfiguration
 
-- (nullable instancetype)initWithResponse:(nonnull YKFManagementReadConfigurationResponse *)response {
-    YKFAssertAbortInit(response);
+- (nullable instancetype)initWithDeviceInfo:(nonnull YKFManagementDeviceInfo *)deviceInfo {
+    YKFAssertAbortInit(deviceInfo);
     self = [super init];
     if (self) {
 
-        self.isConfigurationLocked = false;
-        if (response.configurationLocked != nil && response.configurationLocked.length > 0) {
-            const char* configBytes = (const char*)[response.configurationLocked bytes];
-            for (NSUInteger index = 0; index < response.configurationLocked.length; index++) {
-                if (configBytes[index] != 0) {
-                    self.isConfigurationLocked = true;
-                    break;
-                }
-            }
-        }
-        
-        self.usbSupportedMask = response.usbSupportedMask;
-        self.nfcSupportedMask = response.nfcSupportedMask;
-        self.usbEnabledMask = response.usbEnabledMask;
-        self.nfcEnabledMask = response.nfcEnabledMask;
+        self.isConfigurationLocked = deviceInfo.isConfigurationLocked;
+        self.usbSupportedMask = deviceInfo.usbSupportedMask;
+        self.nfcSupportedMask = deviceInfo.nfcSupportedMask;
+        self.usbEnabledMask = deviceInfo.usbEnabledMask;
+        self.nfcEnabledMask = deviceInfo.nfcEnabledMask;
     }
     return self;
 }
