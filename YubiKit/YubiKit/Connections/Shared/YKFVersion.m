@@ -72,7 +72,7 @@
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"%i.%i.%i.", self.major, self.minor, self.micro];
+    return [NSString stringWithFormat:@"%i.%i.%i", self.major, self.minor, self.micro];
 }
 
 @end
