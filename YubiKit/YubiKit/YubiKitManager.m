@@ -31,7 +31,7 @@
 
 @implementation YubiKitManager
 
-id<YKFManagerDelegate> _delegate;
+__weak id<YKFManagerDelegate> _delegate;
 
 static YubiKitManager *sharedInstance;
 
