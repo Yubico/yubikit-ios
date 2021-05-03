@@ -191,6 +191,34 @@ class OATHTests: XCTestCase {
             }
         }
     }
+    
+    func testAuthFailAndThenAuthAgain() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSession { session in
+                session.setPassword("271828") { error in
+                    guard error == nil else { XCTFail("Failed to set password: \(error!)"); return }
+                    connection.fido2Session { fidoSession, error in
+                        guard error == nil else { XCTAssertTrue(false); return }
+                        connection.oathSession { session, error in
+                            guard let session = session else { XCTFail("Did not get a session: \(error!)"); return }
+                            session.calculateAll { credentials, error in
+                                guard error != nil else { XCTFail("Did not get auth error"); return }
+                                session.unlock(withPassword:"271828") { error in
+                                    guard error == nil else {  XCTFail("Failed to unlock: \(error!)"); return }
+                                    session.listCredentials { credentials, error in
+                                        XCTAssert(error == nil)
+                                        print("✅ set OATH password and unlock")
+                                        completion()
+                                    }
+                                }
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 extension YKFConnectionProtocol {

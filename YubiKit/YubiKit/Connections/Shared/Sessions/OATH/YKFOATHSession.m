@@ -349,7 +349,6 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
         switch(error.code) {
             case YKFAPDUErrorCodeAuthenticationRequired:
                 if (executionTime < YKFOATHServiceTimeoutThreshold) {
-                    self.cachedSelectApplicationResponse = nil; // Clear the cache to allow the application selection again.
                     completion(nil, [YKFOATHError errorWithCode:YKFOATHErrorCodeAuthenticationRequired]);
                 } else {
                     completion(nil, [YKFOATHError errorWithCode:YKFOATHErrorCodeTouchTimeout]);
