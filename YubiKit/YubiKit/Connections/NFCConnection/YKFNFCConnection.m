@@ -169,6 +169,16 @@
     [self updateServicesForSession:self.nfcTagReaderSession tag:nil state:YKFNFCConnectionStateClosed errorMessage:nil];
 }
 
+- (void)stopWithMessage:(NSString *)message API_AVAILABLE(ios(13.0)) {
+    if (!self.nfcTagReaderSession) {
+        YKFLogInfo(@"NFC session already stopped. Ignoring stop request.");
+        return;
+    }
+    
+    [self setAlertMessage:message];
+    [self updateServicesForSession:self.nfcTagReaderSession tag:nil state:YKFNFCConnectionStateClosed errorMessage:nil];
+}
+
 - (void)stopWithErrorMessage:(NSString *)errorMessage API_AVAILABLE(ios(13.0)) {
     if (!self.nfcTagReaderSession) {
         YKFLogInfo(@"NFC session already stopped. Ignoring stop request.");

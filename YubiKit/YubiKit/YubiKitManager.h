@@ -120,10 +120,21 @@
 - (void)stopNFCConnection API_AVAILABLE(ios(13.0));
 
 /*!
- @method stopNFCConnectionWithError:
+ @method stopNFCConnectionWithMessage:
  
  @abstract
-    Stop the NFC connection with an error message.
+    Stop the NFC connection and display a message.
+ 
+ @discussion
+    Use this method to close the NFC connection and display a message to the user.
+  */
+- (void)stopNFCConnectionWithMessage:(NSString *_Nonnull)message API_AVAILABLE(ios(13.0)) NS_SWIFT_NAME(stopNFCConnection(withMessage:));
+
+/*!
+ @method stopNFCConnectionWithErrorMessage:
+ 
+ @abstract
+    Stop the NFC connection and display a error message.
  
  @discussion
     Use this method to close the NFC connection and display a message to the user when an error condition
