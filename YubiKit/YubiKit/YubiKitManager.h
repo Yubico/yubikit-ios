@@ -130,7 +130,7 @@
     occurs after the app successfully executed a command. This type of error can occur if, for example,
     you send a password to unlock the YubiKey and it is not the matching password.
   */
-- (void)stopNFCConnectionWithErrorMessage:(NSString *_Nonnull)errorMessage API_AVAILABLE(ios(13.0));
+- (void)stopNFCConnectionWithErrorMessage:(NSString *_Nonnull)errorMessage API_AVAILABLE(ios(13.0)) NS_SWIFT_NAME(stopNFCConnection(withErrorMessage:));
 
 /*!
  @method startAccessoryConnection
