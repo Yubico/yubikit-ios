@@ -120,6 +120,19 @@
 - (void)stopNFCConnection API_AVAILABLE(ios(13.0));
 
 /*!
+ @method stopNFCConnectionWithError:
+ 
+ @abstract
+    Stop the NFC connection with an error message.
+ 
+ @discussion
+    Use this method to close the NFC connection and display a message to the user when an error condition
+    occurs after the app successfully executed a command. This type of error can occur if, for example,
+    you send a password to unlock the YubiKey and it is not the matching password.
+  */
+- (void)stopNFCConnectionWithErrorMessage:(NSString *_Nonnull)errorMessage API_AVAILABLE(ios(13.0));
+
+/*!
  @method startAccessoryConnection
  
  @abstract

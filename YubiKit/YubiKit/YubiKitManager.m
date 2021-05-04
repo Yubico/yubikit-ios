@@ -94,6 +94,11 @@ static YubiKitManager *sharedInstance;
     [self.nfcConnection stop];
 }
 
+- (void)stopNFCConnectionWithErrorMessage:(NSString *_Nonnull)errorMessage API_AVAILABLE(ios(13.0)) {
+    [self.nfcConnection stopWithErrorMessage:errorMessage];
+}
+
+
 - (void)didConnectAccessory:(YKFAccessoryConnection *_Nonnull)connection {
     [self.delegate didConnectAccessory:connection];
 }
