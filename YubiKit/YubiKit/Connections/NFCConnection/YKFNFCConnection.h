@@ -74,6 +74,14 @@ typedef NS_ENUM(NSUInteger, YKFNFCConnectionState) {
 - (void)stop API_AVAILABLE(ios(13.0));
 
 /*!
+ @method stopWithErrorMessage:
+ 
+ @abstract
+    Closes the communication with the key and display an error message.
+ */
+- (void)stopWithErrorMessage:(NSString *)errorMessage API_AVAILABLE(ios(13.0));
+
+/*!
  @method cancelCommands
  
  @abstract:
