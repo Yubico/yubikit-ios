@@ -84,7 +84,6 @@ typedef void (^YKFPIVSessionDataCompletionBlock)
 
 @interface YKFPIVSession()
 
-@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
 @property (nonatomic, readonly) BOOL isValid;
 @property (nonatomic, readwrite) YKFVersion * _Nonnull version;
 @property (nonatomic, readwrite) YKFPIVSessionFeatures * _Nonnull features;

@@ -26,7 +26,6 @@ NSString* const YKFManagementErrorDomain = @"com.yubico.management";
 @interface YKFManagementSession()
 
 @property (nonatomic, readwrite) YKFVersion *version;
-@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
 @property (nonatomic, readwrite) YKFManagementSessionFeatures * _Nonnull features;
 
 - (YKFVersion *)versionFromResponse:(nonnull NSData *)data;

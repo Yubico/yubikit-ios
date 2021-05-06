@@ -16,6 +16,7 @@
 #define YKFPIVSession_h
 
 #import "YKFVersion.h"
+#import "YKFSession+Private.h"
 #import "YKFPIVKeyType.h"
 
 /// Touch policy for PIV application.
@@ -145,7 +146,7 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 /// @abstract Provides the interface for executing PIV requests with the key.
 /// @discussion The PIV session is mantained by the YKFConnection which controls its lifecycle. The application
 ///             must not create one.
-@interface YKFPIVSession: NSObject <YKFVersionProtocol>
+@interface YKFPIVSession: YKFSession <YKFVersionProtocol>
 
 /// @abstract This property provides the version of the currently connected YubiKey.
 @property (nonatomic, readonly) YKFVersion * _Nonnull version;

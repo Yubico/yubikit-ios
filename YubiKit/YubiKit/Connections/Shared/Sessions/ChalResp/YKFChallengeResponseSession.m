@@ -17,12 +17,6 @@
 #import "YKFSessionError+Private.h"
 #import "YKFSelectApplicationAPDU.h"
 
-@interface YKFChallengeResponseSession()
-
-@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
-
-@end
-
 @implementation YKFChallengeResponseSession
 
 + (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController

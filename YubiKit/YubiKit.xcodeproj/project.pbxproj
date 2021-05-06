@@ -326,6 +326,7 @@
 		51ACC34925E7EC910069214B /* YKFPIVError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVError.h; sourceTree = "<group>"; };
 		51ACC34A25E7ECA80069214B /* YKFPIVError.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVError.m; sourceTree = "<group>"; };
 		51B48A0B2552D60B00D4C7E8 /* YKFChallengeResponseSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFChallengeResponseSession+Private.h"; sourceTree = "<group>"; };
+		51D1E84F2643179E00BDA3FF /* YKFSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFSession+Private.h"; sourceTree = "<group>"; };
 		51E1B97A25765454003C1CA4 /* YKFOATHCredentialTemplate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHCredentialTemplate.m; sourceTree = "<group>"; };
 		51E1B98025765547003C1CA4 /* YKFOATHCredentialTemplate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHCredentialTemplate.h; sourceTree = "<group>"; };
 		51E1B9812576565E003C1CA4 /* YKFOATHCredentialTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHCredentialTypes.h; sourceTree = "<group>"; };
@@ -986,14 +987,15 @@
 		9581394E21590652008558F3 /* Sessions */ = {
 			isa = PBXGroup;
 			children = (
-				51ACC2F425D5857F0069214B /* PIV */,
 				958D0B62215D106F00942CB9 /* YKFSession.h */,
+				51D1E84F2643179E00BDA3FF /* YKFSession+Private.h */,
 				958D0B63215D106F00942CB9 /* YKFSession.m */,
 				51202093255150FF00B0384D /* YKFSessionProtocol+Private.h */,
-				814813E623EA38120003893B /* Management */,
 				81311F3723AAF9F400765522 /* ChalResp */,
 				95D9D3D921D510A700473888 /* FIDO2 */,
+				814813E623EA38120003893B /* Management */,
 				958139562159281D008558F3 /* OATH */,
+				51ACC2F425D5857F0069214B /* PIV */,
 				958139552159280B008558F3 /* U2F */,
 			);
 			path = Sessions;
@@ -1601,7 +1603,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LQA3CS5MM7;
 				INFOPLIST_FILE = YubiKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = "-ObjcC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.YubiKitTests;
@@ -1617,7 +1619,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LQA3CS5MM7;
 				INFOPLIST_FILE = YubiKitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = "-ObjcC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yubico.YubiKitTests;

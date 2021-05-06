@@ -23,8 +23,6 @@
 #import "YKFSessionError+Private.h"
 #import "YKFAPDU+Private.h"
 
-typedef void (^YKFConnectionControllerCommunicationQueueBlock)(NSOperation *operation);
-
 @interface YKFAccessoryConnectionController()
 
 @property (nonatomic) NSOperationQueue *communicationQueue;
@@ -308,43 +306,6 @@ static NSTimeInterval const YKFAccessoryConnectionCommandTime = 0.002;
         
         YKFLogVerbose(@"Command execution time: %lf seconds", executionTime);
     }];
-}
-
-- (void)dispatchOnSequentialQueue:(YKFConnectionControllerCompletionBlock)block delay:(NSTimeInterval)delay {
-    dispatch_queue_t sharedDispatchQueue = self.communicationQueue.underlyingQueue;
-    
-    YKFParameterAssertReturn(sharedDispatchQueue);
-    YKFParameterAssertReturn(block);
-
-    block = [block copy]; // heap block
-    
-    if (delay == 0) {
-        dispatch_async(sharedDispatchQueue, block);
-    } else {
-        NSString *blockId = [NSUUID UUID].UUIDString;
-        
-        ykf_weak_self();
-        dispatch_block_t delayedBlock = dispatch_block_create(0, ^{
-            ykf_safe_strong_self();
-            dispatch_block_t blockReference = strongSelf.delayedDispatches[blockId];
-            strongSelf.delayedDispatches[blockId] = nil;
-            
-            // In case the block started already to run.
-            if (blockReference && dispatch_block_testcancel(blockReference)) {
-                return;
-            }
-            
-            block();
-        });
-        
-        self.delayedDispatches[blockId] = delayedBlock;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), sharedDispatchQueue, delayedBlock);
-    }
-}
-
-- (void)dispatchOnSequentialQueue:(YKFConnectionControllerCompletionBlock)block {
-    YKFParameterAssertReturn(block);
-    [self dispatchOnSequentialQueue:block delay:0];
 }
 
 - (void)cancelAllCommands {

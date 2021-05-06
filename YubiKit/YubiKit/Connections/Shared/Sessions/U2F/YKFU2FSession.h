@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
+#import "YKFSession+Private.h"
 
 @class YKFU2FSignRequest, YKFU2FSignResponse, YKFU2FRegisterRequest, YKFU2FRegisterResponse;
 /**
@@ -88,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
  @discussion
     The U2F session is mantained by the YKFConnection which controls its lifecycle. The application must not create one.
  */
-@interface YKFU2FSession: NSObject
+@interface YKFU2FSession: YKFSession
 
 /*!
  @property keyState

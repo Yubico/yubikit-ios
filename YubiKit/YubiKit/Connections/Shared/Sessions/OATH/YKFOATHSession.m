@@ -59,8 +59,6 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
 
 @interface YKFOATHSession()
 
-@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
-
 /*
  In case of OATH, the reselection of the application leads to the loss of authentication (if any). To avoid
  this the select application response is cached to avoid reselecting the applet. If the request fails with

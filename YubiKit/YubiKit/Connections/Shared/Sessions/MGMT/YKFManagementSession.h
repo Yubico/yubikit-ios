@@ -13,6 +13,7 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFVersion.h"
+#import "YKFSession+Private.h"
 
 @class YKFManagementDeviceInfo, YKFManagementInterfaceConfiguration;
 
@@ -49,7 +50,7 @@ typedef void (^YKFManagementSessionWriteCompletionBlock) (NSError* _Nullable err
 NS_ASSUME_NONNULL_BEGIN
 
 /// @abstract Defines the interface for YKFManagementSessionProtocol.
-@interface YKFManagementSession : NSObject <YKFVersionProtocol>
+@interface YKFManagementSession : YKFSession <YKFVersionProtocol>
 
 /// @abstract
 ///    Reads configuration from YubiKey (what interfaces/applications are enabled and supported)

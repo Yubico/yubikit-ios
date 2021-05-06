@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFSession.h"
+#import "YKFSession+Private.h"
 #import "YKFVersion.h"
 
 @class YKFOATHCode,
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
     The OATH session is mantained by the YKFConnection which controls its lifecycle. The application must not
     create one.
  */
-@interface YKFOATHSession: NSObject
+@interface YKFOATHSession: YKFSession <YKFVersionProtocol>
 
 @property (nonatomic, readonly) YKFVersion* version;
 
