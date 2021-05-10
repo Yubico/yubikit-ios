@@ -290,7 +290,15 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
     // Build the request APDU with the select ID salt
     YKFOATHSetPasswordAPDU *apdu = [[YKFOATHSetPasswordAPDU alloc] initWithPassword:password salt:self.cachedSelectApplicationResponse.selectID];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
-        completion(error);
+        if (error) {
+            if (error.code == YKFAPDUErrorCodeAuthenticationRequired) {
+                completion([YKFOATHError errorWithCode:YKFOATHErrorCodeAuthenticationRequired]);
+            } else {
+                completion(error);
+            }
+        } else {
+            completion(nil);
+        }
     }];
 }
 
