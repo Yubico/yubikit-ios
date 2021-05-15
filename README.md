@@ -64,7 +64,7 @@ pod 'YubiKit', :git => 'https://github.com/Yubico/yubikit-ios.git'
 
 Once YubiKit is added to your `Podfile`, run `pod install` and open the `*.xcworkspace` with Xcode. 
 
-Then import the YubiKit module and you can use it's classes and methods.
+Then import the YubiKit module and you can use its classes and methods.
 ```
 import YubiKit
 ```
