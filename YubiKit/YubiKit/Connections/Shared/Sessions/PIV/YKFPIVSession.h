@@ -52,7 +52,9 @@ typedef NS_ENUM(NSUInteger, YKFPIVFErrorCode) {
     YKFPIVFErrorCodeInvalidCipherTextLength = 1,
     YKFPIVFErrorCodeUnsupportedOperation = 2,
     YKFPIVFErrorCodeDataParseError = 3,
-    YKFPIVFErrorCodeUnknownKeyType = 4
+    YKFPIVFErrorCodeUnknownKeyType = 4,
+    YKFPIVFErrorCodeInvalidPin = 5,
+    YKFPIVFErrorCodePinLocked = 6
 };
 
 @class YKFPIVSessionFeatures, YKFPIVManagementKeyType, YKFPIVManagementKeyMetadata;
