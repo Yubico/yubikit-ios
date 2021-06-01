@@ -43,7 +43,6 @@
 		8152341223BAE9D2004D4788 /* YKFChallengeResponseError.m in Sources */ = {isa = PBXBuildFile; fileRef = 8152341123BAE9D2004D4788 /* YKFChallengeResponseError.m */; };
 		816C684B2343126100209342 /* YKFNFCTagDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 816C684A2343126100209342 /* YKFNFCTagDescription.m */; };
 		816C684E23431BE600209342 /* YKFNFCTagDescription.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 816C68492343126100209342 /* YKFNFCTagDescription.h */; };
-		81F94D8A23F2371200475A70 /* YKFManagementError.m in Sources */ = {isa = PBXBuildFile; fileRef = 81F94D8923F2371200475A70 /* YKFManagementError.m */; };
 		81F94D9123F4DF4400475A70 /* YKFManagementInterfaceConfiguration.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 81F94D8523EE246C00475A70 /* YKFManagementInterfaceConfiguration.h */; };
 		81FD3B9424048295004C4FE9 /* YKFOATHSelectApplicationResponse.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95D61A052170B26F001E7AC8 /* YKFOATHSelectApplicationResponse.h */; };
 		81FD3B982404889C004C4FE9 /* YKFVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 81FD3B972404889C004C4FE9 /* YKFVersion.m */; };
@@ -363,8 +362,6 @@
 		81DF8FD9237B531700737268 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		81DF8FDA237B534D00737268 /* docs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = docs; path = ../docs; sourceTree = "<group>"; };
 		81F94D8523EE246C00475A70 /* YKFManagementInterfaceConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YKFManagementInterfaceConfiguration.h; path = MGMT/YKFManagementInterfaceConfiguration.h; sourceTree = "<group>"; };
-		81F94D8823F2371200475A70 /* YKFManagementError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFManagementError.h; sourceTree = "<group>"; };
-		81F94D8923F2371200475A70 /* YKFManagementError.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFManagementError.m; sourceTree = "<group>"; };
 		81F94D8C23F26F7B00475A70 /* YKFManagementInterfaceConfiguration+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "YKFManagementInterfaceConfiguration+Private.h"; path = "MGMT/YKFManagementInterfaceConfiguration+Private.h"; sourceTree = "<group>"; };
 		81FD3B962404889C004C4FE9 /* YKFVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFVersion.h; sourceTree = "<group>"; };
 		81FD3B972404889C004C4FE9 /* YKFVersion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFVersion.m; sourceTree = "<group>"; };
@@ -1299,8 +1296,6 @@
 				955188272265E4B9001A4191 /* YKFU2FError.m */,
 				8152341023BAE9D2004D4788 /* YKFChallengeResponseError.h */,
 				8152341123BAE9D2004D4788 /* YKFChallengeResponseError.m */,
-				81F94D8823F2371200475A70 /* YKFManagementError.h */,
-				81F94D8923F2371200475A70 /* YKFManagementError.m */,
 				51ACC34925E7EC910069214B /* YKFPIVError.h */,
 				51ACC34A25E7ECA80069214B /* YKFPIVError.m */,
 			);
@@ -1559,7 +1554,6 @@
 				95B0CAAD21EF53E1009C6A34 /* YKFFIDO2Error.m in Sources */,
 				95DD40A72099A8A400363FEE /* YKFAccessoryConnection.m in Sources */,
 				95DD409D2099A89600363FEE /* YKFU2FRegisterResponse.m in Sources */,
-				81F94D8A23F2371200475A70 /* YKFManagementError.m in Sources */,
 				95A4566C2177663800AD5A94 /* YKFOATHCalculateAllResponse.m in Sources */,
 				953A5079213E9F4600929ABB /* YKFAccessoryDescription.m in Sources */,
 				956DBB9021EE1E5E004D6EE3 /* YKFFIDO2GetInfoAPDU.m in Sources */,
