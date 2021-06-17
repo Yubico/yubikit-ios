@@ -346,7 +346,7 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
     }
     
     NSDate *startTime = [NSDate date];
-    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    [self.smartCardInterface executeCommand:apdu sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsOATH completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (data) {
             completion(data, nil);
             return;

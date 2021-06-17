@@ -38,6 +38,21 @@ class OATHTests: XCTestCase {
         }
     }
     
+    func testCalculateLotsOfTOTP() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSession { session in
+                for n in 0...19 {
+                    session.storeRandomCredential(number: n)
+                }
+                session.calculateAll { credentials, error in
+                    guard let credentials = credentials else { XCTFail("Error: \(error!)"); completion(); return }
+                    print("✅ calculated \(credentials.count) credentials")
+                    completion()
+                }
+            }
+        }
+    }
+    
     func testCreateListAndCalculateTOTP() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSession { session in
@@ -206,6 +221,19 @@ class OATHTests: XCTestCase {
                 print("✅ last OATH test, reset application")
                 completion()
             }
+        }
+    }
+}
+
+extension YKFOATHSession {
+    func storeRandomCredential(number: Int) {
+        let account = "test-\(number)@yubico.com"
+        let issuer = "Account-\(number)"
+        let secret = "UOA6FJYR76R\(number)BGDJKLYICL3MUR7QH"
+        let url = URL(string: "otpauth://totp/Yubico:\(account)?secret=\(secret)&\(issuer)&algorithm=SHA1&digits=6&period=30")!
+        let template = YKFOATHCredentialTemplate(url: url)!
+        self.put(template, requiresTouch: false) { error in
+            if error != nil { XCTFail("Error: \(error!)") }
         }
     }
 }
