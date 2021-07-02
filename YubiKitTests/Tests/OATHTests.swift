@@ -53,6 +53,67 @@ class OATHTests: XCTestCase {
         }
     }
     
+    func testCalculateAllTouchRequiredTOTP() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSession { session in
+                let totpUrl = URL(string: "otpauth://totp/Yubico:test-totp@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-requires-touch&algorithm=SHA1&digits=6&counter=30")!
+                let template = YKFOATHCredentialTemplate(url: totpUrl)!
+                session.put(template, requiresTouch: true) { error in
+                    guard error == nil else { XCTFail("Failed creating TOTP"); return }
+                    session.calculateAll { credentials, error in
+                        guard let credential = credentials?.first else { XCTFail("No credentials calculated"); return }
+                        XCTAssert(credential.credential.issuer == "test-requires-touch")
+                        XCTAssert(credential.credential.accountName == "test-totp@yubico.com")
+                        XCTAssert(credential.credential.requiresTouch == true)
+                        print("✅ create OATH TOTP credential that requires touch")
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+    
+    func testlistCredentialsTouchRequiredTOTP() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSession { session in
+                let totpUrl = URL(string: "otpauth://totp/Yubico:test-totp@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-requires-touch&algorithm=SHA1&digits=6&counter=30")!
+                let template = YKFOATHCredentialTemplate(url: totpUrl)!
+                session.put(template, requiresTouch: true) { error in
+                    guard error == nil else { XCTFail("Failed creating TOTP"); return }
+                    session.listCredentials { credentials, error in
+                        guard let credential = credentials?.first else { XCTFail("No credentials calculated"); return }
+                        XCTAssert(credential.issuer == "test-requires-touch")
+                        XCTAssert(credential.accountName == "test-totp@yubico.com")
+                        XCTAssert(credential.requiresTouch == true)
+                        print("✅ create OATH TOTP credential that requires touch")
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+                
+    
+    func testTouchRequiredHOTP() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSession { session in
+                let hotpUrl = URL(string: "otpauth://hotp/Yubico:test-hotp@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-requires-touch&algorithm=SHA1&digits=6&counter=30")!
+                let template = YKFOATHCredentialTemplate(url: hotpUrl)!
+                session.put(template, requiresTouch: true) { error in
+                    guard error == nil else { XCTFail("Failed creating HOTP"); return }
+                    session.calculateAll { credentials, error in
+                        guard let credential = credentials?.first else { XCTFail("No credentials calculated"); return }
+                        XCTAssert(credential.credential.issuer == "test-requires-touch")
+                        XCTAssert(credential.credential.accountName == "test-hotp@yubico.com")
+                        XCTAssert(credential.credential.requiresTouch == true)
+                        print("✅ create OATH HOTP credential that requires touch")
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+
     func testCreateListAndCalculateTOTP() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSession { session in

@@ -351,10 +351,10 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
             completion(data, nil);
             return;
         }
-        NSTimeInterval executionTime = [startTime timeIntervalSinceNow];
+        NSTimeInterval executionTime = -[startTime timeIntervalSinceNow];
         switch(error.code) {
             case YKFAPDUErrorCodeAuthenticationRequired:
-                if (executionTime > YKFOATHServiceTimeoutThreshold) {
+                if (executionTime < YKFOATHServiceTimeoutThreshold) {
                     completion(nil, [YKFOATHError errorWithCode:YKFOATHErrorCodeAuthenticationRequired]);
                 } else {
                     completion(nil, [YKFOATHError errorWithCode:YKFOATHErrorCodeTouchTimeout]);
