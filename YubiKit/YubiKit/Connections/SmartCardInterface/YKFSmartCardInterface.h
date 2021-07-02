@@ -21,10 +21,10 @@
 @class YKFAPDU, YKFSelectApplicationAPDU;
 @protocol YKFConnectionControllerProtocol;
 
-//typedef void (^YKFSmartCardInterfaceSelectApplicationResponseBlock)
-//    (NSError* _Nullable error);
 typedef void (^YKFSmartCardInterfaceResponseBlock)
     (NSData* _Nullable data, NSError* _Nullable error);
+
+typedef void (^YKFSmartCardInterfaceCommandBlock)(void);
 
 typedef NS_ENUM(NSUInteger, YKFSmartCardInterfaceSendRemainingIns) {
     
@@ -52,6 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns completion:(YKFSmartCardInterfaceResponseBlock)completion;
 
 - (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns timeout:(NSTimeInterval)timeout completion:(YKFSmartCardInterfaceResponseBlock)completion;
+
+- (void)dispatchAfterCurrentCommands:(YKFSmartCardInterfaceCommandBlock)block;
 
 NS_ASSUME_NONNULL_END
 

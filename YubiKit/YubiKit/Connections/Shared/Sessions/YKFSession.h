@@ -17,13 +17,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^YKFSessionCommandBlock)(void);
+
 @interface YKFSession: NSObject
 
-/// Removes the YLP headers and status code from the response data received from a key command response.
-+ (NSData *)dataFromKeyResponse:(NSData *)response;
-
-/// Returns the status code from a response received from a key command response.
-+ (UInt16)statusCodeFromKeyResponse:(NSData *)response;
+/// @abstract Dispatch a code block for execution once all currently scheduled commands have completed.
+/// @param block The block that gets called.
+- (void)dispatchAfterCurrentCommands:(YKFSessionCommandBlock)block NS_SWIFT_NAME(dispatchAfterCurrentCommands(block:));
 
 @end
 

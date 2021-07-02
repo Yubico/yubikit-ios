@@ -13,7 +13,9 @@
 // limitations under the License.
 
 #import "YKFSession.h"
+#import "YKFSession+Private.h"
 #import "YKFAccessoryConnectionController.h"
+#import "YKFSmartCardInterface.h"
 #import "YKFNSDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFAPDUError.h"
@@ -21,27 +23,8 @@
 
 @implementation YKFSession
 
-#pragma mark - Key Response
-
-+ (NSData *)dataFromKeyResponse:(NSData *)response {
-    YKFParameterAssertReturnValue(response, [NSData data]);
-    YKFAssertReturnValue(response.length >= 2, @"Key response data is too short.", [NSData data]);
-    
-    if (response.length == 2) {
-        return [NSData data];
-    } else {
-        NSRange range = {0, response.length - 2};
-        return [response subdataWithRange:range];
-    }
-}
-
-#pragma mark - Status Code
-
-+ (UInt16)statusCodeFromKeyResponse:(NSData *)response {
-    YKFParameterAssertReturnValue(response, YKFAPDUErrorCodeWrongLength);
-    YKFAssertReturnValue(response.length >= 2, @"Key response data is too short.", YKFAPDUErrorCodeWrongLength);
-    
-    return [response ykf_getBigEndianIntegerInRange:NSMakeRange([response length] - 2, 2)];
+- (void)dispatchAfterCurrentCommands:(YKFSessionCommandBlock)block {
+    [self.smartCardInterface dispatchAfterCurrentCommands:block];
 }
 
 @end

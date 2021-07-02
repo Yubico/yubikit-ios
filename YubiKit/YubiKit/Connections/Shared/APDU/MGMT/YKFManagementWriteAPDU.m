@@ -9,6 +9,7 @@
 #import "YKFManagementWriteAPDU.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFManagementInterfaceConfiguration+Private.h"
+#import "YKFManagementDeviceInfo+Private.h"
 #import "YKFNSMutableDataAdditions.h"
 #import "YKFAssert.h"
 
@@ -21,11 +22,11 @@ static UInt8 const YKFManagementConfigurationTagsReboot = 0x0c;
 
     NSMutableData *configData = [[NSMutableData alloc] init];
     if (configuration.usbMaskChanged) {
-        [configData ykf_appendShortWithTag:YKFManagementReadConfigurationTagsUsbEnabled data:configuration.usbEnabledMask];
+        [configData ykf_appendShortWithTag:YKFManagementTagUSBEnabled data:configuration.usbEnabledMask];
     }
     
     if (configuration.nfcMaskChanged) {
-        [configData ykf_appendShortWithTag:YKFManagementReadConfigurationTagsNfcEnabled data:configuration.nfcEnabledMask];
+        [configData ykf_appendShortWithTag:YKFManagementTagNFCEnabled data:configuration.nfcEnabledMask];
     }
     
     if (reboot) {

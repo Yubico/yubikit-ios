@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "YKFSession.h"
+#import "YKFSession+Private.h"
 #import "YKFSlot.h"
 
 /**
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 @abstract
    Defines the interface for YKFChallengeResponseSession.
 */
-@interface YKFChallengeResponseSession: NSObject
+@interface YKFChallengeResponseSession: YKFSession
 
 /*!
 @method sendChallenge:slot:completion:

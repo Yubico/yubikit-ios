@@ -76,8 +76,6 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
 // Keeps the state of the application selection to avoid reselecting the application.
 @property BOOL applicationSelected;
 
-@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
-
 @end
 
 @implementation YKFFIDO2Session

@@ -15,6 +15,36 @@
 import XCTest
 
 class SessionTests: XCTestCase {
+    
+    func testDispatchAfterCommands() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathSession { session, error in
+                guard let session = session else { completion(); XCTFail("Failed to get session: \(error!)"); return }
+                session.calculateAll { credentials, error in
+                    print("Finished calculating first set of credentials...")
+                }
+                session.calculateAll { credentials, error in
+                    print("Finished calculating second set of credentials...")
+                }
+                session.calculateAll { credentials, error in
+                    print("Finished calculating third set of credentials...")
+                }
+                session.calculateAll { credentials, error in
+                    print("Finished calculating fourth set of credentials...")
+                }
+                session.dispatchAfterCurrentCommands {
+                    print("✅ Block enqueued after fourth set executed...")
+                }
+                session.calculateAll { credentials, error in
+                    print("Finished calculating fifth set of credentials...")
+                }
+                session.dispatchAfterCurrentCommands {
+                    print("✅ Block enqueued after fifth set executed...")
+                    completion()
+                }
+            }
+        }
+    }
 
     func testOATHSession() throws {
         runYubiKitTest { connection, completion in

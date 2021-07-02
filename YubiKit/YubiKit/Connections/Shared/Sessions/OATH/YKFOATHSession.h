@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFSession.h"
+#import "YKFSession+Private.h"
 #import "YKFVersion.h"
 
 @class YKFOATHCode,
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
     The OATH session is mantained by the YKFConnection which controls its lifecycle. The application must not
     create one.
  */
-@interface YKFOATHSession: NSObject
+@interface YKFOATHSession: YKFSession <YKFVersionProtocol>
 
 @property (nonatomic, readonly) YKFVersion* version;
 
@@ -210,6 +210,28 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)calculateCredential:(YKFOATHCredential *)credential completion:(YKFOATHSessionCalculateCompletionBlock)completion;
 
 /*!
+ @method calculateCredential:timestamp:completion:
+ 
+ @abstract
+    Sends to the key an OATH Calculate request to calculate an existing credential. The request is performed
+    asynchronously on a background execution queue.
+ 
+ @param credential
+    The credential to calculate.
+ 
+ @param timestamp
+    The timestamp used when calculating the OTP.
+ 
+ @param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread. If the intention is to update the UI, dispatch the results
+    on the main thread to avoid an UIKit assertion.
+ 
+ @note
+    This method is thread safe and can be invoked from any thread (main or a background thread).
+ */
+- (void)calculateCredential:(YKFOATHCredential *)credential timestamp:(NSDate *)timestamp completion:(YKFOATHSessionCalculateCompletionBlock)completion;
+/*!
  @method calculateAllWithCompletion:
  
  @abstract
@@ -225,6 +247,26 @@ NS_ASSUME_NONNULL_BEGIN
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
 - (void)calculateAllWithCompletion:(YKFOATHSessionCalculateAllCompletionBlock)completion;
+
+/*!
+ @method calculateAllWithTimestamp:completion:
+ 
+ @abstract
+    Sends to the key an OATH Calculate All request to calculate all stored credentials on the key.
+    The request is performed asynchronously on a background execution queue.
+ 
+ @param timestamp
+    The timestamp used when calculating the OTP.
+ 
+ @param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread. If the intention is to update the UI, dispatch the results
+    on the main thread to avoid an UIKit assertion.
+ 
+ @note
+    This method is thread safe and can be invoked from any thread (main or a background thread).
+ */
+- (void)calculateAllWithTimestamp:(NSDate *)timestamp completion:(YKFOATHSessionCalculateAllCompletionBlock)completion;
 
 /*!
  @method listCredentialsWithCompletion:

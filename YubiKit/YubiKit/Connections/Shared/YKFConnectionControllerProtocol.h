@@ -18,14 +18,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^YKFConnectionControllerCommandResponseBlock)(NSData* _Nullable, NSError* _Nullable, NSTimeInterval);
 typedef void (^YKFConnectionControllerCompletionBlock)(void);
+typedef void (^YKFConnectionControllerCommunicationQueueBlock)(NSOperation *operation);
 
 @protocol YKFConnectionControllerProtocol
 
 - (void)execute:(YKFAPDU *)command completion:(YKFConnectionControllerCommandResponseBlock)completion;
 - (void)execute:(YKFAPDU *)command timeout:(NSTimeInterval)timeout completion:(YKFConnectionControllerCommandResponseBlock)completion;
 
-- (void)dispatchOnSequentialQueue:(YKFConnectionControllerCompletionBlock)block delay:(NSTimeInterval)delay;
-- (void)dispatchOnSequentialQueue:(YKFConnectionControllerCompletionBlock)block;
+- (void)dispatchBlockOnCommunicationQueue:(YKFConnectionControllerCommunicationQueueBlock)block;
 
 - (void)closeConnectionWithCompletion:(YKFConnectionControllerCompletionBlock)completion;
 - (void)cancelAllCommands;

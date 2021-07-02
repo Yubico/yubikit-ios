@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2021 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,23 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef YKFNFCConnection_Private_h
-#define YKFNFCConnection_Private_h
+#ifndef YKFSession_Private_h
+#define YKFSession_Private_h
 
-#import "YKFNFCConnection.h"
+#import "YKFSession.h"
 
-@protocol YKFNFCConnectionDelegate <NSObject>
+@class YKFSmartCardInterface;
 
-- (void)didConnectNFC:(YKFNFCConnection *_Nonnull)connection;
-- (void)didDisconnectNFC:(YKFNFCConnection *_Nonnull)connection error:(NSError *_Nullable)error;
+@interface YKFSession()
 
-@end
-
-@interface YKFNFCConnection()
-
-@property (nonatomic, readonly) YKFNFCConnectionState state;
-@property(nonatomic, weak) id<YKFNFCConnectionDelegate> _Nullable delegate;
+@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
 
 @end
 
-#endif /* YKFNFCConnection_Private_h */
+#endif /* YKFSession_Private_h */

@@ -468,19 +468,23 @@ class PIVTests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
                 session.verifyPin("333333") { retries, error in
-                    XCTAssertNotNil(error)
+                    guard let error = error else { XCTFail("Error was not nil"); return }
+                    XCTAssert((error as NSError).code == YKFPIVFErrorCode.invalidPin.rawValue)
                     XCTAssert(retries == 2)
                     print("✅ PIN retry count \(retries)")
                     session.verifyPin("111111") { retries, error in
-                        XCTAssertNotNil(error)
+                        guard let error = error else { XCTFail("Error was not nil"); return }
+                        XCTAssert((error as NSError).code == YKFPIVFErrorCode.invalidPin.rawValue)
                         XCTAssert(retries == 1)
                         print("✅ PIN retry count \(retries)")
                         session.verifyPin("444444") { retries, error in
-                            XCTAssertNotNil(error)
+                            guard let error = error else { XCTFail("Error was not nil"); return }
+                            XCTAssert((error as NSError).code == YKFPIVFErrorCode.pinLocked.rawValue)
                             XCTAssert(retries == 0)
                             print("✅ PIN retry count \(retries)")
                             session.verifyPin("111111") { retries, error in
-                                XCTAssertNotNil(error)
+                                guard let error = error else { XCTFail("Error was not nil"); return }
+                                XCTAssert((error as NSError).code == YKFPIVFErrorCode.pinLocked.rawValue)
                                 XCTAssert(retries == 0)
                                 print("✅ PIN retry count \(retries)")
                                 completion()

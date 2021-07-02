@@ -59,8 +59,6 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
 
 @interface YKFOATHSession()
 
-@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
-
 /*
  In case of OATH, the reselection of the application leads to the loss of authentication (if any). To avoid
  this the select application response is cached to avoid reselecting the applet. If the request fails with
@@ -170,16 +168,21 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
 #pragma mark - Credential Calculation
 
 - (void)calculateCredential:(YKFOATHCredential *)credential completion:(YKFOATHSessionCalculateCompletionBlock)completion {
+    NSDate *timestamp = [NSDate date];
+    [self calculateCredential:credential timestamp:timestamp completion:completion];
+}
+
+- (void)calculateCredential:(YKFOATHCredential *)credential timestamp:(NSDate *)timestamp completion:(YKFOATHSessionCalculateCompletionBlock)completion {
     YKFParameterAssertReturn(credential);
     YKFParameterAssertReturn(completion);
-    
+    YKFParameterAssertReturn(timestamp);
+
     YKFSessionError *credentialError = [YKFOATHCredentialUtils validateCredential:credential];
     if (credentialError) {
         completion(nil, credentialError);
         return;
     }
     
-    NSDate *timestamp = [NSDate date];
     YKFAPDU *apdu = [[YKFOATHCalculateAPDU alloc] initWithCredential:credential timestamp:timestamp];
     
     [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
@@ -199,10 +202,15 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
     }];
 }
 
+
 - (void)calculateAllWithCompletion:(YKFOATHSessionCalculateAllCompletionBlock)completion {
+    NSDate *timestamp = [NSDate date];
+    [self calculateAllWithTimestamp:timestamp completion:completion];
+}
+
+- (void)calculateAllWithTimestamp:(NSDate *)timestamp completion:(YKFOATHSessionCalculateAllCompletionBlock)completion {
     YKFParameterAssertReturn(completion);
     
-    NSDate *timestamp = [NSDate date];
     YKFAPDU *apdu = [[YKFOATHCalculateAllAPDU alloc] initWithTimestamp:timestamp];
     
     [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
@@ -282,7 +290,15 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
     // Build the request APDU with the select ID salt
     YKFOATHSetPasswordAPDU *apdu = [[YKFOATHSetPasswordAPDU alloc] initWithPassword:password salt:self.cachedSelectApplicationResponse.selectID];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
-        completion(error);
+        if (error) {
+            if (error.code == YKFAPDUErrorCodeAuthenticationRequired) {
+                completion([YKFOATHError errorWithCode:YKFOATHErrorCodeAuthenticationRequired]);
+            } else {
+                completion(error);
+            }
+        } else {
+            completion(nil);
+        }
     }];
 }
 
@@ -330,16 +346,15 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
     }
     
     NSDate *startTime = [NSDate date];
-    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+    [self.smartCardInterface executeCommand:apdu sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsOATH completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (data) {
             completion(data, nil);
             return;
         }
-        NSTimeInterval executionTime = [startTime timeIntervalSinceNow];
+        NSTimeInterval executionTime = -[startTime timeIntervalSinceNow];
         switch(error.code) {
             case YKFAPDUErrorCodeAuthenticationRequired:
                 if (executionTime < YKFOATHServiceTimeoutThreshold) {
-                    self.cachedSelectApplicationResponse = nil; // Clear the cache to allow the application selection again.
                     completion(nil, [YKFOATHError errorWithCode:YKFOATHErrorCodeAuthenticationRequired]);
                 } else {
                     completion(nil, [YKFOATHError errorWithCode:YKFOATHErrorCodeTouchTimeout]);

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
+#import "YKFSession+Private.h"
 
 @class YKFFIDO2MakeCredentialRequest, YKFFIDO2GetAssertionRequest, YKFFIDO2VerifyPinRequest, YKFFIDO2SetPinRequest, YKFFIDO2ChangePinRequest, YKFFIDO2GetInfoResponse, YKFFIDO2MakeCredentialResponse, YKFFIDO2GetAssertionResponse, YKFFIDO2PublicKeyCredentialRpEntity, YKFFIDO2PublicKeyCredentialUserEntity;
 
@@ -184,7 +185,7 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2SessionKeyState) {
     create one. It has to use only the single shared instance from YKFAccessorySession and sync its usage with
     the session state.
  */
-@interface YKFFIDO2Session: NSObject
+@interface YKFFIDO2Session: YKFSession
 
 /*!
  @abstract

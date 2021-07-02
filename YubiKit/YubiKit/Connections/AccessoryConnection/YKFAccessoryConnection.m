@@ -117,6 +117,10 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     return self;
 }
 
+- (YKFAccessoryConnectionState)state {
+    return _connectionState;
+}
+
 - (YKFSmartCardInterface *)smartCardInterface {
     if (!self.connectionController) {
         return nil;

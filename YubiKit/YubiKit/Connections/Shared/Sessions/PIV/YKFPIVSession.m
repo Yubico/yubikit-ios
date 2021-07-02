@@ -84,7 +84,6 @@ typedef void (^YKFPIVSessionDataCompletionBlock)
 
 @interface YKFPIVSession()
 
-@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
 @property (nonatomic, readonly) BOOL isValid;
 @property (nonatomic, readwrite) YKFVersion * _Nonnull version;
 @property (nonatomic, readwrite) YKFPIVSessionFeatures * _Nonnull features;
@@ -569,12 +568,17 @@ int maxPinAttempts = 3;
             YKFSessionError *sessionError = (YKFSessionError *)error;
             if ([sessionError isKindOfClass:[YKFSessionError class]]) {
                 int retries = [self getRetriesFromStatusCode:(int)sessionError.code];
-                if (retries >= 0) {
+                if (retries > 0) {
                     currentPinAttempts = retries;
-                    completion(currentPinAttempts, error);
+                    completion(currentPinAttempts, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeInvalidPin userInfo:@{NSLocalizedDescriptionKey: @"Invalid PIN code."}]);
+                    return;
+                    
+                } else if (retries == 0) {
+                    completion(retries, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodePinLocked userInfo:@{NSLocalizedDescriptionKey: @"PIN code entry locked."}]);
                     return;
                 }
             }
+            // Not wrong pin nor locked pin entry, pass on original error
             completion(-1, error);
         }
     }];

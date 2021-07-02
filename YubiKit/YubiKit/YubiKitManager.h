@@ -93,7 +93,9 @@
  
  @abstract
     The delegate must conform to the YKFManagerDelegate protocol. Setting this delegate will allow you
-    to get notifications when a connection to the YubiKey is established or broken.
+    to get notifications when a connection to the YubiKey is established or broken. If a connection is
+    already established when the delegate is assigned the didConnect delegate methods will be called
+    immediately.
  */
 @property(nonatomic, weak) id<YKFManagerDelegate> _Nullable delegate;
 
@@ -116,6 +118,30 @@
     will also dismiss the NFC system modal presented by iOS during NFC operations.
  */
 - (void)stopNFCConnection API_AVAILABLE(ios(13.0));
+
+/*!
+ @method stopNFCConnectionWithMessage:
+ 
+ @abstract
+    Stop the NFC connection and display a message.
+ 
+ @discussion
+    Use this method to close the NFC connection and display a message to the user.
+  */
+- (void)stopNFCConnectionWithMessage:(NSString *_Nonnull)message API_AVAILABLE(ios(13.0)) NS_SWIFT_NAME(stopNFCConnection(withMessage:));
+
+/*!
+ @method stopNFCConnectionWithErrorMessage:
+ 
+ @abstract
+    Stop the NFC connection and display a error message.
+ 
+ @discussion
+    Use this method to close the NFC connection and display a message to the user when an error condition
+    occurs after the app successfully executed a command. This type of error can occur if, for example,
+    you send a password to unlock the YubiKey and it is not the matching password.
+  */
+- (void)stopNFCConnectionWithErrorMessage:(NSString *_Nonnull)errorMessage API_AVAILABLE(ios(13.0)) NS_SWIFT_NAME(stopNFCConnection(withErrorMessage:));
 
 /*!
  @method startAccessoryConnection

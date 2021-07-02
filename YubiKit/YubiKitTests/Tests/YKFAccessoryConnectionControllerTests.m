@@ -147,48 +147,6 @@
     XCTAssert([response isEqualToData:[inputData subdataWithRange:NSMakeRange(1, 2)]], @"Response data doesn't match the input data.");
 }
 
-- (void)test_WhenDispatchingAnExecutionBlockOnTheCommunicationQueue_BlockIsExecuted {
-    NSData *inputData = [@"input_data" dataUsingEncoding:NSUTF8StringEncoding];
-    self.eaSession = [[FakeEASession alloc] initWithInputData:inputData accessory:nil protocol:@"YLP"];
-    
-    YKFAccessoryConnectionController *connectionController = [[YKFAccessoryConnectionController alloc] initWithSession:self.eaSession operationQueue:self.operationQueue];
-    [self waitForTimeInterval:0.2];
-    
-    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Execution on communication queue completion."];
-    [connectionController dispatchOnSequentialQueue:^{
-        [expectation fulfill];
-    }];
-     
-    XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:1];
-    XCTAssert(result == XCTWaiterResultCompleted);
-}
-
-- (void)test_WhenDispatchingAnExecutionBlockOnTheCommunicationQueueWithDelay_BlockIsExecuted {
-    NSData *inputData = [@"input_data" dataUsingEncoding:NSUTF8StringEncoding];
-    self.eaSession = [[FakeEASession alloc] initWithInputData:inputData accessory:nil protocol:@"YLP"];
-    
-    YKFAccessoryConnectionController *connectionController = [[YKFAccessoryConnectionController alloc] initWithSession:self.eaSession operationQueue:self.operationQueue];
-    [self waitForTimeInterval:0.2];
-    
-    NSTimeInterval delay = 1;
-    NSTimeInterval deviation = 0.2;
-    
-    NSDate *startDate = [NSDate date];
-    
-    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Execution on communication queue completion."];
-    [connectionController dispatchOnSequentialQueue:^{
-        [expectation fulfill];
-    } delay: delay];
-    
-    XCTWaiterResult result = [XCTWaiter waitForExpectations:@[expectation] timeout:delay + deviation];
-    XCTAssert(result == XCTWaiterResultCompleted);
-    
-    NSDate *endDate = [NSDate date];
-    NSTimeInterval time = [endDate timeIntervalSinceDate:startDate];
-    
-    XCTAssert(time <= delay + deviation, @"Execution time exceeded.");
-}
-
 #pragma mark - Delayed Responses
 
 - (void)test_WhenConnectionControllerReadsDelayedResponse_ControllerWaitsForResult {

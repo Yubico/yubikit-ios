@@ -48,32 +48,32 @@
     } else if (keyType == YKFPIVKeyTypeECCP256 || keyType == YKFPIVKeyTypeECCP384) {
         int keySize = YKFPIVSizeFromKeyType(keyType);
         NSMutableData *hash = nil;
-        if (algorithm == kSecKeyAlgorithmECDSASignatureMessageX962SHA224) {
+        if ([(__bridge NSString *)algorithm isEqualToString:(__bridge NSString *)kSecKeyAlgorithmECDSASignatureMessageX962SHA224]) {
             hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA256_DIGEST_LENGTH];
             CC_SHA224(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
         }
-        if (algorithm == kSecKeyAlgorithmECDSASignatureMessageX962SHA256) {
+        if ([(__bridge NSString *)algorithm isEqualToString:(__bridge NSString *)kSecKeyAlgorithmECDSASignatureMessageX962SHA256]) {
             hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA256_DIGEST_LENGTH];
             CC_SHA256(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
         }
-        if (algorithm == kSecKeyAlgorithmECDSASignatureMessageX962SHA384) {
+        if ([(__bridge NSString *)algorithm isEqualToString:(__bridge NSString *)kSecKeyAlgorithmECDSASignatureMessageX962SHA384]) {
             hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA512_DIGEST_LENGTH];
             CC_SHA384(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
         }
 
-        if (algorithm == kSecKeyAlgorithmECDSASignatureMessageX962SHA512) {
+        if ([(__bridge NSString *)algorithm isEqualToString:(__bridge NSString *)kSecKeyAlgorithmECDSASignatureMessageX962SHA512]) {
             hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA512_DIGEST_LENGTH];
             CC_SHA512(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
         }
-        if (algorithm == kSecKeyAlgorithmECDSASignatureMessageX962SHA1) {
+        if ([(__bridge NSString *)algorithm isEqualToString:(__bridge NSString *)kSecKeyAlgorithmECDSASignatureMessageX962SHA1]) {
             hash = [NSMutableData dataWithLength:(NSUInteger)CC_SHA1_DIGEST_LENGTH];
             CC_SHA1(data.bytes, (CC_LONG)data.length, hash.mutableBytes);
         }
-        if (algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA1 ||
-            algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA224 ||
-            algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA256 ||
-            algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA384 ||
-            algorithm == kSecKeyAlgorithmECDSASignatureDigestX962SHA512) {
+        if ([(__bridge NSString *)algorithm isEqualToString:(__bridge NSString *)kSecKeyAlgorithmECDSASignatureDigestX962SHA1] ||
+            [(__bridge NSString *)algorithm isEqualToString:(__bridge NSString *)kSecKeyAlgorithmECDSASignatureDigestX962SHA224] ||
+            [(__bridge NSString *)algorithm isEqualToString:(__bridge NSString *)kSecKeyAlgorithmECDSASignatureDigestX962SHA256] ||
+            [(__bridge NSString *)algorithm isEqualToString:(__bridge NSString *)kSecKeyAlgorithmECDSASignatureDigestX962SHA384] ||
+            [(__bridge NSString *)algorithm isEqualToString:(__bridge NSString *)kSecKeyAlgorithmECDSASignatureDigestX962SHA512]) {
             hash = [data mutableCopy];
         }
         if (hash.length == keySize) {

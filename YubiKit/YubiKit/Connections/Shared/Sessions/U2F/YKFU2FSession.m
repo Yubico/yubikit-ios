@@ -44,7 +44,6 @@ static const NSTimeInterval YKFU2FRetryTimeInterval = 0.5; // seconds
 @interface YKFU2FSession()
 
 @property (nonatomic, assign, readwrite) YKFU2FSessionKeyState keyState;
-@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
 
 @end
 

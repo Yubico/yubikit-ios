@@ -134,6 +134,16 @@ static NSTimeInterval const YKFSmartCardInterfaceDefaultTimeout = 10.0;
     [self executeCommand:apdu sendRemainingIns:sendRemainingIns timeout:timeout data:data completion:completion];
 }
 
+- (void)dispatchAfterCurrentCommands:(YKFSmartCardInterfaceCommandBlock)block {
+    [self.connectionController dispatchBlockOnCommunicationQueue:^(NSOperation *operation) {
+        // Return if operation is cancelled
+        if (operation.isCancelled) {
+            return;
+        }
+        block();
+    }];
+}
+
 #pragma mark - Helpers
 
 - (NSData *)dataFromKeyResponse:(NSData *)response {

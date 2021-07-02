@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UInt8 minor;
 @property (nonatomic, readonly) UInt8 micro;
 
+- (instancetype)initWithData:(NSData *)data NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBytes:(UInt8)major minor:(UInt8)minor micro:(UInt8)micro NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithString:(NSString *)versionString NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

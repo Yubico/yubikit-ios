@@ -53,6 +53,8 @@
 #import "YKFPIVSessionFeatures.h"
 #import "YKFPIVManagementKeyType.h"
 #import "YKFPIVManagementKeyMetadata.h"
+#import "YKFManagementDeviceInfo.h"
+#import "YKFManagementInterfaceConfiguration.h"
 #import "YKFPIVKeyType.h"
 #import "YKFChallengeResponseSession.h"
 #import "YKFManagementSession.h"
