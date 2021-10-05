@@ -293,11 +293,16 @@
         return;
     }
     
+    YKFNFCConnectionState previousState = self.nfcConnectionState;
     self.nfcConnectionState = state;
 
     switch (state) {
         case YKFNFCConnectionStateClosed:
-            [self.delegate didDisconnectNFC:self error:self.nfcConnectionError];
+            if (previousState == YKFNFCConnectionStateOpen) {
+                [self.delegate didDisconnectNFC:self error:self.nfcConnectionError];
+            } else {
+                 [self.delegate didFailConnectingNFC:self.nfcConnectionError];
+            }
             self.connectionController = nil;
             self.tagDescription = nil;
 

@@ -17,7 +17,8 @@ class YubiKeyConnection: NSObject {
     var accessoryConnection: YKFAccessoryConnection?
     var nfcConnection: YKFNFCConnection?
     var connectionCallback: ((_ connection: YKFConnectionProtocol) -> Void)?
-    
+    var connectionErrorCallback: ((_ error: Error) -> Void)?
+
     override init() {
         super.init()
         YubiKitManager.shared.delegate = self
@@ -45,6 +46,9 @@ extension YubiKeyConnection: YKFManagerDelegate {
     
     func didDisconnectNFC(_ connection: YKFNFCConnection, error: Error?) {
         nfcConnection = nil
+    }
+    
+    func didFailConnectingNFC(_ error: Error) {
     }
     
     func didConnectAccessory(_ connection: YKFAccessoryConnection) {

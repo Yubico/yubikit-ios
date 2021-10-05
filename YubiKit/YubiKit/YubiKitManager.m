@@ -120,4 +120,8 @@ static YubiKitManager *sharedInstance;
     [self.delegate didDisconnectNFC:connection error:error];
 }
 
+- (void)didFailConnectingNFC:(NSError *)error {
+    [self.delegate didFailConnectingNFC:error];
+}
+
 @end

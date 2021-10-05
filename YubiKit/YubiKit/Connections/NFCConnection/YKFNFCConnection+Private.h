@@ -21,6 +21,7 @@
 
 - (void)didConnectNFC:(YKFNFCConnection *_Nonnull)connection;
 - (void)didDisconnectNFC:(YKFNFCConnection *_Nonnull)connection error:(NSError *_Nullable)error;
+- (void)didFailConnectingNFC:(NSError *_Nonnull)error;
 
 @end
 

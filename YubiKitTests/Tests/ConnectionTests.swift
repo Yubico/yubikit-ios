@@ -42,25 +42,23 @@ class ConnectionTests: XCTestCase {
     func testNFCTimeOutError() throws {
         let connectionExpectation = expectation(description: "Get a YubiKey Connection")
         let connectionTester = YubiKeyConnectionTester()
-        YubiKitManager.shared.startAccessoryConnection() // We need to start the accessory connection so we can skip this test if an 5Ci key is inserted
+        YubiKitManager.shared.startAccessoryConnection() // We need to start the accessory connection so we can skip this test if a 5Ci key is inserted
         Thread.sleep(forTimeInterval: 0.5)
-        print("👉 Wait for NFC modal to dismiss!")
-        let timestamp = Date()
-        connectionTester.connection { connection, error in
-            if timestamp.timeIntervalSinceNow > -1 {
-                print("YubiKey connected. Skip test.")
-                connectionExpectation.fulfill()
-                return
-            }
-            guard let error = error else {
-                XCTFail()
-                return
-            }
+        print("👉 Wait for NFC modal to dismiss (this will take a long time)!")
+        
+        connectionTester.nfcConnectionErrorCallback = { error in
             XCTAssert((error as NSError).code == 201)
-            print("✅ got NFC timeout error (201)")
+            print("✅ got expected NFC timeout error (201)")
             connectionExpectation.fulfill();
         }
-        waitForExpectations(timeout: 100.0) { error in
+        
+        connectionTester.connection { connection, error in
+            print("YubiKey 5Ci connected. Skip test.")
+            connectionExpectation.fulfill()
+            return
+        }
+        
+        waitForExpectations(timeout: 120.0) { error in
             // If we get an error then the expectation has timed out and we need to stop all connections
             if error != nil {
                 YubiKitManager.shared.stopNFCConnection()
@@ -70,27 +68,25 @@ class ConnectionTests: XCTestCase {
     }
     
     func testNFCUserCancelError() throws {
-        let connectionExpectation = expectation(description: "Get a YubiKey Connection")
+        let connectionExpectation = expectation(description: "Got a YubiKey failed to connect to NFC error")
         let connectionTester = YubiKeyConnectionTester()
-        YubiKitManager.shared.startAccessoryConnection() // We need to start the accessory connection so we can skip this test if an 5Ci key is inserted
+        YubiKitManager.shared.startAccessoryConnection() // We need to start the accessory connection so we can skip this test if a 5Ci key is inserted
         Thread.sleep(forTimeInterval: 0.5)
-        print("👉  Press cancel in NFC modal!")
-        let timestamp = Date()
-        connectionTester.connection { connection, error in
-            if timestamp.timeIntervalSinceNow > -1 {
-                print("YubiKey connected. Skip test.")
-                connectionExpectation.fulfill()
-                return
-            }
-            guard let error = error else {
-                XCTFail()
-                return
-            }
+        
+        connectionTester.nfcConnectionErrorCallback = { error in
             XCTAssert((error as NSError).code == 200)
-            print("✅ got user canceled NFC error (200)")
+            print("✅ got expected user canceled NFC error (200)")
             connectionExpectation.fulfill();
         }
-        waitForExpectations(timeout: 10.0) { error in
+        
+        print("👉  Press cancel in NFC modal!")
+        connectionTester.connection { connection, error in
+            print("YubiKey connected. Skip test.")
+            connectionExpectation.fulfill()
+            return
+        }
+        
+        waitForExpectations(timeout: 20.0) { error in
             // If we get an error then the expectation has timed out and we need to stop all connections
             if error != nil {
                 YubiKitManager.shared.stopNFCConnection()
@@ -105,7 +101,9 @@ class YubiKeyConnectionTester: NSObject {
     var accessoryConnection: YKFAccessoryConnection?
     var nfcConnection: YKFNFCConnection?
     var connectionCallback: ((_ connection: YKFConnectionProtocol, _ error: Error?) -> Void)?
-    
+    var errorCallback: ((_ error: Error) -> Void)?
+    var nfcConnectionErrorCallback: ((_ error: Error) -> Void)?
+
     override init() {
         super.init()
         YubiKitManager.shared.delegate = self
@@ -124,6 +122,18 @@ class YubiKeyConnectionTester: NSObject {
 }
 
 extension YubiKeyConnectionTester: YKFManagerDelegate {
+    func didFailConnectingNFC(_ error: Error) {
+        if let callback = nfcConnectionErrorCallback {
+            callback(error)
+        }
+    }
+    
+    func didReceiveConnectionError(_ error: Error) {
+        if let callback = errorCallback {
+            callback(error)
+        }
+    }
+    
     func didConnectNFC(_ connection: YKFNFCConnection) {
         nfcConnection = connection
         if let callback = connectionCallback {
