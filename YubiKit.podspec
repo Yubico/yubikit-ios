@@ -9,6 +9,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.source_files = 'YubiKit/YubiKit/**/*.{h,m}'
+  s.exclude_files = 'YubiKit/YubiKit/SPMHeaderLinks/*'
 
   s.ios.deployment_target = '11.0'
 end
