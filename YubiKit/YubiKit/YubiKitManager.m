@@ -121,7 +121,9 @@ static YubiKitManager *sharedInstance;
 }
 
 - (void)didFailConnectingNFC:(NSError *)error {
-    [self.delegate didFailConnectingNFC:error];
+    if ([self.delegate respondsToSelector:@selector(didFailConnectingNFC:)]) {
+        [self.delegate didFailConnectingNFC:error];
+    }
 }
 
 @end

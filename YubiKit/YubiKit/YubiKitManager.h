@@ -53,19 +53,6 @@
 - (void)didDisconnectNFC:(YKFNFCConnection *_Nonnull)connection error:(NSError *_Nullable)error;
 
 /*!
- @method didFailConnectingNFC
- 
- @abstract
-    The YubiKey SDK did receive a NFC connection error. This is typically that the user pressed cancel (error code 200) in the
-    NFC modal or it timed out (error code 201) waiting for a NFC YubiKey.
-
- @method error
-    The NSError passed by the SDK.
-  */
-
-- (void)didFailConnectingNFC:(NSError *_Nonnull)error;
-
-/*!
  @method didConnectAccessory:connection
  
  @abstract
@@ -89,6 +76,19 @@
     If the disconnection was unexpted an NSError will be passed.
   */
 - (void)didDisconnectAccessory:(YKFAccessoryConnection *_Nonnull)connection error:(NSError *_Nullable)error;
+
+/*!
+ @method didFailConnectingNFC
+ 
+ @abstract
+    The YubiKey SDK did receive a NFC connection error. This is typically that the user pressed cancel (error code 200) in the
+    NFC modal or it timed out (error code 201) waiting for a NFC YubiKey.
+
+ @method error
+    The NSError passed by the SDK.
+  */
+@optional
+- (void)didFailConnectingNFC:(NSError *_Nonnull)error;
 
 @end
 
