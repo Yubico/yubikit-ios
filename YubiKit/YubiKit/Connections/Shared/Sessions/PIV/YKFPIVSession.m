@@ -130,6 +130,10 @@ int maxPinAttempts = 3;
                 if (error) {
                     completion(nil, error);
                 } else {
+                    if ([data length] < 3) {
+                        completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeInvalidResponse userInfo:@{NSLocalizedDescriptionKey: @"Invalid response when retrieving PIV version."}]);
+                        return;
+                    }
                     UInt8 *versionBytes = (UInt8 *)data.bytes;
                     session.version = [[YKFVersion alloc] initWithBytes:versionBytes[0] minor:versionBytes[1] micro:versionBytes[2]];
                     completion(session, nil);
@@ -420,12 +424,16 @@ int maxPinAttempts = 3;
     TKBERTLVRecord *tlv = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagObjectId value:data];
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetData p1:0x3f p2:0xff data:tlv.data type:YKFAPDUTypeExtended];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
-        NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:data];
-        NSData *objectData = [records ykfTLVRecordWithTag:YKFPIVTagObjectData].value;
-        NSData *certificateData = [[TKBERTLVRecord sequenceOfRecordsFromData:objectData] ykfTLVRecordWithTag:YKFPIVTagCertificate].value;
-        CFDataRef cfCertDataRef =  (__bridge CFDataRef)certificateData;
-        SecCertificateRef certificate = SecCertificateCreateWithData(nil, cfCertDataRef);
-        completion(certificate, error);
+        if (error != nil) {
+            completion(nil, error);
+        } else {
+            NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:data];
+            NSData *objectData = [records ykfTLVRecordWithTag:YKFPIVTagObjectData].value;
+            NSData *certificateData = [[TKBERTLVRecord sequenceOfRecordsFromData:objectData] ykfTLVRecordWithTag:YKFPIVTagCertificate].value;
+            CFDataRef cfCertDataRef =  (__bridge CFDataRef)certificateData;
+            SecCertificateRef certificate = SecCertificateCreateWithData(nil, cfCertDataRef);
+            completion(certificate, nil);
+        }
     }];
 }
 
@@ -513,6 +521,7 @@ int maxPinAttempts = 3;
             NSData *encryptedData = encryptedRecord.value;
             NSData *expectedData = [challenge ykf_encryptDataWithAlgorithm:[keyType.name ykfCCAlgorithm] key:managementKey];
             if (![encryptedData isEqual:expectedData]) {
+                completion([[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeAuthenticationFailed userInfo:@{NSLocalizedDescriptionKey: @"Authentication failed."}]);
                 return;
             }
             completion(nil);
@@ -548,6 +557,10 @@ int maxPinAttempts = 3;
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetSerial p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (data != nil) {
+            if ([data length] != 4) {
+                completion(-1, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeInvalidResponse userInfo:@{NSLocalizedDescriptionKey: @"Invalid response when reading serial number."}]);
+                return;
+            }
             UInt32 serialNumber = CFSwapInt32BigToHost(*(UInt32*)([data bytes]));
             completion(serialNumber, nil);
         } else {
