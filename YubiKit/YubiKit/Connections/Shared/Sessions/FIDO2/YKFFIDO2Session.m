@@ -253,8 +253,10 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
 - (void)setPin:(nonnull NSString *)pin completion:(nonnull YKFFIDO2SessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(pin);
     YKFParameterAssertReturn(completion);
-
-    if (pin.length < 4 || pin.length > 255) {
+    
+    NSData *pinData = [[pin dataUsingEncoding:NSUTF8StringEncoding] ykf_fido2PaddedPinData];
+    
+    if (pin.length < 4 || pinData.length > 65) {
         completion([YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodePIN_POLICY_VIOLATION]);
         return;
     }
@@ -275,7 +277,6 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         setPinRequest.subCommand = YKFFIDO2ClientPinRequestSubCommandSetPIN;
         setPinRequest.keyAgreement = cosePlatformPublicKey;
         
-        NSData *pinData = [[pin dataUsingEncoding:NSUTF8StringEncoding] ykf_fido2PaddedPinData];
         
         setPinRequest.pinEnc = [pinData ykf_aes256EncryptedDataWithKey:sharedSecret];
         setPinRequest.pinAuth = [[setPinRequest.pinEnc ykf_fido2HMACWithKey:sharedSecret] subdataWithRange:NSMakeRange(0, 16)];

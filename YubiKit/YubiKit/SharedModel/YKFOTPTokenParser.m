@@ -86,20 +86,20 @@
             YKFLogInfo(@"Metdata is URI");
             
             token.value = [self.uriParser tokenFromPayload:payload];
-            YKFLogInfo(@"OTP value %@", token.value);
+            YKFLogVerbose(@"OTP value %@", token.value);
             
             token.uri = [self.uriParser uriFromPayload:payload];
-            YKFLogInfo(@"OTP uri %@", token.uri);
+            YKFLogVerbose(@"OTP uri %@", token.uri);
         }
         else if ([self recordHasText:record]) {
             token.metadataType = YKFOTPMetadataTypeText;
             YKFLogInfo(@"Metdata is Text");
             
             token.value = [self.textParser tokenFromPayload:payload];
-            YKFLogInfo(@"OTP value %@", token.value);
+            YKFLogVerbose(@"OTP value %@", token.value);
             
             token.text = [self.textParser textFromPayload:payload];
-            YKFLogInfo(@"OTP text %@", token.text);
+            YKFLogVerbose(@"OTP text %@", token.text);
         }
      
         if (!token.value.length) { // Payload was extracted but it was not a valid or malformed URL/Text

@@ -72,9 +72,9 @@
 
 + (NSData *)encodeArray:(YKFCBORArray *)cborArray {
     YKFAssertReturnValue(cborArray, @"CBOR Encoding - Cannot encode empty CBOR array.", nil);
-    
+    YKFAssertReturnValue(cborArray.value, @"CBOR Encoding - Cannot encode empty/nil array.", nil);
+
     NSArray *array = cborArray.value;
-    YKFAssertReturnValue(cborArray, @"CBOR Encoding - Cannot encode empty/nil array.", nil);
     
     YKFCBORInteger *arrayLength = YKFCBORInteger(array.count);
     NSData *encodedLength = [self encodeInteger:arrayLength];
