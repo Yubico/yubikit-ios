@@ -38,6 +38,64 @@ class OATHTests: XCTestCase {
         }
     }
     
+    func testCalculateLotsOfTOTP() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSession { session in
+                for n in 0...19 {
+                    session.storeRandomCredential(number: n)
+                }
+                session.calculateAll { credentials, error in
+                    guard let credentials = credentials else { XCTFail("Error: \(error!)"); completion(); return }
+                    print("✅ calculated \(credentials.count) credentials")
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func testCalculateAllTouchRequiredTOTP() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSession { session in
+                let totpUrl = URL(string: "otpauth://totp/Yubico:test-totp@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-requires-touch&algorithm=SHA1&digits=6&counter=30")!
+                let template = YKFOATHCredentialTemplate(url: totpUrl)!
+                session.put(template, requiresTouch: true) { error in
+                    guard error == nil else { XCTFail("Failed creating TOTP"); return }
+                    session.calculateAll { credentials, error in
+                        guard let credential = credentials?.first else { XCTFail("No credentials calculated"); return }
+                        XCTAssert(credential.credential.issuer == "test-requires-touch")
+                        XCTAssert(credential.credential.accountName == "test-totp@yubico.com")
+                        XCTAssert(credential.credential.requiresTouch == true)
+                        print("✅ create OATH TOTP credential that requires touch")
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+
+    func testCreateListAndCalculateTOTP() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSession { session in
+                let url = URL(string: "otpauth://totp/Yubico:test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-create-and-calculate&algorithm=SHA1&digits=6&counter=30")!
+                let template = YKFOATHCredentialTemplate(url: url)!
+                session.put(template, requiresTouch: false) { error in
+                    guard error == nil else { XCTAssertTrue(false); return }
+                    session.listCredentials { credentials, error in
+                        guard let credential = credentials?.first else { XCTAssertTrue(false); return }
+//                        credential.notTruncated = true
+                        XCTAssert(credential.issuer == "test-create-and-calculate")
+                        XCTAssert(credential.accountName == "test@yubico.com")
+                        session.calculate(credential, timestamp: Date(timeIntervalSince1970: 0)) { code, error in
+                            XCTAssert(code?.otp == "239396")
+                            print("✅ create, list and calculate OATH HOTP credential")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func testCreateListAndCalculateHOTP() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSession { session in
@@ -66,7 +124,7 @@ class OATHTests: XCTestCase {
                 let url = URL(string: "otpauth://totp/Yubico:test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-rename&algorithm=SHA1&digits=6&period=30")!
                 let template = YKFOATHCredentialTemplate(url: url)!
                 session.put(template, requiresTouch: false) { error in
-                    guard error == nil else { XCTAssertTrue(false); return }
+                    guard error == nil else { XCTFail("Failed saving credential: \(error!)"); return }
                     session.listCredentials { credentials, error in
                         guard let credentials = credentials, let credential = credentials.first else {  XCTAssertTrue(false); return }
                         session.renameCredential(credential, newIssuer: "test-rename-renamed", newAccount: "renamed@yubico.com") { error in
@@ -84,20 +142,69 @@ class OATHTests: XCTestCase {
         }
     }
     
-    func testSetCodeAndUnlock() throws {
+    func testUnlock() throws {
         runYubiKitTest { connection, completion in
-            connection.oathTestSession { session in
-                session.setPassword("271828") { error in
-                    guard error == nil else { XCTAssertTrue(false); return }
-                    connection.fido2Session { fidoSession, error in
+            connection.oathTestSessionWithPassword { session in
+                session.unlock(withPassword:"271828") { error in
+                    guard error == nil else { XCTAssert(false); return }
+                    session.listCredentials { credentials, error in
+                        XCTAssert(error == nil)
+                        print("✅ set OATH password and unlock")
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    func testUnlockWithWrongCode() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSessionWithPassword { session in
+                session.unlock(withPassword:"271844") { error in
+                    guard error != nil else { XCTAssert(false); return }
+                    // Reset OATH on test YubiKey so password is not set when we're done.
+                    // We only do this here since this is the last test in the OATH test suite
+                    // that will run during testing.
+                    session.unlock(withPassword:"271828") { error in
+                        session.reset() { error in
+                            print("✅ set OATH password and try unlock with wrong password")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    func testSetPasswordWithoutUnlock() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSessionWithPassword { session in
+                session.setPassword("77773") { error in
+                    guard let error = error else { XCTFail("Password probably set without unlock."); return }
+                    let errorCode = YKFOATHErrorCode(rawValue: UInt((error as NSError).code))
+                    XCTAssertEqual(errorCode, .authenticationRequired)
+                    print("✅ got authenticationRequired when trying to set password without unlock.")
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func testRemoveCode() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSessionWithPassword { session in
+                session.unlock(withPassword:"271828") { error in
+                    guard error == nil else { XCTAssert(false); return }
+                    session.setPassword("") { error in
                         guard error == nil else { XCTAssertTrue(false); return }
-                        connection.oathSession { session, error in
-                            guard let session = session else { XCTAssert(false); return }
-                            session.unlock(withPassword:"271828") { error in
-                                guard error == nil else { XCTAssert(false); return }
+                        connection.fido2Session { fidoSession, error in
+                            guard error == nil else { XCTAssertTrue(false); return }
+                            connection.oathSession { session, error in
+                                guard let session = session else { XCTAssert(false); return }
                                 session.listCredentials { credentials, error in
                                     XCTAssert(error == nil)
-                                    print("✅ set OATH password and unlock")
+                                    print("✅ set and remove OATH password")
                                     completion()
                                 }
                             }
@@ -108,65 +215,46 @@ class OATHTests: XCTestCase {
         }
     }
     
-    func testSetCodeAndUnlockWithWrongCode() throws {
+    func testAuthFailAndThenAuthAgain() throws {
         runYubiKitTest { connection, completion in
-            connection.oathTestSession { session in
-                session.setPassword("271828") { error in
-                    guard error == nil else { XCTAssertTrue(false); return }
-                    connection.fido2Session { fidoSession, error in
-                        guard error == nil else { XCTAssertTrue(false); return }
-                        connection.oathSession { session, error in
-                            guard let session = session else { XCTAssert(false); return }
-                            session.unlock(withPassword:"271844") { error in
-                                guard error != nil else { XCTAssert(false); return }
-                                // Reset OATH on test YubiKey so password is not set when we're done.
-                                // We only do this here since this is the last test in the OATH test suite
-                                // that will run during testing.
-                                session.unlock(withPassword:"271828") { error in
-                                    session.reset() { error in
-                                        print("✅ set OATH password and try unlock with wrong password")
-                                        completion()
-                                    }
-                                }
-                            }
+            connection.oathTestSessionWithPassword { session in
+                session.calculateAll { credentials, error in
+                    guard let error = error else { XCTFail("Did not get auth error"); return }
+                    let errorCode = YKFOATHErrorCode(rawValue: UInt((error as NSError).code))
+                    XCTAssertEqual(errorCode, .authenticationRequired)
+                    session.unlock(withPassword:"271828") { error in
+                        guard error == nil else {  XCTFail("Failed to unlock: \(error!)"); return }
+                        session.listCredentials { credentials, error in
+                            XCTAssert(error == nil)
+                            print("✅ set OATH password and unlock")
+                            completion()
                         }
                     }
                 }
             }
         }
     }
-    
-    
-    func testSetAndRemoveCode() throws {
+
+    // This test is here to remove any lingering password for the OATH application
+    func testZeeLastOne() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSession { session in
-                session.setPassword("271828") { error in
-                    guard error == nil else { XCTAssertTrue(false); return }
-                    connection.fido2Session { fidoSession, error in
-                        guard error == nil else { XCTAssertTrue(false); return }
-                        connection.oathSession { session, error in
-                            guard let session = session else { XCTAssertTrue(false); return }
-                            session.unlock(withPassword:"271828") { error in
-                                guard error == nil else { XCTAssert(false); return }
-                                session.setPassword("") { error in
-                                    guard error == nil else { XCTAssertTrue(false); return }
-                                    connection.fido2Session { fidoSession, error in
-                                        guard error == nil else { XCTAssertTrue(false); return }
-                                        connection.oathSession { session, error in
-                                            guard let session = session else { XCTAssert(false); return }
-                                            session.listCredentials { credentials, error in
-                                                XCTAssert(error == nil)
-                                                print("✅ set and remove OATH password")
-                                                completion()
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                print("✅ last OATH test, reset application")
+                completion()
             }
+        }
+    }
+}
+
+extension YKFOATHSession {
+    func storeRandomCredential(number: Int) {
+        let account = "test-\(number)@yubico.com"
+        let issuer = "Account-\(number)"
+        let secret = "UOA6FJYR76R\(number)BGDJKLYICL3MUR7QH"
+        let url = URL(string: "otpauth://totp/Yubico:\(account)?secret=\(secret)&\(issuer)&algorithm=SHA1&digits=6&period=30")!
+        let template = YKFOATHCredentialTemplate(url: url)!
+        self.put(template, requiresTouch: false) { error in
+            if error != nil { XCTFail("Error: \(error!)") }
         }
     }
 }
@@ -174,10 +262,25 @@ class OATHTests: XCTestCase {
 extension YKFConnectionProtocol {
     func oathTestSession(completion: @escaping (_ session: YKFOATHSession) -> Void) {
         self.oathSession { session, error in
-            guard let session = session else { XCTAssertTrue(false, "Failed to get OATH session"); return }
+            guard let session = session else { XCTFail("Failed to get OATH session: \(error!)"); return }
             session.reset { error in
-                guard error == nil else { XCTAssertTrue(false, "Failed to reset OATH"); return }
+                guard error == nil else { XCTFail("Failed to reset OATH session: \(error!)"); return }
                 completion(session)
+            }
+        }
+    }
+    
+    func oathTestSessionWithPassword(password: String = "271828", completion: @escaping (_ session: YKFOATHSession) -> Void) {
+        self.oathTestSession { session in
+            session.setPassword(password) { error in
+                guard error == nil else { XCTFail("Failed to set password '\(password)'"); return }
+                self.fido2Session { fidoSession, error in
+                    guard error == nil else { XCTFail("Failed to reset OATH by getting a FIDO2 session"); return }
+                    self.oathSession { session, error in
+                        guard let session = session else { XCTFail("Failed to get OATH session: \(error!)"); return }
+                        completion(session)
+                    }
+                }
             }
         }
     }

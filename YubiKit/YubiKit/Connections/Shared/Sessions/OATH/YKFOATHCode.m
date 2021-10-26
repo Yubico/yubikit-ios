@@ -46,8 +46,10 @@ typedef NS_ENUM(NSUInteger, YKFOATHCalculateResponseType) {
     
     self = [super init];
     if (self) {
+        YKFAssertAbortInit(responseData.length > 3)
+
         UInt8 *bytes = (UInt8 *)responseData.bytes;
-        
+
         UInt8 responseType = bytes[0];
         if (truncate) {
             YKFAssertAbortInit(responseType == YKFOATHCalculateResponseTypeTruncated);
@@ -57,16 +59,15 @@ typedef NS_ENUM(NSUInteger, YKFOATHCalculateResponseType) {
         UInt8 responseLength = bytes[1];
         UInt8 digits = bytes[2];
         YKFAssertAbortInit(digits == 6 || digits == 7 || digits == 8);
-        
         UInt8 otpBytesLength = responseLength - 1;
+        UInt8 offset;
         if (truncate) {
             YKFAssertAbortInit(otpBytesLength == 4);
-            self.otp = [responseData ykf_parseOATHOTPFromIndex:3 digits:digits];
+            offset = 3;
         } else {
-            UInt8 offset = bytes[otpBytesLength - 1] & 0xF + 3;
-            UInt32 otpResponseValue = CFSwapInt32BigToHost(*((UInt32 *)&bytes[offset]));
-            self.otp = [NSString stringWithFormat:@"%d", (unsigned int)otpResponseValue];
+            offset = (bytes[responseData.length - 1] & 0xF) + 3;
         }
+        self.otp = [responseData ykf_parseOATHOTPFromIndex:offset digits:digits];
         YKFAssertAbortInit(self.otp);
         
         if (period > 0) {

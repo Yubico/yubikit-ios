@@ -24,15 +24,7 @@
  */
 static NSString* const U2FClientDataTypeRegistration = @"navigator.id.finishEnrollment";
 
-/*
- Client data as defined in FIDO U2F Raw Message Format
- https://fidoalliance.org/specs/u2f-specs-1.0-bt-nfc-id-amendment/fido-u2f-raw-message-formats.html
- Note: The "cid_pubkey" is missing in this case since the TLS stack on iOS does not support channel id.
- */
-static NSString* const U2FClientDataTemplate = @"\{\"typ\":\"%@\",\"challenge\":\"%@\",\"origin\":\"%@\"}";
-
 static const UInt8 YKFU2FRegisterAPDUEnforceUserPresenceAndSign = 0x03;
-
 
 @interface YKFU2FRegisterAPDU()
 
@@ -46,7 +38,18 @@ static const UInt8 YKFU2FRegisterAPDUEnforceUserPresenceAndSign = 0x03;
     YKFAssertAbortInit(challenge);
     YKFAssertAbortInit(appId);
 
-    self.clientData = [[NSString alloc] initWithFormat:U2FClientDataTemplate, U2FClientDataTypeRegistration, challenge, appId];
+    /*
+     Client data as defined in FIDO U2F Raw Message Format
+     https://fidoalliance.org/specs/u2f-specs-1.0-bt-nfc-id-amendment/fido-u2f-raw-message-formats.html
+     Note: The "cid_pubkey" is missing in this case since the TLS stack on iOS does not support channel id.
+     */
+    NSDictionary *jsonDictionary = @{@"type": U2FClientDataTypeRegistration,
+                                     @"challenge": challenge,
+                                     @"origin": appId};
+    NSError *error = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDictionary options:0 error:&error];
+    self.clientData = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    YKFAssertAbortInit(self.clientData)
     
     NSData *challengeSHA256 = [[self.clientData dataUsingEncoding:NSUTF8StringEncoding] ykf_SHA256];
     YKFAssertAbortInit(challengeSHA256);

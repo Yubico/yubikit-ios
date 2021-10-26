@@ -21,11 +21,13 @@
 
 - (void)didConnectNFC:(YKFNFCConnection *_Nonnull)connection;
 - (void)didDisconnectNFC:(YKFNFCConnection *_Nonnull)connection error:(NSError *_Nullable)error;
+- (void)didFailConnectingNFC:(NSError *_Nonnull)error;
 
 @end
 
 @interface YKFNFCConnection()
 
+@property (nonatomic, readonly) YKFNFCConnectionState state;
 @property(nonatomic, weak) id<YKFNFCConnectionDelegate> _Nullable delegate;
 
 @end

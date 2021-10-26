@@ -1,5 +1,26 @@
 # YubiKit Changelog
 
+## 4.1.0
+
+- Optional timestamp parameter added to OATH calculate and calculateAll methods.
+- Firmware version is now a public variable on `YKFManagementSession`.
+- If a connection is already present when setting the `YKFManagerDelegate` it will return that connection immideatly.
+- Extra dot at the end of `YKFVersion` string removed.
+- Fixed memory issues where we retained the `YKFManagerDelegate`.
+- Fixed issue where failing to unlock a key with passcode before sending an OATH command got the session in a non recoverable state.
+- Improved control over the messages displayed in the NFC dialog.
+- Added `- (void)dispatchBlockOnCommunicationQueue:(YKFConnectionControllerCommunicationQueueBlock)block` to `YKFConnectionControllerProtocol` that will run a block after all enqueued commands has finished.
+- Improved error handling in OATH session.
+- More robust algorithm comparison in PIV session.
+- Fixed bug where an auth required error was sent instead of touch timeout in OATH session.
+- Fixed bug where the number of OATH accounts you could read was limited to around 8
+- Added new optional connection delegate method that will signal if the NFC dialog was cancelled by the user or timed out.
+- Swift package manager header files exluded from Cocoapod distribution.
+- Various array out of bounds checks
+- Improved error checks
+- Fixes bug where authenticateWithManagementKey in the YKFPIVSession would fail to call its completion handler upon failure.
+- Fixes broken implementation of non truncated OATH codes
+
 ## 4.0.0
 
 This release breaks backwards compatibility with previous versions of the SDK. The reason for this is to make the SDK easier to

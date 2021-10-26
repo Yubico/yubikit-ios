@@ -24,8 +24,8 @@ class ManagementTests: XCTestCase {
             } else {
                 transport = .USB
             }
-            connection.managementSessionAndConfiguration { session, response in
-                guard let configuration = response.configuration else { XCTAssertTrue(false, "No configuration"); return }
+            connection.managementSessionAndDeviceInfo { session, deviceInfo in
+                guard let configuration = deviceInfo.configuration else { XCTAssertTrue(false, "No configuration"); return }
                 configuration.setEnabled(false, application: .OATH, overTransport: transport)
                 session.write(configuration, reboot: false) { error in
                     guard error == nil else { XCTAssertTrue(false, "Error while writing configuration: \(error!)"); return }
@@ -54,8 +54,8 @@ class ManagementTests: XCTestCase {
             } else {
                 transport = .USB
             }
-            connection.managementSessionAndConfiguration { session, response in
-                guard let configuration = response.configuration else { XCTAssertTrue(false, "No configuration"); return }
+            connection.managementSessionAndDeviceInfo { session, deviceInfo in
+                guard let configuration = deviceInfo.configuration else { XCTAssertTrue(false, "No configuration"); return }
                 configuration.setEnabled(false, application: .U2F, overTransport: transport)
                 session.write(configuration, reboot: false) { error in
                     guard error == nil else { XCTAssertTrue(false, "Error while writing configuration: \(error!)"); return }
@@ -78,25 +78,42 @@ class ManagementTests: XCTestCase {
     
     func testReadKeyVersion() {
         runYubiKitTest { connection, completion in
-            connection.managementSessionAndConfiguration { session, response in
+            connection.managementSessionAndDeviceInfo { session, deviceInfo in
                 // Only assert major and minor version
-                XCTAssert(response.version.major == 5)
-                XCTAssert(response.version.minor == 2 || response.version.minor == 3 || response.version.minor == 4)
-                print("✅ Got version: \(response.version.major).\(response.version.minor).\(response.version.micro)")
+                XCTAssert(deviceInfo.version.major == 5)
+                XCTAssert(deviceInfo.version.minor == 2 || deviceInfo.version.minor == 3 || deviceInfo.version.minor == 4)
+                print("✅ Got version: \(deviceInfo.version)")
                 completion()
+            }
+        }
+    }
+    
+    func testDeviceInfo() {
+        runYubiKitTest { connection, completion in
+            connection.managementSession { session, error in
+                guard let session = session else { XCTFail("Failed to get Management Session"); return }
+                session.getDeviceInfo { deviceInfo, error in
+                    guard let deviceInfo = deviceInfo else { XCTFail("Failed to get DeviceInfo: \(error!)"); return }
+                    print("✅ Got device info:")
+                    print("     is locked: \(deviceInfo.isConfigurationLocked)")
+                    print("     serial number: \(deviceInfo.serialNumber)")
+                    print("     form factor: \(deviceInfo.formFactor.rawValue)")
+                    print("     firmware version: \(deviceInfo.version)")
+                    completion()
+                }
             }
         }
     }
 }
 
 extension YKFConnectionProtocol {
-    func managementSessionAndConfiguration(completion: @escaping (_ session: YKFManagementSession,
-                                                                  _ response: YKFManagementReadConfigurationResponse) -> Void) {
+    func managementSessionAndDeviceInfo(completion: @escaping (_ session: YKFManagementSession,
+                                                                  _ response: YKFManagementDeviceInfo) -> Void) {
         self.managementSession { session, error in
             guard let session = session else { XCTAssertTrue(false, "Failed to get Management Session: \(error!)"); return }
-            session.readConfiguration { response, error in
-                guard let response = response else { XCTAssertTrue(false, "Failed to read Configuration: \(error!)"); return }
-                completion(session, response)
+            session.getDeviceInfo { deviceInfo, error in
+                guard let deviceInfo = deviceInfo else { XCTAssertTrue(false, "Failed to read device info: \(error!)"); return }
+                completion(session, deviceInfo)
             }
         }
     }

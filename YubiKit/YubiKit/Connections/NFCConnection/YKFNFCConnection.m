@@ -69,6 +69,10 @@
     return self;
 }
 
+- (YKFNFCConnectionState)state {
+    return _nfcConnectionState;
+}
+
 - (YKFSmartCardInterface *)smartCardInterface {
     if (!self.connectionController) {
         return nil;
@@ -162,8 +166,28 @@
     }
     
     [self setAlertMessage:YubiKitExternalLocalization.nfcScanSuccessAlertMessage];
-    [self updateServicesForSession:self.nfcTagReaderSession tag:nil state:YKFNFCConnectionStateClosed];
+    [self updateServicesForSession:self.nfcTagReaderSession tag:nil state:YKFNFCConnectionStateClosed errorMessage:nil];
 }
+
+- (void)stopWithMessage:(NSString *)message API_AVAILABLE(ios(13.0)) {
+    if (!self.nfcTagReaderSession) {
+        YKFLogInfo(@"NFC session already stopped. Ignoring stop request.");
+        return;
+    }
+    
+    [self setAlertMessage:message];
+    [self updateServicesForSession:self.nfcTagReaderSession tag:nil state:YKFNFCConnectionStateClosed errorMessage:nil];
+}
+
+- (void)stopWithErrorMessage:(NSString *)errorMessage API_AVAILABLE(ios(13.0)) {
+    if (!self.nfcTagReaderSession) {
+        YKFLogInfo(@"NFC session already stopped. Ignoring stop request.");
+        return;
+    }
+    
+    [self updateServicesForSession:self.nfcTagReaderSession tag:nil state:YKFNFCConnectionStateClosed errorMessage:errorMessage];
+}
+
 
 - (void)cancelCommands API_AVAILABLE(ios(13.0)) {
     [self.connectionController cancelAllCommands];
@@ -204,7 +228,7 @@
 - (void)tagReaderSessionDidBecomeActive:(NFCTagReaderSession *)session API_AVAILABLE(ios(13.0)) {
     YKFLogInfo(@"NFC session did become active.");
     self.nfcTagReaderSession = session;
-    [self updateServicesForSession:session tag:nil state:YKFNFCConnectionStatePolling];
+    [self updateServicesForSession:session tag:nil state:YKFNFCConnectionStatePolling errorMessage:nil];
 }
 
 - (void)tagReaderSession:(NFCTagReaderSession *)session didDetectTags:(NSArray<__kindof id<NFCTag>> *)tags API_AVAILABLE(ios(13.0)) {
@@ -240,7 +264,7 @@
         }
         
         YKFLogInfo(@"NFC session did connect to tag.");
-        [strongSelf updateServicesForSession:session tag:activeTag state:YKFNFCConnectionStateOpen];
+        [strongSelf updateServicesForSession:session tag:activeTag state:YKFNFCConnectionStateOpen errorMessage:nil];
     }];
 }
 
@@ -258,10 +282,10 @@
 
     self.nfcConnectionError = error;
     [self.nfcTagReaderSession invalidateSessionWithErrorMessage:error.localizedDescription];
-    [self updateServicesForSession:session tag:nil state:YKFNFCConnectionStateClosed];
+    [self updateServicesForSession:session tag:nil state:YKFNFCConnectionStateClosed errorMessage:nil];
 }
 
-- (void)updateServicesForSession:(NFCTagReaderSession *)session tag:(id<NFCISO7816Tag>)tag state:(YKFNFCConnectionState)state API_AVAILABLE(ios(13.0)) {
+- (void)updateServicesForSession:(NFCTagReaderSession *)session tag:(id<NFCISO7816Tag>)tag state:(YKFNFCConnectionState)state errorMessage:(NSString *)errorMessage API_AVAILABLE(ios(13.0)) {
     if (self.nfcConnectionState == state) {
         return;
     }
@@ -269,16 +293,27 @@
         return;
     }
     
+    YKFNFCConnectionState previousState = self.nfcConnectionState;
+    self.nfcConnectionState = state;
+
     switch (state) {
         case YKFNFCConnectionStateClosed:
-            [self.delegate didDisconnectNFC:self error:self.nfcConnectionError];
+            if (previousState == YKFNFCConnectionStateOpen) {
+                [self.delegate didDisconnectNFC:self error:self.nfcConnectionError];
+            } else {
+                 [self.delegate didFailConnectingNFC:self.nfcConnectionError];
+            }
             self.connectionController = nil;
             self.tagDescription = nil;
 
             [self unobserveIso7816TagAvailability];
 
             // invalidating session closes nfc reading sheet
-            [self.nfcTagReaderSession invalidateSession];
+            if (errorMessage) {
+                [self.nfcTagReaderSession invalidateSessionWithErrorMessage:errorMessage];
+            } else {
+                [self.nfcTagReaderSession invalidateSession];
+            }
             self.nfcTagReaderSession = nil;
             break;
         
@@ -301,7 +336,6 @@
             break;
     }
     
-    self.nfcConnectionState = state;
 }
 
 #pragma mark - Tag availability observation
@@ -318,7 +352,7 @@
         } else {
             YKFLogInfo(@"NFC tag is no longer available.");
             // moving from state of open back to polling/waiting for new tag
-            [strongSelf updateServicesForSession:strongSelf.nfcTagReaderSession tag:nil state:YKFNFCConnectionStatePolling];
+            [strongSelf updateServicesForSession:strongSelf.nfcTagReaderSession tag:nil state:YKFNFCConnectionStatePolling errorMessage:nil];
         }
     }];
     [[NSRunLoop mainRunLoop] addTimer:self.iso7816NfcTagAvailabilityTimer forMode:NSDefaultRunLoopMode];

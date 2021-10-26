@@ -234,22 +234,20 @@
 #pragma mark - Helpers
 
 - (NSArray *)nfcResponseWithPayload:(NSString *)payload metadataType:(YKFOTPMetadataType)type {
-    NFCNDEFPayload *nfcPayload = [NFCNDEFPayload new];
     
     UInt8 payloadTypeURIBytes[1] = {'U'};
     UInt8 payloadTypeTextBytes[1] = {'T'};
     
+    NSData *payloadType;
     if (type == YKFOTPMetadataTypeURI) {
-        nfcPayload.type = [NSData dataWithBytes:payloadTypeURIBytes length:1];
+        payloadType = [NSData dataWithBytes:payloadTypeURIBytes length:1];
     } else if (type == YKFOTPMetadataTypeText){
-        nfcPayload.type = [NSData dataWithBytes:payloadTypeTextBytes length:1];
+        payloadType = [NSData dataWithBytes:payloadTypeTextBytes length:1];
     }
-    
-    nfcPayload.typeNameFormat = NFCTypeNameFormatNFCWellKnown;
-    nfcPayload.payload = [self uriNFCPayloadDataWithString:payload metadataType:type];
-    
-    NFCNDEFMessage *nfcMessage = [NFCNDEFMessage new];
-    nfcMessage.records = @[nfcPayload];
+
+    NFCNDEFPayload *nfcPayload = [[NFCNDEFPayload alloc] initWithFormat:NFCTypeNameFormatNFCWellKnown type:payloadType identifier:[NSData new] payload:[self uriNFCPayloadDataWithString:payload metadataType:type]];
+
+    NFCNDEFMessage *nfcMessage = [[NFCNDEFMessage alloc] initWithNDEFRecords:@[nfcPayload]];
     return @[nfcMessage];
 }
 

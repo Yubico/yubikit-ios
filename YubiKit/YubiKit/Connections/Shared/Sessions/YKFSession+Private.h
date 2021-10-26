@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2021 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifndef YKFSession_Private_h
+#define YKFSession_Private_h
+
 #import "YKFSession.h"
-#import "YKFSession+Private.h"
-#import "YKFAccessoryConnectionController.h"
-#import "YKFSmartCardInterface.h"
-#import "YKFNSDataAdditions.h"
-#import "YKFNSDataAdditions+Private.h"
-#import "YKFAPDUError.h"
-#import "YKFAssert.h"
 
-@implementation YKFSession
+@class YKFSmartCardInterface;
 
-- (void)dispatchAfterCurrentCommands:(YKFSessionCommandBlock)block {
-    [self.smartCardInterface dispatchAfterCurrentCommands:block];
-}
+@interface YKFSession()
+
+@property (nonatomic, readwrite) YKFSmartCardInterface *smartCardInterface;
 
 @end
+
+#endif /* YKFSession_Private_h */

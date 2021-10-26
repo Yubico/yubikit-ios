@@ -90,6 +90,10 @@
     // Do nothing
 }
 
+- (void)dispatchBlockOnCommunicationQueue:(nonnull YKFConnectionControllerCommunicationQueueBlock)block {
+    // Do nothing
+}
+
 #pragma mark - Helpers
 
 - (NSData *)nextResponseDataInSequence {
