@@ -118,6 +118,29 @@ class OATHTests: XCTestCase {
         }
     }
     
+    func testCreateAndCalculateResponse() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathTestSession { session in
+                // Test data from rfc2202
+                let keyData = Data([0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b]) as NSData
+                let url = URL(string: "otpauth://totp/Yubico:test@yubico.com?secret=\(keyData.ykf_base32String())&issuer=test-create-and-calculate-response&algorithm=SHA1&digits=7&counter=30")!
+                let template = YKFOATHCredentialTemplate(url: url)!
+                session.put(template, requiresTouch: false) { error in
+                    guard error == nil else { XCTFail("Failed putting credential on YubiKey with error: \(error!)"); completion(); return }
+                    
+                    let id = Data(YKFOATHCredentialUtils.key(from: template).utf8)
+                    let challenge = Data("Hi There".utf8)
+                    session.calculateResponse(forCredentialID: id, challenge: challenge) { data, error in
+                        guard let data = data else { XCTFail("Failed calculating response with error: \(error!)"); completion(); return }
+                        let expected = Data([0xb6, 0x17, 0x31, 0x86, 0x55, 0x05, 0x72, 0x64, 0xe2, 0x8b, 0xc0, 0xb6, 0xfb, 0x37, 0x8c, 0x8e, 0xf1, 0x46, 0xbe, 0x00])
+                        XCTAssertEqual(data, expected)
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+    
     func testRenameCredential() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSession { session in

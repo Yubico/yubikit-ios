@@ -30,6 +30,8 @@
 
 #import "YKFNSDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
+#import "YKFNSMutableDataAdditions.h"
+#import "TKTLVRecordAdditions+Private.h"
 
 #import "YKFAPDU+Private.h"
 
@@ -52,6 +54,11 @@
 
 #import "YKFSmartCardInterface.h"
 #import "YKFSelectApplicationAPDU.h"
+
+static const NSUInteger YKFOATHResponseTag = 0x75;
+static const NSUInteger YKFOATHCredentialIdTag = 0x71;
+static const NSUInteger YKFOATHChallengeTag = 0x74;
+static const NSUInteger YKFOATHCalculateIns = 0xa2;
 
 static const NSTimeInterval YKFOATHServiceTimeoutThreshold = 10; // seconds
 
@@ -192,8 +199,7 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
         }
         YKFOATHCode *code = [[YKFOATHCode alloc] initWithKeyResponseData:result
                                                          requestTimetamp:timestamp
-                                                           requestPeriod:credential.period
-                                                          truncateResult:!credential.notTruncated];
+                                                           requestPeriod:credential.period];
         if (!code) {
             completion(nil, [YKFOATHError errorWithCode:YKFOATHErrorCodeBadCalculationResponse]);
             return;
@@ -332,6 +338,36 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
         }
         
         completion(nil);
+    }];
+}
+
+- (void)calculateResponseForCredentialID:(NSData *)credentialId challenge:(NSData *)challenge completion:(YKFOATHSessionCalculateResponseCompletionBlock)completion {
+    YKFParameterAssertReturn(credentialId);
+    YKFParameterAssertReturn(challenge);
+    YKFParameterAssertReturn(completion);
+
+    NSMutableData *data = [[NSMutableData alloc] init];
+    [data appendData:[[TKBERTLVRecord alloc] initWithTag:YKFOATHCredentialIdTag value:credentialId].data];
+    [data appendData:[[TKBERTLVRecord alloc] initWithTag:YKFOATHChallengeTag value:challenge].data];
+    
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFOATHCalculateIns p1:0 p2:0 data:data type:YKFAPDUTypeShort];
+    
+    [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+            return;
+        }
+        
+        TKBERTLVRecord *responseRecord = [TKBERTLVRecord recordFromData:result];
+
+        if (responseRecord.tag != YKFOATHResponseTag || responseRecord.value.length == 0) {
+            completion(nil, [YKFOATHError errorWithCode:YKFOATHErrorCodeBadCalculationResponse]);
+            return;
+        }
+        NSRange range = NSMakeRange(1, [responseRecord.value length] - 1);
+        NSData *response = [responseRecord.value subdataWithRange:range];
+        
+        completion(response, nil);
     }];
 }
 

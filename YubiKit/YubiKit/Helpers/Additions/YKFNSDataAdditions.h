@@ -97,6 +97,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable NSData *)ykf_dataWithBase32String:(NSString *)base32String;
 
+/*!
+ @method ykf_base32String:
+ 
+ @return
+    A Base32 encoded string from the data.
+ */
+- (NSString *)ykf_base32String;
+
 @end
 
 NS_ASSUME_NONNULL_END

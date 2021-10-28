@@ -48,9 +48,7 @@ static const UInt8 YKFOATHCalculateAPDUChallengeTag = 0x74;
         [data ykf_appendByte:0];
     }
     
-    // P2 is 0x01 for truncated response only
-    UInt8 p2 = credential.notTruncated ? 0x00 : 0x01;
-    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHCalculate p1:0 p2:p2 data:data type:YKFAPDUTypeShort];
+    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHCalculate p1:0 p2:1 data:data type:YKFAPDUTypeShort];
 }
 
 @end

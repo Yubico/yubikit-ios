@@ -335,6 +335,10 @@
     return [self dataWithBase32String: base32String];
 }
 
+- (NSString *)ykf_base32String {
+    return [self base32String];
+}
+
 @end
 
 #pragma mark - HEX string conversion
