@@ -367,12 +367,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*!
- @method calculateResponse:timestamp:completion:
+ @method calculateResponseForCredentialID:challenge:completion:
  
  @abstract
-    Calculate a full (non-truncated) HMAC signature using a Credential.
-    Using this command a Credential can be used as an HMAC key to calculate a result for an arbitrary challenge.
-    The hash algorithm specified for the Credential is used.
+    Calculate a full (non-truncated) HMAC signature using a YKFOATHCredential.
+    Using this command a YKFOATHCredential can be used as an HMAC key to calculate a result for an arbitrary challenge.
+    The hash algorithm specified for the YKFOATHCredential is used.
  
  @param credentialId
     The id of the credential to use when calulating the result.
