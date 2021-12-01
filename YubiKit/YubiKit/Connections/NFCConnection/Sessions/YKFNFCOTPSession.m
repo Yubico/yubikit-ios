@@ -74,15 +74,15 @@
 - (void)readerSession:(NFCNDEFReaderSession *)session didInvalidateWithError:(NSError *)error {
     YKFAssertOnMainThread();
     
-    self.nfcSession = nil;
     if ([self shouldIgnoreError: error]) {
         return;
     }
     
     YKFLogNSError(error);
     
-    self.nfcOTPResponseBlock(nil, error);
+    if (self.nfcOTPResponseBlock) self.nfcOTPResponseBlock(nil, error);
     self.nfcOTPResponseBlock = nil;
+    self.nfcSession = nil;
 }
 
 - (void)readerSession:(NFCNDEFReaderSession *)session didDetectNDEFs:(NSArray<NFCNDEFMessage *> *)messages {
@@ -90,13 +90,13 @@
     
     id<YKFOTPTokenProtocol> otpToken = [self.otpTokenParser otpTokenFromNfcMessages:messages];
     if (otpToken) {
-        self.nfcOTPResponseBlock(otpToken, nil);
-        self.nfcOTPResponseBlock = nil;
+        if (self.nfcOTPResponseBlock) self.nfcOTPResponseBlock(otpToken, nil);
     } else {
         YKFNFCError *error = [YKFNFCError noTokenAfterScanError];
-        self.nfcOTPResponseBlock(nil, error);
-        self.nfcOTPResponseBlock = nil;
+        if (self.nfcOTPResponseBlock) self.nfcOTPResponseBlock(nil, error);
     }
+    self.nfcOTPResponseBlock = nil;
+    self.nfcSession = nil;
 }
 
 #pragma mark - Helpers
