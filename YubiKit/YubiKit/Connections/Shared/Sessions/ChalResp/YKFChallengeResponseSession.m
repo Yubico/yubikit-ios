@@ -8,6 +8,7 @@
 
 #import "YKFChallengeResponseSession.h"
 #import "YubiKitManager.h"
+#import "YKFSession+Private.h"
 #import "YKFChalRespSendRequest.h"
 #import "YKFChalRespRequest+Private.h"
 #import "YKFChallengeResponseError.h"

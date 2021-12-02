@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#import "YKFSession+Private.h"
 #import "YKFFIDO2Session.h"
 #import "YKFFIDO2Session+Private.h"
 #import "YKFAccessoryConnectionController.h"

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFSession+Private.h"
+#import "YKFSession.h"
 
 @class YKFU2FSignRequest, YKFU2FSignResponse, YKFU2FRegisterRequest, YKFU2FRegisterResponse;
 /**

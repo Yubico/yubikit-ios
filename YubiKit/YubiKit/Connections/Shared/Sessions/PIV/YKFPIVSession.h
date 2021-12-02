@@ -16,7 +16,7 @@
 #define YKFPIVSession_h
 
 #import "YKFVersion.h"
-#import "YKFSession+Private.h"
+#import "YKFSession.h"
 #import "YKFPIVKeyType.h"
 
 /// Touch policy for PIV application.

@@ -13,7 +13,7 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFVersion.h"
-#import "YKFSession+Private.h"
+#import "YKFSession.h"
 
 @class YKFManagementDeviceInfo, YKFManagementInterfaceConfiguration;
 
