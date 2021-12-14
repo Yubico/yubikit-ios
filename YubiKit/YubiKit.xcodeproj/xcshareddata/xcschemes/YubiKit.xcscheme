@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "95C29610206247210091318B"
                BuildableName = "libYubiKit.a"
-               BlueprintName = "YubiKit"
+               BlueprintName = "YubiKitLight"
                ReferencedContainer = "container:YubiKit.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -33,7 +33,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "95C29610206247210091318B"
             BuildableName = "libYubiKit.a"
-            BlueprintName = "YubiKit"
+            BlueprintName = "YubiKitLight"
             ReferencedContainer = "container:YubiKit.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -42,7 +42,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "95C29610206247210091318B"
             BuildableName = "libYubiKit.a"
-            BlueprintName = "YubiKit"
+            BlueprintName = "YubiKitLight"
             ReferencedContainer = "container:YubiKit.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>
@@ -74,7 +74,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "95C29610206247210091318B"
             BuildableName = "libYubiKit.a"
-            BlueprintName = "YubiKit"
+            BlueprintName = "YubiKitLight"
             ReferencedContainer = "container:YubiKit.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -90,7 +90,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "95C29610206247210091318B"
             BuildableName = "libYubiKit.a"
-            BlueprintName = "YubiKit"
+            BlueprintName = "YubiKitLight"
             ReferencedContainer = "container:YubiKit.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

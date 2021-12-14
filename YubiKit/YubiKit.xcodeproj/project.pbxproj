@@ -138,7 +138,7 @@
 		95885B1520A0994F00828D02 /* YKFU2FSession.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD40A22099A8A300363FEE /* YKFU2FSession.h */; };
 		95885B1620A0994F00828D02 /* YKFNSDataAdditions.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD40762099A4EB00363FEE /* YKFNSDataAdditions.h */; };
 		95885B1820A2F94700828D02 /* YKFAccessoryConnectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 95DD40A52099A8A400363FEE /* YKFAccessoryConnectionController.m */; };
-		95885B2A20A3187700828D02 /* libYubiKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 95C29611206247210091318B /* libYubiKit.a */; };
+		95885B2A20A3187700828D02 /* libYubiKitLight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 95C29611206247210091318B /* libYubiKitLight.a */; };
 		95885B3120A31EFF00828D02 /* YKFOTPTokenValidatorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 95885B3020A31EFF00828D02 /* YKFOTPTokenValidatorTests.m */; };
 		95885B3220A31F1D00828D02 /* YKFOTPTokenValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = 95C296252062497C0091318B /* YKFOTPTokenValidator.m */; };
 		958D0B64215D106F00942CB9 /* YKFSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 958D0B63215D106F00942CB9 /* YKFSession.m */; };
@@ -515,7 +515,7 @@
 		95BA204421F7483100EED927 /* YKFFIDO2GetAssertionResponse.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFFIDO2GetAssertionResponse.m; sourceTree = "<group>"; };
 		95BA204621F877BA00EED927 /* YKFFIDO2TouchPoolingAPDU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFFIDO2TouchPoolingAPDU.h; sourceTree = "<group>"; };
 		95BA204721F877BA00EED927 /* YKFFIDO2TouchPoolingAPDU.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFFIDO2TouchPoolingAPDU.m; sourceTree = "<group>"; };
-		95C29611206247210091318B /* libYubiKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libYubiKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		95C29611206247210091318B /* libYubiKitLight.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libYubiKitLight.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		95C29614206247210091318B /* YubiKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YubiKit.h; sourceTree = "<group>"; };
 		95C2961E206247450091318B /* CoreNFC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreNFC.framework; path = System/Library/Frameworks/CoreNFC.framework; sourceTree = SDKROOT; };
 		95C29621206247920091318B /* YKFOTPToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOTPToken.h; sourceTree = "<group>"; };
@@ -627,7 +627,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				95885B2A20A3187700828D02 /* libYubiKit.a in Frameworks */,
+				95885B2A20A3187700828D02 /* libYubiKitLight.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1112,7 +1112,7 @@
 		95C29612206247210091318B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				95C29611206247210091318B /* libYubiKit.a */,
+				95C29611206247210091318B /* libYubiKitLight.a */,
 				95885B2520A3187700828D02 /* YubiKitTests.xctest */,
 			);
 			name = Products;
@@ -1347,9 +1347,9 @@
 			productReference = 95885B2520A3187700828D02 /* YubiKitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		95C29610206247210091318B /* YubiKit */ = {
+		95C29610206247210091318B /* YubiKitLight */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 95C2961A206247210091318B /* Build configuration list for PBXNativeTarget "YubiKit" */;
+			buildConfigurationList = 95C2961A206247210091318B /* Build configuration list for PBXNativeTarget "YubiKitLight" */;
 			buildPhases = (
 				95C2960D206247210091318B /* Sources */,
 				95C2960E206247210091318B /* Frameworks */,
@@ -1359,9 +1359,9 @@
 			);
 			dependencies = (
 			);
-			name = YubiKit;
+			name = YubiKitLight;
 			productName = YubiKit;
-			productReference = 95C29611206247210091318B /* libYubiKit.a */;
+			productReference = 95C29611206247210091318B /* libYubiKitLight.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -1396,7 +1396,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				95C29610206247210091318B /* YubiKit */,
+				95C29610206247210091318B /* YubiKitLight */,
 				95885B2420A3187700828D02 /* YubiKitTests */,
 			);
 		};
@@ -1584,7 +1584,7 @@
 /* Begin PBXTargetDependency section */
 		95885B2C20A3187700828D02 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 95C29610206247210091318B /* YubiKit */;
+			target = 95C29610206247210091318B /* YubiKitLight */;
 			targetProxy = 95885B2B20A3187700828D02 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -1778,7 +1778,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		95C2961A206247210091318B /* Build configuration list for PBXNativeTarget "YubiKit" */ = {
+		95C2961A206247210091318B /* Build configuration list for PBXNativeTarget "YubiKitLight" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				95C2961B206247210091318B /* Debug */,
