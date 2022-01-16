@@ -12,4 +12,6 @@ Pod::Spec.new do |s|
   s.exclude_files = 'YubiKit/YubiKit/SPMHeaderLinks/*'
 
   s.ios.deployment_target = '11.0'
+
+  s.weak_frameworks = 'CoreNFC', 'CryptoTokenKit'
 end
