@@ -105,6 +105,13 @@ Click + and add the ``libYubiKit.a``
 
 ---
 
+**Optional Framework Dependencies**
+
+YubiKit weakly links to the CoreNFC and CryptoTokenKit system frameworks since these are not present on some supported device/OS combinations.
+If your target project supports devices without these frameworks present, you must avoid using YubiKit features that depend on them or your app will crash.
+
+---
+
 **Enable Custom Lightning Protocol**
 
 `REQUIRED` if you are supporting the YubiKey 5Ci over the Lightning connector.
