@@ -30,6 +30,7 @@
 		51E1B9932577EF05003C1CA4 /* YKFOATHCredentialWithCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B9922577EF05003C1CA4 /* YKFOATHCredentialWithCode.m */; };
 		51F8E3C42639856A0010686B /* YKFManagementDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 51F8E3C32639856A0010686B /* YKFManagementDeviceInfo.m */; };
 		51F8E3C7263989520010686B /* YKFManagementSessionFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = 51F8E3C6263989520010686B /* YKFManagementSessionFeatures.m */; };
+		5F25E0CA2794AAE8001F22A6 /* CryptoTokenKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F25E0C92794AAE8001F22A6 /* CryptoTokenKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		81311F3A23AAFA4A00765522 /* YKFChallengeResponseSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 81311F3923AAFA4A00765522 /* YKFChallengeResponseSession.m */; };
 		813271EC240F265B0084E105 /* YKFManagementSession.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 814813E923EA381F0003893B /* YKFManagementSession.h */; };
 		814813D123EA37F60003893B /* YKFManagementWriteAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 814813CD23EA37F60003893B /* YKFManagementWriteAPDU.m */; };
@@ -158,7 +159,7 @@
 		95BA204521F7483100EED927 /* YKFFIDO2GetAssertionResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 95BA204421F7483100EED927 /* YKFFIDO2GetAssertionResponse.m */; };
 		95BA204821F877BA00EED927 /* YKFFIDO2TouchPoolingAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 95BA204721F877BA00EED927 /* YKFFIDO2TouchPoolingAPDU.m */; };
 		95C29617206247210091318B /* YubiKit.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95C29614206247210091318B /* YubiKit.h */; };
-		95C2961F206247450091318B /* CoreNFC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95C2961E206247450091318B /* CoreNFC.framework */; };
+		95C2961F206247450091318B /* CoreNFC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95C2961E206247450091318B /* CoreNFC.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		95C29623206247920091318B /* YKFOTPToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 95C29622206247920091318B /* YKFOTPToken.m */; };
 		95C296262062497C0091318B /* YKFOTPTokenValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = 95C296252062497C0091318B /* YKFOTPTokenValidator.m */; };
 		95C29628206250820091318B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95C29627206250820091318B /* AVFoundation.framework */; };
@@ -338,6 +339,7 @@
 		51F8E3C52639893D0010686B /* YKFManagementSessionFeatures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFManagementSessionFeatures.h; sourceTree = "<group>"; };
 		51F8E3C6263989520010686B /* YKFManagementSessionFeatures.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFManagementSessionFeatures.m; sourceTree = "<group>"; };
 		51F8E3C8263A95AB0010686B /* YKFManagementDeviceInfo+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFManagementDeviceInfo+Private.h"; sourceTree = "<group>"; };
+		5F25E0C92794AAE8001F22A6 /* CryptoTokenKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoTokenKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.0.sdk/System/Library/Frameworks/CryptoTokenKit.framework; sourceTree = DEVELOPER_DIR; };
 		811F91EF2383C57B002158ED /* Changelog.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = Changelog.md; path = ../Changelog.md; sourceTree = "<group>"; };
 		81311F3823AAFA4A00765522 /* YKFChallengeResponseSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFChallengeResponseSession.h; sourceTree = "<group>"; };
 		81311F3923AAFA4A00765522 /* YKFChallengeResponseSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFChallengeResponseSession.m; sourceTree = "<group>"; };
@@ -635,6 +637,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F25E0CA2794AAE8001F22A6 /* CryptoTokenKit.framework in Frameworks */,
 				956DB6742063B41E006B1738 /* AudioToolbox.framework in Frameworks */,
 				95C29637206259660091318B /* UIKit.framework in Frameworks */,
 				95C29628206250820091318B /* AVFoundation.framework in Frameworks */,
@@ -1146,6 +1149,7 @@
 		95C2961D206247440091318B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5F25E0C92794AAE8001F22A6 /* CryptoTokenKit.framework */,
 				956DB6732063B41E006B1738 /* AudioToolbox.framework */,
 				95C29636206259660091318B /* UIKit.framework */,
 				95C29627206250820091318B /* AVFoundation.framework */,
