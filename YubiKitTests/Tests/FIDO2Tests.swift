@@ -41,7 +41,7 @@ class FIDO2Tests: XCTestCase {
         runYubiKitTest { connection, completion in
             if connection as? YKFNFCConnection != nil {
                 connection.fido2TestSession { session in
-                    session.setPin("123456") { error in
+                    session.setPin("123456") { _ in
                         session.verifyPin("234567") { error in
                             if let error = error {
                                 XCTAssertTrue((error as NSError).code == 49, "🔴 Unexpected error: \(error)")
@@ -67,7 +67,7 @@ class FIDO2Tests: XCTestCase {
         runYubiKitTest { connection, completion in
             if connection as? YKFNFCConnection != nil {
                 connection.fido2TestSession { session in
-                    session.setPin("123456") { error in
+                    session.setPin("123456") { _ in
                         session.verifyPin("123456") { error in
                             session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
                                 print("✅ Created new FIDO2 credential: \(response)")
@@ -128,7 +128,7 @@ class FIDO2Tests: XCTestCase {
         runYubiKitTest { connection, completion in
             if connection as? YKFNFCConnection != nil {
                 connection.fido2TestSession { session in
-                    session.setPin("123456") { error in
+                    session.setPin("123456") { _ in
                         session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response, error in
                             if let error = error {
                                 XCTAssertTrue((error as NSError).code == 54, "🔴 Unexpected error: \(error)")
