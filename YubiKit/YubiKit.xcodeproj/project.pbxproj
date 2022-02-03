@@ -214,6 +214,8 @@
 		A5016E5C24297FEF005A0C21 /* YKFNSDataAdditionsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A5016E5B24297FEF005A0C21 /* YKFNSDataAdditionsTests.m */; };
 		A51F7B1D23EFC6DB0046F6A3 /* YKFNSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 95EA81E62178805D0020595D /* YKFNSStringAdditions.m */; };
 		A54DCC0323F2147500E95259 /* YKNSStringAdditionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A54DCC0223F2147500E95259 /* YKNSStringAdditionTests.m */; };
+		B41B6F9A27A96B760062C377 /* YKFTLVRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B41B6F9927A96B760062C377 /* YKFTLVRecord.m */; };
+		B41B6F9C27A97DB40062C377 /* YKFTLVRecordTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B41B6F9B27A97DB40062C377 /* YKFTLVRecordTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -620,6 +622,9 @@
 		95F75BAD2175D6D600C13DC5 /* YKFOATHUnlockAPDU.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHUnlockAPDU.m; sourceTree = "<group>"; };
 		A5016E5B24297FEF005A0C21 /* YKFNSDataAdditionsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFNSDataAdditionsTests.m; sourceTree = "<group>"; };
 		A54DCC0223F2147500E95259 /* YKNSStringAdditionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKNSStringAdditionTests.m; sourceTree = "<group>"; };
+		B41B6F9827A96B5B0062C377 /* YKFTLVRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFTLVRecord.h; sourceTree = "<group>"; };
+		B41B6F9927A96B760062C377 /* YKFTLVRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFTLVRecord.m; sourceTree = "<group>"; };
+		B41B6F9B27A97DB40062C377 /* YKFTLVRecordTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFTLVRecordTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -898,6 +903,7 @@
 				9529CBC0214927D80041D2F8 /* YKFU2FServiceTests.m */,
 				A54DCC0223F2147500E95259 /* YKNSStringAdditionTests.m */,
 				950C70082298095F00E48458 /* YubiKitDeviceCapabilitiesTests.m */,
+				B41B6F9B27A97DB40062C377 /* YKFTLVRecordTests.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -1191,6 +1197,8 @@
 				95DD407A2099A64C00363FEE /* YKFDispatch.m */,
 				95E1B257219EE2D300E349E3 /* YKFKVOObservation.h */,
 				95E1B258219EE2D300E349E3 /* YKFKVOObservation.m */,
+				B41B6F9827A96B5B0062C377 /* YKFTLVRecord.h */,
+				B41B6F9927A96B760062C377 /* YKFTLVRecord.m */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -1423,6 +1431,7 @@
 				950C700C22980CFE00E48458 /* FakeUIDevice.m in Sources */,
 				9564333620A5C03C007621BD /* YKFOTPTokenParserTests.m in Sources */,
 				956884C120AAD98500E0F72C /* YKFNFCOTPServiceTests.m in Sources */,
+				B41B6F9C27A97DB40062C377 /* YKFTLVRecordTests.m in Sources */,
 				9529CBC1214927D80041D2F8 /* YKFU2FServiceTests.m in Sources */,
 				957D869921B825B4004ABF86 /* YKFSmartCardInterfaceTests.m in Sources */,
 				95EF75C3213FEF0500059C79 /* YKFTestCase.m in Sources */,
@@ -1516,6 +1525,7 @@
 				95C2965A2062A5970091318B /* YubiKitManager.m in Sources */,
 				958491732130286900D7E2A3 /* YKFAccessoryConnectionConfiguration.m in Sources */,
 				51ACC32025DBBB7E0069214B /* YKFFeature.m in Sources */,
+				B41B6F9A27A96B760062C377 /* YKFTLVRecord.m in Sources */,
 				5110D6B12603568800467680 /* YKFPIVKeyType.m in Sources */,
 				95C2962C206250D90091318B /* YKFPermissions.m in Sources */,
 				956DBB8421EDEA1D004D6EE3 /* YKFFIDO2Session.m in Sources */,

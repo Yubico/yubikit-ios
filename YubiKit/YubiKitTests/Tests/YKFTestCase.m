@@ -38,6 +38,7 @@
 }
 
 + (NSData *)dataFromHexString:(NSString *)string {
+    string = [string stringByReplacingOccurrencesOfString:@" " withString:@""];
     NSAssert(string.length % 2 == 0, @"String does not have the right format.");
     NSMutableData* data = [[NSMutableData alloc] init];
     
