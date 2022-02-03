@@ -14,9 +14,9 @@
 
 #ifndef TKTLVRecordAdditions_h
 #define TKTLVRecordAdditions_h
-#import <CryptoTokenKit/TKTLVRecord.h>
+#import "YKFTLVRecord.h"
 
-@interface TKTLVRecord(Additions)
+@interface YKFTLVRecord(Additions)
 
 + (NSData * _Nullable)valueFromData:(NSData * _Nonnull)data withTag:(UInt64)tag error:(NSError *_Nullable* _Nullable)error;
 

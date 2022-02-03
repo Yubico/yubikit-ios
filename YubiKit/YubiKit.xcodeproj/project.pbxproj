@@ -22,7 +22,7 @@
 		51ACC2F625D585F70069214B /* YKFPIVSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC2F525D585F70069214B /* YKFPIVSession.m */; };
 		51ACC32025DBBB7E0069214B /* YKFFeature.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC31F25DBBB7E0069214B /* YKFFeature.m */; };
 		51ACC32925DC01DA0069214B /* YKFPIVSessionFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */; };
-		51ACC33625E50C860069214B /* NSArray+TKTLVRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC33525E50C860069214B /* NSArray+TKTLVRecord.m */; };
+		51ACC33625E50C860069214B /* NSArray+YKFTLVRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC33525E50C860069214B /* NSArray+YKFTLVRecord.m */; };
 		51ACC33C25E553580069214B /* YKFPIVManagementKeyType.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC33B25E553580069214B /* YKFPIVManagementKeyType.m */; };
 		51ACC34B25E7ECA80069214B /* YKFPIVError.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC34A25E7ECA80069214B /* YKFPIVError.m */; };
 		51E1B97B25765454003C1CA4 /* YKFOATHCredentialTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = 51E1B97A25765454003C1CA4 /* YKFOATHCredentialTemplate.m */; };
@@ -320,8 +320,8 @@
 		51ACC31F25DBBB7E0069214B /* YKFFeature.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFFeature.m; sourceTree = "<group>"; };
 		51ACC32725DC01C90069214B /* YKFPIVSessionFeatures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVSessionFeatures.h; sourceTree = "<group>"; };
 		51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVSessionFeatures.m; sourceTree = "<group>"; };
-		51ACC33425E50C6B0069214B /* NSArray+TKTLVRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+TKTLVRecord.h"; sourceTree = "<group>"; };
-		51ACC33525E50C860069214B /* NSArray+TKTLVRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+TKTLVRecord.m"; sourceTree = "<group>"; };
+		51ACC33425E50C6B0069214B /* NSArray+YKFTLVRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+YKFTLVRecord.h"; sourceTree = "<group>"; };
+		51ACC33525E50C860069214B /* NSArray+YKFTLVRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+YKFTLVRecord.m"; sourceTree = "<group>"; };
 		51ACC33B25E553580069214B /* YKFPIVManagementKeyType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVManagementKeyType.m; sourceTree = "<group>"; };
 		51ACC34125E553910069214B /* YKFPIVManagementKeyType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVManagementKeyType.h; sourceTree = "<group>"; };
 		51ACC34925E7EC910069214B /* YKFPIVError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVError.h; sourceTree = "<group>"; };
@@ -784,8 +784,8 @@
 				95D5E2DB2187159700AA1C11 /* YKFNSMutableDataAdditions.m */,
 				95EA81E52178805D0020595D /* YKFNSStringAdditions.h */,
 				95EA81E62178805D0020595D /* YKFNSStringAdditions.m */,
-				51ACC33425E50C6B0069214B /* NSArray+TKTLVRecord.h */,
-				51ACC33525E50C860069214B /* NSArray+TKTLVRecord.m */,
+				51ACC33425E50C6B0069214B /* NSArray+YKFTLVRecord.h */,
+				51ACC33525E50C860069214B /* NSArray+YKFTLVRecord.m */,
 				5110D6AA2601FBE200467680 /* TKTLVRecordAdditions+Private.h */,
 				5110D6A62601FBC800467680 /* TKTLVRecordAdditions.m */,
 			);
@@ -1499,7 +1499,7 @@
 				955188302265F4EE001A4191 /* YKFAPDUError.m in Sources */,
 				9581395421591DE1008558F3 /* YKFSelectOATHApplicationAPDU.m in Sources */,
 				95BA204521F7483100EED927 /* YKFFIDO2GetAssertionResponse.m in Sources */,
-				51ACC33625E50C860069214B /* NSArray+TKTLVRecord.m in Sources */,
+				51ACC33625E50C860069214B /* NSArray+YKFTLVRecord.m in Sources */,
 				815233FE23B56A6F004D4788 /* YKFChalRespSendRequest.m in Sources */,
 				95081DEE2214255B006CD08C /* YKFRequest.m in Sources */,
 				956991F422C224BC00C5EB02 /* YKFWebAuthnClientData.m in Sources */,

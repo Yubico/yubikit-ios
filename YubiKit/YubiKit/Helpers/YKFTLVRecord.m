@@ -27,12 +27,21 @@
     // tag
     if (data.length == 0) { return nil; }
     Byte *bytes = (Byte *)data.bytes;
-    Byte tag = bytes[0];
-    if ((tag & 0x1F) == 0x1F) { return nil; }
-
-    // length
     int dataStartLocation = 2;
-    int length = bytes[1];
+    int tag = bytes[0] & 0xFF;
+    if ((tag & 0x1F) == 0x1F) {
+        tag = (tag << 8) | (bytes[1] & 0xFF);
+        dataStartLocation++;
+        int index = 1;
+        while ((tag & 0x80) == 0x80 && index < data.length) {
+            tag = (tag << 8) | (bytes[index] & 0xFF);
+            dataStartLocation++;
+            index++;
+        }
+    }
+    
+    // length
+    int length = bytes[dataStartLocation - 1];
     int lengthOfLength = 0;
     if (length == 0x80) {
         return nil;
@@ -40,8 +49,7 @@
         lengthOfLength = length - 0x80;
         length = 0;
         if (data.length < dataStartLocation + lengthOfLength) { return nil; }
-        for (int i = 2; i < lengthOfLength + 2; i++) {
-            NSLog(@"read lenght: %02x", bytes[i]);
+        for (int i = dataStartLocation; i < lengthOfLength + dataStartLocation; i++) {
             length = (length << 8) | (bytes[i] & 0xff);
         }
         dataStartLocation += lengthOfLength;

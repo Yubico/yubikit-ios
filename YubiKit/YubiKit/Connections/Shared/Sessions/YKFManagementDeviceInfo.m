@@ -14,8 +14,8 @@
 #import <Foundation/Foundation.h>
 #import "YKFManagementDeviceInfo+Private.h"
 #import "YKFAssert.h"
-#import <CryptoTokenKit/TKTLVRecord.h>
-#import "NSArray+TKTLVRecord.h"
+#import "YKFTLVRecord.h"
+#import "NSArray+YKFTLVRecord.h"
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFVersion.h"
 #import "YKFManagementInterfaceConfiguration+Private.h"
@@ -45,7 +45,7 @@
         if (length != data.length - 1) {
             return nil;
         }
-        NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:[data subdataWithRange:NSMakeRange(1, data.length -  1)]];
+        NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:[data subdataWithRange:NSMakeRange(1, data.length -  1)]];
         
         self.isLocked = [[records ykfTLVRecordWithTag:YKFManagementTagConfigLocked].value ykf_integerValue] == 1;
         

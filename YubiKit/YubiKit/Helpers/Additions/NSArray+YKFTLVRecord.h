@@ -15,11 +15,11 @@
 #ifndef NSArray_TKTLVRecord_h
 #define NSArray_TKTLVRecord_h
 
-@class TKTLVRecord;
+@class YKFTLVRecord;
 
-@interface NSArray(TKTLVRecord)
+@interface NSArray(YKFTLVRecord)
 
-- (TKTLVRecord  * _Nullable)ykfTLVRecordWithTag:(UInt64)tag;
+- (YKFTLVRecord  * _Nullable)ykfTLVRecordWithTag:(UInt64)tag;
 
 @end
 
