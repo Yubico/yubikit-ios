@@ -263,10 +263,6 @@ int maxPinAttempts = 3;
     NSData *tlvsData = tlvsContainer.data;
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGenerateAsymetric p1:0 p2:slot data:tlvsData type:YKFAPDUTypeExtended];
     [self.smartCardInterface executeCommand:apdu timeout:120.0 completion:^(NSData * _Nullable data, NSError * _Nullable error) {
-        
-        
-        NSLog(@"%@", [data ykf_hexadecimalString]);
-        
         NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:[[YKFTLVRecord sequenceOfRecordsFromData:data] ykfTLVRecordWithTag:(UInt64)0x7F49].value];
         SecKeyRef publicKey = nil;
         CFErrorRef cfError = nil;
