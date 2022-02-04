@@ -27,38 +27,32 @@
     // tag
     if (data.length == 0) { return nil; }
     Byte *bytes = (Byte *)data.bytes;
-    int dataStartLocation = 2;
-    int tag = bytes[0] & 0xFF;
+    int offset = 0;
+    int tag = bytes[offset++] & 0xFF;
     if ((tag & 0x1F) == 0x1F) {
-        tag = (tag << 8) | (bytes[1] & 0xFF);
-        dataStartLocation++;
-        int index = 1;
-        while ((tag & 0x80) == 0x80 && index < data.length) {
-            tag = (tag << 8) | (bytes[index] & 0xFF);
-            dataStartLocation++;
-            index++;
+        tag = (tag << 8) | (bytes[offset++] & 0xFF);
+        while ((tag & 0x80) == 0x80 && offset < data.length) {
+            tag = (tag << 8) | (bytes[offset++] & 0xFF);
         }
     }
     
     // length
-    int length = bytes[dataStartLocation - 1];
-    int lengthOfLength = 0;
+    int length = bytes[offset++];
     if (length == 0x80) {
         return nil;
     } else if (length > 0x80) {
-        lengthOfLength = length - 0x80;
+        int lengthOfLength = length - 0x80;
         length = 0;
-        if (data.length < dataStartLocation + lengthOfLength) { return nil; }
-        for (int i = dataStartLocation; i < lengthOfLength + dataStartLocation; i++) {
-            length = (length << 8) | (bytes[i] & 0xff);
+        if (data.length < offset + lengthOfLength) { return nil; }
+        for (int i = 0; i < lengthOfLength; i++) {
+            length = (length << 8) | (bytes[offset++] & 0xff);
         }
-        dataStartLocation += lengthOfLength;
     }
     // data
-    *bytesRead = dataStartLocation + length;
-    if (checkMatchingLength && data.length != dataStartLocation + length) { return nil; }
-    if (data.length < dataStartLocation + length) { return nil; }
-    return [[YKFTLVRecord alloc] initWithTag:tag value:[data subdataWithRange:NSMakeRange(dataStartLocation, length)]];
+    *bytesRead = offset + length;
+    if (checkMatchingLength && data.length != offset + length) { return nil; }
+    if (data.length < offset + length) { return nil; }
+    return [[YKFTLVRecord alloc] initWithTag:tag value:[data subdataWithRange:NSMakeRange(offset, length)]];
 }
 
 - (NSData *)data {
