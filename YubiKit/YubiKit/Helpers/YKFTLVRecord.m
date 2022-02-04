@@ -93,10 +93,7 @@
         
         Byte lengthHeader = 0x80 | (sizeof(length) - skippedBytes);
         [result appendBytes:&lengthHeader length:1];
-        
-        for (int i = skippedBytes; i < sizeof(length); i++) {
-            [result appendBytes:&lengthBytes[i] length:1];
-        }
+        [result appendBytes:&lengthBytes[skippedBytes] length:sizeof(length) - skippedBytes];
     }
     
     // data
