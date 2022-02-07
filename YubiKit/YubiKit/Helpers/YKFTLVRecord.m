@@ -21,6 +21,10 @@
 @property (nonatomic, readwrite) NSData *value;
 @end
 
+@interface NSData (NSData_ByteEncoding)
+    + (NSData *)ykf_encodeBytesBigSkippingZeros:(char*)bytes length:(int)length;
+@end
+
 @implementation YKFTLVRecord
 
 + (nullable instancetype)recordFromData:(NSData *_Nullable)data checkMatchingLength:(Boolean)checkMatchingLength bytesRead:(int*)bytesRead {
@@ -62,32 +66,20 @@
     // tag
     YKFTLVTag tag = CFSwapInt32HostToBig(self.tag);
     char* tagBytes = (char*) &tag;
-    for (int i = 0; i < sizeof(YKFTLVTag); i++) {
-        if (tagBytes[i] != 0) {
-            [result appendBytes:&tagBytes[i] length:1];
-        }
-    }
+    NSData *tagData = [NSData ykf_encodeBytesBigSkippingZeros:tagBytes length:sizeof(YKFTLVTag)];
+    [result appendData:tagData];
     
     // length
     NSUInteger hostLength = self.value.length;
-    NSUInteger length = NSSwapHostLongToBig(hostLength);
-    
     if (hostLength < 0x80) {
         [result appendBytes:&hostLength length:1];
     } else {
+        NSUInteger length = NSSwapHostLongToBig(hostLength);
         char* lengthBytes = (char*)&length;
-        int skippedBytes = 0;
-        for (int i = 0; i < sizeof(length); i++) {
-            if (lengthBytes[i] == 0) {
-                skippedBytes++;
-            } else {
-                break;
-            }
-        }
-        
-        Byte lengthHeader = 0x80 | (sizeof(length) - skippedBytes);
+        NSData *lengthData = [NSData ykf_encodeBytesBigSkippingZeros:lengthBytes length:sizeof(length)];
+        Byte lengthHeader = 0x80 | lengthData.length;
         [result appendBytes:&lengthHeader length:1];
-        [result appendBytes:&lengthBytes[skippedBytes] length:sizeof(length) - skippedBytes];
+        [result appendData:lengthData];
     }
     
     // data
@@ -141,6 +133,23 @@
         }
     }
     return records;
+}
+
+@end
+
+
+@implementation NSData (NSData_ByteEncoding)
+    
++ (NSData *)ykf_encodeBytesBigSkippingZeros:(char*)bytes length:(int)length {
+    int skippedBytes = 0;
+    for (int i = 0; i < length; i++) {
+        if (bytes[i] == 0) {
+            skippedBytes++;
+        } else {
+            break;
+        }
+    }
+    return [[NSData alloc] initWithBytes:&bytes[skippedBytes] length:length - skippedBytes];
 }
 
 @end

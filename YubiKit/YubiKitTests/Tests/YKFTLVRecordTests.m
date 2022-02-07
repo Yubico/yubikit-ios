@@ -89,6 +89,11 @@
     XCTAssert(longRecord == nil);
 }
 
+-  (void)test_recordFromDataWithZeroByteInTag {
+    YKFTLVRecord *record = [[YKFTLVRecord alloc] initWithTag:0x110011 value:[NSData dataFromHexString:@"112233"]];
+    XCTAssert([record.data isEqual:[NSData dataFromHexString:@"11001103112233"]]);
+}
+
 - (void)test_sequenceOfRecordsFromData {
     NSData *singleRecordData = [NSData dataFromHexString:@"1e03112233"];
     NSArray<YKFTLVRecord *> *singleRecords = [YKFTLVRecord sequenceOfRecordsFromData:singleRecordData];
