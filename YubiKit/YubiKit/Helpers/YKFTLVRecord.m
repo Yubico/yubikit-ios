@@ -15,6 +15,7 @@
 #import <Foundation/Foundation.h>
 #import "YKFTLVRecord.h"
 #import "YKFNSDataAdditions+Private.h"
+#import <CryptoTokenKit/TKTLVRecord.h>
 
 @interface YKFTLVRecord()
 @property (nonatomic, readwrite) YKFTLVTag tag;
@@ -29,6 +30,8 @@
 
 + (nullable instancetype)recordFromData:(NSData *_Nullable)data checkMatchingLength:(Boolean)checkMatchingLength bytesRead:(int*)bytesRead {
     *bytesRead = 0;
+    
+    TKBERTLVRecord *foo;
     
     // tag
     if (data.length == 0) {
