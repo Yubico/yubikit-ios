@@ -28,9 +28,10 @@
 @implementation YKFTLVRecord
 
 + (nullable instancetype)recordFromData:(NSData *_Nullable)data checkMatchingLength:(Boolean)checkMatchingLength bytesRead:(int*)bytesRead {
+    *bytesRead = 0;
+    
     // tag
     if (data.length == 0) {
-        *bytesRead = 0;
         return nil;
     }
     Byte *bytes = (Byte *)data.bytes;
@@ -46,29 +47,26 @@
     // length
     int length = bytes[offset++];
     if (length == 0x80) {
-        *bytesRead = 0;
         return nil;
     } else if (length > 0x80) {
         int lengthOfLength = length - 0x80;
         length = 0;
         if (data.length < offset + lengthOfLength) {
-            *bytesRead = 0;
             return nil;
         }
         for (int i = 0; i < lengthOfLength; i++) {
             length = (length << 8) | (bytes[offset++] & 0xFF);
         }
     }
+    
     // data
-    *bytesRead = offset + length;
     if (checkMatchingLength && data.length != offset + length) {
-        *bytesRead = 0;
         return nil;
     }
     if (data.length < offset + length) {
-        *bytesRead = 0;
         return nil;
     }
+    *bytesRead = offset + length;
     return [[YKFTLVRecord alloc] initWithTag:tag value:[data subdataWithRange:NSMakeRange(offset, length)]];
 }
 
