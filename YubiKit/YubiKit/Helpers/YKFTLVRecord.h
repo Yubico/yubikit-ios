@@ -16,7 +16,7 @@
 #define TLVRecord_h
 
 
-typedef UInt32 YKFTLVTag;
+typedef UInt64 YKFTLVTag;
 
 @interface YKFTLVRecord : NSObject
 
