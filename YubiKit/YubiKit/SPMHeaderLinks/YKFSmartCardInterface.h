@@ -1,1 +1,1 @@
-..//Connections/SmartCardInterface/YKFSmartCardInterface.h
+../Connections/SmartCardInterface/YKFSmartCardInterface.h

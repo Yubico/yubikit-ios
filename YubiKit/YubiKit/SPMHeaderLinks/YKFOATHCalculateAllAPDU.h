@@ -1,1 +1,1 @@
-..//Connections/Shared/APDU/OATH/YKFOATHCalculateAllAPDU.h
+../Connections/Shared/APDU/OATH/YKFOATHCalculateAllAPDU.h

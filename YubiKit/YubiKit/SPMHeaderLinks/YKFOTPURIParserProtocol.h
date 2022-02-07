@@ -1,1 +1,1 @@
-..//SharedModel/YKFOTPURIParserProtocol.h
+../SharedModel/YKFOTPURIParserProtocol.h

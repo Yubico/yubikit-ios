@@ -1,1 +1,1 @@
-..//YubiKitDeviceCapabilities.h
+../YubiKitDeviceCapabilities.h

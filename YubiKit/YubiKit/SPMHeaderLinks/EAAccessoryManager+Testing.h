@@ -1,1 +1,1 @@
-..//TestExtentions/EAAccessoryManager+Testing.h
+../TestExtentions/EAAccessoryManager+Testing.h

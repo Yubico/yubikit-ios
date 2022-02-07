@@ -1,1 +1,1 @@
-..//Connections/Shared/APDU/OATH/YKFOATHRenameAPDU.h
+../Connections/Shared/APDU/OATH/YKFOATHRenameAPDU.h

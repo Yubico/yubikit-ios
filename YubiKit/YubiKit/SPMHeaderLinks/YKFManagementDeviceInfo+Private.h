@@ -1,1 +1,1 @@
-..//Connections/Shared/Sessions/YKFManagementDeviceInfo+Private.h
+../Connections/Shared/Sessions/YKFManagementDeviceInfo+Private.h

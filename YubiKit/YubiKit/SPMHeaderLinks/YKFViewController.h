@@ -1,1 +1,1 @@
-..//Helpers/YKFViewController.h
+../Helpers/YKFViewController.h

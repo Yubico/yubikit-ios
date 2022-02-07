@@ -1,1 +1,1 @@
-..//YubiKitConfiguration.h
+../YubiKitConfiguration.h

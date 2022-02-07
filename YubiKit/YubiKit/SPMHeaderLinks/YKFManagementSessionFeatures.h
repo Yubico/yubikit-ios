@@ -1,1 +1,1 @@
-..//Connections/Shared/Sessions/YKFManagementSessionFeatures.h
+../Connections/Shared/Sessions/YKFManagementSessionFeatures.h

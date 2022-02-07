@@ -1,1 +1,1 @@
-..//TestExtentions/UIDevice+Testing.h
+../TestExtentions/UIDevice+Testing.h
