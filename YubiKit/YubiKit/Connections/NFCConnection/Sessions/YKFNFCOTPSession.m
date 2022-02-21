@@ -80,7 +80,9 @@
     
     YKFLogNSError(error);
     
-    if (self.nfcOTPResponseBlock) self.nfcOTPResponseBlock(nil, error);
+    if (self.nfcOTPResponseBlock) {
+        self.nfcOTPResponseBlock(nil, error);
+    }
     self.nfcOTPResponseBlock = nil;
     self.nfcSession = nil;
 }
@@ -90,10 +92,14 @@
     
     id<YKFOTPTokenProtocol> otpToken = [self.otpTokenParser otpTokenFromNfcMessages:messages];
     if (otpToken) {
-        if (self.nfcOTPResponseBlock) self.nfcOTPResponseBlock(otpToken, nil);
+        if (self.nfcOTPResponseBlock) {
+            self.nfcOTPResponseBlock(otpToken, nil);
+        }
     } else {
         YKFNFCError *error = [YKFNFCError noTokenAfterScanError];
-        if (self.nfcOTPResponseBlock) self.nfcOTPResponseBlock(nil, error);
+        if (self.nfcOTPResponseBlock) {
+            self.nfcOTPResponseBlock(nil, error);
+        }
     }
     self.nfcOTPResponseBlock = nil;
     self.nfcSession = nil;
