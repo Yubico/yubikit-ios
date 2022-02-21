@@ -48,6 +48,7 @@ static const UInt8 YKFOATHCalculateAPDUChallengeTag = 0x74;
         [data ykf_appendByte:0];
     }
     
+    // P2 is 0x01 for truncated response only
     return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHCalculate p1:0 p2:1 data:data type:YKFAPDUTypeShort];
 }
 
