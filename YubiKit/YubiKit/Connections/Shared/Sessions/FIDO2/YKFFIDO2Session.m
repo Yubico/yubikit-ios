@@ -190,14 +190,8 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
 }
 
 - (void)clearUserVerification {
-    if (!self.pinToken && !self.applicationSelected) {
-        return;
-    }
-    
     YKFLogVerbose(@"Clearing FIDO2 Session user verification.");
     self.pinToken = nil;
-// TODO: We can't do this anymore. Should we handle it in some other way?
-//        strongSelf.applicationSelected = NO; // Force also an application re-selection.
 }
 
 - (void)changePin:(nonnull NSString *)oldPin to:(nonnull NSString *)newPin completion:(nonnull YKFFIDO2SessionGenericCompletionBlock)completion {
@@ -329,7 +323,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         pinProtocol = 1;
         NSData *hmac = [clientDataHash ykf_fido2HMACWithKey:self.pinToken];
         pinAuth = [hmac subdataWithRange:NSMakeRange(0, 16)];
-        if (pinAuth) {
+        if (!pinAuth) {
             completion(nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER]);
         }
     }
@@ -373,15 +367,15 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     // Attach the PIN authentication if the pinToken is present.
     NSData *pinAuth;
     NSUInteger pinProtocol = 0;
-//    if (self.pinToken) {
-//        YKFParameterAssertReturn(clientDataHash);
-//        pinProtocol = 1;
-//        NSData *hmac = [clientDataHash ykf_fido2HMACWithKey:self.pinToken];
-//        pinAuth = [hmac subdataWithRange:NSMakeRange(0, 16)];
-//        if (!pinAuth) {
-//            completion(nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER]);
-//        }
-//    }
+    if (self.pinToken) {
+        YKFParameterAssertReturn(clientDataHash);
+        pinProtocol = 1;
+        NSData *hmac = [clientDataHash ykf_fido2HMACWithKey:self.pinToken];
+        pinAuth = [hmac subdataWithRange:NSMakeRange(0, 16)];
+        if (!pinAuth) {
+            completion(nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER]);
+        }
+    }
     
     YKFFIDO2GetAssertionAPDU *apdu = [[YKFFIDO2GetAssertionAPDU alloc] initWithClientDataHash:clientDataHash
                                                                                          rpId:rpId

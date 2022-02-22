@@ -17,11 +17,12 @@ import Foundation
 
 class FIDO2Tests: XCTestCase {
     
+    // Resetting the FIDO2 over lightning requires the user to remove and then insert the key again. This would make the FIDO2 test
+    // not that usable so we only test features that requires a reset on the NFC key.
     func testResetOverNFC() {
         runYubiKitTest { connection, completion in
             if connection as? YKFNFCConnection != nil {
-                connection.fido2Session { session, error in
-                    guard let session = session else { XCTAssertTrue(false, "🔴 Failed to get FIDO2 session: \(error!)"); return }
+                connection.fido2TestSession { session in
                     session.reset { error in
                         guard error == nil else { XCTAssertTrue(false, "🔴 Failed to reset FIDO2 session: \(error!)"); return }
                         print("✅ FIDO2 reset")
@@ -29,7 +30,121 @@ class FIDO2Tests: XCTestCase {
                     }
                 }
             } else {
-                print("✅ Skipping FIDO2 reset over lightning")
+                print("✅ Skipping FIDO2 testResetOverNFC() over lightning")
+                completion()
+            }
+        }
+    }
+    
+    
+    func testWrongPinOverNFC() {
+        runYubiKitTest { connection, completion in
+            if connection as? YKFNFCConnection != nil {
+                connection.fido2TestSession { session in
+                    session.setPin("123456") { _ in
+                        session.verifyPin("234567") { error in
+                            if let error = error {
+                                XCTAssertTrue((error as NSError).code == 49, "🔴 Unexpected error: \(error)")
+                            } else {
+                                XCTFail("🔴 Failed to get an error although wrong pin was entered")
+                            }
+                            session.reset { error in
+                                guard error == nil else { XCTAssertTrue(false, "🔴 Failed to reset FIDO2 session: \(error!)"); return }
+                                print("✅ FIDO2 reset")
+                                completion()
+                            }
+                        }
+                    }
+                }
+            } else {
+                print("✅ Skipping FIDO2 testWrongPinOverNFC() over lightning")
+                completion()
+            }
+        }
+    }
+    
+    func testCreateAndAssertWithPinOverNFC() {
+        runYubiKitTest { connection, completion in
+            if connection as? YKFNFCConnection != nil {
+                connection.fido2TestSession { session in
+                    session.setPin("123456") { _ in
+                        session.verifyPin("123456") { error in
+                            session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
+                                print("✅ Created new FIDO2 credential: \(response)")
+                                session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true]) { response in
+                                    // https://www.w3.org/TR/webauthn/#authenticator-data
+                                    XCTAssertTrue(response.authData.bytes[32] & 0b00000100 != 0, "🔴 Got auth data indicating we never verified pin")
+                                    print("✅ Asserted FIDO2 credential: \(response.authData)")
+                                    session.reset { error in
+                                        guard error == nil else { XCTAssertTrue(false, "🔴 Failed to reset FIDO2 session: \(error!)"); return }
+                                        print("✅ FIDO2 reset")
+                                        completion()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                print("✅ Skipping FIDO2 testCreateAndAssertWithPinOverNFC() over lightning")
+                completion()
+            }
+        }
+    }
+    
+    func testAssertWithoutProvidingPinOverNFC() {
+        runYubiKitTest { connection, completion in
+            if connection as? YKFNFCConnection != nil {
+                connection.fido2TestSession { session in
+                    session.setPin("123456") { _ in
+                        session.verifyPin("123456") { error in
+                            session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
+                                session.clearUserVerification()
+                                session.getAssertion(response: response, options: [YKFFIDO2OptionUP: true]) { response, error in
+                                    if let response = response {
+                                        // https://www.w3.org/TR/webauthn/#authenticator-data
+                                        XCTAssertTrue(response.authData.bytes[32] & 0b00000100 == 0, "🔴 Got auth data indicating we verified pin when we never did.")
+                                    } else {
+                                        XCTFail("🔴 Got unexpected error: \(error!)")
+                                    }
+                                    session.reset { error in
+                                        guard error == nil else { XCTAssertTrue(false, "🔴 Failed to reset FIDO2 session: \(error!)"); return }
+                                        print("✅ FIDO2 reset")
+                                        completion()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                print("✅ Skipping FIDO2 testAssertWithoutProvidingPinOverNFC() over lightning")
+                completion()
+            }
+        }
+    }
+    
+    func testAddWithoutProvidingPinOverNFC() {
+        runYubiKitTest { connection, completion in
+            if connection as? YKFNFCConnection != nil {
+                connection.fido2TestSession { session in
+                    session.setPin("123456") { _ in
+                        session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response, error in
+                            if let error = error {
+                                XCTAssertTrue((error as NSError).code == 54, "🔴 Unexpected error: \(error)")
+                            } else {
+                                XCTFail("🔴 Failed to get an error although no pin was supplied")
+                            }
+                            session.reset { error in
+                                guard error == nil else { XCTAssertTrue(false, "🔴 Failed to reset FIDO2 session: \(error!)"); return }
+                                print("✅ FIDO2 reset")
+                                completion()
+                            }
+                        }
+                    }
+                }
+            } else {
+                print("✅ Skipping FIDO2 testAddWithoutProvidingPinOverNFC() over lightning")
                 completion()
             }
         }
@@ -56,7 +171,7 @@ class FIDO2Tests: XCTestCase {
     func testCreateECCNonRKCredential() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
-                session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
                     print("✅ New FIDO2 credential: \(response)")
                     completion()
                 }
@@ -67,7 +182,7 @@ class FIDO2Tests: XCTestCase {
     func testCreateEdSANonRKCredential() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
-                session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: false]) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: false]) { response in
                     print("✅ Created new FIDO2 credential: \(response)")
                     completion()
                 }
@@ -78,9 +193,9 @@ class FIDO2Tests: XCTestCase {
     func testCreateECCNonRKCredentialAndAssert() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
-                session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
                     print("✅ Created new FIDO2 credential: \(response)")
-                    session.assertCredential(response: response, options: [YKFFIDO2OptionUP: true]) { response in
+                    session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true]) { response in
                         print("✅ Asserted FIDO2 credential: \(response)")
                         completion()
                     }
@@ -92,9 +207,9 @@ class FIDO2Tests: XCTestCase {
     func testCreateEdDSANonRKCredentialAndAssert() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
-                session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: false]) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: false]) { response in
                     print("✅ Created new FIDO2 credential: \(response)")
-                    session.assertCredential(response: response, options: [YKFFIDO2OptionUP: true]) { response in
+                    session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true]) { response in
                         print("✅ Asserted FIDO2 credential: \(response)")
                         completion()
                     }
@@ -106,9 +221,9 @@ class FIDO2Tests: XCTestCase {
     func testCreateEdDSARKCredentialAndAssert() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
-                session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response in
                     print("✅ Created new FIDO2 credential: \(response)")
-                    session.assertCredential(response: response, options: [YKFFIDO2OptionUP: true]) { response in
+                    session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true]) { response in
                         print("✅ Asserted FIDO2 credential: \(response)")
                         completion()
                     }
@@ -120,9 +235,9 @@ class FIDO2Tests: XCTestCase {
     func testCreateEdDSARKCredentialAndAssertWithoutUP() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
-                session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response in
                     print("✅ Created new FIDO2 credential: \(response)")
-                    session.assertCredential(response: response, options: [YKFFIDO2OptionUP: false]) { response in
+                    session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: false]) { response in
                         print("✅ Asserted FIDO2 credential: \(response)")
                         completion()
                     }
@@ -133,7 +248,15 @@ class FIDO2Tests: XCTestCase {
 }
 
 extension YKFFIDO2Session {
-    func addCredential(algorithm: Int, options: [String: Any]? = nil,  completion: @escaping (_ response: YKFFIDO2MakeCredentialResponse) -> Void) {
+    func addCredentialAndAssert(algorithm: Int, options: [String: Any]? = nil,  completion: @escaping (_ response: YKFFIDO2MakeCredentialResponse) -> Void) {
+        addCredential(algorithm: algorithm, options: options) { response, error in
+            guard let response = response else { XCTAssertTrue(false, "🔴 Failed making FIDO2 credential: \(error!)"); return }
+            completion(response)
+        }
+    }
+    
+    
+    func addCredential(algorithm: Int, options: [String: Any]? = nil, completion: @escaping YKFFIDO2SessionMakeCredentialCompletionBlock) {
         let data = Data(repeating: 0, count: 32)
         let rp = YKFFIDO2PublicKeyCredentialRpEntity()
         rp.rpId = "yubikit-test.com"
@@ -145,13 +268,17 @@ extension YKFFIDO2Session {
         let param = YKFFIDO2PublicKeyCredentialParam()
         param.alg = algorithm
         let pubKeyCredParams = [param]
-        makeCredential(withClientDataHash: data, rp: rp, user: user, pubKeyCredParams: pubKeyCredParams, excludeList: nil, options: options) { response, error in
-            guard let response = response else { XCTAssertTrue(false, "🔴 Failed making FIDO2 credential: \(error!)"); return }
+        makeCredential(withClientDataHash: data, rp: rp, user: user, pubKeyCredParams: pubKeyCredParams, excludeList: nil, options: options, completion: completion)
+    }
+    
+    func getAssertionAndAssert(response: YKFFIDO2MakeCredentialResponse, options: [String: Any]? = nil,  completion: @escaping (_ response: YKFFIDO2GetAssertionResponse) -> Void) {
+        getAssertion(response: response, options: options) { response, error in
+            guard let response = response else { XCTAssertTrue(false, "🔴 Failed asserting FIDO2 credential: \(error!)"); return }
             completion(response)
         }
     }
     
-    func assertCredential(response: YKFFIDO2MakeCredentialResponse, options: [String: Any]? = nil,  completion: @escaping (_ response: YKFFIDO2GetAssertionResponse) -> Void) {
+    func getAssertion(response: YKFFIDO2MakeCredentialResponse, options: [String: Any]? = nil,  completion: @escaping YKFFIDO2SessionGetAssertionCompletionBlock) {
         let data = Data(repeating: 0, count: 32)
         let credentialDescriptor = YKFFIDO2PublicKeyCredentialDescriptor()
         credentialDescriptor.credentialId = response.authenticatorData!.credentialId!
@@ -159,10 +286,7 @@ extension YKFFIDO2Session {
         credType.name = "public-key"
         credentialDescriptor.credentialType = credType
         let allowList = [credentialDescriptor]
-        getAssertionWithClientDataHash(data, rpId: "yubikit-test.com", allowList: allowList, options: options) { response, error in
-            guard let response = response else { XCTAssertTrue(false, "🔴 Failed asserting FIDO2 credential: \(error!)"); return }
-                completion(response)
-        }
+        getAssertionWithClientDataHash(data, rpId: "yubikit-test.com", allowList: allowList, options: options, completion: completion)
     }
 }
 
