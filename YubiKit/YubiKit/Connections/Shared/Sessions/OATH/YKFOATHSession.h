@@ -99,6 +99,24 @@ typedef void (^YKFOATHSessionCalculateAllCompletionBlock)
 typedef void (^YKFOATHSelectApplicationCompletionBlock)
     (YKFOATHSelectApplicationResponse* _Nullable response, NSError* _Nullable error);
 
+
+/*!
+ @abstract
+    Response block for [executeCalculateResponse:completion:] which provides the result for the execution
+    of the Calculate response request.
+ 
+ @param response
+    The response if the request was successful. In case of error this parameter is nil.
+
+ @param error
+    In case of a failed request this parameter contains the error. If the request was successful this
+    parameter is nil.
+ */
+typedef void (^YKFOATHSessionCalculateResponseCompletionBlock)
+    (NSData* _Nullable response, NSError* _Nullable error);
+
+
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -346,6 +364,31 @@ NS_ASSUME_NONNULL_BEGIN
     This method is thread safe and can be invoked from any thread (main or a background thread).
  */
 - (void)unlockWithPassword:(NSString *)password completion:(YKFOATHSessionGenericCompletionBlock)completion;
+
+
+/*!
+ @method calculateResponseForCredentialID:challenge:completion:
+ 
+ @abstract
+    Calculate a full (non-truncated) HMAC signature using a YKFOATHCredential.
+    Using this command a YKFOATHCredential can be used as an HMAC key to calculate a result for an arbitrary challenge.
+    The hash algorithm specified for the YKFOATHCredential is used.
+ 
+ @param credentialId
+    The id of the credential to use when calulating the result.
+ 
+ @param challenge
+    The challenge.
+
+ @param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread. If the intention is to update the UI, dispatch the results
+    on the main thread to avoid an UIKit assertion.
+ 
+ @note
+    This method is thread safe and can be invoked from any thread (main or a background thread).
+ */
+- (void)calculateResponseForCredentialID:(NSData *)credentialId challenge:(NSData *)challenge completion:(YKFOATHSessionCalculateResponseCompletionBlock)completion;
 
 /*
  Not available: use only the instance from the YKFAccessorySession.
