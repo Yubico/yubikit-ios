@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "YKFSession+Private.h"
+#import "YKFSession.h"
 #import "YKFSlot.h"
 
 /**

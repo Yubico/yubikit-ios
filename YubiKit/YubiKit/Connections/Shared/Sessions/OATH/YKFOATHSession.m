@@ -14,6 +14,7 @@
 
 #import "YKFOATHSession.h"
 #import "YKFOATHSession+Private.h"
+#import "YKFSession+Private.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFOATHError.h"
 #import "YKFAPDUError.h"
