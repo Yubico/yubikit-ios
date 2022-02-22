@@ -1,5 +1,14 @@
 # YubiKit Changelog
 
+## 4.2.0
+
+- Fixed calcultion of non-trunkated HMAC signatures in OATH.
+- Fix for crash on iOS 15 when scanning OTP over NFC.
+- CoreNFC specified as weak framework fixing crash on devices not supporting NFC.
+- Fixed broken header file imports for static compiled libraries.
+- Bug fixes for PIN handling in FIDO2.
+- Replaced TKBERTLVRecord from CryptoTokenKit with own BERTLV implementation. This fixes issues on older iOS versions.
+
 ## 4.1.0
 
 - Optional timestamp parameter added to OATH calculate and calculateAll methods.
