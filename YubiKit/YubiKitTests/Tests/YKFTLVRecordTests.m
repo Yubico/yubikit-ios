@@ -35,7 +35,7 @@
 }
 
 - (void)test_nonTerminatedTag {
-    NSData *data = [NSData dataFromHexString:@"DF8282 03 303132"];
+    NSData *data = [NSData dataFromHexString:@"DF8282 00"];
     YKFTLVRecord *record = [YKFTLVRecord recordFromData:data];
     XCTAssertNil(record);
 }
