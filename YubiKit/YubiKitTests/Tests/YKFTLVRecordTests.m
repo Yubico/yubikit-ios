@@ -34,6 +34,25 @@
     XCTAssert([longTagRecord.data isEqual:longTagData]);
 }
 
+- (void)test_nonTerminatedTag {
+    NSData *data = [NSData dataFromHexString:@"DF8282 03 303132"];
+    YKFTLVRecord *record = [YKFTLVRecord recordFromData:data];
+    XCTAssertNil(record);
+}
+
+- (void)test_maxLengthTag {
+    NSData *data = [NSData dataFromHexString:@"DF81818181818101 03 303132"];
+    YKFTLVRecord *record = [YKFTLVRecord recordFromData:data];
+    XCTAssert(record != nil);
+    XCTAssertEqual(record.tag, 0xDF81818181818101);
+}
+
+- (void)test_toBigTag {
+    NSData *data = [NSData dataFromHexString:@"DF8181818181818101 03 303132"];
+    YKFTLVRecord *record = [YKFTLVRecord recordFromData:data];
+    XCTAssertNil(record);
+}
+
 - (void)test_recordFromDataNoValue {
    NSData *shortRecordData = [NSData dataFromHexString:@"1e00"];
    YKFTLVRecord *shortRecord = [YKFTLVRecord recordFromData:shortRecordData];
@@ -74,6 +93,18 @@
     XCTAssert(longRecord == nil);
 }
 
+- (void)test_malformedLength {
+    NSData *data = [NSData dataFromHexString:@"DF820A 80 303132"];
+    YKFTLVRecord *record = [YKFTLVRecord recordFromData:data];
+    XCTAssertNil(record);
+}
+
+- (void)test_toBigLength {
+    NSData *data = [NSData dataFromHexString:@"DF820A 89 303132"];
+    YKFTLVRecord *record = [YKFTLVRecord recordFromData:data];
+    XCTAssertNil(record);
+}
+
 -  (void)test_recordFromDataWithOutOfBoundsLength {
     // this will force the value length calculation to go out of bounds unless checked
     YKFTLVRecord *record = [YKFTLVRecord recordFromData:[NSData dataFromHexString:@"a1852233"]];
@@ -92,6 +123,12 @@
 -  (void)test_recordFromDataWithZeroByteInTag {
     YKFTLVRecord *record = [[YKFTLVRecord alloc] initWithTag:0x110011 value:[NSData dataFromHexString:@"112233"]];
     XCTAssert([record.data isEqual:[NSData dataFromHexString:@"11001103112233"]]);
+}
+
+-  (void)test_recordFromDataWith0x1FTag {
+    NSData *data = [NSData dataFromHexString:@"1f00"];
+    YKFTLVRecord *record = [YKFTLVRecord recordFromData:data];
+    XCTAssertNil(record);
 }
 
 - (void)test_sequenceOfRecordsFromData {

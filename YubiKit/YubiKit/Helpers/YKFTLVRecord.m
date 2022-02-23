@@ -27,7 +27,7 @@
 
 @implementation YKFTLVRecord
 
-+ (nullable instancetype)recordFromData:(NSData *_Nullable)data checkMatchingLength:(Boolean)checkMatchingLength bytesRead:(int*)bytesRead {
++ (nullable instancetype)recordFromData:(NSData *_Nullable)data checkMatchingLength:(Boolean)checkMatchingLength bytesRead:(NSUInteger*)bytesRead {
     *bytesRead = 0;
     
     // tag
@@ -35,23 +35,25 @@
         return nil;
     }
     Byte *bytes = (Byte *)data.bytes;
-    int offset = 0;
-    int tag = bytes[offset++] & 0xFF;
+    NSUInteger offset = 0;
+    YKFTLVTag tag = bytes[offset++];
     if ((tag & 0x1F) == 0x1F) {
+        if (data.length < 2) { return nil; }
         tag = (tag << 8) | (bytes[offset++] & 0xFF);
         while ((tag & 0x80) == 0x80 && offset < data.length) {
+            if (offset >= sizeof(YKFTLVTag)) { return nil; }
             tag = (tag << 8) | (bytes[offset++] & 0xFF);
         }
     }
     
     // length
-    int length = bytes[offset++];
+    NSUInteger length = bytes[offset++];
     if (length == 0x80) {
         return nil;
     } else if (length > 0x80) {
-        int lengthOfLength = length - 0x80;
+        NSUInteger lengthOfLength = length - 0x80;
         length = 0;
-        if (data.length < offset + lengthOfLength) {
+        if (lengthOfLength > sizeof(length) || data.length < offset + lengthOfLength) {
             return nil;
         }
         for (int i = 0; i < lengthOfLength; i++) {
@@ -117,7 +119,7 @@
 }
 
 + (nullable instancetype)recordFromData:(NSData *_Nullable)data {
-    int bytesRead = 0;
+    NSUInteger bytesRead = 0;
     return [self recordFromData:data checkMatchingLength:true bytesRead:&bytesRead];
 }
 
@@ -125,12 +127,12 @@
     
     NSMutableArray<YKFTLVRecord *> *records = [[NSMutableArray<YKFTLVRecord *> alloc] init];
     
-    int location = 0;
+    NSUInteger location = 0;
     bool keepScanning = true;
     while (keepScanning) {
         data = [data subdataWithRange:NSMakeRange(location, data.length - location)];
         
-        int bytesRead = 0;
+        NSUInteger bytesRead = 0;
         YKFTLVRecord *record = [YKFTLVRecord recordFromData:data checkMatchingLength:NO bytesRead:&bytesRead];
         if (record) {
             [records addObject:record];
