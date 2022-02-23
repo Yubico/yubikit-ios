@@ -22,7 +22,7 @@
 @end
 
 @interface NSData (NSData_ByteEncoding)
-    + (NSData *)ykf_dataWithBytesStripLeadingZeros:(char*)bytes length:(int)length;
+    + (NSData *)ykf_dataWithBytesStripLeadingZeros:(char*)bytes length:(NSUInteger)length;
 @end
 
 @implementation YKFTLVRecord
@@ -153,7 +153,7 @@
 
 @implementation NSData (NSData_ByteEncoding)
     
-+ (NSData *)ykf_dataWithBytesStripLeadingZeros:(char*)bytes length:(int)length {
++ (NSData *)ykf_dataWithBytesStripLeadingZeros:(char*)bytes length:(NSUInteger)length {
     int skippedBytes = 0;
     for (int i = 0; i < length; i++) {
         if (bytes[i] == 0) {
