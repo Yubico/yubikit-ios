@@ -34,12 +34,6 @@
     XCTAssert([longTagRecord.data isEqual:longTagData]);
 }
 
-- (void)test_nonTerminatedTag {
-    NSData *data = [NSData dataFromHexString:@"DF8282 00"];
-    YKFTLVRecord *record = [YKFTLVRecord recordFromData:data];
-    XCTAssertNil(record);
-}
-
 - (void)test_maxLengthTag {
     NSData *data = [NSData dataFromHexString:@"DF81818181818101 03 303132"];
     YKFTLVRecord *record = [YKFTLVRecord recordFromData:data];
@@ -123,12 +117,6 @@
 -  (void)test_recordFromDataWithZeroByteInTag {
     YKFTLVRecord *record = [[YKFTLVRecord alloc] initWithTag:0x110011 value:[NSData dataFromHexString:@"112233"]];
     XCTAssert([record.data isEqual:[NSData dataFromHexString:@"11001103112233"]]);
-}
-
--  (void)test_recordFromDataWith0x1FTag {
-    NSData *data = [NSData dataFromHexString:@"1f00"];
-    YKFTLVRecord *record = [YKFTLVRecord recordFromData:data];
-    XCTAssertNil(record);
 }
 
 - (void)test_sequenceOfRecordsFromData {
