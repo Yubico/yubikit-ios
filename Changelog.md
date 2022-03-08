@@ -3,7 +3,7 @@
 ## 4.2.0
 
 - Fixed calculation of non-truncated HMAC signatures in OATH.
-- Fix for crash on iOS 15 when scanning OTP over NFC.
+- Fixed crash on iOS 15 when scanning OTP over NFC.
 - CoreNFC specified as weak framework fixing crash on devices not supporting NFC.
 - Fixed broken header file imports for static compiled libraries.
 - Bug fixes for PIN handling in FIDO2.
