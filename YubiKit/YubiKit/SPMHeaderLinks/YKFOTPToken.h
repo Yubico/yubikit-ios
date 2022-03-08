@@ -1,1 +1,1 @@
-..//SharedModel/YKFOTPToken.h
+../SharedModel/YKFOTPToken.h

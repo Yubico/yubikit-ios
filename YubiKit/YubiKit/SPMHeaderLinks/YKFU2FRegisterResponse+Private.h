@@ -1,1 +1,1 @@
-..//Connections/Shared/Requests/U2F/YKFU2FRegisterResponse+Private.h
+../Connections/Shared/Requests/U2F/YKFU2FRegisterResponse+Private.h

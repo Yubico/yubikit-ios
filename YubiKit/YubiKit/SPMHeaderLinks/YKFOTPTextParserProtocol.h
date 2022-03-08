@@ -1,1 +1,1 @@
-..//SharedModel/YKFOTPTextParserProtocol.h
+../SharedModel/YKFOTPTextParserProtocol.h

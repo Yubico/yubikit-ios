@@ -1,1 +1,1 @@
-..//Connections/QRReaderSession/YKFQRReaderSession.h
+../Connections/QRReaderSession/YKFQRReaderSession.h

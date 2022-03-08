@@ -1,1 +1,1 @@
-..//Connections/Shared/Sessions/MGMT/YKFManagementSession.h
+../Connections/Shared/Sessions/MGMT/YKFManagementSession.h

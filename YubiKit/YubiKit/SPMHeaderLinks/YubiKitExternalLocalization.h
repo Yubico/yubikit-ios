@@ -1,1 +1,1 @@
-..//YubiKitExternalLocalization.h
+../YubiKitExternalLocalization.h

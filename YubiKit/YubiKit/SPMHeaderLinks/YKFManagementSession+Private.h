@@ -1,1 +1,1 @@
-..//Connections/Shared/Sessions/YKFManagementSession+Private.h
+../Connections/Shared/Sessions/YKFManagementSession+Private.h

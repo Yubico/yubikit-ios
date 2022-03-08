@@ -1,1 +1,1 @@
-..//Helpers/YKFPermissions.h
+../Helpers/YKFPermissions.h

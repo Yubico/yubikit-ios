@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import <CryptoTokenKit/TKTLVRecord.h>
 #import <CommonCrypto/CommonCrypto.h>
 #import "YKFPIVSession.h"
 #import "YKFPIVSession+Private.h"
@@ -25,7 +24,7 @@
 #import "YKFPIVSessionFeatures.h"
 #import "YKFSessionError.h"
 #import "YKFNSDataAdditions+Private.h"
-#import "NSArray+TKTLVRecord.h"
+#import "NSArray+YKFTLVRecord.h"
 #import "YKFPIVManagementKeyType.h"
 #import "YKFAPDU+Private.h"
 #import "YKFPIVError.h"
@@ -33,6 +32,7 @@
 #import "YKFPIVManagementKeyMetadata+Private.h"
 #import "YKFPIVPadding+Private.h"
 #import "TKTLVRecordAdditions+Private.h"
+#import "YKFTLVRecord.h"
 
 NSString* const YKFPIVErrorDomain = @"com.yubico.piv";
 
@@ -189,9 +189,9 @@ int maxPinAttempts = 3;
 
 - (void)usePrivateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type message:(NSData *)message exponentiation:(BOOL)exponentiation completion:(YKFPIVSessionDataCompletionBlock)completion {
     NSMutableData *recordsData = [NSMutableData data];
-    [recordsData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagAuthResponse value:[NSData data]].data];
-    [recordsData appendData:[[TKBERTLVRecord alloc] initWithTag:exponentiation ? YKFPIVTagExponentiation : YKFPIVTagChallenge value:message].data];
-    NSData *data = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:recordsData].data;
+    [recordsData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagAuthResponse value:[NSData data]].data];
+    [recordsData appendData:[[YKFTLVRecord alloc] initWithTag:exponentiation ? YKFPIVTagExponentiation : YKFPIVTagChallenge value:message].data];
+    NSData *data = [[YKFTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:recordsData].data;
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAuthenticate p1:type p2:slot data:data type:YKFAPDUTypeExtended];
     [self.smartCardInterface executeCommand:apdu timeout:120.0  completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
@@ -199,12 +199,12 @@ int maxPinAttempts = 3;
             return;
         }
         NSError *tlvError = nil;
-        NSData *recordData = [TKBERTLVRecord valueFromData:data withTag:YKFPIVTagDynAuth error:&tlvError];
+        NSData *recordData = [YKFTLVRecord valueFromData:data withTag:YKFPIVTagDynAuth error:&tlvError];
         if (tlvError) {
             completion(nil, tlvError);
             return;
         }
-        NSData *result = [TKBERTLVRecord valueFromData:recordData withTag:YKFPIVTagAuthResponse error:&tlvError];
+        NSData *result = [YKFTLVRecord valueFromData:recordData withTag:YKFPIVTagAuthResponse error:&tlvError];
         if (tlvError) {
             completion(nil, tlvError);
             return;
@@ -259,12 +259,12 @@ int maxPinAttempts = 3;
         completion(nil, error);
     }
     NSMutableData *data = [NSMutableData dataWithBytes:&type length:1];
-    TKBERTLVRecord *tlv = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagGenAlgorithm value:data];
-    TKBERTLVRecord *tlvsContainer = [[TKBERTLVRecord alloc] initWithTag:0xac value:tlv.data];
+    YKFTLVRecord *tlv = [[YKFTLVRecord alloc] initWithTag:YKFPIVTagGenAlgorithm value:data];
+    YKFTLVRecord *tlvsContainer = [[YKFTLVRecord alloc] initWithTag:0xac value:tlv.data];
     NSData *tlvsData = tlvsContainer.data;
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGenerateAsymetric p1:0 p2:slot data:tlvsData type:YKFAPDUTypeExtended];
     [self.smartCardInterface executeCommand:apdu timeout:120.0 completion:^(NSData * _Nullable data, NSError * _Nullable error) {
-        NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:[[TKBERTLVRecord sequenceOfRecordsFromData:data] ykfTLVRecordWithTag:(UInt64)0x7F49].value];
+        NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:[[YKFTLVRecord sequenceOfRecordsFromData:data] ykfTLVRecordWithTag:(UInt64)0x7F49].value];
         SecKeyRef publicKey = nil;
         CFErrorRef cfError = nil;
         if (type == YKFPIVKeyTypeECCP256 || type == YKFPIVKeyTypeECCP384) {
@@ -279,9 +279,9 @@ int maxPinAttempts = 3;
             [modulusData appendData:[records ykfTLVRecordWithTag:(UInt64)0x81].value];
             NSData *exponentData = [records ykfTLVRecordWithTag:(UInt64)0x82].value;
             NSMutableData *mutableData = [NSMutableData data];
-            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x02 value:modulusData].data];
-            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x02 value:exponentData].data];
-            TKBERTLVRecord *record = [[TKBERTLVRecord alloc] initWithTag:0x30 value:mutableData];
+            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x02 value:modulusData].data];
+            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x02 value:exponentData].data];
+            YKFTLVRecord *record = [[YKFTLVRecord alloc] initWithTag:0x30 value:mutableData];
             NSData *keyData = record.data;
             NSDictionary *attributes = @{(id)kSecAttrKeyType: (id)kSecAttrKeyTypeRSA,
                                          (id)kSecAttrKeyClass: (id)kSecAttrKeyClassPublic};
@@ -353,7 +353,7 @@ int maxPinAttempts = 3;
         case YKFPIVKeyTypeRSA1024:
         case YKFPIVKeyTypeRSA2048:
         {
-            NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:[TKBERTLVRecord recordFromData:data].value];
+            NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:[YKFTLVRecord recordFromData:data].value];
             NSData *primeOne = records[4].value;
             NSData *primeTwo = records[5].value;
             NSData *exponentOne = records[6].value;
@@ -361,11 +361,11 @@ int maxPinAttempts = 3;
             NSData *coefficient = records[8].value;
             
             int length = YKFPIVSizeFromKeyType(keyType) / 2;
-            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x01 value:[primeOne ykf_toLength:length]].data];
-            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x02 value:[primeTwo ykf_toLength:length]].data];
-            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x03 value:[exponentOne ykf_toLength:length]].data];
-            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x04 value:[exponentTwo ykf_toLength:length]].data];
-            [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:0x05 value:[coefficient ykf_toLength:length]].data];
+            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x01 value:[primeOne ykf_toLength:length]].data];
+            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x02 value:[primeTwo ykf_toLength:length]].data];
+            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x03 value:[exponentOne ykf_toLength:length]].data];
+            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x04 value:[exponentTwo ykf_toLength:length]].data];
+            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x05 value:[coefficient ykf_toLength:length]].data];
             break;
         }
         case YKFPIVKeyTypeECCP256:
@@ -373,7 +373,7 @@ int maxPinAttempts = 3;
         {
             int keyLength = YKFPIVSizeFromKeyType(keyType);
             NSData *privateKey = [data subdataWithRange:NSMakeRange(1 + 2 * keyLength, keyLength)];
-            TKTLVRecord *record = [[TKBERTLVRecord alloc] initWithTag:0x06 value:privateKey];
+            YKFTLVRecord *record = [[YKFTLVRecord alloc] initWithTag:0x06 value:privateKey];
             [mutableData appendData:record.data];
             break;
         }
@@ -383,10 +383,10 @@ int maxPinAttempts = 3;
     }
     
     if (pinPolicy != YKFPIVPinPolicyDefault) {
-        [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagPinPolicy value:[NSData dataWithBytes:&pinPolicy length:1]].value];
+        [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagPinPolicy value:[NSData dataWithBytes:&pinPolicy length:1]].value];
     }
     if (touchPolicy != YKFPIVTouchPolicyDefault) {
-        [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagTouchPolicy value:[NSData dataWithBytes:&touchPolicy length:1]].value];
+        [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagTouchPolicy value:[NSData dataWithBytes:&touchPolicy length:1]].value];
     }
     
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsImportKey p1:keyType p2:slot data:mutableData type:YKFAPDUTypeExtended];
@@ -402,9 +402,9 @@ int maxPinAttempts = 3;
 - (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionGenericCompletionBlock)completion {
     NSMutableData *mutableData = [NSMutableData data];
     NSData *certData = (__bridge NSData *)SecCertificateCopyData(certificate);
-    [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagCertificate value:certData].data];
-    [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagCertificateInfo value:certData].data];
-    [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagLRC value:[NSData data]].data];
+    [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagCertificate value:certData].data];
+    [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagCertificateInfo value:certData].data];
+    [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagLRC value:[NSData data]].data];
     [self putObject:mutableData objectId:[self objectIdForSlot:slot] completion:^(NSError * _Nullable error) {
         completion(error);
     }];
@@ -412,8 +412,8 @@ int maxPinAttempts = 3;
 
 - (void)putObject:(NSData *)object objectId:(NSData *)objectId completion:(YKFPIVSessionGenericCompletionBlock)completion  {
     NSMutableData *mutableData = [NSMutableData data];
-    [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagObjectId value:objectId].data];
-    [mutableData appendData:[[TKBERTLVRecord alloc] initWithTag:YKFPIVTagObjectData value:object].data];
+    [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagObjectId value:objectId].data];
+    [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagObjectData value:object].data];
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsPutData p1:0x3f p2:0xff data:mutableData type:YKFAPDUTypeExtended];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         completion(error);
@@ -422,15 +422,15 @@ int maxPinAttempts = 3;
 
 - (void)getCertificateInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionReadCertCompletionBlock)completion {
     NSData *data = [self objectIdForSlot:slot];
-    TKBERTLVRecord *tlv = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagObjectId value:data];
+    YKFTLVRecord *tlv = [[YKFTLVRecord alloc] initWithTag:YKFPIVTagObjectId value:data];
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetData p1:0x3f p2:0xff data:tlv.data type:YKFAPDUTypeExtended];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error != nil) {
             completion(nil, error);
         } else {
-            NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:data];
+            NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:data];
             NSData *objectData = [records ykfTLVRecordWithTag:YKFPIVTagObjectData].value;
-            NSData *certificateData = [[TKBERTLVRecord sequenceOfRecordsFromData:objectData] ykfTLVRecordWithTag:YKFPIVTagCertificate].value;
+            NSData *certificateData = [[YKFTLVRecord sequenceOfRecordsFromData:objectData] ykfTLVRecordWithTag:YKFPIVTagCertificate].value;
             CFDataRef cfCertDataRef =  (__bridge CFDataRef)certificateData;
             SecCertificateRef certificate = SecCertificateCreateWithData(nil, cfCertDataRef);
             completion(certificate, nil);
@@ -453,7 +453,7 @@ int maxPinAttempts = 3;
         completion([[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"AES management key not supported by this YubiKey."}]);
         return;
     }
-    TKBERTLVRecord *tlv = [[TKBERTLVRecord alloc] initWithTag:YKFPIVSlotCardManagement value:managementKey];
+    YKFTLVRecord *tlv = [[YKFTLVRecord alloc] initWithTag:YKFPIVSlotCardManagement value:managementKey];
     
     UInt8 typeValue = type.value;
     NSMutableData *data = [NSMutableData dataWithBytes:&typeValue length:1];
@@ -472,8 +472,8 @@ int maxPinAttempts = 3;
         return;
     }
     
-    TKBERTLVRecord *witness = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagAuthWitness value:[NSData data]];
-    NSData *requestData = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:witness.data].data;
+    YKFTLVRecord *witness = [[YKFTLVRecord alloc] initWithTag:YKFPIVTagAuthWitness value:[NSData data]];
+    NSData *requestData = [[YKFTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:witness.data].data;
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAuthenticate p1:keyType.value p2:YKFPIVSlotCardManagement data:requestData type:YKFAPDUTypeExtended];
 
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
@@ -481,26 +481,26 @@ int maxPinAttempts = 3;
             completion(error);
             return;
         }
-        TKBERTLVRecord *dynAuthRecord = [TKBERTLVRecord recordFromData:data];
+        YKFTLVRecord *dynAuthRecord = [YKFTLVRecord recordFromData:data];
         if (dynAuthRecord.tag != YKFPIVTagDynAuth) {
             completion([YKFPIVError errorUnpackingTLVExpected:YKFPIVTagDynAuth got:dynAuthRecord.tag]);
             return;
         }
-        TKBERTLVRecord *witnessRecord = [TKBERTLVRecord recordFromData:dynAuthRecord.value];
+        YKFTLVRecord *witnessRecord = [YKFTLVRecord recordFromData:dynAuthRecord.value];
         if (witnessRecord.tag != YKFPIVTagAuthWitness) {
             completion([YKFPIVError errorUnpackingTLVExpected:YKFPIVTagAuthWitness got:witnessRecord.tag]);
             return;
         }
         
         NSData *decryptedWitness = [witnessRecord.value ykf_decryptedDataWithAlgorithm:[keyType.name ykfCCAlgorithm] key:managementKey];
-        TKBERTLVRecord *decryptedWitnessRecord = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagAuthWitness value:decryptedWitness];
+        YKFTLVRecord *decryptedWitnessRecord = [[YKFTLVRecord alloc] initWithTag:YKFPIVTagAuthWitness value:decryptedWitness];
 
         NSData *challenge = [NSData ykf_randomDataOfSize:keyType.challengeLength];
-        TKBERTLVRecord *challengeRecord = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagChallenge value:challenge];
+        YKFTLVRecord *challengeRecord = [[YKFTLVRecord alloc] initWithTag:YKFPIVTagChallenge value:challenge];
 
         NSMutableData *mutableData = [decryptedWitnessRecord.data mutableCopy];
         [mutableData appendData:challengeRecord.data];
-        TKBERTLVRecord *authTLVS = [[TKBERTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:mutableData];
+        YKFTLVRecord *authTLVS = [[YKFTLVRecord alloc] initWithTag:YKFPIVTagDynAuth value:mutableData];
 
         YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsAuthenticate p1:keyType.value p2:YKFPIVSlotCardManagement data:authTLVS.data type:YKFAPDUTypeExtended];
 
@@ -509,12 +509,12 @@ int maxPinAttempts = 3;
                 completion(error);
                 return;
             }
-            TKBERTLVRecord *dynAuthRecord = [TKBERTLVRecord recordFromData:data];
+            YKFTLVRecord *dynAuthRecord = [YKFTLVRecord recordFromData:data];
             if (dynAuthRecord.tag != YKFPIVTagDynAuth) {
                 completion([YKFPIVError errorUnpackingTLVExpected:YKFPIVTagDynAuth got:dynAuthRecord.tag]);
                 return;
             }
-            TKBERTLVRecord *encryptedRecord = [TKBERTLVRecord recordFromData:dynAuthRecord.value];
+            YKFTLVRecord *encryptedRecord = [YKFTLVRecord recordFromData:dynAuthRecord.value];
             if (encryptedRecord.tag != YKFPIVTagAuthResponse) {
                 completion([YKFPIVError errorUnpackingTLVExpected:YKFPIVTagAuthResponse got:encryptedRecord.tag]);
                 return;
@@ -628,7 +628,7 @@ int maxPinAttempts = 3;
             completion(0, 0, 0, error);
             return;
         }
-        NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:data];
+        NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:data];
         UInt8 isDefault = ((UInt8 *)[records ykfTLVRecordWithTag:YKFPIVTagMetadataIsDefault].value.bytes)[0];
         UInt8 retriesTotal = ((UInt8 *)[records ykfTLVRecordWithTag:YKFPIVTagMetadataRetries].value.bytes)[0];
         UInt8 retriesRemaining = ((UInt8 *)[records ykfTLVRecordWithTag:YKFPIVTagMetadataRetries].value.bytes)[1];
@@ -647,8 +647,8 @@ int maxPinAttempts = 3;
             completion(nil, error);
             return;
         }
-        NSArray<TKTLVRecord*> *records = [TKBERTLVRecord sequenceOfRecordsFromData:data];
-        TKTLVRecord *algorithmRecord = [records ykfTLVRecordWithTag:YKFPIVTagMetadataAlgorithm];
+        NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:data];
+        YKFTLVRecord *algorithmRecord = [records ykfTLVRecordWithTag:YKFPIVTagMetadataAlgorithm];
         YKFPIVManagementKeyType *keyType;
         if (algorithmRecord) {
             keyType = [YKFPIVManagementKeyType fromValue:((UInt8 *)algorithmRecord.value.bytes)[0]];

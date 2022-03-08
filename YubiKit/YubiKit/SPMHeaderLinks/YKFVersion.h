@@ -1,1 +1,1 @@
-..//Connections/Shared/YKFVersion.h
+../Connections/Shared/YKFVersion.h

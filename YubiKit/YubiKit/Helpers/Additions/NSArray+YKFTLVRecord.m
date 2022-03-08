@@ -13,14 +13,14 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import <CryptoTokenKit/TKTLVRecord.h>
-#import "NSArray+TKTLVRecord.h"
+#import "YKFTLVRecord.h"
+#import "NSArray+YKFTLVRecord.h"
 
-@implementation NSArray(TKTLVRecord)
+@implementation NSArray(YKFTLVRecord)
 
-- (TKTLVRecord  * _Nullable)ykfTLVRecordWithTag:(UInt64)tag {
+- (YKFTLVRecord  * _Nullable)ykfTLVRecordWithTag:(UInt64)tag {
     NSUInteger index = [self indexOfObjectPassingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        TKTLVRecord *record = (TKTLVRecord *)obj;
+        YKFTLVRecord *record = (YKFTLVRecord *)obj;
         return record.tag == tag;
     }];
     

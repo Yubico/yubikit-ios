@@ -1,1 +1,1 @@
-..//Connections/Shared/Requests/OATH/YKFOATHCalculateAllResponse.h
+../Connections/Shared/Requests/OATH/YKFOATHCalculateAllResponse.h

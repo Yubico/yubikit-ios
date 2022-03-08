@@ -1,1 +1,1 @@
-..//YubiKitManager.h
+../YubiKitManager.h
