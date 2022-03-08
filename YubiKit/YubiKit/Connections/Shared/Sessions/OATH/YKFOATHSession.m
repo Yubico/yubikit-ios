@@ -348,8 +348,8 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
     YKFParameterAssertReturn(completion);
 
     NSMutableData *data = [[NSMutableData alloc] init];
-    [data appendData:[[TKBERTLVRecord alloc] initWithTag:YKFOATHCredentialIdTag value:credentialId].data];
-    [data appendData:[[TKBERTLVRecord alloc] initWithTag:YKFOATHChallengeTag value:challenge].data];
+    [data appendData:[[YKFTLVRecord alloc] initWithTag:YKFOATHCredentialIdTag value:credentialId].data];
+    [data appendData:[[YKFTLVRecord alloc] initWithTag:YKFOATHChallengeTag value:challenge].data];
     
     YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFOATHCalculateIns p1:0 p2:0 data:data type:YKFAPDUTypeShort];
     
@@ -359,7 +359,7 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
             return;
         }
         
-        TKBERTLVRecord *responseRecord = [TKBERTLVRecord recordFromData:result];
+        YKFTLVRecord *responseRecord = [YKFTLVRecord recordFromData:result];
 
         if (responseRecord.tag != YKFOATHResponseTag || responseRecord.value.length == 0) {
             completion(nil, [YKFOATHError errorWithCode:YKFOATHErrorCodeBadCalculationResponse]);
