@@ -47,6 +47,7 @@
     }
     
     // length
+    if (offset > data.length) { return nil; }
     NSUInteger length = bytes[offset++];
     if (length == 0x80) {
         return nil;
@@ -65,7 +66,7 @@
     if (checkMatchingLength && data.length != offset + length) {
         return nil;
     }
-    if (data.length < offset + length) {
+    if (data.length < offset + length || offset + length < length) {
         return nil;
     }
     *bytesRead = offset + length;
@@ -137,12 +138,16 @@
         if (record) {
             [records addObject:record];
             location = bytesRead;
-            if (location >= data.length) {
+            if (location > data.length) {
+                records = nil;
+                keepScanning = NO;
+            }
+            if (location == data.length) {
                 keepScanning = NO;
             }
         } else {
             records = nil;
-            break;
+            keepScanning = NO;
         }
     }
     return records;
