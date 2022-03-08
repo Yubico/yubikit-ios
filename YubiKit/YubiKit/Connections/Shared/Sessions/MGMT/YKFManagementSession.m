@@ -11,15 +11,16 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
+#import "YKFManagementSession+Private.h"
+#import "YKFManagementSessionFeatures.h"
 #import "YKFManagementWriteAPDU.h"
+#import "YKFManagementDeviceInfo+Private.h"
+#import "YKFSession+Private.h"
 #import "YKFAssert.h"
 #import "YKFAPDUError.h"
-#import "YKFManagementSession+Private.h"
 #import "YKFSmartCardInterface.h"
 #import "YKFSelectApplicationAPDU.h"
-#import "YKFManagementSessionFeatures.h"
 #import "YKFFeature.h"
-#import "YKFManagementDeviceInfo+Private.h"
 
 NSString* const YKFManagementErrorDomain = @"com.yubico.management";
 

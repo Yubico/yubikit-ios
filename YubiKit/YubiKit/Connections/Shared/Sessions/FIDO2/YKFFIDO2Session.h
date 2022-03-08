@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "YKFSession+Private.h"
+#import "YKFSession.h"
 
 @class YKFFIDO2MakeCredentialRequest, YKFFIDO2GetAssertionRequest, YKFFIDO2VerifyPinRequest, YKFFIDO2SetPinRequest, YKFFIDO2ChangePinRequest, YKFFIDO2GetInfoResponse, YKFFIDO2MakeCredentialResponse, YKFFIDO2GetAssertionResponse, YKFFIDO2PublicKeyCredentialRpEntity, YKFFIDO2PublicKeyCredentialUserEntity;
 

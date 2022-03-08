@@ -16,6 +16,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 #import "YKFPIVSession.h"
 #import "YKFPIVSession+Private.h"
+#import "YKFSession+Private.h"
 #import "YKFSmartCardInterface.h"
 #import "YKFSelectApplicationAPDU.h"
 #import "YKFVersion.h"

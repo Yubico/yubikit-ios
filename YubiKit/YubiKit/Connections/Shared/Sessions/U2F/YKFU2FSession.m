@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #import "YKFU2FSession.h"
+#import "YKFSession+Private.h"
 #import "YKFAccessoryConnectionController.h"
 #import "YKFU2FError.h"
 #import "YKFAPDUError.h"

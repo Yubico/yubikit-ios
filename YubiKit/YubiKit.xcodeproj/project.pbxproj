@@ -216,6 +216,23 @@
 		A54DCC0323F2147500E95259 /* YKNSStringAdditionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A54DCC0223F2147500E95259 /* YKNSStringAdditionTests.m */; };
 		B41B6F9A27A96B760062C377 /* YKFTLVRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B41B6F9927A96B760062C377 /* YKFTLVRecord.m */; };
 		B41B6F9C27A97DB40062C377 /* YKFTLVRecordTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B41B6F9B27A97DB40062C377 /* YKFTLVRecordTests.m */; };
+		B4451EBE2757B493002690BB /* YKFConnectionProtocol.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5176559925405FE400819857 /* YKFConnectionProtocol.h */; };
+		B4451EBF2757B4A9002690BB /* YKFPIVError.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51ACC34925E7EC910069214B /* YKFPIVError.h */; };
+		B4451EC02757B4BF002690BB /* YKFPIVSession.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51ACC2FB25D5860C0069214B /* YKFPIVSession.h */; };
+		B4451EC12757B4F3002690BB /* YKFFeature.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51ACC31E25DBBB590069214B /* YKFFeature.h */; };
+		B4451EC22757B4FF002690BB /* YKFOATHCredentialTemplate.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51E1B98025765547003C1CA4 /* YKFOATHCredentialTemplate.h */; };
+		B4451EC32757B509002690BB /* YKFOATHCredentialTypes.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51E1B9812576565E003C1CA4 /* YKFOATHCredentialTypes.h */; };
+		B4451EC42757B514002690BB /* YKFOATHCredentialWithCode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51E1B9962577EF25003C1CA4 /* YKFOATHCredentialWithCode.h */; };
+		B4451EC52757B51E002690BB /* YKFPCSCLayer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 951446A82188592C002BB3C5 /* YKFPCSCLayer.h */; };
+		B4451EC62757B528002690BB /* YKFPIVKeyType.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5110D6AF2603566200467680 /* YKFPIVKeyType.h */; };
+		B4451EC72757B535002690BB /* YKFPIVManagementKeyMetadata.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5110D67425F8FD1500467680 /* YKFPIVManagementKeyMetadata.h */; };
+		B4451EC82757B53E002690BB /* YKFPIVManagementKeyType.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51ACC34125E553910069214B /* YKFPIVManagementKeyType.h */; };
+		B4451EC92757B556002690BB /* YKFPIVSessionFeatures.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51ACC32725DC01C90069214B /* YKFPIVSessionFeatures.h */; };
+		B4451ECA2757B560002690BB /* YKFSelectApplicationAPDU.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5121B229256521F100300145 /* YKFSelectApplicationAPDU.h */; };
+		B4451ECB2757B56F002690BB /* YKFSmartCardInterface.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5121B2262563DE9800300145 /* YKFSmartCardInterface.h */; };
+		B4451ECC2757B579002690BB /* YKFOATHCredentialUtils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51E1B98425779929003C1CA4 /* YKFOATHCredentialUtils.h */; };
+		B4451ECD2757C4B0002690BB /* YKFChallengeResponseError.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8152341023BAE9D2004D4788 /* YKFChallengeResponseError.h */; };
+		B4451EEF2758C31F002690BB /* YKFManagementDeviceInfo.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51F8E3C2263985560010686B /* YKFManagementDeviceInfo.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -235,6 +252,23 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				B4451EEF2758C31F002690BB /* YKFManagementDeviceInfo.h in CopyFiles */,
+				B4451ECD2757C4B0002690BB /* YKFChallengeResponseError.h in CopyFiles */,
+				B4451ECC2757B579002690BB /* YKFOATHCredentialUtils.h in CopyFiles */,
+				B4451ECB2757B56F002690BB /* YKFSmartCardInterface.h in CopyFiles */,
+				B4451ECA2757B560002690BB /* YKFSelectApplicationAPDU.h in CopyFiles */,
+				B4451EC92757B556002690BB /* YKFPIVSessionFeatures.h in CopyFiles */,
+				B4451EC82757B53E002690BB /* YKFPIVManagementKeyType.h in CopyFiles */,
+				B4451EC72757B535002690BB /* YKFPIVManagementKeyMetadata.h in CopyFiles */,
+				B4451EC62757B528002690BB /* YKFPIVKeyType.h in CopyFiles */,
+				B4451EC52757B51E002690BB /* YKFPCSCLayer.h in CopyFiles */,
+				B4451EC42757B514002690BB /* YKFOATHCredentialWithCode.h in CopyFiles */,
+				B4451EC32757B509002690BB /* YKFOATHCredentialTypes.h in CopyFiles */,
+				B4451EC22757B4FF002690BB /* YKFOATHCredentialTemplate.h in CopyFiles */,
+				B4451EC12757B4F3002690BB /* YKFFeature.h in CopyFiles */,
+				B4451EC02757B4BF002690BB /* YKFPIVSession.h in CopyFiles */,
+				B4451EBF2757B4A9002690BB /* YKFPIVError.h in CopyFiles */,
+				B4451EBE2757B493002690BB /* YKFConnectionProtocol.h in CopyFiles */,
 				813271EC240F265B0084E105 /* YKFManagementSession.h in CopyFiles */,
 				81FD3B99240488F6004C4FE9 /* YKFVersion.h in CopyFiles */,
 				81F94D9123F4DF4400475A70 /* YKFManagementInterfaceConfiguration.h in CopyFiles */,

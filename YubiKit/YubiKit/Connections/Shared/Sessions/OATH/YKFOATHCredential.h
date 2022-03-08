@@ -66,11 +66,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) BOOL requiresTouch;
 
-/*!
- The credential requires the user to touch the key to generate it.
- */
-@property (nonatomic) BOOL notTruncated;
-
 @end
 
 NS_ASSUME_NONNULL_END
