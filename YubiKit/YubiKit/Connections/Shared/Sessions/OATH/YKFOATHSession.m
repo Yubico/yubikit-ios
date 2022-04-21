@@ -38,7 +38,6 @@
 
 #import "YKFOATHPutAPDU.h"
 #import "YKFOATHDeleteAPDU.h"
-#import "YKFOATHRenameAPDU.h"
 #import "YKFOATHCalculateAPDU.h"
 #import "YKFOATHCalculateAllAPDU.h"
 
@@ -55,6 +54,9 @@
 
 #import "YKFSmartCardInterface.h"
 #import "YKFSelectApplicationAPDU.h"
+
+#import "YKFAPDUCommandInstruction.h"
+#import "YKFAPDU.h"
 
 static const NSUInteger YKFOATHResponseTag = 0x75;
 static const NSUInteger YKFOATHCredentialIdTag = 0x71;
@@ -109,12 +111,6 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
     YKFParameterAssertReturn(credentialTemplate);
     YKFParameterAssertReturn(completion);
     
-    YKFSessionError *credentialError = [YKFOATHCredentialUtils validateCredentialTemplate:credentialTemplate];
-    if (credentialError) {
-        completion(credentialError);
-        return;
-    }
-    
     YKFOATHPutAPDU *apdu = [[YKFOATHPutAPDU alloc] initWithCredentialTemplate:credentialTemplate requriesTouch:requiresTouch];
     
     [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
@@ -127,18 +123,14 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
     YKFParameterAssertReturn(credential);
     YKFParameterAssertReturn(completion);
 
-    YKFSessionError *credentialError = [YKFOATHCredentialUtils validateCredential:credential];
-    if (credentialError) {
-        completion(credentialError);
-        return;
-    }
-
     YKFOATHDeleteAPDU *apdu = [[YKFOATHDeleteAPDU alloc] initWithCredential:credential];
     [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         // No result except status code
         completion(error);
     }];
 }
+
+static const UInt8 YKFOATHRenameAPDUNameTag = 0x71;
 
 - (void)renameCredential:(nonnull YKFOATHCredential *)credential
                newIssuer:(nonnull NSString*)newIssuer
@@ -149,23 +141,19 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
     YKFParameterAssertReturn(newAccount);
     YKFParameterAssertReturn(completion);
     
-    YKFSessionError *credentialError = [YKFOATHCredentialUtils validateCredential:credential];
-    if (credentialError) {
-        completion(credentialError);
-        return;
-    }
+    NSMutableData *data = [[NSMutableData alloc] init];
     
-    YKFOATHCredential *renamedCredential = credential.copy;
-    renamedCredential.issuer = newIssuer;
-    renamedCredential.accountName = newAccount;
+    // Current name
+    NSString *name = [YKFOATHCredentialUtils keyFromAccountName:credential.accountName issuer:credential.issuer period:credential.period type:credential.type];
+    NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
+    [data ykf_appendEntryWithTag:YKFOATHRenameAPDUNameTag data:nameData];
     
-    YKFSessionError *renamedCredentialError = [YKFOATHCredentialUtils validateCredential:renamedCredential];
-    if (renamedCredentialError) {
-        completion(renamedCredentialError);
-        return;
-    }
+    // New name
+    NSString *newName = [YKFOATHCredentialUtils keyFromAccountName:newAccount issuer:newIssuer period:credential.period type:credential.type];
+    NSData *newNameData = [newName dataUsingEncoding:NSUTF8StringEncoding];
+    [data ykf_appendEntryWithTag:YKFOATHRenameAPDUNameTag data:newNameData];
     
-    YKFAPDU *apdu = [[YKFOATHRenameAPDU alloc] initWithCredential:credential renamedCredential:renamedCredential];
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFAPDUCommandInstructionOATHRename p1:0 p2:0 data:data type:YKFAPDUTypeShort];
     
     [self executeOATHCommand:apdu completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         // No result except status code
@@ -184,12 +172,6 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
     YKFParameterAssertReturn(credential);
     YKFParameterAssertReturn(completion);
     YKFParameterAssertReturn(timestamp);
-
-    YKFSessionError *credentialError = [YKFOATHCredentialUtils validateCredential:credential];
-    if (credentialError) {
-        completion(nil, credentialError);
-        return;
-    }
     
     YKFAPDU *apdu = [[YKFOATHCalculateAPDU alloc] initWithCredential:credential timestamp:timestamp];
     
