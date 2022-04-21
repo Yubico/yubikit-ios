@@ -300,7 +300,7 @@
         case YKFNFCConnectionStateClosed:
             if (previousState == YKFNFCConnectionStateOpen) {
                 [self.delegate didDisconnectNFC:self error:self.nfcConnectionError];
-            } else {
+            } else if (self.nfcConnectionError != nil) {
                  [self.delegate didFailConnectingNFC:self.nfcConnectionError];
             }
             self.connectionController = nil;
