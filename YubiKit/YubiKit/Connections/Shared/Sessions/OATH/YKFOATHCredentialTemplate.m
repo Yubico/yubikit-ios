@@ -21,16 +21,274 @@
 #import "YKFNSDataAdditions.h"
 #import "MF_Base32Additions.h"
 
+NSString* const YKFOATHCredentialTemplateErrorDomain = @"com.yubico.oath.credential.template";
+static const int YKFOATHCredentialValidatorMaxNameSize = 64;
+
+@interface NSURLComponents (YKFOATHCredentialTemplateParsing)
+
+- (nullable NSString *)queryParameterValueForName:(NSString *)name;
+
+@end
+
+@implementation NSURLComponents (YKFOATHCredentialTemplateParsing)
+
+- (nullable NSString *)queryParameterValueForName:(NSString *)name {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name == %@", name];
+    return [self.queryItems filteredArrayUsingPredicate:predicate].firstObject.value;
+}
+
+@end
+
+@interface YKFOATHCredentialTemplateError : NSError
+
++ (instancetype)ykfErrorWithCode:(YKFOATHCredentialTemplateErrorCode)code;
+
+@end
+
+@implementation YKFOATHCredentialTemplateError
+
++ (instancetype)ykfErrorWithCode:(YKFOATHCredentialTemplateErrorCode)code {
+    NSString *message;
+    switch (code) {
+        case YKFOATHCredentialTemplateErrorCodeScheme:
+            message = @"Missing scheme in URL";
+            break;
+        case YKFOATHCredentialTemplateErrorCodeType:
+            message = @"Failed to get account type from URL";
+            break;
+        case YKFOATHCredentialTemplateErrorCodeLabel:
+            message = @"Missing label in URL";
+            break;
+        case YKFOATHCredentialTemplateErrorCodeAlgorithm:
+            message = @"Unknown algorithm";
+            break;
+        case YKFOATHCredentialTemplateErrorCodeCounter:
+            message = @"Missing counter parameter";
+            break;
+        case YKFOATHCredentialTemplateErrorCodeDigits:
+            message = @"Unsupported number of digits";
+            break;
+        case YKFOATHCredentialTemplateErrorCodeSecret:
+            message = @"Secret is not correct";
+            break;
+        case YKFOATHCredentialTemplateErrorNameIssuerToLong:
+            message = @"Account name and issuer is to long";
+            break;
+    }
+    return [[YKFOATHCredentialTemplateError alloc] initWithDomain:YKFOATHCredentialTemplateErrorDomain code:code userInfo:@{NSLocalizedDescriptionKey: message}];
+}
+
+@end
+
+
+@interface YKFOATHCredentialTemplate ()
+@property (nonatomic) YKFOATHCredentialType type;
+@property (nonatomic) YKFOATHCredentialAlgorithm algorithm;
+@property (nonatomic) NSData *secret;
+@property (nonatomic) NSString *issuer;
+@property (nonatomic) NSUInteger digits;
+@property (nonatomic) NSUInteger period;
+@property (nonatomic) UInt32 counter;
+@property (nonatomic) NSString *accountName;
+@end
+
 @implementation YKFOATHCredentialTemplate
 
+- (instancetype)initWithURL:(NSURL *)url error:(NSError **)error {
+    
+    NSURLComponents *urlComponents = [[NSURLComponents alloc] initWithURL:url resolvingAgainstBaseURL:NO];
+    
+    // Scheme
+    if (![urlComponents.scheme isEqualToString:YKFOATHCredentialScheme]) {
+        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeScheme];
+        return nil;
+    }
+    
+    // Parse account name and issuer
+    if (urlComponents.path.length < 2) {
+        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeLabel];
+        return nil;
+    }
+    NSString *name = [urlComponents.path substringFromIndex:1];
+    NSString *issuer = [urlComponents queryParameterValueForName:YKFOATHCredentialURLParameterIssuer];
+    if ([name containsString:@":"]) {
+        NSMutableArray *labelComponents = [[name componentsSeparatedByString:@":"] mutableCopy];
+        issuer = labelComponents.firstObject;
+        if (labelComponents.count == 2) {
+            name = labelComponents.lastObject;
+        } else {
+            [labelComponents removeObjectAtIndex:0];
+            name = [labelComponents componentsJoinedByString:@":"];
+        }
+    }
+    if (!name.length) {
+        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeLabel];
+        return nil;
+    }
+    
+    // OATH Type
+    YKFOATHCredentialType type;
+    if ([urlComponents.host isEqualToString:YKFOATHCredentialURLTypeHOTP]) {
+        type = YKFOATHCredentialTypeHOTP;
+    } else if ([urlComponents.host isEqualToString:YKFOATHCredentialURLTypeTOTP]) {
+        type = YKFOATHCredentialTypeTOTP;
+    } else {
+        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeType];
+        return nil;
+    }
+    
+    // Algorithm
+    YKFOATHCredentialAlgorithm algorithm;
+    NSString *algorithmString = [urlComponents queryParameterValueForName:YKFOATHCredentialURLParameterAlgorithm];
+    if (!algorithmString || [algorithmString isEqualToString:YKFOATHCredentialURLParameterValueSHA1]) {
+        algorithm = YKFOATHCredentialAlgorithmSHA1;
+    } else if ([algorithmString isEqualToString:YKFOATHCredentialURLParameterValueSHA256]) {
+        algorithm = YKFOATHCredentialAlgorithmSHA256;
+    } else if ([algorithmString isEqualToString:YKFOATHCredentialURLParameterValueSHA512]) {
+        algorithm = YKFOATHCredentialAlgorithmSHA512;
+    } else {
+        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeAlgorithm];
+        return nil;
+    }
+    
+    // Number of digits
+    NSUInteger digits = YKFOATHCredentialDefaultDigits;
+    NSString *digitsString = [urlComponents queryParameterValueForName:YKFOATHCredentialURLParameterDigits];
+    if (digitsString) {
+        digits = [digitsString intValue];
+    }
+    
+    // Period
+    NSUInteger period = 0;
+    if (type == YKFOATHCredentialTypeTOTP) {
+        period = YKFOATHCredentialDefaultPeriod;
+        NSString *periodString = [urlComponents queryParameterValueForName:YKFOATHCredentialURLParameterPeriod];
+        if (periodString) {
+            period = [periodString intValue];
+        }
+    }
+    
+    // Counter
+    UInt32 counter = 0;
+    if (type == YKFOATHCredentialTypeHOTP) {
+        NSString *counterString = [urlComponents queryParameterValueForName:YKFOATHCredentialURLParameterCounter];
+        if (counterString) {
+            counter = MAX(0, [counterString intValue]);
+        } else {
+            *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeCounter];
+            return nil;
+        }
+    }
+    
+    // Secret
+    NSData *secret;
+    NSString *base32EncodedSecret = [urlComponents queryParameterValueForName:YKFOATHCredentialURLParameterSecret];
+    if (!base32EncodedSecret) {
+        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeSecret];
+        return nil;
+    }
+    secret = [NSData dataWithBase32String:base32EncodedSecret];
+    if (!secret.length) {
+        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeSecret];
+        return nil;
+    }
+    
+    return [self initWithType:type
+                    algorithm:algorithm
+                       secret:secret
+                       issuer:issuer
+                  accountName:name
+                       digits:digits
+                       period:period
+                      counter:counter
+                        error:error];
+}
+
 - (instancetype)initWithURL:(NSURL *)url {
+    NSError *ignoreError;
+    return [self initWithURL:url error:&ignoreError];
+}
+
+- (instancetype)initWithType:(YKFOATHCredentialType)type
+                   algorithm:(YKFOATHCredentialAlgorithm)algorithm
+                      secret:(NSData *)secret
+                      issuer:(NSString *_Nullable)issuer
+                 accountName:(NSString *)accountName
+                      digits:(NSUInteger)digits
+                      period:(NSUInteger)period
+                     counter:(UInt32)counter
+                       error:(NSError **)error {
     self = [super init];
     if (self) {
-        if (![self parseUrl: url]) {
-            self = nil;
+        _type = type;
+        _algorithm = algorithm;
+        
+        // Secret
+        if (secret.length < YKFOATHCredentialMinSecretLength) {
+            NSMutableData *paddedSecret = [[NSMutableData alloc] initWithData:secret];
+            [paddedSecret increaseLengthBy: YKFOATHCredentialMinSecretLength - secret.length];
+            _secret = paddedSecret;
+        } else {
+            switch (self.algorithm) {
+                case YKFOATHCredentialAlgorithmSHA1:
+                    if (secret.length > CC_SHA1_BLOCK_BYTES) {
+                        _secret = [secret ykf_SHA1];
+                    } else {
+                        _secret = secret;
+                    }
+                    break;
+                case YKFOATHCredentialAlgorithmSHA256:
+                    if (secret.length > CC_SHA256_BLOCK_BYTES) {
+                        _secret = [secret ykf_SHA256];
+                    } else {
+                        _secret = secret;
+                    }
+                    break;
+                case YKFOATHCredentialAlgorithmSHA512:
+                    if (secret.length > CC_SHA512_BLOCK_BYTES) {
+                        _secret = [secret ykf_SHA512];
+                    } else {
+                        _secret = secret;
+                    }
+                    break;
+                default:
+                    *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeAlgorithm];
+                    return nil;
+            }
+        }
+        
+        _period = period;
+        _issuer = issuer;
+        _accountName = accountName;
+
+        // Digits
+        if (digits == 6 || digits == 7 || digits == 8) {
+            _digits = digits;
+        } else {
+            *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeDigits];
+            return nil;
+        }
+        _counter = counter;
+        
+        NSString *key = [YKFOATHCredentialUtils keyFromAccountName:_accountName issuer:_issuer period:_period type:_type];
+        if (key.length > YKFOATHCredentialValidatorMaxNameSize) {
+            *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorNameIssuerToLong];
+            return nil;
         }
     }
     return self;
+}
+
+- (instancetype)initWithType:(YKFOATHCredentialType)type
+                   algorithm:(YKFOATHCredentialAlgorithm)algorithm
+                      secret:(NSData *)secret
+                      issuer:(NSString *_Nullable)issuer
+                 accountName:(NSString *)accountName
+                      digits:(NSUInteger)digits
+                      period:(NSUInteger)period
+                     counter:(UInt32)counter {
+    NSError *ignoreError;
+    return [self initWithType:type algorithm:algorithm secret:secret issuer:issuer accountName:accountName digits:digits period:period counter:counter error:&ignoreError];
 }
 
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
@@ -87,248 +345,6 @@
                        digits:digits
                        period:0
                       counter:counter];
-}
-
-- (instancetype)initWithType:(YKFOATHCredentialType)type
-                   algorithm:(YKFOATHCredentialAlgorithm)algorithm
-                      secret:(NSData *)secret
-                      issuer:(NSString *_Nullable)issuer
-                 accountName:(NSString *)accountName
-                      digits:(NSUInteger)digits
-                      period:(NSUInteger)period
-                     counter:(UInt32)counter {
-    self = [super init];
-    if (self) {
-        self.type = type;
-        self.algorithm = algorithm;
-        self.secret = secret;
-        self.issuer = issuer;
-        self.accountName = accountName;
-        self.digits = digits;
-        self.period = period;
-        self.counter = counter;
-    }
-    return self;
-}
-
-#pragma mark - Properties Overrides
-
-- (YKFOATHCredentialType)type {
-    if (_type) {
-        return _type;
-    }
-    return YKFOATHCredentialTypeTOTP;
-}
-
-- (YKFOATHCredentialAlgorithm)algorithm {
-    if (_algorithm) {
-        return _algorithm;
-    }
-    return YKFOATHCredentialAlgorithmSHA1;
-}
-
-- (NSUInteger)digits {
-    if (_digits) {
-        return _digits;
-    }
-    return YKFOATHCredentialDefaultDigits;
-}
-
-- (NSUInteger)period {
-    if (_period) {
-        return _period;
-    }
-    return self.type == YKFOATHCredentialTypeTOTP ? YKFOATHCredentialDefaultPeriod : 0;
-}
-
-- (void)setSecret:(NSData *)secret {
-    YKFAssertReturn(secret.length, @"Cannot set empty OATH secret.");
-    
-    if (secret.length < YKFOATHCredentialMinSecretLength) {
-        NSMutableData *paddedSecret = [[NSMutableData alloc] initWithData:secret];
-        [paddedSecret increaseLengthBy: YKFOATHCredentialMinSecretLength - secret.length];
-        _secret = [paddedSecret copy];
-        return;
-    }
-    
-    switch (self.algorithm) {
-        case YKFOATHCredentialAlgorithmSHA1:
-            if (secret.length > CC_SHA1_BLOCK_BYTES) {
-                _secret = [secret ykf_SHA1];
-            } else {
-                _secret = secret;
-            }
-            break;
-            
-        case YKFOATHCredentialAlgorithmSHA256:
-            if (secret.length > CC_SHA256_BLOCK_BYTES) {
-                _secret = [secret ykf_SHA256];
-            } else {
-                _secret = secret;
-            }
-            break;
-            
-        case YKFOATHCredentialAlgorithmSHA512:
-            if (secret.length > CC_SHA512_BLOCK_BYTES) {
-                _secret = [secret ykf_SHA512];
-            } else {
-                _secret = secret;
-            }
-            break;
-            
-        default:
-            YKFAssertReturn(NO, @"Unknown hash algorithm for credential.");
-            break;
-    }
-}
-
-#pragma mark - URL Parsing
-
-- (BOOL)parseUrl:(NSURL *)url {
-    YKFParameterAssertReturnValue(url, NO);
-    
-    NSURLComponents *urlComponents = [[NSURLComponents alloc] initWithURL:url resolvingAgainstBaseURL:NO];
-    
-    // Check scheme
-    if (![urlComponents.scheme isEqualToString:YKFOATHCredentialScheme]) {
-        return NO;
-    }
-    
-    if (![self parseTypeFromUrlComponents:urlComponents])       { return NO; }
-    if (![self parseLabelFromUrlComponents:urlComponents])      { return NO; }
-    if (![self parseIssuerFromUrlComponents:urlComponents])     { return NO; }
-    if (![self parseAlgorithmFromUrlComponents:urlComponents])  { return NO; }
-    if (![self parseDigitsFromUrlComponents:urlComponents])     { return NO; }
-    if (![self parseSecretFromUrlComponents:urlComponents])     { return NO; }
-
-    // Parse specific parameters
-    if (self.type == YKFOATHCredentialTypeHOTP) {
-        return [self parserHOTPParamsFromUrlComponents:urlComponents];
-    } else {
-        return [self parserTOTPParamsFromUrlComponents:urlComponents];
-    }
-}
-
-#pragma mark - Specific Parameters
-
-- (BOOL)parseDigitsFromUrlComponents:(NSURLComponents *)urlComponents {
-    YKFParameterAssertReturnValue(urlComponents, NO);
-    
-    NSString *digits = [self queryParameterValueForName:YKFOATHCredentialURLParameterDigits inUrlComponents:urlComponents];
-    if (digits) {
-        int value = [digits intValue];
-        if (value && (value == 6 || value == 7 || value == 8)) {
-            self.digits = value;
-        } else {
-            return NO; // Invalid digits number
-        }
-    } else {
-        self.digits = YKFOATHCredentialDefaultDigits;
-    }
-    return YES;
-}
-
-- (BOOL)parseAlgorithmFromUrlComponents:(NSURLComponents *)urlComponents {
-    YKFParameterAssertReturnValue(urlComponents, NO);
-    
-    NSString *algorithm = [self queryParameterValueForName:YKFOATHCredentialURLParameterAlgorithm inUrlComponents:urlComponents];
-    
-    if (!algorithm || [algorithm isEqualToString:YKFOATHCredentialURLParameterValueSHA1]) {
-        self.algorithm = YKFOATHCredentialAlgorithmSHA1;
-    } else if ([algorithm isEqualToString:YKFOATHCredentialURLParameterValueSHA256]) {
-        self.algorithm = YKFOATHCredentialAlgorithmSHA256;
-    } else if ([algorithm isEqualToString:YKFOATHCredentialURLParameterValueSHA512]) {
-        self.algorithm = YKFOATHCredentialAlgorithmSHA512;
-    } else {
-        return NO; // Unknown algorithm
-    }
-    
-    return YES;
-}
-
-- (BOOL)parseIssuerFromUrlComponents:(NSURLComponents *)urlComponents {
-    YKFParameterAssertReturnValue(urlComponents, NO);
-    
-    NSString *issuer = [self queryParameterValueForName:YKFOATHCredentialURLParameterIssuer inUrlComponents:urlComponents];
-    if (issuer) {
-        self.issuer = issuer;
-    }
-    return YES;
-}
-
-- (BOOL)parseSecretFromUrlComponents:(NSURLComponents *)urlComponents {
-    YKFParameterAssertReturnValue(urlComponents, NO);
-    
-    NSString *base32EncodedSecret = [self queryParameterValueForName:YKFOATHCredentialURLParameterSecret inUrlComponents:urlComponents];
-    if (!base32EncodedSecret) {
-        return NO;
-    }
-    
-    self.secret = [NSData dataWithBase32String:base32EncodedSecret];
-    return self.secret.length > 0;
-}
-
-- (BOOL)parseLabelFromUrlComponents:(NSURLComponents *)urlComponents {
-    YKFParameterAssertReturnValue(urlComponents, NO);
-    
-    NSString *label = urlComponents.path;
-    label = [label stringByReplacingOccurrencesOfString:@"/" withString:@""];
-    if (!label.length) {
-        return NO;
-    }
-    if ([label containsString:@":"]) { // Issuer is present in the label
-        NSArray *labelComponents = [label componentsSeparatedByString:@":"];
-        self.issuer = labelComponents.firstObject; // It's fine if nil
-        self.accountName = labelComponents.lastObject;
-    } else {
-        self.accountName = label;
-    }
-    
-    return YES;
-}
-
-- (BOOL)parseTypeFromUrlComponents:(NSURLComponents *)urlComponents {
-    YKFParameterAssertReturnValue(urlComponents, NO);
-    
-    if ([urlComponents.host isEqualToString:YKFOATHCredentialURLTypeHOTP]) {
-        self.type = YKFOATHCredentialTypeHOTP;
-    } else if ([urlComponents.host isEqualToString:YKFOATHCredentialURLTypeTOTP]) {
-        self.type = YKFOATHCredentialTypeTOTP;
-    } else {
-        return NO;
-    }
-    return YES;
-}
-
-- (BOOL)parserHOTPParamsFromUrlComponents:(NSURLComponents *)urlComponents {
-    YKFParameterAssertReturnValue(urlComponents, NO);
-    
-    NSString *counter = [self queryParameterValueForName:YKFOATHCredentialURLParameterCounter inUrlComponents:urlComponents];
-    if (!counter) {
-        return NO;
-    }
-    self.counter = MAX(0, [counter intValue]);
-    return YES;
-}
-
-- (BOOL)parserTOTPParamsFromUrlComponents:(NSURLComponents *)urlComponents {
-    YKFParameterAssertReturnValue(urlComponents, NO);
-    
-    NSString *period = [self queryParameterValueForName:YKFOATHCredentialURLParameterPeriod inUrlComponents:urlComponents];
-    if (period) {
-        int periodValue = [period intValue];
-        self.period = periodValue > 0 ? periodValue : YKFOATHCredentialDefaultPeriod;
-    } else {
-        self.period = YKFOATHCredentialDefaultPeriod;
-    }
-    return YES;
-}
-
-#pragma mark - Helpers
-
-- (NSString *)queryParameterValueForName:(NSString *)name inUrlComponents:(NSURLComponents *)urlComponents {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name == %@", name];
-    return [urlComponents.queryItems filteredArrayUsingPredicate:predicate].firstObject.value;
 }
 
 #pragma mark - NSCopying

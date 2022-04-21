@@ -28,7 +28,7 @@ static const UInt8 YKFOATHDeleteAPDUNameTag = 0x71;
     YKFAssertAbortInit(credential);
     
     NSMutableData *data = [[NSMutableData alloc] init];
-    NSString *name = [YKFOATHCredentialUtils keyFromCredentialIdentifier:credential];
+    NSString *name = [YKFOATHCredentialUtils keyFromAccountName:credential.accountName issuer:credential.issuer period:credential.period type:credential.type];
     [data ykf_appendEntryWithTag:YKFOATHDeleteAPDUNameTag data:[name dataUsingEncoding:NSUTF8StringEncoding]];
     return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHDelete p1:0 p2:0 data:data type:YKFAPDUTypeShort];
 }

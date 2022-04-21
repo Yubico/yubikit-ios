@@ -18,7 +18,6 @@
 		5121B22D2565238500300145 /* YKFSelectApplicationAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 5121B22C2565238500300145 /* YKFSelectApplicationAPDU.m */; };
 		51323C2F251A3BE600579915 /* YKFAccessoryConnectionConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 958491722130286900D7E2A3 /* YKFAccessoryConnectionConfiguration.m */; };
 		5177C45924572D2B00954533 /* YKFOATHUnlockResponse.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9535F0102175FFB600A6D617 /* YKFOATHUnlockResponse.h */; };
-		51A5D2592451D7CD00C7161E /* YKFOATHRenameAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = 51A5D2572451D7CD00C7161E /* YKFOATHRenameAPDU.m */; };
 		51ACC2F625D585F70069214B /* YKFPIVSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC2F525D585F70069214B /* YKFPIVSession.m */; };
 		51ACC32025DBBB7E0069214B /* YKFFeature.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC31F25DBBB7E0069214B /* YKFFeature.m */; };
 		51ACC32925DC01DA0069214B /* YKFPIVSessionFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = 51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */; };
@@ -345,8 +344,6 @@
 		516BCE0E252C77EE0022F455 /* YKFNFCConnection+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFNFCConnection+Private.h"; sourceTree = "<group>"; };
 		5172679D2552F7E90007FEA0 /* YKFManagementSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFManagementSession+Private.h"; sourceTree = "<group>"; };
 		5176559925405FE400819857 /* YKFConnectionProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFConnectionProtocol.h; sourceTree = "<group>"; };
-		51A5D2572451D7CD00C7161E /* YKFOATHRenameAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFOATHRenameAPDU.m; sourceTree = "<group>"; };
-		51A5D2582451D7CD00C7161E /* YKFOATHRenameAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFOATHRenameAPDU.h; sourceTree = "<group>"; };
 		51ACC2F525D585F70069214B /* YKFPIVSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVSession.m; sourceTree = "<group>"; };
 		51ACC2FB25D5860C0069214B /* YKFPIVSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVSession.h; sourceTree = "<group>"; };
 		51ACC2FC25D587BB0069214B /* YKFPIVSession+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFPIVSession+Private.h"; sourceTree = "<group>"; };
@@ -1064,8 +1061,6 @@
 				958793E6216CE35F001A0406 /* YKFOATHListAPDU.m */,
 				955BCBF3215A33CA00C2EA2B /* YKFOATHPutAPDU.h */,
 				955BCBF4215A33CA00C2EA2B /* YKFOATHPutAPDU.m */,
-				51A5D2582451D7CD00C7161E /* YKFOATHRenameAPDU.h */,
-				51A5D2572451D7CD00C7161E /* YKFOATHRenameAPDU.m */,
 				95EEEF6421676B7F00BE7D7B /* YKFOATHSendRemainingAPDU.h */,
 				95EEEF6521676B7F00BE7D7B /* YKFOATHSendRemainingAPDU.m */,
 				95D61A0B2170E0C3001E7AC8 /* YKFOATHSetPasswordAPDU.h */,
@@ -1508,7 +1503,6 @@
 				95233E552330DEE000C51F92 /* YubiKitLogger.m in Sources */,
 				814813EC23EA381F0003893B /* YKFManagementInterfaceConfiguration.m in Sources */,
 				814813D123EA37F60003893B /* YKFManagementWriteAPDU.m in Sources */,
-				51A5D2592451D7CD00C7161E /* YKFOATHRenameAPDU.m in Sources */,
 				8152340B23B573E4004D4788 /* YKFChalRespRequest.m in Sources */,
 				5121B2212563DE8200300145 /* YKFSmartCardInterface.m in Sources */,
 				95DD40872099A86A00363FEE /* YKFU2FSignAPDU.m in Sources */,

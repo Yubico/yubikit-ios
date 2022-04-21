@@ -28,7 +28,7 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
 
 @implementation YKFOATHCredentialUtils
 
-+ (NSString *)labelFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier {
++ (NSString *)labelFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier __deprecated {
     YKFAssertReturnValue(credentialIdentifier.accountName, @"Missing OATH credential account. Cannot build the credential label.", nil);
     
     if (credentialIdentifier.issuer) {
@@ -38,8 +38,22 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
     }
 }
 
-+ (NSString *)keyFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier {
-    NSString *keyLabel = [YKFOATHCredentialUtils labelFromCredentialIdentifier:credentialIdentifier];
++ (NSString *)keyFromAccountName:(NSString *)name issuer:(NSString *)issuer period:(NSUInteger)period type:(YKFOATHCredentialType)type {
+    NSString *label;
+    if (issuer) {
+        label = [NSString stringWithFormat:@"%@:%@", issuer, name];
+    } else {
+        label = name;
+    }
+    if (type == YKFOATHCredentialTypeTOTP && period != YKFOATHCredentialDefaultPeriod) {
+        return [NSString stringWithFormat:@"%ld/%@", (unsigned long)period, label];
+    } else {
+        return label;
+    }
+}
+
++ (NSString *)keyFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier  {
+    NSString *keyLabel = [YKFOATHCredentialUtils keyFromAccountName:credentialIdentifier.accountName issuer:credentialIdentifier.issuer period:credentialIdentifier.period type:credentialIdentifier.type];
     
     if (credentialIdentifier.type == YKFOATHCredentialTypeTOTP) {
         if (credentialIdentifier.period != YKFOATHCredentialDefaultPeriod) {

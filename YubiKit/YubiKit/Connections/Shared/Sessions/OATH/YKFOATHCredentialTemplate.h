@@ -22,63 +22,74 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
- * @name OATH Credential
+ * @name OATH Credential Template
  * ---------------------------------------------------------------------------------------------------------------------
  */
 
+typedef NS_ENUM(NSUInteger, YKFOATHCredentialTemplateErrorCode) {
+    YKFOATHCredentialTemplateErrorCodeScheme = 0,
+    YKFOATHCredentialTemplateErrorCodeType = 1,
+    YKFOATHCredentialTemplateErrorCodeLabel = 2,
+    YKFOATHCredentialTemplateErrorCodeAlgorithm = 3,
+    YKFOATHCredentialTemplateErrorCodeCounter = 4,
+    YKFOATHCredentialTemplateErrorCodeDigits = 5,
+    YKFOATHCredentialTemplateErrorCodeSecret = 6,
+    YKFOATHCredentialTemplateErrorNameIssuerToLong = 7
+};
+
 /*!
- @class YKFOATHCredential
+ @class YKFOATHCredentialTemplate
  
  @abstract
-    The YKFOATHCredential is a data model which contains a list of properties defining an OATH credential.
+    The YKFOATHCredentialTemplate is a data model which contains a list of properties defining an OATH credential.
  */
 @interface YKFOATHCredentialTemplate: NSObject <YKFOATHCredentialIdentifier, NSCopying>
 
 /*!
  The credential type (HOTP or TOTP).
  */
-@property (nonatomic, assign) YKFOATHCredentialType type;
+@property (readonly) YKFOATHCredentialType type;
 
 /*!
  The hash algorithm to use for the OATH credential.
  */
-@property (nonatomic, assign) YKFOATHCredentialAlgorithm algorithm;
+@property (readonly) YKFOATHCredentialAlgorithm algorithm;
 
 /*!
  The Secret of the credential as defined in the Key URI Format specifications:
  https://github.com/google/google-authenticator/wiki/Key-Uri-Format
  */
-@property (nonatomic) NSData *secret;
+@property (readonly) NSData *secret;
 
 /*!
  The Issuer of the credential as defined in the Key URI Format specifications:
  https://github.com/google/google-authenticator/wiki/Key-Uri-Format
  */
-@property (nonatomic, nullable) NSString *issuer;
+@property (readonly) NSString *issuer;
 
 /*!
  How long is the one-time passcode to display to the user. The value for this property can
  only be 6, 7 or 8. The default value is 6.
  */
-@property (nonatomic, assign) NSUInteger digits;
+@property (readonly) NSUInteger digits;
 
 /*!
  The validity period for a TOTP code, in seconds. The default value for this property is 30.
  If the credential is of HOTP type, this property returns 0.
  */
-@property (nonatomic, assign) NSUInteger period;
+@property (readonly) NSUInteger period;
 
 /*!
  The counter parameter is required when the type is HOTP. It will set the initial counter value.
  If the credential is of TOTP type, this property returns 0.
  */
-@property (nonatomic, assign) UInt32 counter;
+@property (readonly) UInt32 counter;
 
 /*!
  The account name extracted from the label. If the label does not contain the issuer, the
  name is the same as the label.
  */
-@property (nonatomic) NSString *accountName;
+@property (readonly) NSString *accountName;
 
 
 /*!
@@ -97,29 +108,50 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable instancetype)initWithURL:(NSURL *)url;
 
+- (nullable instancetype)initWithURL:(NSURL *)url error:(NSError **)error;
+
+- (instancetype)initWithType:(YKFOATHCredentialType)type
+                   algorithm:(YKFOATHCredentialAlgorithm)algorithm
+                      secret:(NSData *)secret
+                      issuer:(NSString *_Nullable)issuer
+                 accountName:(NSString *)accountName
+                      digits:(NSUInteger)digits
+                      period:(NSUInteger)period
+                     counter:(UInt32)counter;
+
+- (instancetype)initWithType:(YKFOATHCredentialType)type
+                   algorithm:(YKFOATHCredentialAlgorithm)algorithm
+                      secret:(NSData *)secret
+                      issuer:(NSString *_Nullable)issuer
+                 accountName:(NSString *)accountName
+                      digits:(NSUInteger)digits
+                      period:(NSUInteger)period
+                     counter:(UInt32)counter
+                       error:(NSError **)error;
+
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
-                          accountName:(NSString *)accountName;
+                          accountName:(NSString *)accountName __deprecated;
 
 - (instancetype)initHOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
-                          accountName:(NSString *)accountName;
+                          accountName:(NSString *)accountName __deprecated;
 
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
                           accountName:(NSString *)accountName
                                digits:(NSUInteger)digits
-                               period:(NSUInteger)period;
+                               period:(NSUInteger)period __deprecated;
 
 - (instancetype)initHOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
                                issuer:(NSString *_Nullable)issuer
                           accountName:(NSString *)accountName
                                digits:(NSUInteger)digits
-                              counter:(UInt32)counter;
+                              counter:(UInt32)counter __deprecated;
 
 @end
 
