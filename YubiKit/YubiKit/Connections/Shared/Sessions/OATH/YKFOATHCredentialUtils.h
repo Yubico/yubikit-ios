@@ -26,37 +26,35 @@ NS_ASSUME_NONNULL_BEGIN
 /*!
  The credential type (HOTP or TOTP).
  */
-@property (readonly) YKFOATHCredentialType type;
+@property (nonatomic, assign) YKFOATHCredentialType type;
 
 /*!
  The validity period for a TOTP code, in seconds. The default value for this property is 30.
  If the credential is of HOTP type, this property returns 0.
  */
-@property (readonly) NSUInteger period;
+@property (nonatomic, assign) NSUInteger period;
 
 /*!
  The account name extracted from the label. If the label does not contain the issuer, the
  name is the same as the label.
  */
-@property (readonly) NSString *accountName;
+@property (nonatomic) NSString *accountName;
 
 /*!
  The Issuer of the credential as defined in the Key URI Format specifications:
  https://github.com/google/google-authenticator/wiki/Key-Uri-Format
  */
-@property (readonly, nullable) NSString *issuer;
+@property (nonatomic, nullable) NSString *issuer;
 
 @end
 
 @interface YKFOATHCredentialUtils: NSObject
 
-+ (NSString *)keyFromAccountName:(NSString *)name issuer:(NSString *_Nullable)issuer period:(NSUInteger)period type:(YKFOATHCredentialType)type;
++ (NSString *)labelFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier;
++ (NSString *)keyFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier;
 
-+ (NSString *)labelFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier __deprecated;
-+ (NSString *)keyFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier __deprecated;
-
-+ (nullable YKFSessionError *)validateCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate __deprecated;
-+ (nullable YKFSessionError *)validateCredential:(YKFOATHCredential *)credential __deprecated;
++ (nullable YKFSessionError *)validateCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate;
++ (nullable YKFSessionError *)validateCredential:(YKFOATHCredential *)credential;
 
 @end
 

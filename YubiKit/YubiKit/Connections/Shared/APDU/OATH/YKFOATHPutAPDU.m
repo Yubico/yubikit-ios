@@ -39,7 +39,7 @@ typedef NS_ENUM(NSUInteger, YKFOATHPutCredentialAPDUProperty) {
     NSMutableData *rawRequest = [[NSMutableData alloc] init];
     
     // Name - max 64 bytes
-    NSString *name = [YKFOATHCredentialUtils keyFromAccountName:credential.accountName issuer:credential.issuer period:credential.period type:credential.type];
+    NSString *name = [YKFOATHCredentialUtils keyFromCredentialIdentifier:credential];
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     [rawRequest ykf_appendEntryWithTag:YKFOATHPutCredentialAPDUTagName data:nameData];
     

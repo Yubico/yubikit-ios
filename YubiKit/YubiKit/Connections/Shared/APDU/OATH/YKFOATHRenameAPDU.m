@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFOATHCalculateAPDU.h"
+#import "YKFOATHRenameAPDU.h"
 #import "YKFOATHCredential.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFAssert.h"
@@ -20,36 +20,29 @@
 #import "YKFOATHCredential+Private.h"
 #import "YKFOATHCredentialUtils.h"
 
-static const UInt8 YKFOATHCalculateAPDUNameTag = 0x71;
-static const UInt8 YKFOATHCalculateAPDUChallengeTag = 0x74;
+static const UInt8 YKFOATHRenameAPDUNameTag = 0x71;
 
-@implementation YKFOATHCalculateAPDU
+@implementation YKFOATHRenameAPDU
 
-- (nullable instancetype)initWithCredential:(YKFOATHCredential *)credential timestamp:(NSDate *)timestamp {
+- (nullable instancetype)initWithCredential:(YKFOATHCredential *)credential
+                          renamedCredential:(YKFOATHCredential *)renamedCredential {
     YKFAssertAbortInit(credential);
-    
+    YKFAssertAbortInit(renamedCredential);
+
     NSMutableData *data = [[NSMutableData alloc] init];
     
-    // Name
+    // Current name
     NSString *name = [YKFOATHCredentialUtils keyFromCredentialIdentifier:credential];
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
+    [data ykf_appendEntryWithTag:YKFOATHRenameAPDUNameTag data:nameData];
     
-    [data ykf_appendEntryWithTag:YKFOATHCalculateAPDUNameTag data:nameData];
+    // New name
+    NSString *newName = [YKFOATHCredentialUtils keyFromCredentialIdentifier:renamedCredential];
+    NSData *newNameData = [newName dataUsingEncoding:NSUTF8StringEncoding];
+    [data ykf_appendEntryWithTag:YKFOATHRenameAPDUNameTag data:newNameData];
     
-    // Challenge
-    if (credential.type == YKFOATHCredentialTypeTOTP) {
-        time_t time = (time_t)[timestamp timeIntervalSince1970];
-        time_t challengeTime = time / credential.period;
-        
-        [data ykf_appendUInt64EntryWithTag:YKFOATHCalculateAPDUChallengeTag value:challengeTime];
-    } else {
-        // For HOTP the challenge is 0
-        [data ykf_appendByte:YKFOATHCalculateAPDUChallengeTag];
-        [data ykf_appendByte:0];
-    }
-    
-    // P2 is 0x01 for truncated response only
-    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHCalculate p1:0 p2:1 data:data type:YKFAPDUTypeShort];
+    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHRename p1:0 p2:0 data:data type:YKFAPDUTypeShort];
 }
 
 @end
+

@@ -19,7 +19,7 @@ class OATHTests: XCTestCase {
     func testCreateAndCalculateAllTOTP() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSession { session in
-                let url = URL(string: "otpauth://totp/test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-create-and-calculate&algorithm=SHA1&digits=6&period=30")!
+                let url = URL(string: "otpauth://totp/Yubico:test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-create-and-calculate&algorithm=SHA1&digits=6&period=30")!
                 let template = YKFOATHCredentialTemplate(url: url)!
                 session.put(template, requiresTouch: false) { error in
                     guard error == nil else { XCTAssertTrue(false); return }
@@ -56,7 +56,7 @@ class OATHTests: XCTestCase {
     func testCalculateAllTouchRequiredTOTP() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSession { session in
-                let totpUrl = URL(string: "otpauth://totp/test-totp@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-requires-touch&algorithm=SHA1&digits=6&counter=30")!
+                let totpUrl = URL(string: "otpauth://totp/Yubico:test-totp@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-requires-touch&algorithm=SHA1&digits=6&counter=30")!
                 let template = YKFOATHCredentialTemplate(url: totpUrl)!
                 session.put(template, requiresTouch: true) { error in
                     guard error == nil else { XCTFail("Failed creating TOTP"); return }
@@ -76,12 +76,13 @@ class OATHTests: XCTestCase {
     func testCreateListAndCalculateTOTP() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSession { session in
-                let url = URL(string: "otpauth://totp/test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-create-and-calculate&algorithm=SHA1&digits=6&counter=30")!
+                let url = URL(string: "otpauth://totp/Yubico:test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-create-and-calculate&algorithm=SHA1&digits=6&counter=30")!
                 let template = YKFOATHCredentialTemplate(url: url)!
                 session.put(template, requiresTouch: false) { error in
                     guard error == nil else { XCTAssertTrue(false); return }
                     session.listCredentials { credentials, error in
                         guard let credential = credentials?.first else { XCTAssertTrue(false); return }
+//                        credential.notTruncated = true
                         XCTAssert(credential.issuer == "test-create-and-calculate")
                         XCTAssert(credential.accountName == "test@yubico.com")
                         session.calculate(credential, timestamp: Date(timeIntervalSince1970: 0)) { code, error in
@@ -98,7 +99,7 @@ class OATHTests: XCTestCase {
     func testCreateListAndCalculateHOTP() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSession { session in
-                let url = URL(string: "otpauth://hotp/test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-create-and-calculate&algorithm=SHA1&digits=6&counter=30")!
+                let url = URL(string: "otpauth://hotp/Yubico:test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-create-and-calculate&algorithm=SHA1&digits=6&counter=30")!
                 let template = YKFOATHCredentialTemplate(url: url)!
                 session.put(template, requiresTouch: false) { error in
                     guard error == nil else { XCTAssertTrue(false); return }
@@ -127,7 +128,7 @@ class OATHTests: XCTestCase {
                 session.put(template, requiresTouch: false) { error in
                     guard error == nil else { XCTFail("Failed putting credential on YubiKey with error: \(error!)"); completion(); return }
                     
-                    let id = Data(YKFOATHCredentialUtils.key(fromAccountName: template.accountName, issuer: template.issuer, period: template.period, type: template.type).utf8)
+                    let id = Data(YKFOATHCredentialUtils.key(from: template).utf8)
                     let challenge = Data("Hi There".utf8)
                     session.calculateResponse(forCredentialID: id, challenge: challenge) { data, error in
                         guard let data = data else { XCTFail("Failed calculating response with error: \(error!)"); completion(); return }
@@ -140,10 +141,10 @@ class OATHTests: XCTestCase {
         }
     }
     
-    func testRenameTOTPCredential() throws {
+    func testRenameCredential() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSession { session in
-                let url = URL(string: "otpauth://totp/test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-rename&algorithm=SHA1&digits=6&period=30")!
+                let url = URL(string: "otpauth://totp/Yubico:test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-rename&algorithm=SHA1&digits=6&period=30")!
                 let template = YKFOATHCredentialTemplate(url: url)!
                 session.put(template, requiresTouch: false) { error in
                     guard error == nil else { XCTFail("Failed saving credential: \(error!)"); return }
@@ -154,31 +155,7 @@ class OATHTests: XCTestCase {
                                 guard let credentials = credentials, let credential = credentials.first else {  XCTAssertTrue(false); return }
                                 XCTAssert(credential.issuer == "test-rename-renamed")
                                 XCTAssert(credential.accountName == "renamed@yubico.com")
-                                print("✅ rename TOTP credential")
-                                completion()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    func testRenameHOTPCredential() throws {
-        runYubiKitTest { connection, completion in
-            connection.oathTestSession { session in
-                let url = URL(string: "otpauth://hotp/test@yubico.com?secret=UOA6FJYR76R7IRZBGDJKLYICL3MUR7QH&issuer=test-renamed&algorithm=SHA1&digits=6&counter=30")!
-                let template = YKFOATHCredentialTemplate(url: url)!
-                session.put(template, requiresTouch: false) { error in
-                    guard error == nil else { XCTFail("Failed saving credential: \(error!)"); return }
-                    session.listCredentials { credentials, error in
-                        guard let credentials = credentials, let credential = credentials.first else {  XCTAssertTrue(false); return }
-                        session.renameCredential(credential, newIssuer: "test-rename-renamed", newAccount: "renamed@yubico.com") { error in
-                            session.listCredentials { credentials, error in
-                                guard let credentials = credentials, let credential = credentials.first else {  XCTAssertTrue(false); return }
-                                XCTAssert(credential.issuer == "test-rename-renamed")
-                                XCTAssert(credential.accountName == "renamed@yubico.com")
-                                print("✅ rename HOTP credential")
+                                print("✅ rename OATH credential")
                                 completion()
                             }
                         }

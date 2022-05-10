@@ -42,7 +42,7 @@
 
 - (NSString *)key {
     if (!_key) {
-        return [YKFOATHCredentialUtils keyFromAccountName:self.accountName issuer:self.issuer period:self.period type:self.type];
+        return [YKFOATHCredentialUtils keyFromCredentialIdentifier:self];
     }
     return _key;
 }
