@@ -31,7 +31,7 @@ static const UInt8 YKFOATHCalculateAPDUChallengeTag = 0x74;
     NSMutableData *data = [[NSMutableData alloc] init];
     
     // Name
-    NSString *name = [YKFOATHCredentialUtils keyFromAccountName:credential.accountName issuer:credential.issuer period:credential.period type:credential.type];
+    NSString *name = [YKFOATHCredentialUtils  keyFromAccountName:credential.accountName issuer:credential.issuer period:credential.period type:credential.type];
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     
     [data ykf_appendEntryWithTag:YKFOATHCalculateAPDUNameTag data:nameData];
