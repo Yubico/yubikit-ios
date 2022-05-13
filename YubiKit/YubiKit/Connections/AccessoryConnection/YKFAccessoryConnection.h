@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
  NOTE:
     This property becomes available when the key is connected and is nil when the key is disconnected.
  */
-@property (nonatomic, readonly, nullable) YKFAccessoryDescription *accessoryDescription __deprecated;
+@property (nonatomic, readonly, nullable) YKFAccessoryDescription *accessoryDescription;
 
 /*!
  @property isKeyConnected
