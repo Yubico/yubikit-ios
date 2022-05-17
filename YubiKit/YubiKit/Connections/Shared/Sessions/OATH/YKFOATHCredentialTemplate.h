@@ -34,7 +34,8 @@ typedef NS_ENUM(NSUInteger, YKFOATHCredentialTemplateErrorCode) {
     YKFOATHCredentialTemplateErrorCodeCounter = 4,
     YKFOATHCredentialTemplateErrorCodeDigits = 5,
     YKFOATHCredentialTemplateErrorCodeSecret = 6,
-    YKFOATHCredentialTemplateErrorNameIssuerToLong = 7
+    YKFOATHCredentialTemplateErrorNameIssuerToLong = 7,
+    YKFOATHCredentialTemplateErrorIssuerContainsColon = 8
 };
 
 /*!

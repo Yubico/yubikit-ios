@@ -40,11 +40,11 @@
     // Parse the label as [issuer]:[account]
     if ([key containsString: @":"]) {
         NSArray *labelComponents = [key componentsSeparatedByString:@":"];
-        *account = labelComponents.lastObject;
+        *issuer = labelComponents.firstObject;
 
         componentsArray = [NSMutableArray arrayWithArray: labelComponents];
-        [componentsArray removeLastObject];
-        *issuer = [componentsArray componentsJoinedByString: @":"];
+        [componentsArray removeObjectAtIndex:0];
+        *account = [componentsArray componentsJoinedByString: @":"];
     } else {
         *account = key;
     }

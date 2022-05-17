@@ -74,6 +74,9 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
         case YKFOATHCredentialTemplateErrorNameIssuerToLong:
             message = @"Account name and issuer is to long";
             break;
+        case YKFOATHCredentialTemplateErrorIssuerContainsColon:
+            message = @"Character ':' is not allowed in issuer";
+            break;
     }
     return [[YKFOATHCredentialTemplateError alloc] initWithDomain:YKFOATHCredentialTemplateErrorDomain code:code userInfo:@{NSLocalizedDescriptionKey: message}];
 }
@@ -269,6 +272,11 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
             return nil;
         }
         _counter = counter;
+        
+        if ([_issuer containsString:@":"]) {
+            *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorIssuerContainsColon];
+            return nil;
+        }
         
         NSString *key = [YKFOATHCredentialUtils keyFromAccountName:_accountName issuer:_issuer period:_period type:_type];
         if (key.length > YKFOATHCredentialValidatorMaxNameSize) {
