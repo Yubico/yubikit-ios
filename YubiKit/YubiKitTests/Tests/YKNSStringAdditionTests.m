@@ -115,8 +115,8 @@
     XCTAssertNotNil(issuer, @"Issuer is parsed");
     XCTAssertNotNil(account, @"Account is parsed");
     XCTAssertTrue([label isEqualToString:@"Yubico:demo:account@gmail.com"], @"");
-    XCTAssertTrue([issuer isEqualToString:@"Yubico:demo"], @"");
-    XCTAssertTrue([account isEqualToString:@"account@gmail.com"], @"");
+    XCTAssertTrue([issuer isEqualToString:@"Yubico"], @"");
+    XCTAssertTrue([account isEqualToString:@"demo:account@gmail.com"], @"");
     XCTAssertEqual(period, 0, @"");
 }
 
@@ -132,8 +132,8 @@
     XCTAssertNotNil(issuer, @"Issuer is parsed");
     XCTAssertNotNil(account, @"Account is parsed");
     XCTAssertTrue([label isEqualToString:@"Yubico:demo:account@gmail.com"], @"");
-    XCTAssertTrue([issuer isEqualToString:@"Yubico:demo"], @"");
-    XCTAssertTrue([account isEqualToString:@"account@gmail.com"], @"");
+    XCTAssertTrue([issuer isEqualToString:@"Yubico"], @"");
+    XCTAssertTrue([account isEqualToString:@"demo:account@gmail.com"], @"");
     XCTAssertEqual(period, 15, @"");
 }
 
@@ -217,8 +217,8 @@
     XCTAssertNotNil(issuer, @"Issuer is parsed");
     XCTAssertNotNil(account, @"Account is parsed");
     XCTAssertTrue([label isEqualToString:@"Yubico Demo:account:test"], @"");
-    XCTAssertTrue([issuer isEqualToString:@"Yubico Demo:account"], @"");
-    XCTAssertTrue([account isEqualToString:@"test"], @"");
+    XCTAssertTrue([issuer isEqualToString:@"Yubico Demo"], @"");
+    XCTAssertTrue([account isEqualToString:@"account:test"], @"");
     XCTAssertEqual(period, 0, @"");
 }
 
