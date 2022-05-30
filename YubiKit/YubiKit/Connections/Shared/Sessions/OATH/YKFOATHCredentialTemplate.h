@@ -33,9 +33,15 @@ typedef NS_ENUM(NSUInteger, YKFOATHCredentialTemplateErrorCode) {
     YKFOATHCredentialTemplateErrorCodeAlgorithm = 3,
     YKFOATHCredentialTemplateErrorCodeCounter = 4,
     YKFOATHCredentialTemplateErrorCodeDigits = 5,
-    YKFOATHCredentialTemplateErrorCodeSecret = 6,
-    YKFOATHCredentialTemplateErrorNameIssuerToLong = 7,
-    YKFOATHCredentialTemplateErrorIssuerContainsColon = 8
+    YKFOATHCredentialTemplateErrorCodeMissingSecret = 6,
+    YKFOATHCredentialTemplateErrorCodeInvalidSecret = 7,
+    YKFOATHCredentialTemplateErrorNameIssuerToLong = 8,
+    YKFOATHCredentialTemplateErrorIssuerContainsColon = 9
+};
+
+typedef NS_OPTIONS(NSUInteger, YKFOATHCredentialTemplateValidation) {
+    YKFOATHCredentialTemplateValidationLabel                 = 1 << 0,
+    YKFOATHCredentialTemplateValidationIssuer                = 1 << 1
 };
 
 /*!
@@ -111,24 +117,39 @@ typedef NS_ENUM(NSUInteger, YKFOATHCredentialTemplateErrorCode) {
 
 - (nullable instancetype)initWithURL:(NSURL *)url error:(NSError **)error;
 
-- (instancetype)initWithType:(YKFOATHCredentialType)type
-                   algorithm:(YKFOATHCredentialAlgorithm)algorithm
-                      secret:(NSData *)secret
-                      issuer:(NSString *_Nullable)issuer
-                 accountName:(NSString *)accountName
-                      digits:(NSUInteger)digits
-                      period:(NSUInteger)period
-                     counter:(UInt32)counter;
+- (nullable instancetype)initWithURL:(NSURL *)url
+                      skipValidation:(YKFOATHCredentialTemplateValidation)skipValidation
+                               error:(NSError **)error;
 
-- (instancetype)initWithType:(YKFOATHCredentialType)type
-                   algorithm:(YKFOATHCredentialAlgorithm)algorithm
-                      secret:(NSData *)secret
-                      issuer:(NSString *_Nullable)issuer
-                 accountName:(NSString *)accountName
-                      digits:(NSUInteger)digits
-                      period:(NSUInteger)period
-                     counter:(UInt32)counter
-                       error:(NSError **)error;
+- (nullable instancetype)initWithType:(YKFOATHCredentialType)type
+                            algorithm:(YKFOATHCredentialAlgorithm)algorithm
+                               secret:(NSData *)secret
+                               issuer:(NSString *_Nullable)issuer
+                          accountName:(NSString *)accountName
+                               digits:(NSUInteger)digits
+                               period:(NSUInteger)period
+                              counter:(UInt32)counter;
+
+- (nullable instancetype)initWithType:(YKFOATHCredentialType)type
+                            algorithm:(YKFOATHCredentialAlgorithm)algorithm
+                               secret:(NSData *)secret
+                               issuer:(NSString *_Nullable)issuer
+                          accountName:(NSString *)accountName
+                               digits:(NSUInteger)digits
+                               period:(NSUInteger)period
+                              counter:(UInt32)counter
+                                error:(NSError **)error;
+
+- (nullable instancetype)initWithType:(YKFOATHCredentialType)type
+                            algorithm:(YKFOATHCredentialAlgorithm)algorithm
+                               secret:(NSData *)secret
+                               issuer:(NSString *_Nullable)issuer
+                          accountName:(NSString *)accountName
+                               digits:(NSUInteger)digits
+                               period:(NSUInteger)period
+                              counter:(UInt32)counter
+                       skipValidation:(YKFOATHCredentialTemplateValidation)skipValidation
+                                error:(NSError **)error;
 
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
                                secret:(NSData *)secret
