@@ -57,7 +57,7 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
             message = @"Failed to get account type from URL";
             break;
         case YKFOATHCredentialTemplateErrorCodeLabel:
-            message = @"Missing label in URL";
+            message = @"Missing account name";
             break;
         case YKFOATHCredentialTemplateErrorCodeAlgorithm:
             message = @"Unknown algorithm";
@@ -68,11 +68,17 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
         case YKFOATHCredentialTemplateErrorCodeDigits:
             message = @"Unsupported number of digits";
             break;
-        case YKFOATHCredentialTemplateErrorCodeSecret:
-            message = @"Secret is not correct";
+        case YKFOATHCredentialTemplateErrorCodeMissingSecret:
+            message = @"Missing secret";
+            break;
+        case YKFOATHCredentialTemplateErrorCodeInvalidSecret:
+            message = @"Invalid Base32 encoded secret";
             break;
         case YKFOATHCredentialTemplateErrorNameIssuerToLong:
             message = @"Account name and issuer is to long";
+            break;
+        case YKFOATHCredentialTemplateErrorIssuerContainsColon:
+            message = @"Character ':' is not allowed in issuer";
             break;
     }
     return [[YKFOATHCredentialTemplateError alloc] initWithDomain:YKFOATHCredentialTemplateErrorDomain code:code userInfo:@{NSLocalizedDescriptionKey: message}];
@@ -94,7 +100,7 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
 
 @implementation YKFOATHCredentialTemplate
 
-- (instancetype)initWithURL:(NSURL *)url error:(NSError **)error {
+- (instancetype)initWithURL:(NSURL *)url skipValidation:(YKFOATHCredentialTemplateValidation)skipValidation error:(NSError **)error {
     
     NSURLComponents *urlComponents = [[NSURLComponents alloc] initWithURL:url resolvingAgainstBaseURL:NO];
     
@@ -105,7 +111,7 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
     }
     
     // Parse account name and issuer
-    if (urlComponents.path.length < 2) {
+    if (!(skipValidation & YKFOATHCredentialTemplateValidationLabel) && urlComponents.path.length < 2) {
         *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeLabel];
         return nil;
     }
@@ -120,10 +126,6 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
             [labelComponents removeObjectAtIndex:0];
             name = [labelComponents componentsJoinedByString:@":"];
         }
-    }
-    if (!name.length) {
-        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeLabel];
-        return nil;
     }
     
     // OATH Type
@@ -184,12 +186,12 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
     NSData *secret;
     NSString *base32EncodedSecret = [urlComponents queryParameterValueForName:YKFOATHCredentialURLParameterSecret];
     if (!base32EncodedSecret) {
-        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeSecret];
+        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeMissingSecret];
         return nil;
     }
-    secret = [NSData dataWithBase32String:base32EncodedSecret];
+    secret = [NSData ykf_dataWithBase32String:base32EncodedSecret];
     if (!secret.length) {
-        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeSecret];
+        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeInvalidSecret];
         return nil;
     }
     
@@ -201,12 +203,17 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
                        digits:digits
                        period:period
                       counter:counter
+               skipValidation:skipValidation
                         error:error];
+}
+
+- (instancetype)initWithURL:(NSURL *)url error:(NSError **)error {
+    return [self initWithURL:url skipValidation:0 error:error];
 }
 
 - (instancetype)initWithURL:(NSURL *)url {
     NSError *ignoreError;
-    return [self initWithURL:url error:&ignoreError];
+    return [self initWithURL:url skipValidation:0 error:&ignoreError];
 }
 
 - (instancetype)initWithType:(YKFOATHCredentialType)type
@@ -217,13 +224,17 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
                       digits:(NSUInteger)digits
                       period:(NSUInteger)period
                      counter:(UInt32)counter
+              skipValidation:(YKFOATHCredentialTemplateValidation)skipValidation
                        error:(NSError **)error {
     self = [super init];
     if (self) {
         _type = type;
         _algorithm = algorithm;
         
-        // Secret
+        if (secret.length == 0) {
+            *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeMissingSecret];
+            return nil;
+        }
         if (secret.length < YKFOATHCredentialMinSecretLength) {
             NSMutableData *paddedSecret = [[NSMutableData alloc] initWithData:secret];
             [paddedSecret increaseLengthBy: YKFOATHCredentialMinSecretLength - secret.length];
@@ -270,8 +281,18 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
         }
         _counter = counter;
         
+        if (!(skipValidation & YKFOATHCredentialTemplateValidationIssuer) && [_issuer containsString:@":"]) {
+            *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorIssuerContainsColon];
+            return nil;
+        }
+
+        if (!(skipValidation & YKFOATHCredentialTemplateValidationLabel) && !_accountName.length) {
+            *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeLabel];
+            return nil;
+        }
+        
         NSString *key = [YKFOATHCredentialUtils keyFromAccountName:_accountName issuer:_issuer period:_period type:_type];
-        if (key.length > YKFOATHCredentialValidatorMaxNameSize) {
+        if (!(skipValidation & YKFOATHCredentialTemplateValidationLabel) && key.length > YKFOATHCredentialValidatorMaxNameSize) {
             *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorNameIssuerToLong];
             return nil;
         }
@@ -286,9 +307,21 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
                  accountName:(NSString *)accountName
                       digits:(NSUInteger)digits
                       period:(NSUInteger)period
+                     counter:(UInt32)counter
+                       error:(NSError **)error {
+    return [self initWithType:type algorithm:algorithm secret:secret issuer:issuer accountName:accountName digits:digits period:period counter:counter skipValidation:0 error:error];
+}
+
+- (instancetype)initWithType:(YKFOATHCredentialType)type
+                   algorithm:(YKFOATHCredentialAlgorithm)algorithm
+                      secret:(NSData *)secret
+                      issuer:(NSString *_Nullable)issuer
+                 accountName:(NSString *)accountName
+                      digits:(NSUInteger)digits
+                      period:(NSUInteger)period
                      counter:(UInt32)counter {
     NSError *ignoreError;
-    return [self initWithType:type algorithm:algorithm secret:secret issuer:issuer accountName:accountName digits:digits period:period counter:counter error:&ignoreError];
+    return [self initWithType:type algorithm:algorithm secret:secret issuer:issuer accountName:accountName digits:digits period:period counter:counter skipValidation:0 error:&ignoreError];
 }
 
 - (instancetype)initTOTPWithAlgorithm:(YKFOATHCredentialAlgorithm)algorithm
