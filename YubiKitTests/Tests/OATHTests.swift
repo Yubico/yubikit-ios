@@ -296,8 +296,7 @@ extension YKFOATHSession {
     func storeRandomCredential(number: Int) {
         let account = "test-\(number)@yubico.com"
         let issuer = "Account-\(number)"
-        let secret = "UOA6FJYR76R\(number)BGDJKLYICL3MUR7QH"
-        let url = URL(string: "otpauth://totp/Yubico:\(account)?secret=\(secret)&\(issuer)&algorithm=SHA1&digits=6&period=30")!
+        let url = URL(string: "otpauth://totp/Yubico:\(account)?secret=UOA6FJYR76R&\(issuer)&algorithm=SHA1&digits=6&period=30")!
         let template = YKFOATHCredentialTemplate(url: url)!
         self.put(template, requiresTouch: false) { error in
             if error != nil { XCTFail("Error: \(error!)") }
