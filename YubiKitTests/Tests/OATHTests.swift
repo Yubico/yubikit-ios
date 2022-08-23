@@ -244,7 +244,7 @@ class OATHTests: XCTestCase {
                     guard error == nil else { XCTAssert(false); return }
                     session.setPassword("") { error in
                         guard error == nil else { XCTAssertTrue(false); return }
-                        connection.fido2Session { fidoSession, error in
+                        connection.pivSession { pivSession, error in
                             guard error == nil else { XCTAssertTrue(false); return }
                             connection.oathSession { session, error in
                                 guard let session = session else { XCTAssert(false); return }
@@ -319,8 +319,8 @@ extension YKFConnectionProtocol {
         self.oathTestSession { session in
             session.setPassword(password) { error in
                 guard error == nil else { XCTFail("Failed to set password '\(password)'"); return }
-                self.fido2Session { fidoSession, error in
-                    guard error == nil else { XCTFail("Failed to reset OATH by getting a FIDO2 session"); return }
+                self.pivSession { pivSession, error in
+                    guard error == nil else { XCTFail("Failed to reset OATH by getting a PIV session: \(error!)"); return }
                     self.oathSession { session, error in
                         guard let session = session else { XCTFail("Failed to get OATH session: \(error!)"); return }
                         completion(session)

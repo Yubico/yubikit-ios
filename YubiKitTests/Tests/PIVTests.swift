@@ -757,9 +757,9 @@ extension YKFPIVSession {
 extension YKFConnectionProtocol {
     func pivTestSession(completion: @escaping (_ session: YKFPIVSession) -> Void) {
         self.pivSession { session, error in
-            guard let session = session else { XCTAssertTrue(false, "🔴 Failed to get PIV session"); return }
+            guard let session = session else { XCTAssertTrue(false, "🔴 Failed to get PIV session: \(error!)"); return }
             session.reset { error in
-                guard error == nil else { XCTAssertTrue(false, "🔴 Failed to reset PIV application"); return }
+                guard error == nil else { XCTAssertTrue(false, "🔴 Failed to reset PIV application: \(error!)"); return }
                 print("Reset PIV application")
                 completion(session)
             }

@@ -17,7 +17,7 @@
 
 #import "YKFNFCConnection.h"
 #import "YKFAccessoryConnection.h"
-
+#import "YKFSmartCardConnection.h"
 
 /*!
  @protocol YKFManagerDelegate
@@ -77,6 +77,33 @@
   */
 - (void)didDisconnectAccessory:(YKFAccessoryConnection *_Nonnull)connection error:(NSError *_Nullable)error;
 
+@optional
+
+/*!
+ @method didConnectSmartCard:connection
+ 
+ @abstract
+    The YubiKey SDK did connect to a USB-C Yubikey.
+ 
+ @param connection
+    The YKFSmartCardConnection to the YubiKey.
+ */
+- (void)didConnectSmartCard:(YKFSmartCardConnection *_Nonnull)connection;
+
+/*!
+ @method didDisconnectSmartCard:connection:error
+ 
+ @abstract
+    The YubiKey SDK did disconnect a USB-C Yubikey.
+
+ @param connection
+    The YKFSmartCardConnection to the YubiKey that did disconnect.
+ 
+ @method error
+    If the disconnection was unexpted an NSError will be passed.
+  */
+- (void)didDisconnectSmartCard:(YKFSmartCardConnection *_Nonnull)connection error:(NSError *_Nullable)error;
+
 /*!
  @method didFailConnectingNFC
  
@@ -87,7 +114,6 @@
  @method error
     The NSError passed by the SDK.
   */
-@optional
 - (void)didFailConnectingNFC:(NSError *_Nonnull)error;
 
 @end
@@ -174,6 +200,26 @@
     Stop the accessory connection.
  */
 - (void)stopAccessoryConnection;
+
+
+/*!
+ @method startSmartCardConnection
+ 
+ @abstract
+    Start the smart card connection.
+ 
+ @discussion
+    Do this when the application becomes active to continuosly listen for a YubiKey inserted into the USB-C Port.
+ */
+- (void)startSmartCardConnection API_AVAILABLE(ios(16.0));
+
+/*!
+ @method stopSmartCardConnection
+ 
+ @abstract
+    Stop the smart card connection.
+ */
+- (void)stopSmartCardConnection API_AVAILABLE(ios(16.0));
 
 
 /*!

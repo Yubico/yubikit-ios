@@ -18,6 +18,7 @@ class ConnectionTests: XCTestCase {
 
     func testConnectionDelegate() throws {
         YubiKitManager.shared.startAccessoryConnection()
+        YubiKitManager.shared.startSmartCardConnection()
         let connectionExpectation = expectation(description: "Get a YubiKey Connection")
         let firstConnection = YubiKeyConnectionTester()
         Thread.sleep(forTimeInterval: 0.5)
@@ -33,6 +34,7 @@ class ConnectionTests: XCTestCase {
             // If we get an error then the expectation has timed out and we need to stop all connections
             if error != nil {
                 YubiKitManager.shared.stopAccessoryConnection()
+                YubiKitManager.shared.stopSmartCardConnection()
                 YubiKitManager.shared.stopNFCConnection()
                 Thread.sleep(forTimeInterval: 5.0) // In case it was a NFC connection wait for the modal to dismiss
             }
@@ -43,6 +45,8 @@ class ConnectionTests: XCTestCase {
         let connectionExpectation = expectation(description: "Get a YubiKey Connection")
         let connectionTester = YubiKeyConnectionTester()
         YubiKitManager.shared.startAccessoryConnection() // We need to start the accessory connection so we can skip this test if a 5Ci key is inserted
+        YubiKitManager.shared.startSmartCardConnection()
+
         Thread.sleep(forTimeInterval: 0.5)
         print("👉 Wait for NFC modal to dismiss (this will take a long time)!")
         
@@ -71,6 +75,7 @@ class ConnectionTests: XCTestCase {
         let connectionExpectation = expectation(description: "Got a YubiKey failed to connect to NFC error")
         let connectionTester = YubiKeyConnectionTester()
         YubiKitManager.shared.startAccessoryConnection() // We need to start the accessory connection so we can skip this test if a 5Ci key is inserted
+        YubiKitManager.shared.startSmartCardConnection()
         Thread.sleep(forTimeInterval: 0.5)
         
         connectionTester.nfcConnectionErrorCallback = { error in
@@ -99,6 +104,7 @@ class ConnectionTests: XCTestCase {
 class YubiKeyConnectionTester: NSObject {
     
     var accessoryConnection: YKFAccessoryConnection?
+    var smartCardConnection: YKFSmartCardConnection?
     var nfcConnection: YKFNFCConnection?
     var connectionCallback: ((_ connection: YKFConnectionProtocol, _ error: Error?) -> Void)?
     var errorCallback: ((_ error: Error) -> Void)?
@@ -112,11 +118,15 @@ class YubiKeyConnectionTester: NSObject {
     func connection(completion: @escaping (_ connection: YKFConnectionProtocol, _ error: Error?) -> Void) {
         if let connection = accessoryConnection {
             completion(connection, nil)
+        } else if let connection = smartCardConnection {
+            completion(connection, nil)
         } else if let connection = nfcConnection {
             completion(connection, nil)
         } else {
             connectionCallback = completion
-            YubiKitManager.shared.startNFCConnection()
+            if NFCNDEFReaderSession.readingAvailable {
+                YubiKitManager.shared.startNFCConnection()
+            }
         }
     }
 }
@@ -160,5 +170,19 @@ extension YubiKeyConnectionTester: YKFManagerDelegate {
             callback(connection, error)
         }
         accessoryConnection = nil
+    }
+    
+    func didConnectSmartCard(_ connection: YKFSmartCardConnection) {
+        smartCardConnection = connection
+        if let callback = connectionCallback {
+            callback(connection, nil)
+        }
+    }
+    
+    func didDisconnectSmartCard(_ connection: YKFSmartCardConnection, error: Error?) {
+        if let callback = connectionCallback {
+            callback(connection, error)
+        }
+        smartCardConnection = nil
     }
 }

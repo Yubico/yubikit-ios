@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifndef YKFConnectionProtocol_h
+#define YKFConnectionProtocol_h
+
 @class YKFOATHSession, YKFU2FSession, YKFFIDO2Session, YKFPIVSession, YKFChallengeResponseSession, YKFManagementSession, YKFSmartCardInterface;
 
 @protocol YKFConnectionProtocol<NSObject>
@@ -64,3 +67,5 @@ typedef void (^YKFManagementSessionCompletion)(YKFManagementSession *_Nullable, 
 @property (nonatomic, readonly) YKFSmartCardInterface *_Nullable smartCardInterface;
 
 @end
+
+#endif
