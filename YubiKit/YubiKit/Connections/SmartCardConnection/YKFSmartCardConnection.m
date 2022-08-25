@@ -27,7 +27,6 @@
 
 @interface YKFSmartCardConnection()
 
-@property (nonatomic, readwrite) TKSmartCard *smartCard;
 @property (nonatomic) YKFSmartCardConnectionController *connectionController;
 @property (nonatomic) bool isActive;
 @property (nonatomic, readwrite) id<YKFSessionProtocol> currentSession;
@@ -50,30 +49,36 @@
 }
 
 - (void)updateConnections API_AVAILABLE(ios(16.0)) {
-    // creating the smart card has to be done on the main thread
-    dispatch_async(dispatch_get_main_queue(), ^{
+    // creating the smart card has to be done on the main thread and after a slight delay
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         TKSmartCardSlotManager *manager = [TKSmartCardSlotManager defaultManager];
-        NSString *slotName = manager.slotNames.firstObject;
+        NSString *slotName = manager.slotNames.firstObject; // just grab the first slot for now
         if (slotName != nil) {
             TKSmartCardSlot *slot = [manager slotNamed:slotName];
-            NSLog(@"slot.maxInputLength: %li", (long)slot.maxInputLength);
-            NSLog(@"slot.maxOutputLength: %li", (long)slot.maxOutputLength);
-
-            self.smartCard = [slot makeSmartCard];
-            [YKFSmartCardConnectionController smartCardControllerWithSmartCard:self.smartCard completion:^(YKFSmartCardConnectionController * controller, NSError * error) {
+            TKSmartCard *smartCard = [slot makeSmartCard];
+            if (smartCard == nil) {
+                return;
+            }
+            [YKFSmartCardConnectionController smartCardControllerWithSmartCard:smartCard completion:^(YKFSmartCardConnectionController * controller, NSError * error) {
                 if (controller != nil) {
                     self.connectionController = controller;
                     [self.delegate didConnectSmartCard:self];
-                    NSLog(@"SmartCard connected %@ and session started", self.smartCard);
+                } else {
+                    NSLog(@"🦠 SmartCard failed to create controller: %@", error);
                 }
             }];
-        } else {
-            NSLog(@"Smart card disconnected");
+        } else if (self.connectionController != nil) {
             [self.delegate didDisconnectSmartCard:self error:nil];
             self.connectionController = nil;
-            self.smartCard = nil;
+            [self.currentSession clearSessionState];
+            self.currentSession = nil;
         }
     });
+}
+
+- (void)dealloc {
+    [self stop];
+    NSLog(@"🦠 dealloc YKFSmartCardConnection");
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath

@@ -44,10 +44,14 @@ static NSTimeInterval const YKFSmartCardConnectionDefaultTimeout = 10.0;
     return self;
 }
 
-+ (void)smartCardControllerWithSmartCard:(TKSmartCard *)smartCard                                                                                      completion:(YKFSmartCardConnectionControllerCompletionBlock _Nonnull)completion {
++ (void)smartCardControllerWithSmartCard:(TKSmartCard *)smartCard
+                              completion:(YKFSmartCardConnectionControllerCompletionBlock _Nonnull)completion {
     YKFSmartCardConnectionController *controller = [YKFSmartCardConnectionController new];
+    if (smartCard == nil) {
+        [NSException raise:@"Nonnull object is null" format:@"TKSmartCard can not be null."];
+    }
     controller.smartCard = smartCard;
-    [controller.smartCard beginSessionWithReply:^(BOOL success, NSError * _Nullable error) {
+    [smartCard beginSessionWithReply:^(BOOL success, NSError * _Nullable error) {
         if (error == nil) {
             completion(controller, nil);
         } else {
@@ -144,6 +148,12 @@ static NSTimeInterval const YKFSmartCardConnectionDefaultTimeout = 10.0;
             completion(executionResult, nil, executionTime);
         }
     }];
+}
+
+- (void)dealloc {
+    [self.smartCard endSession];
+    self.smartCard = nil;
+    NSLog(@"🦠 dealloc YKFSmartCardConnectionController %@", self);
 }
     
 @end
