@@ -132,9 +132,11 @@
     }];
 }
 
-- (void)managementSession:(YKFManagementSessionCompletion _Nonnull)completion { 
+- (void)managementSession:(YKFManagementSessionCompletion _Nonnull)completion {
+    [self.currentSession clearSessionState];
     [YKFManagementSession sessionWithConnectionController:self.connectionController
                                                completion:^(YKFManagementSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
         completion(session, error);
     }];
 }
@@ -148,16 +150,20 @@
     }];
 }
 
-- (void)pivSession:(YKFPIVSessionCompletionBlock _Nonnull)completion { 
+- (void)pivSession:(YKFPIVSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
     [YKFPIVSession sessionWithConnectionController:self.connectionController
                                         completion:^(YKFPIVSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
         completion(session, error);
     }];
 }
 
-- (void)u2fSession:(YKFU2FSessionCompletionBlock _Nonnull)completion { 
+- (void)u2fSession:(YKFU2FSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
     [YKFU2FSession sessionWithConnectionController:self.connectionController
                                         completion:^(YKFU2FSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
         completion(session, error);
     }];
 }

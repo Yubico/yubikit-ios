@@ -151,7 +151,6 @@ static NSTimeInterval const YKFSmartCardConnectionDefaultTimeout = 10.0;
 }
 
 - (void)dealloc {
-    [self.smartCard endSession];
     self.smartCard = nil;
     NSLog(@"🦠 dealloc YKFSmartCardConnectionController %@", self);
 }
