@@ -110,6 +110,28 @@
     return NO;
 }
 
++ (BOOL)supportsSmartCardOverUSBC {
+#ifdef DEBUG
+    // When this is set by UTs.
+    if (self.fakeDeviceCapabilities) {
+        return [[self.fakeDeviceCapabilities class] supportsSmartCardOverUSBC];
+    }
+#endif
+    
+    // USB-C type devices on iOS 16 and up
+    if (@available(iOS 16, *)) {
+        if (self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadMini6 ||
+            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro3 ||
+            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro4 ||
+            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro5 ||
+            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir4 ||
+            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir5) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 #pragma mark - Helpers
 
 + (id<YKFUIDeviceProtocol>)currentUIDevice {

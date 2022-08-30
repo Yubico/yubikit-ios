@@ -102,4 +102,22 @@
     XCTAssert(!YubiKitDeviceCapabilities.supportsMFIAccessoryKey, @"The device capabilities do not block USB-C devices.");
 }
 
+#pragma mark - SmartCard over USB-C
+
+- (void)test_WhenRunningSupportedOSVersions_SmartCardOverUSBCKeyIsSupported {
+    FakeUIDevice *fakeDevice = [[FakeUIDevice alloc] init];
+    fakeDevice.ykf_deviceModel = YKFDeviceModelIPadMini6;
+    fakeDevice.systemVersion = @"16.0";
+    YubiKitDeviceCapabilities.fakeUIDevice = fakeDevice;
+    XCTAssert(YubiKitDeviceCapabilities.supportsSmartCardOverUSBC, @"The device capabilities should allow SmartCard over USB-C for iPad Mini 6.");
+}
+
+- (void)test_WhenRunningNotSupportedOSVersions_SmartCardOverUSBCKeyIsNotSupported {
+    FakeUIDevice *fakeDevice = [[FakeUIDevice alloc] init];
+    fakeDevice.ykf_deviceModel = YKFDeviceModelIPadMini5;
+    fakeDevice.systemVersion = @"16.0";
+    YubiKitDeviceCapabilities.fakeUIDevice = fakeDevice;
+    XCTAssert(!YubiKitDeviceCapabilities.supportsSmartCardOverUSBC, @"The device capabilities should block iPad Mini 5.");
+}
+
 @end
