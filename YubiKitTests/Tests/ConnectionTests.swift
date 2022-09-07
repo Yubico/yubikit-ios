@@ -41,6 +41,7 @@ class ConnectionTests: XCTestCase {
         }
     }
     
+    // Run this test without a nfc yubikey present
     func testNFCTimeOutError() throws {
         let connectionExpectation = expectation(description: "Get a YubiKey Connection")
         let connectionTester = YubiKeyConnectionTester()
@@ -71,6 +72,7 @@ class ConnectionTests: XCTestCase {
         }
     }
     
+    // Run this test without a nfc yubikey present
     func testNFCUserCancelError() throws {
         let connectionExpectation = expectation(description: "Got a YubiKey failed to connect to NFC error")
         let connectionTester = YubiKeyConnectionTester()

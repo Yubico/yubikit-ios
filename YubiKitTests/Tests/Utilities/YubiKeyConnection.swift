@@ -23,11 +23,15 @@ class YubiKeyConnection: NSObject {
     override init() {
         super.init()
         YubiKitManager.shared.delegate = self
-        YubiKitManager.shared.startAccessoryConnection()
-        YubiKitManager.shared.startSmartCardConnection()
+        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
+            YubiKitManager.shared.startAccessoryConnection()
+        }
+        if YubiKitDeviceCapabilities.supportsSmartCardOverUSBC {
+            YubiKitManager.shared.startSmartCardConnection()
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             // If there's no wired yubikey connected after 0.5 seconds start NFC
-            if self.accessoryConnection == nil && self.smartCardConnection == nil {
+            if YubiKitDeviceCapabilities.supportsISO7816NFCTags && self.accessoryConnection == nil && self.smartCardConnection == nil {
                 YubiKitManager.shared.startNFCConnection()
             }
         }
