@@ -29,7 +29,8 @@ class YubiKeyConnection: NSObject {
         if YubiKitDeviceCapabilities.supportsSmartCardOverUSBC {
             YubiKitManager.shared.startSmartCardConnection()
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self else { return }
             // If there's no wired yubikey connected after 0.5 seconds start NFC
             if YubiKitDeviceCapabilities.supportsISO7816NFCTags && self.accessoryConnection == nil && self.smartCardConnection == nil {
                 YubiKitManager.shared.startNFCConnection()
