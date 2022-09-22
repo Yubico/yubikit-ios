@@ -15,16 +15,13 @@
 #import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
 
-@class YKFOATHValidateRequest;
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFOATHUnlockAPDU: YKFAPDU
 
 @property (nonatomic, nullable) NSData *expectedChallengeData;
 
-- (nullable instancetype)initWithPassword:(NSString *)code challenge:(NSData *)challenge salt:(NSData *)salt NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithAccessKey:(nonnull NSData *)accessKey challenge:(NSData *)challenge NS_DESIGNATED_INITIALIZER;
 
 @end
 

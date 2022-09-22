@@ -237,18 +237,19 @@ class OATHTests: XCTestCase {
         }
     }
     
-    func testRemoveCode() throws {
+    func testRemovePassword() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSessionWithPassword { session in
                 session.unlock(withPassword:"271828") { error in
                     guard error == nil else { XCTAssert(false); return }
                     session.setPassword("") { error in
                         guard error == nil else { XCTAssertTrue(false); return }
-                        connection.fido2Session { fidoSession, error in
+                        connection.pivSession { pivSession, error in
                             guard error == nil else { XCTAssertTrue(false); return }
                             connection.oathSession { session, error in
                                 guard let session = session else { XCTAssert(false); return }
                                 session.listCredentials { credentials, error in
+                                    print(error)
                                     XCTAssert(error == nil)
                                     print("✅ set and remove OATH password")
                                     completion()
