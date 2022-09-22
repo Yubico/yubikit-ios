@@ -77,7 +77,9 @@ static YubiKitManager *sharedInstance;
         [self.delegate didConnectAccessory:self.accessoryConnection];
     }
     if (self.smartCardConnection.state == YKFSmartCardConnectionStateOpen) {
-        [self.delegate didConnectSmartCard:self.smartCardConnection];
+        if ([self.delegate respondsToSelector:@selector(didConnectSmartCard:)]) {
+            [self.delegate didConnectSmartCard:self.smartCardConnection];
+        }
     }
     if (self.nfcConnection.state == YKFNFCConnectionStateOpen) {
         [self.delegate didConnectNFC:self.nfcConnection];
