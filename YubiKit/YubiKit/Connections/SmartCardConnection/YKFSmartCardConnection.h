@@ -26,13 +26,19 @@ typedef NS_ENUM(NSUInteger, YKFSmartCardConnectionState) {
     YKFSmartCardConnectionStateOpen
 };
 
+extern NSString* _Nonnull const YKFSmartCardConnectionErrorDomain;
+
+typedef NS_ENUM(NSUInteger, YKFSmartCardConnectionErrorCode) {
+    YKFSmartCardConnectionErrorCodeNotSupported = 1,
+};
+
 @interface YKFSmartCardConnection : NSObject<YKFConnectionProtocol>
 
 - (void)start API_AVAILABLE(ios(16.0));
 
 - (void)stop API_AVAILABLE(ios(16.0));
 
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype _Nonnull )init NS_UNAVAILABLE;
 
 @end
 

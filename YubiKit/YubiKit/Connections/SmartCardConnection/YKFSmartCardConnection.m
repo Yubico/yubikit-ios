@@ -25,6 +25,8 @@
 #import "YKFSmartCardInterface.h"
 #import "YKFChallengeResponseSession+Private.h"
 
+NSString* const YKFSmartCardConnectionErrorDomain = @"com.yubico.smart-card-connection";
+
 @interface YKFSmartCardConnection()
 
 @property (nonatomic) YKFSmartCardConnectionController *connectionController;
@@ -115,20 +117,18 @@
     return [[YKFSmartCardInterface alloc] initWithConnectionController:self.connectionController];
 }
 
-- (void)challengeResponseSession:(YKFChallengeResponseSessionCompletionBlock _Nonnull)completion { 
-    [YKFChallengeResponseSession sessionWithConnectionController:self.connectionController
-                                                      completion:^(YKFChallengeResponseSession *_Nullable session, NSError * _Nullable error) {
-        completion(session, error);
-    }];
+- (void)challengeResponseSession:(YKFChallengeResponseSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    completion(nil, [[NSError alloc] initWithDomain:YKFSmartCardConnectionErrorDomain
+                                               code:YKFSmartCardConnectionErrorCodeNotSupported
+                                           userInfo:@{NSLocalizedDescriptionKey: @"Challenge response session not supported by YKFSmartCardConnection."}]);
 }
 
 - (void)fido2Session:(YKFFIDO2SessionCompletionBlock _Nonnull)completion {
     [self.currentSession clearSessionState];
-    [YKFFIDO2Session sessionWithConnectionController:self.connectionController
-                                          completion:^(YKFFIDO2Session *_Nullable session, NSError * _Nullable error) {
-        self.currentSession = session;
-        completion(session, error);
-    }];
+    completion(nil, [[NSError alloc] initWithDomain:YKFSmartCardConnectionErrorDomain
+                                               code:YKFSmartCardConnectionErrorCodeNotSupported
+                                           userInfo:@{NSLocalizedDescriptionKey: @"FIDO2 session not supported by YKFSmartCardConnection."}]);
 }
 
 - (void)managementSession:(YKFManagementSessionCompletion _Nonnull)completion {
@@ -160,11 +160,9 @@
 
 - (void)u2fSession:(YKFU2FSessionCompletionBlock _Nonnull)completion {
     [self.currentSession clearSessionState];
-    [YKFU2FSession sessionWithConnectionController:self.connectionController
-                                        completion:^(YKFU2FSession *_Nullable session, NSError * _Nullable error) {
-        self.currentSession = session;
-        completion(session, error);
-    }];
+    completion(nil, [[NSError alloc] initWithDomain:YKFSmartCardConnectionErrorDomain
+                                               code:YKFSmartCardConnectionErrorCodeNotSupported
+                                           userInfo:@{NSLocalizedDescriptionKey: @"U2F session not supported by YKFSmartCardConnection."}]);
 }
 
 @end
