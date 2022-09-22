@@ -230,7 +230,6 @@
 		B4451ECC2757B579002690BB /* YKFOATHCredentialUtils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51E1B98425779929003C1CA4 /* YKFOATHCredentialUtils.h */; };
 		B4451ECD2757C4B0002690BB /* YKFChallengeResponseError.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8152341023BAE9D2004D4788 /* YKFChallengeResponseError.h */; };
 		B4451EEF2758C31F002690BB /* YKFManagementDeviceInfo.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51F8E3C2263985560010686B /* YKFManagementDeviceInfo.h */; };
-		B4712B6B28DB45BE009B270D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		B4712B6E28DC8413009B270D /* YKFOATHSetAccessKeyAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = B4712B6D28DC8413009B270D /* YKFOATHSetAccessKeyAPDU.m */; };
 /* End PBXBuildFile section */
 
