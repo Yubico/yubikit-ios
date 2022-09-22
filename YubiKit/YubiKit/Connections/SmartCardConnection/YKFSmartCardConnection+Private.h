@@ -21,6 +21,7 @@
 
 - (void)didConnectSmartCard:(YKFSmartCardConnection *_Nonnull)connection;
 - (void)didDisconnectSmartCard:(YKFSmartCardConnection *_Nonnull)connection error:(NSError *_Nullable)error;
+- (void)didFailConnectingSmartCard:(NSError *_Nonnull)error;
 
 @end
 

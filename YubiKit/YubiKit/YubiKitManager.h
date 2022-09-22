@@ -105,6 +105,17 @@
 - (void)didDisconnectSmartCard:(YKFSmartCardConnection *_Nonnull)connection error:(NSError *_Nullable)error;
 
 /*!
+ @method didFailConnectingSmartCard
+ 
+ @abstract
+    The YubiKey SDK did receive a connection error when trying to start a TKSmartCard session.
+
+ @method error
+    The NSError passed by the SDK.
+  */
+- (void)didFailConnectingSmartCard:(NSError *_Nonnull)error;
+
+/*!
  @method didFailConnectingNFC
  
  @abstract

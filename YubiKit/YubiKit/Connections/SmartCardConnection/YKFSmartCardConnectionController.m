@@ -119,9 +119,7 @@ static NSTimeInterval const YKFSmartCardConnectionDefaultTimeout = 10.0;
         NSDate *commandStartDate = [NSDate date];
         dispatch_semaphore_t executionSemaphore = dispatch_semaphore_create(0);
 
-        NSLog(@"Smart card will transmit: %@", [command apduData]);
         [strongSelf.smartCard transmitRequest:[command apduData] reply:^(NSData * _Nullable response, NSError * _Nullable error) {
-            NSLog(@"Smart card transmitted with result: %@, %@", response, error);
             if (error) {
                 executionError = error;
                 dispatch_semaphore_signal(executionSemaphore);
@@ -152,7 +150,6 @@ static NSTimeInterval const YKFSmartCardConnectionDefaultTimeout = 10.0;
 
 - (void)dealloc {
     self.smartCard = nil;
-    NSLog(@"🦠 dealloc YKFSmartCardConnectionController %@", self);
 }
     
 @end

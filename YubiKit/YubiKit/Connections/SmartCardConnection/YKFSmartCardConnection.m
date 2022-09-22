@@ -64,7 +64,7 @@
                     self.connectionController = controller;
                     [self.delegate didConnectSmartCard:self];
                 } else {
-                    NSLog(@"🦠 SmartCard failed to create controller: %@", error);
+                    [self.delegate didFailConnectingSmartCard:error];
                 }
             }];
         } else if (self.connectionController != nil) {
@@ -77,8 +77,9 @@
 }
 
 - (void)dealloc {
-    [self stop];
-    NSLog(@"🦠 dealloc YKFSmartCardConnection");
+    if (@available(iOS 16.0, *)) {
+        [self stop];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -105,8 +106,6 @@
     self.connectionController = nil;
     [self.currentSession clearSessionState];
     self.currentSession = nil;
-    NSLog(@"SmartCard session ended");
-
 }
 
 - (YKFSmartCardInterface *)smartCardInterface {

@@ -157,4 +157,10 @@ static YubiKitManager *sharedInstance;
     }
 }
 
+- (void)didFailConnectingSmartCard:(NSError *_Nonnull)error {
+    if ([self.delegate respondsToSelector:@selector(didFailConnectingSmartCard:)]) {
+        [self.delegate didFailConnectingSmartCard:error];
+    }
+}
+
 @end
