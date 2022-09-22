@@ -22,7 +22,7 @@ typedef NS_ENUM(NSUInteger, YKFSmartCardConnectionState) {
     /// The session is closed. No commands can be sent to the key.
     YKFSmartCardConnectionStateClosed,
 
-    /// The session is opened and ready to use. The application can send immediately commands to the key.
+    /// The session is opened and ready to use. The application can send commands to the key.
     YKFSmartCardConnectionStateOpen
 };
 

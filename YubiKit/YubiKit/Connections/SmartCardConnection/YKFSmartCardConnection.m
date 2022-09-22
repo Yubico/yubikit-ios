@@ -52,7 +52,7 @@
     // creating the smart card has to be done on the main thread and after a slight delay
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         TKSmartCardSlotManager *manager = [TKSmartCardSlotManager defaultManager];
-        NSString *slotName = manager.slotNames.firstObject; // just grab the first slot for now
+        NSString *slotName = manager.slotNames.firstObject; // iPads only have one usb-c port
         if (slotName != nil) {
             TKSmartCardSlot *slot = [manager slotNamed:slotName];
             TKSmartCard *smartCard = [slot makeSmartCard];
