@@ -1527,7 +1527,6 @@
 				815233FE23B56A6F004D4788 /* YKFChalRespSendRequest.m in Sources */,
 				95081DEE2214255B006CD08C /* YKFRequest.m in Sources */,
 				956991F422C224BC00C5EB02 /* YKFWebAuthnClientData.m in Sources */,
-				B4712B6B28DB45BE009B270D /* (null) in Sources */,
 				95C296262062497C0091318B /* YKFOTPTokenValidator.m in Sources */,
 				956DB66B206391C5006B1738 /* YKFQRCodeScanError.m in Sources */,
 				956DBB9421EE2B29004D6EE3 /* YKFFIDO2ResetAPDU.m in Sources */,
