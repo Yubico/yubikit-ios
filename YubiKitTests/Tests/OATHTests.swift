@@ -249,7 +249,6 @@ class OATHTests: XCTestCase {
                             connection.oathSession { session, error in
                                 guard let session = session else { XCTAssert(false); return }
                                 session.listCredentials { credentials, error in
-                                    print(error)
                                     XCTAssert(error == nil)
                                     print("✅ set and remove OATH password")
                                     completion()
