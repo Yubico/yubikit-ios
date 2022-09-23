@@ -237,7 +237,7 @@ class OATHTests: XCTestCase {
         }
     }
     
-    func testRemoveCode() throws {
+    func testRemovePassword() throws {
         runYubiKitTest { connection, completion in
             connection.oathTestSessionWithPassword { session in
                 session.unlock(withPassword:"271828") { error in

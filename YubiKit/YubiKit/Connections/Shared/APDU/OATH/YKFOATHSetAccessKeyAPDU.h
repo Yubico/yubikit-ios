@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2022 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +15,11 @@
 #import <Foundation/Foundation.h>
 #import "YKFAPDU.h"
 
-@class YKFOATHSetCodeRequest;
-
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFOATHSetPasswordAPDU: YKFAPDU
+@interface YKFOATHSetAccessKeyAPDU: YKFAPDU
 
-- (nullable instancetype)initWithPassword:(NSString *)code salt:(NSData *)salt NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithAccessKey:(NSData *)accessKey NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

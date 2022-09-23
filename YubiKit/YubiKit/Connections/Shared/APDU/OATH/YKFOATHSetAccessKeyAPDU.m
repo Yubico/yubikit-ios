@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright 2018-2022 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,39 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFOATHUnlockAPDU.h"
+#import "YKFOATHSetAccessKeyAPDU.h"
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFOATHCredential.h"
 #import "YKFAssert.h"
 #import "YKFNSMutableDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
 
+static const UInt8 YKFOATHSetCodeAPDUKeyTag = 0x73;
 static const UInt8 YKFOATHSetCodeAPDUChallengeTag = 0x74;
 static const UInt8 YKFOATHSetCodeAPDUResponseTag = 0x75;
 
-@implementation YKFOATHUnlockAPDU
+@implementation YKFOATHSetAccessKeyAPDU
 
-- (nullable instancetype)initWithAccessKey:(nonnull NSData *)accessKey challenge:(NSData *)challenge {
+- (instancetype)initWithAccessKey:(NSData *)accessKey {
     YKFAssertAbortInit(accessKey);
-    YKFAssertAbortInit(challenge);
     
     NSMutableData *data = [[NSMutableData alloc] init];
     
-    // Response (hmac of the select challenge)
+    UInt8 algorithm = YKFOATHCredentialTypeTOTP | YKFOATHCredentialAlgorithmSHA1;
     
-    NSData *response = [challenge ykf_oathHMACWithKey:accessKey];
-    [data ykf_appendEntryWithTag:YKFOATHSetCodeAPDUResponseTag data:response];
-        
-    // Challenge (random bytes)
+    [data ykf_appendEntryWithTag:YKFOATHSetCodeAPDUKeyTag headerBytes:@[@(algorithm)] data:accessKey];
     
+    // Challenge
     UInt8 challengeBuffer[8];
     arc4random_buf(challengeBuffer, 8);
-    NSData *randomChallenge = [NSData dataWithBytes:challengeBuffer length:8];
+    NSData *challenge = [NSData dataWithBytes:challengeBuffer length:8];
+    [data ykf_appendEntryWithTag:YKFOATHSetCodeAPDUChallengeTag data:challenge];
     
-    self.expectedChallengeData = [randomChallenge ykf_oathHMACWithKey:accessKey];
-    [data ykf_appendEntryWithTag:YKFOATHSetCodeAPDUChallengeTag data:randomChallenge];
-        
-    return [super initWithCla:0 ins:YKFAPDUCommandInstructionOATHValidate p1:0 p2:0 data:data type:YKFAPDUTypeShort];
+    // Response
+    NSData *response = [challenge ykf_oathHMACWithKey:accessKey];
+    [data ykf_appendEntryWithTag:YKFOATHSetCodeAPDUResponseTag data:response];
+    
+    return [super initWithCla:0 ins:0x03 p1:0 p2:0 data:data type:YKFAPDUTypeShort];
 }
 
 @end

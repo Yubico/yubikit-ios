@@ -136,6 +136,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface YKFOATHSession: YKFSession <YKFVersionProtocol>
 
+/// Returns a unique ID which can be used to identify a particular YubiKey. This ID is randomly generated when the OATH application is reset.
+@property (nonatomic, readonly) NSString* deviceId;
+
 @property (nonatomic, readonly) YKFVersion* version;
 
 /*!
@@ -343,6 +346,42 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setPassword:(NSString *)password completion:(YKFOATHSessionGenericCompletionBlock)completion;
 
 /*!
+ @method setAccessKey:completion:
+ 
+ @abstract
+    Sends to the key an OATH Set Code request to set the access key on the OATH application. The request
+    is performed asynchronously on a background execution queue.
+ 
+ @param accessKey
+    The access key to set on the OATH application.
+ 
+ @param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread. If the intention is to update the UI, dispatch the results
+    on the main thread to avoid an UIKit assertion.
+ 
+ @note
+    This method is thread safe and can be invoked from any thread (main or a background thread).
+ */
+- (void)setAccessKey:(NSData *)accessKey completion:(YKFOATHSessionGenericCompletionBlock)completion;
+
+/*!
+ @method deleteAccessKeyWithCompletion:
+ 
+ @abstract
+    Deletes the access key, if one is set. The request is performed asynchronously on a background execution queue.
+ 
+ @param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread. If the intention is to update the UI, dispatch the results
+    on the main thread to avoid an UIKit assertion.
+ 
+ @note
+    This method is thread safe and can be invoked from any thread (main or a background thread).
+ */
+- (void)deleteAccessKeyWithCompletion:(YKFOATHSessionGenericCompletionBlock)completion;
+
+/*!
  @method unlockWithPassword:completion:
  
  @abstract
@@ -365,6 +404,43 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)unlockWithPassword:(NSString *)password completion:(YKFOATHSessionGenericCompletionBlock)completion;
 
+/*!
+ @method unlockWithAccessKey:completion:
+ 
+ @abstract
+    Sends to the key an OATH Validate request to authentificate against the OATH application. This request maps
+    to the VALIDATE command from YOATH protocol: https://developers.yubico.com/OATH/YKOATH_Protocol.html
+    After authentification all subsequent requests can be performed until the key application is deselected,
+    as the result of performing another type of request (e.g. U2F) or by unplugging the key from the device.
+    The method is performed asynchronously on a background execution queue.
+ 
+ @param accessKey
+    The access key to authenticate the OATH application.
+ 
+ @param completion
+    The response block which is executed after the request was processed by the key. The completion block
+    will be executed on a background thread. If the intention is to update the UI, dispatch the results
+    on the main thread to avoid an UIKit assertion.
+ 
+ @note
+    This method is thread safe and can be invoked from any thread (main or a background thread).
+ */
+- (void)unlockWithAccessKey:(NSData *)accessKey completion:(YKFOATHSessionGenericCompletionBlock)completion;
+
+/*!
+ @method deriveAccessKey:
+ 
+ @abstract
+    Derives an access key from a password and the device-specific salt.
+    The key is derived by running 1000 rounds of PBKDF2 using the password and salt as inputs, with a 16 byte output.
+ 
+ @param password
+    A user-supplied password, encoded as UTF-8 bytes.
+ 
+ @note
+    This method is thread safe and can be invoked from any thread (main or a background thread).
+ */
+- (NSData *)deriveAccessKey:(NSString *)password;
 
 /*!
  @method calculateResponseForCredentialID:challenge:completion:

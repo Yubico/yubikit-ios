@@ -24,7 +24,7 @@
 
 #import "YKFSelectOATHApplicationAPDU.h"
 #import "YKFOATHSendRemainingAPDU.h"
-#import "YKFOATHSetPasswordAPDU.h"
+#import "YKFOATHSetAccessKeyAPDU.h"
 #import "YKFOATHUnlockAPDU.h"
 
 #import "YKFSessionError+Private.h"
@@ -99,6 +99,12 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
             completion(session, nil);
         }
     }];
+}
+
+- (NSString *)deviceId {
+    NSData *hash = [_cachedSelectApplicationResponse.selectID ykf_SHA256];
+    NSString *deviceId = [hash base64EncodedStringWithOptions: 0];
+    return [[deviceId substringToIndex:16] stringByReplacingOccurrencesOfString:@"=" withString:@""];
 }
 
 -(YKFVersion *)version {
@@ -271,13 +277,46 @@ static const UInt8 YKFOATHRenameAPDUNameTag = 0x71;
 - (void)setPassword:(NSString *)password completion:(YKFOATHSessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(password);
     YKFParameterAssertReturn(completion);
+    if (password.length == 0) {
+        [self deleteAccessKeyWithCompletion:completion];
+    } else {
+        NSData *accessKey = [self deriveAccessKey:password];
+        [self setAccessKey:accessKey completion:completion];
+    }
+}
+
+- (NSData *)deriveAccessKey:(NSString *)password {
+    return [[password dataUsingEncoding:NSUTF8StringEncoding] ykf_deriveOATHKeyWithSalt:self.cachedSelectApplicationResponse.selectID];
+}
+
+- (void)setAccessKey:(NSData *)accessKey completion:(YKFOATHSessionGenericCompletionBlock)completion {
     // Check if the session is valid since we need the cached select application response later
     if (!self.isValid) {
         completion([YKFSessionError errorWithCode:YKFSessionErrorInvalidSessionStateStatusCode]);
         return;
     }
-    // Build the request APDU with the select ID salt
-    YKFOATHSetPasswordAPDU *apdu = [[YKFOATHSetPasswordAPDU alloc] initWithPassword:password salt:self.cachedSelectApplicationResponse.selectID];
+    YKFOATHSetAccessKeyAPDU *apdu = [[YKFOATHSetAccessKeyAPDU alloc] initWithAccessKey:accessKey];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            if (error.code == YKFAPDUErrorCodeAuthenticationRequired) {
+                completion([YKFOATHError errorWithCode:YKFOATHErrorCodeAuthenticationRequired]);
+            } else {
+                completion(error);
+            }
+        } else {
+            completion(nil);
+        }
+    }];
+}
+
+
+- (void)deleteAccessKeyWithCompletion:(YKFOATHSessionGenericCompletionBlock)completion {
+    if (!self.isValid) {
+        completion([YKFSessionError errorWithCode:YKFSessionErrorInvalidSessionStateStatusCode]);
+        return;
+    }
+    NSData *data = [NSData dataWithBytes:(UInt8[]){0x73, 0x00} length:2];
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0x03 p1:0 p2:0 data:data type:YKFAPDUTypeShort];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
             if (error.code == YKFAPDUErrorCodeAuthenticationRequired) {
@@ -298,7 +337,18 @@ static const UInt8 YKFOATHRenameAPDUNameTag = 0x71;
         completion([YKFSessionError errorWithCode:YKFSessionErrorInvalidSessionStateStatusCode]);
         return;
     }
-    YKFOATHUnlockAPDU *apdu = [[YKFOATHUnlockAPDU alloc] initWithPassword:password challenge:self.cachedSelectApplicationResponse.challenge salt:self.cachedSelectApplicationResponse.selectID];
+    NSData *accessKey = [self deriveAccessKey:password];
+    [self unlockWithAccessKey:accessKey completion:completion];
+}
+
+- (void)unlockWithAccessKey:(NSData *)accessKey completion:(YKFOATHSessionGenericCompletionBlock)completion {
+    YKFParameterAssertReturn(accessKey);
+    YKFParameterAssertReturn(completion);
+    if (!self.isValid) {
+        completion([YKFSessionError errorWithCode:YKFSessionErrorInvalidSessionStateStatusCode]);
+        return;
+    }
+    YKFOATHUnlockAPDU *apdu = [[YKFOATHUnlockAPDU alloc] initWithAccessKey:accessKey challenge:self.cachedSelectApplicationResponse.challenge];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
             if (error.code == YKFAPDUErrorCodeWrongData) {
@@ -323,6 +373,7 @@ static const UInt8 YKFOATHRenameAPDUNameTag = 0x71;
         completion(nil);
     }];
 }
+
 
 - (void)calculateResponseForCredentialID:(NSData *)credentialId challenge:(NSData *)challenge completion:(YKFOATHSessionCalculateResponseCompletionBlock)completion {
     YKFParameterAssertReturn(credentialId);
