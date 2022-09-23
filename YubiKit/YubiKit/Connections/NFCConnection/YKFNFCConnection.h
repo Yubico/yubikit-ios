@@ -15,9 +15,6 @@
 #import <Foundation/Foundation.h>
 #import "YKFNFCTagDescription.h"
 #import "YKFNFCOTPSession.h"
-#import "YKFU2FSession.h"
-#import "YKFFIDO2Session.h"
-#import "YKFOATHSession.h"
 #import "YKFConnectionProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN

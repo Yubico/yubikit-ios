@@ -14,6 +14,7 @@
 
 #import <Foundation/Foundation.h>
 #import "YKFSessionProtocol+Private.h"
+#import "YKFU2FSession.h"
 
 @protocol YKFConnectionControllerProtocol;
 

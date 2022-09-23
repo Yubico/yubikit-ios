@@ -20,11 +20,13 @@
 #import "YKFNFCOTPSession+Private.h"
 #import "YKFAccessoryConnection+Private.h"
 #import "YKFNFCConnection+Private.h"
+#import "YKFSmartCardConnection+Private.h"
 
-@interface YubiKitManager()<YKFAccessoryConnectionDelegate, YKFNFCConnectionDelegate>
+@interface YubiKitManager()<YKFAccessoryConnectionDelegate, YKFNFCConnectionDelegate, YKFSmartCardConnectionDelegate>
 
 @property (nonatomic, readwrite) YKFNFCConnection *nfcConnection;
 @property (nonatomic, readwrite) YKFAccessoryConnection *accessoryConnection;
+@property (nonatomic, readwrite) YKFSmartCardConnection *smartCardConnection;
 @property (nonatomic, readwrite) YKFNFCOTPSession *otpSession;
 
 @end
@@ -58,6 +60,10 @@ static YubiKitManager *sharedInstance;
         accessoryConnection.delegate = self;
         self.accessoryConnection = accessoryConnection;
         
+        if (@available(iOS 16.0, *)) {
+            self.smartCardConnection = [[YKFSmartCardConnection alloc] initWithDelegate:self];
+        }
+        
         if (@available(iOS 11.0, *)) {
             self.otpSession = [[YKFNFCOTPSession alloc] initWithTokenParser:nil session:nil];
         }
@@ -69,7 +75,13 @@ static YubiKitManager *sharedInstance;
     _delegate = delegate;
     if (self.accessoryConnection.state == YKFAccessoryConnectionStateOpen) {
         [self.delegate didConnectAccessory:self.accessoryConnection];
-    } else if (self.nfcConnection.state == YKFNFCConnectionStateOpen) {
+    }
+    if (self.smartCardConnection.state == YKFSmartCardConnectionStateOpen) {
+        if ([self.delegate respondsToSelector:@selector(didConnectSmartCard:)]) {
+            [self.delegate didConnectSmartCard:self.smartCardConnection];
+        }
+    }
+    if (self.nfcConnection.state == YKFNFCConnectionStateOpen) {
         [self.delegate didConnectNFC:self.nfcConnection];
     }
 }
@@ -102,6 +114,13 @@ static YubiKitManager *sharedInstance;
     [self.nfcConnection stopWithErrorMessage:errorMessage];
 }
 
+- (void)startSmartCardConnection {
+    [self.smartCardConnection start];
+}
+
+- (void)stopSmartCardConnection {
+    [self.smartCardConnection stop];
+}
 
 - (void)didConnectAccessory:(YKFAccessoryConnection *_Nonnull)connection {
     [self.delegate didConnectAccessory:connection];
@@ -123,6 +142,24 @@ static YubiKitManager *sharedInstance;
 - (void)didFailConnectingNFC:(NSError *_Nonnull)error {
     if ([self.delegate respondsToSelector:@selector(didFailConnectingNFC:)]) {
         [self.delegate didFailConnectingNFC:error];
+    }
+}
+
+- (void)didConnectSmartCard:(YKFSmartCardConnection *_Nonnull)connection {
+    if ([self.delegate respondsToSelector:@selector(didConnectSmartCard:)]) {
+        [self.delegate didConnectSmartCard:connection];
+    }
+}
+
+- (void)didDisconnectSmartCard:(YKFSmartCardConnection *_Nonnull)connection error:(NSError *_Nullable)error {
+    if ([self.delegate respondsToSelector:@selector(didDisconnectSmartCard:error:)]) {
+        [self.delegate didDisconnectSmartCard:connection error:error];
+    }
+}
+
+- (void)didFailConnectingSmartCard:(NSError *_Nonnull)error {
+    if ([self.delegate respondsToSelector:@selector(didFailConnectingSmartCard:)]) {
+        [self.delegate didFailConnectingSmartCard:error];
     }
 }
 

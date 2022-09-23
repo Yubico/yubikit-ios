@@ -62,6 +62,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (class, nonatomic, assign, readonly) BOOL supportsMFIAccessoryKey;
 
+
+/*!
+ @property supportsSmartCardOverUSBC
+ 
+ @abstract
+ Returns YES if the device and the OS version can connect to a YubiKey over USB-C using the TKSmartCard connection.
+ */
+@property (class, nonatomic, assign, readonly) BOOL supportsSmartCardOverUSBC;
+
 @end
 
 /*!

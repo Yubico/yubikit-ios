@@ -24,7 +24,12 @@ extension XCTestCase {
                     YubiKitManager.shared.stopNFCConnection()
                     Thread.sleep(forTimeInterval: 4.0) // Approximate time it takes for the NFC modal to dismiss
                 } else {
-                    YubiKitManager.shared.stopAccessoryConnection()
+                    if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
+                        YubiKitManager.shared.stopAccessoryConnection()
+                    }
+                    if YubiKitDeviceCapabilities.supportsSmartCardOverUSBC {
+                        YubiKitManager.shared.stopSmartCardConnection()
+                    }
                 }
                 connectionExpectation.fulfill();
             }
@@ -33,8 +38,15 @@ extension XCTestCase {
         waitForExpectations(timeout: 30.0) { error in
             // If we get an error then the expectation has timed out and we need to stop all connections
             if error != nil {
-                YubiKitManager.shared.stopAccessoryConnection()
-                YubiKitManager.shared.stopNFCConnection()
+                if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
+                    YubiKitManager.shared.stopAccessoryConnection()
+                }
+                if YubiKitDeviceCapabilities.supportsSmartCardOverUSBC {
+                    YubiKitManager.shared.stopSmartCardConnection()
+                }
+                if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
+                    YubiKitManager.shared.stopNFCConnection()
+                }
                 Thread.sleep(forTimeInterval: 5.0) // In case it was a NFC connection wait for the modal to dismiss
             }
         }

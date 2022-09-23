@@ -16,9 +16,6 @@
 #import "YKFAccessoryDescription.h"
 
 #import "YKFConnectionProtocol.h"
-#import "YKFU2FSession.h"
-#import "YKFFIDO2Session.h"
-#import "YKFOATHSession.h"
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------

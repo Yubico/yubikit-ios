@@ -81,4 +81,25 @@ class SessionTests: XCTestCase {
             }
         }
     }
+    
+    func testInvalidSessionError() throws {
+        runYubiKitTest { connection, completion in
+            connection.oathSession { oathSession, error in
+                connection.managementSession { managementSession, error in
+                    oathSession?.calculateAll(completion: { credentials, error in
+                        if let error = error as? YKFSessionError,
+                            YKFSessionErrorCode(rawValue: UInt(error.code)) == .invalidSessionStateStatusCode {
+                            print("✅ Got expected invalid session error")
+                            XCTAssert(true)
+                        } else if let error = error {
+                            XCTFail("🔴 Expected invalid session status but got: \(error)")
+                        } else {
+                            XCTFail("🔴 Expected error but got nil")
+                        }
+                        completion()
+                    })
+                }
+            }
+        }
+    }
 }
