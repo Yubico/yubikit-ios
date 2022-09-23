@@ -1,5 +1,9 @@
 # YubiKit Changelog
 
+## 4.3.0
+
+- Added USC-C support on iPads running iPadOS 16 using TKSmartCard.
+
 ## 4.2.0
 
 - Fixed calculation of non-truncated HMAC signatures in OATH.

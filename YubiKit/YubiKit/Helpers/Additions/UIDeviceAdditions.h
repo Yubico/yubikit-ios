@@ -42,6 +42,9 @@ typedef NS_ENUM(NSUInteger, YKFDeviceModel) {
     YKFDeviceModelIPhoneXR,
     YKFDeviceModelIPhone11,
     YKFDeviceModelIPhoneSE2,
+    YKFDeviceModelIPhone12,
+    YKFDeviceModelIPhone13,
+    YKFDeviceModelIPhoneSE3,
 
     
     // iPad models
@@ -60,11 +63,15 @@ typedef NS_ENUM(NSUInteger, YKFDeviceModel) {
     YKFDeviceModelIPad2017,
     YKFDeviceModelIPadPro2,
     YKFDeviceModelIPad6,
+    YKFDeviceModelIPad9,
     YKFDeviceModelIPadPro3,
     YKFDeviceModelIPadMini5,
+    YKFDeviceModelIPadMini6,
     YKFDeviceModelIPadAir3,
     YKFDeviceModelIPadPro4,
     YKFDeviceModelIPadAir4,
+    YKFDeviceModelIPadPro5,
+    YKFDeviceModelIPadAir5,
     
     // iPod models
     
