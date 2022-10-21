@@ -16,7 +16,7 @@ static NSString* const YKFChallengeResponseEmptyResponseDescription = @"Response
 
 static NSDictionary *errorMap = nil;
 
-+ (YKFSessionError *)errorWithCode:(NSUInteger)code {
++ (instancetype)errorWithCode:(NSUInteger)code {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [YKFChallengeResponseError buildErrorMap];
@@ -26,7 +26,7 @@ static NSDictionary *errorMap = nil;
     if (!errorDescription) {
         return [super errorWithCode:code];
     }
-    return [[YKFSessionError alloc] initWithCode:code message:errorDescription];
+    return [[self alloc] initWithCode:code message:errorDescription];
 }
 
 + (void)buildErrorMap {

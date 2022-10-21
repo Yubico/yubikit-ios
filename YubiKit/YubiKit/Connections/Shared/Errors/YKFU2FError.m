@@ -22,7 +22,7 @@ static NSString* const YKFU2FErrorU2FSigningUnavailableDescription = @"A sign op
 
 static NSDictionary *errorMap = nil;
 
-+ (YKFSessionError *)errorWithCode:(NSUInteger)code {
++ (instancetype)errorWithCode:(NSUInteger)code {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [YKFU2FError buildErrorMap];
@@ -32,7 +32,7 @@ static NSDictionary *errorMap = nil;
     if (!errorDescription) {
         return [super errorWithCode:code];
     }
-    return [[YKFSessionError alloc] initWithCode:code message:errorDescription];
+    return [[self alloc] initWithCode:code message:errorDescription];
 }
 
 + (void)buildErrorMap {

@@ -32,7 +32,7 @@ static NSString* const YKFSessionErrorInvalidSessionStateDescription = @"Invalid
 
 static NSDictionary *errorMap = nil;
 
-+ (YKFSessionError *)errorWithCode:(NSUInteger)code {
++ (instancetype)errorWithCode:(NSUInteger)code {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [YKFSessionError buildErrorMap];
@@ -43,7 +43,7 @@ static NSDictionary *errorMap = nil;
         errorDescription = [[NSString alloc] initWithFormat:@"Status error 0x%2lX returned by the key.", (unsigned long)code];
     }
     
-    return [[YKFSessionError alloc] initWithCode:code message:errorDescription];
+    return [[self alloc] initWithCode:code message:errorDescription];
 }
 
 + (void)buildErrorMap {
