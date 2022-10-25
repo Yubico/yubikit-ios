@@ -3,6 +3,13 @@
 ## 4.3.0
 
 - Added USC-C support on iPads running iPadOS 16 using TKSmartCard.
+- Added support for using access key for YKFOATHSession.
+- Improved OATH error handling when saving a new account.
+- Colon character not allowed in OATH issuer anymore.
+- More validation options when creating a YKFOATHCredentialTemplate.
+- didFailConnectingNFC will no longer be called if the connection was closed by calling stopNFCConection().
+- Fixes issue where wrong error type was returned in various parts of the SDK.
+- YKFAccessoryConnection.accessoryDescription is no longer marked as deprecated.
 
 ## 4.2.0
 
