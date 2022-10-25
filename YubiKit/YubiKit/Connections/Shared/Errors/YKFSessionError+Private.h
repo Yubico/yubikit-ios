@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFSessionError()
 
-+ (YKFSessionError *)errorWithCode:(NSUInteger)code;
++ (instancetype)errorWithCode:(NSUInteger)code;
 - (instancetype)initWithCode:(NSInteger)code message:(NSString *)message NS_DESIGNATED_INITIALIZER;
 
 @end

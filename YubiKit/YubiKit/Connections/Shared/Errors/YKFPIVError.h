@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface YKFPIVError: YKFSessionError
 
-+ (YKFSessionError *)errorUnpackingTLVExpected:(NSUInteger)expected got:(NSUInteger)got;
++ (instancetype)errorUnpackingTLVExpected:(NSUInteger)expected got:(NSUInteger)got;
 
 @end
 

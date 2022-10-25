@@ -67,7 +67,7 @@ static NSString* const YKFFIDO2ErrorUP_REQUIRED = @"User presence is required fo
 
 static NSDictionary *errorMap = nil;
 
-+ (YKFSessionError *)errorWithCode:(NSUInteger)code {
++ (instancetype)errorWithCode:(NSUInteger)code {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [YKFFIDO2Error buildErrorMap];
@@ -77,7 +77,7 @@ static NSDictionary *errorMap = nil;
     if (!errorDescription) {
         return [super errorWithCode:code];
     }
-    return [[YKFSessionError alloc] initWithCode:code message:errorDescription];
+    return [[self alloc] initWithCode:code message:errorDescription];
 }
 
 + (void)buildErrorMap {

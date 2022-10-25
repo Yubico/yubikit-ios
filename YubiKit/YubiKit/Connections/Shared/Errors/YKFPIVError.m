@@ -17,7 +17,7 @@
 
 @implementation YKFPIVError
 
-+ (YKFSessionError *)errorWithCode:(NSUInteger)code {
++ (instancetype)errorWithCode:(NSUInteger)code {
     NSString *message;
     switch (code) {
         case YKFPIVErrorCodeBadResponse:
@@ -27,11 +27,11 @@
             message = @"Unknown error";
             break;
     }
-    return [[YKFPIVError alloc] initWithCode:code message:message];
+    return [[self alloc] initWithCode:code message:message];
 }
     
-+ (YKFSessionError *)errorUnpackingTLVExpected:(NSUInteger)expected got:(NSUInteger)got {
-    return [[YKFSessionError alloc] initWithCode:YKFPIVErrorCodeBadResponse message:[[NSString alloc] initWithFormat:@"Exptected tag: %02lx, got %02lx", (unsigned long)expected, (unsigned long)got]];
++ (instancetype)errorUnpackingTLVExpected:(NSUInteger)expected got:(NSUInteger)got {
+    return [[self alloc] initWithCode:YKFPIVErrorCodeBadResponse message:[[NSString alloc] initWithFormat:@"Exptected tag: %02lx, got %02lx", (unsigned long)expected, (unsigned long)got]];
 }
 
 @end
