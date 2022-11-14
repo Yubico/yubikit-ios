@@ -102,6 +102,10 @@ NSString* const YKFSmartCardConnectionErrorDomain = @"com.yubico.smart-card-conn
 }
 
 - (void)stop {
+    if (self.isActive == NO) {
+        return;
+    }
+    
     self.isActive = NO;
     [[TKSmartCardSlotManager defaultManager] removeObserver:self forKeyPath:@"slotNames"];
     [self.connectionController endSession];
