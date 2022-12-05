@@ -121,7 +121,7 @@ To support YubiKeys connected via the USB-C port on a device running iOS 16 or h
 
 To add support for NFC YubiKeys in your application, follow these steps:
 
-- Add a `NEW` entitlement for reading NFC specific tags, available since iOS 13. This new entitlement is added automatically by Xcode when enabling the **Near Field Communication Tag Reading** capability in the target **Signing & Capabilities**. After enabling the capability the *.entitelments* files needs to contain the `TAG` formats:
+- Add a `NEW` entitlement for reading NFC specific tags, available since iOS 13. This new entitlement is added automatically by Xcode when enabling the **Near Field Communication Tag Reading** capability in the target **Signing & Capabilities**. After enabling the capability the *.entitlements* file needs to contain the `com.apple.developer.nfc.readersession.formats` entitlement:
 
 ```xml
 ...
