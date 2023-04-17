@@ -433,7 +433,11 @@ int maxPinAttempts = 3;
             NSData *certificateData = [[YKFTLVRecord sequenceOfRecordsFromData:objectData] ykfTLVRecordWithTag:YKFPIVTagCertificate].value;
             CFDataRef cfCertDataRef =  (__bridge CFDataRef)certificateData;
             SecCertificateRef certificate = SecCertificateCreateWithData(nil, cfCertDataRef);
-            completion(certificate, nil);
+            if (certificate != nil) {
+                completion(certificate, nil);
+            } else {
+                completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeDataParseError userInfo:@{NSLocalizedDescriptionKey: @"Malformed certificate."}]);
+            }
         }
     }];
 }
