@@ -436,7 +436,7 @@ int maxPinAttempts = 3;
             if (certificate != nil) {
                 completion(certificate, nil);
             } else {
-                completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeDataParseError userInfo:@{NSLocalizedDescriptionKey: @"Malformed certificate."}]);
+                completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeDataParseError userInfo:@{NSLocalizedDescriptionKey: @"Failed to parse certificate."}]);
             }
         }
     }];
