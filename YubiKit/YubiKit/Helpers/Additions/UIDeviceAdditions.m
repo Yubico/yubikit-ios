@@ -98,6 +98,9 @@ static YKFDeviceModel ykf_deviceModelInternal = YKFDeviceModelUnknown;
     if ([self ykf_deviceName:deviceName isInList:@[@"iPhone14,6"]]) {
         return YKFDeviceModelIPhoneSE3;
     }
+    if ([self ykf_deviceName:deviceName isInList:@[@"iPhone14,7", @"iPhone14,8", @"iPhone15,2", @"iPhone15,3"]]) {
+        return YKFDeviceModelIPhone14;
+    }
 
     // iPad models
 
@@ -169,6 +172,12 @@ static YKFDeviceModel ykf_deviceModelInternal = YKFDeviceModelUnknown;
     }
     if ([self ykf_deviceName:deviceName isInList:@[@"iPad13,16", @"iPad13,17"]]) {
         return YKFDeviceModelIPadAir5;
+    }
+    if ([self ykf_deviceName:deviceName isInList:@[@"iPad13,18", @"iPad13,19"]]) {
+        return YKFDeviceModelIPad10;
+    }
+    if ([self ykf_deviceName:deviceName isInList:@[@"iPad14,3", @"iPad14,4", @"iPad14,5", @"iPad14,6"]]) {
+        return YKFDeviceModelIPadPro6;
     }
 
     // iPod models
