@@ -362,6 +362,7 @@ class PIVTests: XCTestCase {
                     session.getCertificateIn(.authentication) { cert, error in
                         guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         print("✅ Read certificate")
+                        completion()
                     }
                 }
             }
@@ -377,6 +378,7 @@ class PIVTests: XCTestCase {
                     session.getCertificateIn(.authentication) { cert, error in
                         guard error == nil else { XCTFail("\(error!)"); completion(); return }
                         print("✅ Read compressed certificate")
+                        completion()
                     }
                 }
             }
