@@ -231,6 +231,8 @@
 		B4451ECD2757C4B0002690BB /* YKFChallengeResponseError.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8152341023BAE9D2004D4788 /* YKFChallengeResponseError.h */; };
 		B4451EEF2758C31F002690BB /* YKFManagementDeviceInfo.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51F8E3C2263985560010686B /* YKFManagementDeviceInfo.h */; };
 		B4712B6E28DC8413009B270D /* YKFOATHSetAccessKeyAPDU.m in Sources */ = {isa = PBXBuildFile; fileRef = B4712B6D28DC8413009B270D /* YKFOATHSetAccessKeyAPDU.m */; };
+		B4C9BBCB2A05547400FFDFD6 /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = B4C9BBC92A05547400FFDFD6 /* NSData+GZIP.m */; };
+		B4C9BBCC2A05547400FFDFD6 /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = B4C9BBC92A05547400FFDFD6 /* NSData+GZIP.m */; };
 		B4CFA9BE28AA4D0B0080813A /* YKFSmartCardConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = B4CFA9BD28AA4D0B0080813A /* YKFSmartCardConnection.m */; };
 		B4CFA9C428ABB9BB0080813A /* YKFSmartCardConnectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = B4CFA9C328ABB9BB0080813A /* YKFSmartCardConnectionController.m */; };
 /* End PBXBuildFile section */
@@ -656,6 +658,8 @@
 		B41B6F9B27A97DB40062C377 /* YKFTLVRecordTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFTLVRecordTests.m; sourceTree = "<group>"; };
 		B4712B6C28DC8412009B270D /* YKFOATHSetAccessKeyAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFOATHSetAccessKeyAPDU.h; sourceTree = "<group>"; };
 		B4712B6D28DC8413009B270D /* YKFOATHSetAccessKeyAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFOATHSetAccessKeyAPDU.m; sourceTree = "<group>"; };
+		B4C9BBC92A05547400FFDFD6 /* NSData+GZIP.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+GZIP.m"; sourceTree = "<group>"; };
+		B4C9BBCA2A05547400FFDFD6 /* NSData+GZIP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+GZIP.h"; sourceTree = "<group>"; };
 		B4CFA9BC28AA41910080813A /* YKFSmartCardConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSmartCardConnection.h; sourceTree = "<group>"; };
 		B4CFA9BD28AA4D0B0080813A /* YKFSmartCardConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFSmartCardConnection.m; sourceTree = "<group>"; };
 		B4CFA9BF28AA95B70080813A /* YKFSmartCardConnection+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFSmartCardConnection+Private.h"; sourceTree = "<group>"; };
@@ -885,6 +889,8 @@
 		955BCC0B215A999400C2EA2B /* ThirdParties */ = {
 			isa = PBXGroup;
 			children = (
+				B4C9BBCA2A05547400FFDFD6 /* NSData+GZIP.h */,
+				B4C9BBC92A05547400FFDFD6 /* NSData+GZIP.m */,
 				955BCC0D215A9A4C00C2EA2B /* MF_Base32Additions.h */,
 				955BCC0E215A9A4C00C2EA2B /* MF_Base32Additions.m */,
 			);
@@ -1480,6 +1486,7 @@
 				B41B6F9C27A97DB40062C377 /* YKFTLVRecordTests.m in Sources */,
 				9529CBC1214927D80041D2F8 /* YKFU2FServiceTests.m in Sources */,
 				957D869921B825B4004ABF86 /* YKFSmartCardInterfaceTests.m in Sources */,
+				B4C9BBCC2A05547400FFDFD6 /* NSData+GZIP.m in Sources */,
 				95EF75C3213FEF0500059C79 /* YKFTestCase.m in Sources */,
 				95EF75BE213FE9F200059C79 /* YKFAccessoryConnectionControllerTests.m in Sources */,
 				950C70092298095F00E48458 /* YubiKitDeviceCapabilitiesTests.m in Sources */,
@@ -1625,6 +1632,7 @@
 				95C2963D2062634C0091318B /* YKFViewController.m in Sources */,
 				956DB66F20639C2B006B1738 /* YKFQRCodeScanOverlayView.m in Sources */,
 				952CB9EC220D835F004A7624 /* YKFFIDO2PinAuthKey.m in Sources */,
+				B4C9BBCB2A05547400FFDFD6 /* NSData+GZIP.m in Sources */,
 				95DD40A62099A8A400363FEE /* YKFU2FSession.m in Sources */,
 				95C296412062653E0091318B /* YKFOTPTokenParser.m in Sources */,
 				95C29650206295A00091318B /* YubiKitExternalLocalization.m in Sources */,

@@ -33,6 +33,7 @@
 #import "YKFPIVPadding+Private.h"
 #import "TKTLVRecordAdditions+Private.h"
 #import "YKFTLVRecord.h"
+#import "NSData+GZIP.h"
 
 NSString* const YKFPIVErrorDomain = @"com.yubico.piv";
 
@@ -400,10 +401,18 @@ int maxPinAttempts = 3;
 }
 
 - (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionGenericCompletionBlock)completion {
+    [self putCertificate:certificate inSlot:slot compressed:NO completion:completion];
+}
+
+- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot compressed:(bool)compressed completion:(YKFPIVSessionGenericCompletionBlock)completion {
     NSMutableData *mutableData = [NSMutableData data];
     NSData *certData = (__bridge NSData *)SecCertificateCopyData(certificate);
+    if (compressed) {
+        certData = [certData gzippedData];
+    }
     [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagCertificate value:certData].data];
-    [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagCertificateInfo value:certData].data];
+    UInt8 isCompressed = compressed ? 1 : 0;
+    [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagCertificateInfo value:[NSData dataWithBytes:&isCompressed length:1]].data];
     [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagLRC value:[NSData data]].data];
     [self putObject:mutableData objectId:[self objectIdForSlot:slot] completion:^(NSError * _Nullable error) {
         completion(error);
@@ -430,7 +439,15 @@ int maxPinAttempts = 3;
         } else {
             NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:data];
             NSData *objectData = [records ykfTLVRecordWithTag:YKFPIVTagObjectData].value;
-            NSData *certificateData = [[YKFTLVRecord sequenceOfRecordsFromData:objectData] ykfTLVRecordWithTag:YKFPIVTagCertificate].value;
+            NSArray<YKFTLVRecord*> *subRecords = [YKFTLVRecord sequenceOfRecordsFromData:objectData];
+            
+            NSData *certificateData = [subRecords ykfTLVRecordWithTag:YKFPIVTagCertificate].value;
+            NSData *certificateInfo = [subRecords ykfTLVRecordWithTag:YKFPIVTagCertificateInfo].value;
+
+            if (certificateInfo && certificateInfo.length > 0 && ((UInt8 *)(certificateInfo.bytes))[0] == 1 && [certificateData isGzippedData]) {
+                certificateData = [certificateData gunzippedData];
+            }
+            
             CFDataRef cfCertDataRef =  (__bridge CFDataRef)certificateData;
             SecCertificateRef certificate = SecCertificateCreateWithData(nil, cfCertDataRef);
             if (certificate != nil) {
