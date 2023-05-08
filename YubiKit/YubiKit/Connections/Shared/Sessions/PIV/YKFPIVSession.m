@@ -401,17 +401,17 @@ int maxPinAttempts = 3;
 }
 
 - (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionGenericCompletionBlock)completion {
-    [self putCertificate:certificate inSlot:slot compressed:NO completion:completion];
+    [self putCertificate:certificate inSlot:slot compress:NO completion:completion];
 }
 
-- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot compressed:(bool)compressed completion:(YKFPIVSessionGenericCompletionBlock)completion {
+- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot compress:(bool)compress completion:(YKFPIVSessionGenericCompletionBlock)completion {
     NSMutableData *mutableData = [NSMutableData data];
     NSData *certData = (__bridge NSData *)SecCertificateCopyData(certificate);
-    if (compressed) {
+    if (compress) {
         certData = [certData gzippedData];
     }
     [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagCertificate value:certData].data];
-    UInt8 isCompressed = compressed ? 1 : 0;
+    UInt8 isCompressed = compress ? 1 : 0;
     [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagCertificateInfo value:[NSData dataWithBytes:&isCompressed length:1]].data];
     [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagLRC value:[NSData data]].data];
     [self putObject:mutableData objectId:[self objectIdForSlot:slot] completion:^(NSError * _Nullable error) {

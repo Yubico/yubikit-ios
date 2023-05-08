@@ -281,7 +281,7 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 /// @discussion This method requires authentication.
 /// @param certificate Certificate to write.
 /// @param slot The slot to write the certificate to.
-/// @param compressed If true the certificate will be compressed before being stored on the YubiKey
+/// @param compress If true the certificate will be compressed before being stored on the YubiKey
 /// @param completion The completion handler that gets called once the YubiKey has finished processing the request.
 ///                   This handler is executed on a background queue.
 ///  @note YubiKey FIPS does not allow RSA1024 nor PinProtocol.NEVER.
@@ -290,8 +290,8 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 ///        PinPolicy or TouchPolicy other than default require support for usage policy, available on YubiKey 4 or later.
 ///        TouchPolicy.CACHED requires support for touch cached, available on YubiKey 4.3 or later.
 ///        This method is thread safe and can be invoked from any thread (main or a background thread).
-- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot compressed:(bool)compressed completion:(YKFPIVSessionGenericCompletionBlock)completion
-        NS_SWIFT_NAME(putCertificate(_:inSlot:compressed:completion:));
+- (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot compress:(bool)compress completion:(YKFPIVSessionGenericCompletionBlock)completion
+        NS_SWIFT_NAME(putCertificate(_:inSlot:compress:completion:));
 
 /// @abstract Reads the X.509 certificate stored in the specified slot on the YubiKey.
 /// @param slot The slot where the certificate is stored.
