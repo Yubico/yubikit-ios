@@ -369,6 +369,22 @@ class PIVTests: XCTestCase {
         }
     }
     
+    func testPutCompressedAndReadCertificate() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.putCertificate(self.certificate, inSlot: .authentication, compress: true) { error in
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
+                    print("✅ Put compressed certificate")
+                    session.getCertificateIn(.authentication) { cert, error in
+                        guard error == nil else { XCTFail("\(error!)"); completion(); return }
+                        print("✅ Read compressed certificate")
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+    
     func testPutAndDeleteCertificate() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
