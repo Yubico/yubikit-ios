@@ -104,7 +104,9 @@
         self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir4 ||
         self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro5 ||
         self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir5 ||
-        self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadMini6) {
+        self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadMini6 ||
+        self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPad10 ||
+        self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro6) {
         return NO;
     }
     if (@available(iOS 10, *)) {
@@ -128,7 +130,9 @@
             self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro4 ||
             self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro5 ||
             self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir4 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir5) {
+            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir5 ||
+            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPad10 ||
+            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro6) {
             return YES;
         }
     }
@@ -158,9 +162,10 @@
             deviceModel == YKFDeviceModelIPhoneXS || deviceModel == YKFDeviceModelIPhoneXSMax || deviceModel == YKFDeviceModelIPhoneXR ||
             deviceModel == YKFDeviceModelIPhone11 ||
             deviceModel == YKFDeviceModelIPhoneSE2 ||
+            deviceModel == YKFDeviceModelIPhoneSE3 ||
             deviceModel == YKFDeviceModelIPhone12 ||
             deviceModel == YKFDeviceModelIPhone13 ||
-            deviceModel == YKFDeviceModelIPhoneSE3 ||
+            deviceModel == YKFDeviceModelIPhone14 ||
             deviceModel == YKFDeviceModelUnknown; // A newer device which is not in the list yet
     });
     
