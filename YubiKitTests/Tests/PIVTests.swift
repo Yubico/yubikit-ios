@@ -377,6 +377,7 @@ class PIVTests: XCTestCase {
                     print("✅ Put compressed certificate")
                     session.getCertificateIn(.authentication) { cert, error in
                         guard error == nil else { XCTFail("\(error!)"); completion(); return }
+                        XCTAssertEqual(self.certificate, cert, "Original and decompressed certificate does not match.")
                         print("✅ Read compressed certificate")
                         completion()
                     }
