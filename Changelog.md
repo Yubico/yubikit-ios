@@ -1,5 +1,11 @@
 # YubiKit Changelog
 
+## 4.4.0
+
+- Added support for storing and reading compressed PIV certificates.
+- Fixes bug in error handling in getCertificateInSlot() in the YKFPIVSession.
+- Fixed missing iOS devices.
+
 ## 4.3.0
 
 - Added USC-C support on iPads running iPadOS 16 using TKSmartCard.
