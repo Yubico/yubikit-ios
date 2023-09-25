@@ -166,6 +166,7 @@
             deviceModel == YKFDeviceModelIPhone12 ||
             deviceModel == YKFDeviceModelIPhone13 ||
             deviceModel == YKFDeviceModelIPhone14 ||
+            deviceModel == YKFDeviceModelIPhone15 ||
             deviceModel == YKFDeviceModelUnknown; // A newer device which is not in the list yet
     });
     
