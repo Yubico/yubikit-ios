@@ -132,7 +132,8 @@
             self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir4 ||
             self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir5 ||
             self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPad10 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro6) {
+            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro6 ||
+            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPhone15) {
             return YES;
         }
     }
