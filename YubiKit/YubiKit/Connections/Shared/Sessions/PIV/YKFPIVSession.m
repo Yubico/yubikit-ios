@@ -154,6 +154,7 @@ int maxPinAttempts = 3;
     NSData *payload = [YKFPIVPadding padData:message keyType:keyType algorithm:algorithm error:&padError];
     if (padError != nil) {
         completion(nil, padError);
+        return;
     }
     return [self usePrivateKeyInSlot:slot type:keyType message:payload exponentiation:false completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         completion(data, error);
