@@ -16,7 +16,7 @@
 
 @implementation NSString(NSString_OATH)
 
-- (void)ykf_OATHKeyExtractForType:(YKFOATHCredentialType)type period:(NSUInteger *)period issuer:(NSString **)issuer account:(NSString **)account label:(NSString **)label {
+- (void)ykf_OATHKeyExtractForType:(YKFOATHCredentialType)type period:(NSUInteger *)period issuer:(NSString **)issuer account:(NSString **)account {
     
     if (type == YKFOATHCredentialTypeTOTP) {
         NSError *error = NULL;
@@ -42,6 +42,7 @@
                 *account = [self substringWithRange:accountRange];
             }
         } else {
+            //Invalid id, use it directly as name.
             *account = self;
         }
     } else {

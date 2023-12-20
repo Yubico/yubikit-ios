@@ -17,6 +17,6 @@
 
 @interface NSString(NSString_OATH)
 
-- (void)ykf_OATHKeyExtractForType:(YKFOATHCredentialType)type period:(NSUInteger *)period issuer:(NSString **)issuer account:(NSString **)account label:(NSString **)label;
+- (void)ykf_OATHKeyExtractForType:(YKFOATHCredentialType)type period:(NSUInteger *)period issuer:(NSString **)issuer account:(NSString **)account;
 
 @end
