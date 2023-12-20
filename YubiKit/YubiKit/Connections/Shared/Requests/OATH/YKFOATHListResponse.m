@@ -100,7 +100,7 @@ static const int YKFOATHListResponseNameTag = 0x72;
         NSString *account = nil;
         NSString *label = nil;
         
-        [keyString ykf_OATHKeyExtractPeriod:&period issuer:&issuer account:&account label:&label];
+        [keyString ykf_OATHKeyExtractForType:credential.type period:&period issuer:&issuer account:&account label:&label];
         credential.period = period;
         credential.issuer = issuer;
         credential.accountName = account;

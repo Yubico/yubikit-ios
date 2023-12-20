@@ -103,7 +103,7 @@ static NSUInteger const YKFOATHCredentialCalculateResultDefaultPeriod = 30; // s
             NSString *account = nil;
             NSString *label = nil;
             
-            [credentialKey ykf_OATHKeyExtractPeriod:&period issuer:&issuer account:&account label:&label];
+            [credentialKey ykf_OATHKeyExtractForType:credential.type period:&period issuer:&issuer account:&account label:&label];
             
             credential.issuer = issuer;
             credential.accountName = account;
