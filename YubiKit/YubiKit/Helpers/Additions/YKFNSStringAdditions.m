@@ -16,37 +16,43 @@
 
 @implementation NSString(NSString_OATH)
 
-- (void)ykf_OATHKeyExtractPeriod:(NSUInteger *)period issuer:(NSString **)issuer account:(NSString **)account label:(NSString **)label {
-    NSString *key = self;
-    NSMutableArray *componentsArray;
-
-    // TOTP key with format [period]/[label]
-    if ([key containsString:@"/"]) {
-        NSArray *stringComponents = [key componentsSeparatedByString:@"/"];
-        if (stringComponents.count > 1) {
-            NSUInteger interval = [stringComponents[0] intValue];
-            if (interval) {
-                *period = interval;
-
-                componentsArray = [NSMutableArray arrayWithArray: stringComponents];
-                [componentsArray removeObjectAtIndex: 0];
-                key = [componentsArray componentsJoinedByString: @"/"];
+- (void)ykf_OATHKeyExtractForType:(YKFOATHCredentialType)type period:(NSUInteger *)period issuer:(NSString **)issuer account:(NSString **)account {
+    
+    if (type == YKFOATHCredentialTypeTOTP) {
+        NSError *error = NULL;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^((\\d+)/)?(([^:]+):)?(.+)$"
+                                                                               options:NSRegularExpressionCaseInsensitive
+                                                                                 error:&error];
+        if (error != nil) { [NSException raise:@"Malformed regex" format:@"Built in regex for parsing yubikey keys is malformed."]; }
+        
+        NSTextCheckingResult *match = [regex matchesInString:self
+                                                       options:0
+                                                         range:NSMakeRange(0, [self length])].firstObject;
+        if (match != nil) {
+            NSRange periodRange = [match rangeAtIndex:2];
+            if (periodRange.location != NSNotFound) {
+                *period = [self substringWithRange:periodRange].intValue;
             }
+            NSRange issuerRange = [match rangeAtIndex:4];
+            if (issuerRange.location != NSNotFound) {
+                *issuer = [self substringWithRange:issuerRange];
+            }
+            NSRange accountRange = [match rangeAtIndex:5];
+            if (accountRange.location != NSNotFound) {
+                *account = [self substringWithRange:accountRange];
+            }
+        } else {
+            //Invalid id, use it directly as name.
+            *account = self;
         }
-    }
-    
-    *label = key;
-    
-    // Parse the label as [issuer]:[account]
-    if ([key containsString: @":"]) {
-        NSArray *labelComponents = [key componentsSeparatedByString:@":"];
-        *issuer = labelComponents.firstObject;
-
-        componentsArray = [NSMutableArray arrayWithArray: labelComponents];
-        [componentsArray removeObjectAtIndex:0];
-        *account = [componentsArray componentsJoinedByString: @":"];
     } else {
-        *account = key;
+        if ([self containsString: @":"]) {
+            NSArray<NSString*> *parts = [self componentsSeparatedByString:@":"];
+            *issuer = parts[0];
+            *account = parts[1];
+        } else {
+            *account = self;
+        }
     }
 }
 

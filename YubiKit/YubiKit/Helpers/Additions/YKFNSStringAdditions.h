@@ -13,9 +13,10 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
+#import "YKFOATHCredential.h"
 
 @interface NSString(NSString_OATH)
 
-- (void)ykf_OATHKeyExtractPeriod:(NSUInteger *)period issuer:(NSString **)issuer account:(NSString **)account label:(NSString **)label;
+- (void)ykf_OATHKeyExtractForType:(YKFOATHCredentialType)type period:(NSUInteger *)period issuer:(NSString **)issuer account:(NSString **)account;
 
 @end

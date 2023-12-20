@@ -21,11 +21,9 @@
     NSUInteger period = 0;
     NSString *issuer = nil;
     NSString *account = nil;
-    NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
     XCTAssertEqual(period, 60, @"");
-    XCTAssertTrue([label isEqualToString:@"Yubico:account@gmail.com"], @"");
 }
 
 - (void)test_WhenKeyContainsSlashAndPeriodNotExists_PeriodIsZero {
@@ -34,11 +32,9 @@
     NSUInteger period = 0;
     NSString *issuer = nil;
     NSString *account = nil;
-    NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
     XCTAssertEqual(period, 0, @"");
-    XCTAssertTrue([label isEqualToString:@"/Yubico:account@gmail.com"], @"");
 }
 
 - (void)test_WhenKeyContainsSlashInTheMiddleOfText_PeriodIsZero {
@@ -47,11 +43,9 @@
     NSUInteger period = 0;
     NSString *issuer = nil;
     NSString *account = nil;
-    NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
     XCTAssertEqual(period, 0, @"");
-    XCTAssertTrue([label isEqualToString:@"Yubico/demo:account@gmail.com"], @"");
 }
 
 - (void)test_WhenKeyContainsSlashAndPeriodExistsAndIssuerNotExists_PeriodIsParsedAndIssuerIsNilAndAccountIsParsed {
@@ -62,10 +56,9 @@
     NSString *account = nil;
     NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
     XCTAssertNil(issuer, @"Issuer parsed as nil");
     XCTAssertNotNil(account, @"Account is parsed");
-    XCTAssertTrue([label isEqualToString:@"account@gmail.com"], @"");
     XCTAssertTrue([account isEqualToString:@"account@gmail.com"], @"");
     XCTAssertEqual(period, 60, @"");
 }
@@ -76,12 +69,10 @@
     NSUInteger period = 0;
     NSString *issuer = nil;
     NSString *account = nil;
-    NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
     XCTAssertNil(issuer, @"Issuer parsed as nil");
     XCTAssertNotNil(account, @"Account is parsed");
-    XCTAssertTrue([label isEqualToString:@"account@gmail.com"], @"");
     XCTAssertTrue([account isEqualToString:@"account@gmail.com"], @"");
     XCTAssertEqual(period, 0, @"");
 }
@@ -92,14 +83,11 @@
     NSUInteger period = 0;
     NSString *issuer = nil;
     NSString *account = nil;
-    NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
-    XCTAssertNotNil(issuer, @"Issuer is parsed");
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
+    XCTAssertNil(issuer, @"Issuer is not nil");
     XCTAssertNotNil(account, @"Account is parsed");
-    XCTAssertTrue([label isEqualToString:@":account@gmail.com"], @"");
-    XCTAssertTrue([issuer isEqualToString:@""], @"");
-    XCTAssertTrue([account isEqualToString:@"account@gmail.com"], @"");
+    XCTAssertTrue([account isEqualToString:@":account@gmail.com"], @"");
     XCTAssertEqual(period, 0, @"");
 }
 
@@ -109,12 +97,10 @@
     NSUInteger period = 0;
     NSString *issuer = nil;
     NSString *account = nil;
-    NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
     XCTAssertNotNil(issuer, @"Issuer is parsed");
     XCTAssertNotNil(account, @"Account is parsed");
-    XCTAssertTrue([label isEqualToString:@"Yubico:demo:account@gmail.com"], @"");
     XCTAssertTrue([issuer isEqualToString:@"Yubico"], @"");
     XCTAssertTrue([account isEqualToString:@"demo:account@gmail.com"], @"");
     XCTAssertEqual(period, 0, @"");
@@ -126,12 +112,10 @@
     NSUInteger period = 0;
     NSString *issuer = nil;
     NSString *account = nil;
-    NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
     XCTAssertNotNil(issuer, @"Issuer is parsed");
     XCTAssertNotNil(account, @"Account is parsed");
-    XCTAssertTrue([label isEqualToString:@"Yubico:demo:account@gmail.com"], @"");
     XCTAssertTrue([issuer isEqualToString:@"Yubico"], @"");
     XCTAssertTrue([account isEqualToString:@"demo:account@gmail.com"], @"");
     XCTAssertEqual(period, 15, @"");
@@ -143,12 +127,10 @@
     NSUInteger period = 0;
     NSString *issuer = nil;
     NSString *account = nil;
-    NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
     XCTAssertNotNil(issuer, @"Issuer is parsed");
     XCTAssertNotNil(account, @"Account is parsed");
-    XCTAssertTrue([label isEqualToString:@"YubicoDemo:account/test"], @"");
     XCTAssertTrue([issuer isEqualToString:@"YubicoDemo"], @"");
     XCTAssertTrue([account isEqualToString:@"account/test"], @"");
     XCTAssertEqual(period, 0, @"");
@@ -160,12 +142,10 @@
     NSUInteger period = 0;
     NSString *issuer = nil;
     NSString *account = nil;
-    NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
     XCTAssertNotNil(issuer, @"Issuer is parsed");
     XCTAssertNotNil(account, @"Account is parsed");
-    XCTAssertTrue([label isEqualToString:@"Yubico/demo:account/test"], @"");
     XCTAssertTrue([issuer isEqualToString:@"Yubico/demo"], @"");
     XCTAssertTrue([account isEqualToString:@"account/test"], @"");
     XCTAssertEqual(period, 0, @"");
@@ -177,12 +157,10 @@
     NSUInteger period = 0;
     NSString *issuer = nil;
     NSString *account = nil;
-    NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
     XCTAssertNotNil(issuer, @"Issuer is parsed");
     XCTAssertNotNil(account, @"Account is parsed");
-    XCTAssertTrue([label isEqualToString:@"YubicoDemo:account/test"], @"");
     XCTAssertTrue([issuer isEqualToString:@"YubicoDemo"], @"");
     XCTAssertTrue([account isEqualToString:@"account/test"], @"");
     XCTAssertEqual(period, 15, @"");
@@ -194,12 +172,10 @@
     NSUInteger period = 0;
     NSString *issuer = nil;
     NSString *account = nil;
-    NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
     XCTAssertNotNil(issuer, @"Issuer is parsed");
     XCTAssertNotNil(account, @"Account is parsed");
-    XCTAssertTrue([label isEqualToString:@"Yubico/demo:account/test"], @"");
     XCTAssertTrue([issuer isEqualToString:@"Yubico/demo"], @"");
     XCTAssertTrue([account isEqualToString:@"account/test"], @"");
     XCTAssertEqual(period, 15, @"");
@@ -211,12 +187,10 @@
     NSUInteger period = 0;
     NSString *issuer = nil;
     NSString *account = nil;
-    NSString *label = nil;
 
-    [credentialKey ykf_OATHKeyExtractPeriod: &period issuer: &issuer account: &account label: &label];
+    [credentialKey ykf_OATHKeyExtractForType:YKFOATHCredentialTypeTOTP period:&period issuer:&issuer account:&account];
     XCTAssertNotNil(issuer, @"Issuer is parsed");
     XCTAssertNotNil(account, @"Account is parsed");
-    XCTAssertTrue([label isEqualToString:@"Yubico Demo:account:test"], @"");
     XCTAssertTrue([issuer isEqualToString:@"Yubico Demo"], @"");
     XCTAssertTrue([account isEqualToString:@"account:test"], @"");
     XCTAssertEqual(period, 0, @"");

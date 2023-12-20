@@ -28,81 +28,16 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
 
 @implementation YKFOATHCredentialUtils
 
-+ (NSString *)labelFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier __deprecated {
-    YKFAssertReturnValue(credentialIdentifier.accountName, @"Missing OATH credential account. Cannot build the credential label.", nil);
-    
-    if (credentialIdentifier.issuer) {
-        return [NSString stringWithFormat:@"%@:%@", credentialIdentifier.issuer, credentialIdentifier.accountName];
-    } else {
-        return credentialIdentifier.accountName;
-    }
-}
-
 + (NSString *)keyFromAccountName:(NSString *)name issuer:(NSString *)issuer period:(NSUInteger)period type:(YKFOATHCredentialType)type {
-    NSString *label;
-    if (issuer) {
-        label = [NSString stringWithFormat:@"%@:%@", issuer, name];
-    } else {
-        label = name;
-    }
+    NSMutableString *accountId = [NSMutableString new];
     if (type == YKFOATHCredentialTypeTOTP && period != YKFOATHCredentialDefaultPeriod) {
-        return [NSString stringWithFormat:@"%ld/%@", (unsigned long)period, label];
-    } else {
-        return label;
+        [accountId appendFormat:@"%ld/", (unsigned long)period];
     }
+    if (issuer != nil) {
+        [accountId appendFormat:@"%@:", issuer];
+    }
+    [accountId appendString:name];
+    return accountId ;
 }
-
-+ (NSString *)keyFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier  {
-    NSString *keyLabel = [YKFOATHCredentialUtils keyFromAccountName:credentialIdentifier.accountName issuer:credentialIdentifier.issuer period:credentialIdentifier.period type:credentialIdentifier.type];
-    
-    if (credentialIdentifier.type == YKFOATHCredentialTypeTOTP) {
-        if (credentialIdentifier.period != YKFOATHCredentialDefaultPeriod) {
-            return [NSString stringWithFormat:@"%ld/%@", (unsigned long)credentialIdentifier.period, keyLabel];
-        }
-        else {
-            return keyLabel;
-        }
-    } else {
-        return keyLabel;
-    }
-}
-
-
-+ (YKFSessionError *)validateCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate {
-    YKFParameterAssertReturnValue(credentialTemplate, nil);
-    
-    if ([YKFOATHCredentialUtils keyFromCredentialIdentifier:credentialTemplate].length > YKFOATHCredentialValidatorMaxNameSize) {
-        return [YKFOATHError errorWithCode:YKFOATHErrorCodeNameTooLong];
-    }
-    NSData *credentialSecret = credentialTemplate.secret;
-    int shaAlgorithmBlockSize = 0;
-    switch (credentialTemplate.algorithm) {
-        case YKFOATHCredentialAlgorithmSHA1:
-            shaAlgorithmBlockSize = CC_SHA1_BLOCK_BYTES;
-            break;
-        case YKFOATHCredentialAlgorithmSHA256:
-            shaAlgorithmBlockSize = CC_SHA256_BLOCK_BYTES;
-            break;
-        case YKFOATHCredentialAlgorithmSHA512:
-            shaAlgorithmBlockSize = CC_SHA512_BLOCK_BYTES;
-            break;
-        default:
-            YKFAssertReturnValue(NO, @"Invalid OATH algorithm.", nil);
-    }
-    if (credentialSecret.length > shaAlgorithmBlockSize) {
-        return [YKFOATHError errorWithCode:YKFOATHErrorCodeSecretTooLong];
-    }
-    return nil;
-}
-
-+ (YKFSessionError *)validateCredential:(YKFOATHCredential *)credential {
-    YKFParameterAssertReturnValue(credential, nil);
-    
-    if ([YKFOATHCredentialUtils keyFromCredentialIdentifier:credential].length > YKFOATHCredentialValidatorMaxNameSize) {
-        return [YKFOATHError errorWithCode:YKFOATHErrorCodeNameTooLong];
-    }
-    return nil;
-}
-
 
 @end

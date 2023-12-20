@@ -52,12 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)keyFromAccountName:(NSString *)name issuer:(NSString *_Nullable)issuer period:(NSUInteger)period type:(YKFOATHCredentialType)type;
 
-+ (NSString *)labelFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier __deprecated;
-+ (NSString *)keyFromCredentialIdentifier:(id<YKFOATHCredentialIdentifier>)credentialIdentifier __deprecated;
-
-+ (nullable YKFSessionError *)validateCredentialTemplate:(YKFOATHCredentialTemplate *)credentialTemplate __deprecated;
-+ (nullable YKFSessionError *)validateCredential:(YKFOATHCredential *)credential __deprecated;
-
 @end
 
 NS_ASSUME_NONNULL_END
