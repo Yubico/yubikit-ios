@@ -66,9 +66,6 @@
 #import "YKFU2FSignResponse.h"
 #import "YKFU2FRegisterResponse.h"
 
-#import "YKFPCSC.h"
-#import "YKFPCSCLayer.h"
-
 #import "YKFNSDataAdditions.h"
 #import "YKFWebAuthnClientData.h"
 
