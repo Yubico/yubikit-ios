@@ -174,7 +174,6 @@
 		95D5E2DC2187159700AA1C11 /* YKFNSMutableDataAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D5E2DB2187159700AA1C11 /* YKFNSMutableDataAdditions.m */; };
 		95D5E2DD2187173D00AA1C11 /* YKFAPDU.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95DD407F2099A86900363FEE /* YKFAPDU.h */; };
 		95D61A072170B26F001E7AC8 /* YKFOATHSelectApplicationResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D61A062170B26F001E7AC8 /* YKFOATHSelectApplicationResponse.m */; };
-		95D7364D21C94BFD0039141A /* FakeYKFPCSCLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D7364C21C94BFD0039141A /* FakeYKFPCSCLayer.m */; };
 		95D9D3DD21D5110100473888 /* YKFCBOREncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D9D3DC21D5110100473888 /* YKFCBOREncoder.m */; };
 		95D9D3E021D5111500473888 /* YKFCBORDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D9D3DF21D5111500473888 /* YKFCBORDecoder.m */; };
 		95D9D3E321D67AAA00473888 /* YKFCBORType.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D9D3E221D67AAA00473888 /* YKFCBORType.m */; };
@@ -576,8 +575,6 @@
 		95D5E2DB2187159700AA1C11 /* YKFNSMutableDataAdditions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFNSMutableDataAdditions.m; sourceTree = "<group>"; };
 		95D61A052170B26F001E7AC8 /* YKFOATHSelectApplicationResponse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFOATHSelectApplicationResponse.h; sourceTree = "<group>"; };
 		95D61A062170B26F001E7AC8 /* YKFOATHSelectApplicationResponse.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHSelectApplicationResponse.m; sourceTree = "<group>"; };
-		95D7364B21C94BFD0039141A /* FakeYKFPCSCLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FakeYKFPCSCLayer.h; sourceTree = "<group>"; };
-		95D7364C21C94BFD0039141A /* FakeYKFPCSCLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FakeYKFPCSCLayer.m; sourceTree = "<group>"; };
 		95D9D3DB21D5110100473888 /* YKFCBOREncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFCBOREncoder.h; sourceTree = "<group>"; };
 		95D9D3DC21D5110100473888 /* YKFCBOREncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFCBOREncoder.m; sourceTree = "<group>"; };
 		95D9D3DE21D5111500473888 /* YKFCBORDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFCBORDecoder.h; sourceTree = "<group>"; };
@@ -870,8 +867,6 @@
 				956884CF20AAFE9300E0F72C /* FakeYKFOTPTextParser.m */,
 				956884D120AB012200E0F72C /* FakeYKFOTPURIParser.h */,
 				956884D220AB012200E0F72C /* FakeYKFOTPURIParser.m */,
-				95D7364B21C94BFD0039141A /* FakeYKFPCSCLayer.h */,
-				95D7364C21C94BFD0039141A /* FakeYKFPCSCLayer.m */,
 				956884CB20AAFB3F00E0F72C /* FakeYubiKitDeviceCapabilities.h */,
 				956884CC20AAFB3F00E0F72C /* FakeYubiKitDeviceCapabilities.m */,
 			);
@@ -1458,7 +1453,6 @@
 				9564333220A58EDA007621BD /* YKFOTPURIParserTests.m in Sources */,
 				9529CBBF2149105F0041D2F8 /* YKFAccessoryDescriptionTests.m in Sources */,
 				95885B3220A31F1D00828D02 /* YKFOTPTokenValidator.m in Sources */,
-				95D7364D21C94BFD0039141A /* FakeYKFPCSCLayer.m in Sources */,
 				A54DCC0323F2147500E95259 /* YKNSStringAdditionTests.m in Sources */,
 				956884D320AB012200E0F72C /* FakeYKFOTPURIParser.m in Sources */,
 				956884CD20AAFB3F00E0F72C /* FakeYubiKitDeviceCapabilities.m in Sources */,
