@@ -1,6 +1,6 @@
 # YubiKit Changelog
 
-## 4.5.0
+## 4.4.1
 
 - Removed deprecated PCSCLayer.
 - Fixes bug in OATH identifier parsing.
