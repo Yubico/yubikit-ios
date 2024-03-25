@@ -1,5 +1,12 @@
 # YubiKit Changelog
 
+## 4.4.1
+
+- Removed deprecated PCSCLayer.
+- Fixes bug in OATH identifier parsing.
+- Fixes bug where signWithKeyInSlot in YKFPIVSession could call its completion twice.
+- Updated device support list with new iPhone models.
+
 ## 4.4.0
 
 - Added support for storing and reading compressed PIV certificates.
