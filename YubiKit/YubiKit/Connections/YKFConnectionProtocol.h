@@ -15,7 +15,7 @@
 #ifndef YKFConnectionProtocol_h
 #define YKFConnectionProtocol_h
 
-@class YKFOATHSession, YKFU2FSession, YKFFIDO2Session, YKFPIVSession, YKFChallengeResponseSession, YKFManagementSession, YKFSmartCardInterface;
+@class YKFOATHSession, YKFU2FSession, YKFFIDO2Session, YKFPIVSession, YKFChallengeResponseSession, YKFManagementSession, YKFSmartCardInterface, YKFAPDU;
 
 @protocol YKFConnectionProtocol<NSObject>
 
@@ -65,6 +65,23 @@ typedef void (^YKFManagementSessionCompletion)(YKFManagementSession *_Nullable, 
 /// @discussion Use this for communicating with the YubiKey by sending APDUs to the it. Only use this
 ///             when none of the supplied sessions can be used.
 @property (nonatomic, readonly) YKFSmartCardInterface *_Nullable smartCardInterface;
+
+typedef void (^YKFRawComandCompletion)(NSData *_Nullable, NSError *_Nullable);
+
+/// @abstract Send a APDU and get the unparsed result as an NSData from the YubiKey.
+/// @param apdu The APDU to send to the YubiKey.
+/// @param completion The unparsed result from the YubiKey or an error.
+/// @discussion Use this for communicating with the YubiKey by sending APDUs to the it. Only use this
+///             when the `SmartCardInterface` or any of the supplied sessions can not be used.
+- (void)executeRawCommand:(YKFAPDU *_Nonnull)apdu completion:(YKFRawComandCompletion _Nonnull)completion;
+
+/// @abstract Send a APDU and get the unparsed result as an NSData from the YubiKey.
+/// @param apdu The APDU to send to the YubiKey.
+/// @param timeout The timeout to wait before cancelling the command sent to the YubiKey.
+/// @param completion The unparsed result from the YubiKey or an error.
+/// @discussion Use this for communicating with the YubiKey by sending APDUs to the it. Only use this
+///             when the `SmartCardInterface` or any of the supplied sessions can not be used.
+- (void)executeRawCommand:(YKFAPDU *_Nonnull)apdu timeout:(NSTimeInterval)timeout completion:(YKFRawComandCompletion _Nonnull)completion;
 
 @end
 

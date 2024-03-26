@@ -138,6 +138,20 @@
     }];
 }
 
+- (void)executeRawCommand:(YKFAPDU *)apdu completion:(YKFRawComandCompletion)completion {
+    [self.connectionController execute:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error, NSTimeInterval executionTime) {
+        completion(data, error);
+    }];
+}
+
+- (void)executeRawCommand:(YKFAPDU *)apdu timeout:(NSTimeInterval)timeout completion:(YKFRawComandCompletion)completion {
+    [self.connectionController execute:apdu
+                               timeout:timeout
+                            completion:^(NSData * _Nullable  response, NSError * _Nullable error, NSTimeInterval executionTime) {
+        completion(response, error);
+    }];
+}
+
 - (void)dealloc {
     if (@available(iOS 13.0, *)) {
         [self unobserveIso7816TagAvailability];

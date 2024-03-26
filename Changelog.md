@@ -1,5 +1,9 @@
 # YubiKit Changelog
 
+## 4.5.0
+
+- Add support for sending and returning raw commands to the `YKFConnectionProtocol`.
+
 ## 4.4.1
 
 - Removed deprecated PCSCLayer.
