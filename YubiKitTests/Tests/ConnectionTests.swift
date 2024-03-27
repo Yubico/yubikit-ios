@@ -17,7 +17,9 @@ import XCTest
 class ConnectionTests: XCTestCase {
 
     func testConnectionDelegate() throws {
-        YubiKitManager.shared.startAccessoryConnection()
+        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
+            YubiKitManager.shared.startAccessoryConnection()
+        }
         YubiKitManager.shared.startSmartCardConnection()
         let connectionExpectation = expectation(description: "Get a YubiKey Connection")
         let firstConnection = YubiKeyConnectionTester()
@@ -45,7 +47,9 @@ class ConnectionTests: XCTestCase {
     func testNFCTimeOutError() throws {
         let connectionExpectation = expectation(description: "Get a YubiKey Connection")
         let connectionTester = YubiKeyConnectionTester()
-        YubiKitManager.shared.startAccessoryConnection() // We need to start the accessory connection so we can skip this test if a 5Ci key is inserted
+        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
+            YubiKitManager.shared.startAccessoryConnection() // We need to start the accessory connection so we can skip this test if a 5Ci key is inserted
+        }
         YubiKitManager.shared.startSmartCardConnection()
 
         Thread.sleep(forTimeInterval: 0.5)
@@ -76,7 +80,9 @@ class ConnectionTests: XCTestCase {
     func testNFCUserCancelError() throws {
         let connectionExpectation = expectation(description: "Got a YubiKey failed to connect to NFC error")
         let connectionTester = YubiKeyConnectionTester()
-        YubiKitManager.shared.startAccessoryConnection() // We need to start the accessory connection so we can skip this test if a 5Ci key is inserted
+        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
+            YubiKitManager.shared.startAccessoryConnection() // We need to start the accessory connection so we can skip this test if a 5Ci key is inserted
+        }
         YubiKitManager.shared.startSmartCardConnection()
         Thread.sleep(forTimeInterval: 0.5)
         
@@ -101,6 +107,35 @@ class ConnectionTests: XCTestCase {
             }
         }
     }
+    
+    func testRawCommands() throws {
+        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
+            YubiKitManager.shared.startAccessoryConnection()
+        }
+        YubiKitManager.shared.startSmartCardConnection()
+        let connectionExpectation = expectation(description: "Get a YubiKey Connection")
+        let firstConnection = YubiKeyConnectionTester()
+        Thread.sleep(forTimeInterval: 0.5)
+        firstConnection.connection { connection, error in
+            // Select Management application
+            let data = Data([0xA0, 0x00, 0x00, 0x05, 0x27, 0x47, 0x11, 0x17])
+            let apdu = YKFAPDU(cla: 0x00, ins: 0xa4, p1: 0x04, p2: 0x00, data: data, type: .short)!
+            connection.executeRawCommand(apdu) { data, error in
+                guard let data else { XCTFail("Failed with error: \(error!)"); return }
+                XCTAssertEqual(data.statusCode, 0x9000)
+                connectionExpectation.fulfill()
+            }
+        }
+        
+        waitForExpectations(timeout: 20.0) { error in
+            // If we get an error then the expectation has timed out and we need to stop all connections
+            if error != nil {
+                YubiKitManager.shared.stopNFCConnection()
+                Thread.sleep(forTimeInterval: 5.0) // In case it was a NFC connection wait for the modal to dismiss
+            }
+        }
+    }
+    
 }
 
 class YubiKeyConnectionTester: NSObject {
@@ -186,5 +221,17 @@ extension YubiKeyConnectionTester: YKFManagerDelegate {
             callback(connection, error)
         }
         smartCardConnection = nil
+    }
+}
+
+extension Data {
+    /// Returns the SW from a key response.
+    var statusCode: UInt16 {
+        get {
+            guard self.count >= 2 else {
+                return 0x00
+            }
+            return UInt16(self[self.count - 2]) << 8 + UInt16(self[self.count - 1])
+        }
     }
 }
