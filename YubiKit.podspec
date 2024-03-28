@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = 'YubiKit'
-  s.version  = '4.4.1'
+  s.version  = '4.5.0'
   s.license  = 'Apache 2.0'
   s.summary  = 'YubiKit is an iOS library provided by Yubico to interact with YubiKeys on iOS devices.'
   s.homepage = 'https://github.com/Yubico/yubikit-ios'
