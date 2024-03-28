@@ -138,13 +138,15 @@
     }];
 }
 
-- (void)executeRawCommand:(YKFAPDU *)apdu completion:(YKFRawComandCompletion)completion {
+- (void)executeRawCommand:(NSData *)data completion:(YKFRawComandCompletion)completion {
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithData:data];
     [self.connectionController execute:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error, NSTimeInterval executionTime) {
         completion(data, error);
     }];
 }
 
-- (void)executeRawCommand:(YKFAPDU *)apdu timeout:(NSTimeInterval)timeout completion:(YKFRawComandCompletion)completion {
+- (void)executeRawCommand:(NSData *)data timeout:(NSTimeInterval)timeout completion:(YKFRawComandCompletion)completion {
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithData:data];
     [self.connectionController execute:apdu
                                timeout:timeout
                             completion:^(NSData * _Nullable  response, NSError * _Nullable error, NSTimeInterval executionTime) {

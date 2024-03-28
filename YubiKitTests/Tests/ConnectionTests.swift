@@ -118,10 +118,10 @@ class ConnectionTests: XCTestCase {
         Thread.sleep(forTimeInterval: 0.5)
         firstConnection.connection { connection, error in
             // Select Management application
-            let data = Data([0xA0, 0x00, 0x00, 0x05, 0x27, 0x47, 0x11, 0x17])
-            let apdu = YKFAPDU(cla: 0x00, ins: 0xa4, p1: 0x04, p2: 0x00, data: data, type: .short)!
-            connection.executeRawCommand(apdu) { data, error in
+            let data = Data([0x00, 0xa4, 0x04, 0x00, 0x08, 0xa0, 0x00, 0x00, 0x05, 0x27, 0x47, 0x11, 0x17])
+            connection.executeRawCommand(data) { data, error in
                 guard let data else { XCTFail("Failed with error: \(error!)"); return }
+                print(data.hexDescription)
                 XCTAssertEqual(data.statusCode, 0x9000)
                 connectionExpectation.fulfill()
             }

@@ -73,15 +73,15 @@ typedef void (^YKFRawComandCompletion)(NSData *_Nullable, NSError *_Nullable);
 /// @param completion The unparsed result from the YubiKey or an error.
 /// @discussion Use this for communicating with the YubiKey by sending APDUs to the it. Only use this
 ///             when the `SmartCardInterface` or any of the supplied sessions can not be used.
-- (void)executeRawCommand:(YKFAPDU *_Nonnull)apdu completion:(YKFRawComandCompletion _Nonnull)completion;
+- (void)executeRawCommand:(NSData *_Nonnull)apdu completion:(YKFRawComandCompletion _Nonnull)completion;
 
-/// @abstract Send a APDU and get the unparsed result as an NSData from the YubiKey.
-/// @param apdu The APDU to send to the YubiKey.
+/// @abstract Send command as NSData and get the unparsed result as an NSData from the YubiKey.
+/// @param data The NSData to send to the YubiKey.
 /// @param timeout The timeout to wait before cancelling the command sent to the YubiKey.
 /// @param completion The unparsed result from the YubiKey or an error.
 /// @discussion Use this for communicating with the YubiKey by sending APDUs to the it. Only use this
 ///             when the `SmartCardInterface` or any of the supplied sessions can not be used.
-- (void)executeRawCommand:(YKFAPDU *_Nonnull)apdu timeout:(NSTimeInterval)timeout completion:(YKFRawComandCompletion _Nonnull)completion;
+- (void)executeRawCommand:(NSData *_Nonnull)data timeout:(NSTimeInterval)timeout completion:(YKFRawComandCompletion _Nonnull)completion;
 
 @end
 
