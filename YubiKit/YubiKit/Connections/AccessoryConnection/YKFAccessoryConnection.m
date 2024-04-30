@@ -271,15 +271,15 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
 
 - (void)stop {
     YKFLogInfo(@"Accessory session stop requested.");
+
+    self.observeAccessoryConnection = NO;
+    self.observeApplicationState = NO;
     
     if (self.connectionState != YKFAccessoryConnectionStateOpen) {
         YKFLogInfo(@"Accessory session stop ignored. The session is already stopped.");
         return;
     }
-
-    self.observeAccessoryConnection = NO;
-    self.observeApplicationState = NO;
-
+    
     [self closeSession];
 }
 
