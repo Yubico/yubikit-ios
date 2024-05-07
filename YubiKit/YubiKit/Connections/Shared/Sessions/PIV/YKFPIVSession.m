@@ -170,6 +170,12 @@ int maxPinAttempts = 3;
         case 2048 / 8:
             keyType = YKFPIVKeyTypeRSA2048;
             break;
+        case 3072 / 8:
+            keyType = YKFPIVKeyTypeRSA3072;
+            break;
+        case 4096 / 8:
+            keyType = YKFPIVKeyTypeRSA4096;
+            break;
         default:
             completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeInvalidCipherTextLength userInfo:@{NSLocalizedDescriptionKey: @"Invalid lenght of cipher text."}]);
             return;
@@ -259,6 +265,7 @@ int maxPinAttempts = 3;
     NSError *error = [self checkKeySupport:type pinPolicy:pinPolicy touchPolicy:touchPolicy generateKey:YES];
     if (error) {
         completion(nil, error);
+        return;
     }
     NSMutableData *data = [NSMutableData dataWithBytes:&type length:1];
     YKFTLVRecord *tlv = [[YKFTLVRecord alloc] initWithTag:YKFPIVTagGenAlgorithm value:data];
@@ -276,7 +283,7 @@ int maxPinAttempts = 3;
                                          (id)kSecAttrKeyClass: (id)kSecAttrKeyClassPublic};
             CFDictionaryRef attributesRef = (__bridge CFDictionaryRef)attributes;
             publicKey = SecKeyCreateWithData(cfDataRef, attributesRef, &cfError);
-        } else if (type == YKFPIVKeyTypeRSA1024 || type == YKFPIVKeyTypeRSA2048) {
+        } else if (type == YKFPIVKeyTypeRSA1024 || type == YKFPIVKeyTypeRSA2048 || type == YKFPIVKeyTypeRSA3072 || type == YKFPIVKeyTypeRSA4096) {
             NSMutableData *modulusData = [NSMutableData dataWithBytes:&(UInt8 *){0x00} length:1];
             [modulusData appendData:[records ykfTLVRecordWithTag:(UInt64)0x81].value];
             NSData *exponentData = [records ykfTLVRecordWithTag:(UInt64)0x82].value;
@@ -329,6 +336,14 @@ int maxPinAttempts = 3;
         }
     }
     
+    if (generateKey && (keyType == YKFPIVKeyTypeRSA3072 || keyType == YKFPIVKeyTypeRSA4096)) {
+        YKFVersion *from = [[YKFVersion alloc] initWithString:@"5.7.0"];
+        NSComparisonResult fromComparision = [from compare:self.version];
+        if (fromComparision == NSOrderedDescending) {
+            errorMessage = @"RSA 3072 and 4096 key generation";
+        }
+    }
+    
     if (errorMessage) {
         return [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVFErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"%@ not supported by this YubiKey.", errorMessage]}];
     }
@@ -354,6 +369,8 @@ int maxPinAttempts = 3;
     switch (keyType) {
         case YKFPIVKeyTypeRSA1024:
         case YKFPIVKeyTypeRSA2048:
+        case YKFPIVKeyTypeRSA3072:
+        case YKFPIVKeyTypeRSA4096:
         {
             NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:[YKFTLVRecord recordFromData:data].value];
             NSData *primeOne = records[4].value;

@@ -12,6 +12,8 @@
 typedef NS_ENUM(NSUInteger, YKFPIVKeyType) {
     YKFPIVKeyTypeRSA1024 = 0x06,
     YKFPIVKeyTypeRSA2048 = 0x07,
+    YKFPIVKeyTypeRSA3072 = 0x05,
+    YKFPIVKeyTypeRSA4096 = 0x16,
     YKFPIVKeyTypeECCP256 = 0x11,
     YKFPIVKeyTypeECCP384 = 0x14,
     YKFPIVKeyTypeUnknown = 0x00
