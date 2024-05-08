@@ -20,6 +20,12 @@ YKFPIVKeyType YKFPIVKeyTypeFromKey(SecKeyRef key) {
         if (size == 2048) {
             return YKFPIVKeyTypeRSA2048;
         }
+        if (size == 3072) {
+            return YKFPIVKeyTypeRSA3072;
+        }
+        if (size == 4096) {
+            return YKFPIVKeyTypeRSA4096;
+        }
     }
     if ([type isEqual:(__bridge NSString*)kSecAttrKeyTypeEC]) {
         if (size == 256) {
@@ -43,6 +49,10 @@ int YKFPIVSizeFromKeyType(YKFPIVKeyType keyType) {
             return 1024 / 8;
         case YKFPIVKeyTypeRSA2048:
             return 2048 / 8;
+        case YKFPIVKeyTypeRSA3072:
+            return 3072 / 8;
+        case YKFPIVKeyTypeRSA4096:
+            return 4096 / 8;
         default:
             return 0;
     }

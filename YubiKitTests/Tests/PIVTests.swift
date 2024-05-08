@@ -298,6 +298,40 @@ class PIVTests: XCTestCase {
         }
     }
     
+    func testGenerate3072RSAKey() throws {
+        runYubiKitTest(timeout: 100.0) { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.generateKey(in: .signature, type: .RSA3072, pinPolicy: .always, touchPolicy: .cached) { publicKey, error in
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
+                    XCTAssertNotNil(publicKey);
+                    let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
+                    XCTAssert(attributes[kSecAttrKeySizeInBits as String] as! Int == 3072)
+                    XCTAssert(attributes[kSecAttrKeyType as String] as! String == kSecAttrKeyTypeRSA as String)
+                    XCTAssert(attributes[kSecAttrKeyClass as String] as! String == kSecAttrKeyClassPublic as String)
+                    print("✅ Generated 3072 RSA key")
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func testGenerate4096RSAKey() throws {
+        runYubiKitTest(timeout: 200.0) { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.generateKey(in: .signature, type: .RSA4096, pinPolicy: .always, touchPolicy: .cached) { publicKey, error in
+                    guard error == nil else { XCTFail("\(error!)"); completion(); return }
+                    XCTAssertNotNil(publicKey);
+                    let attributes = SecKeyCopyAttributes(publicKey!) as! [String: Any]
+                    XCTAssert(attributes[kSecAttrKeySizeInBits as String] as! Int == 4096)
+                    XCTAssert(attributes[kSecAttrKeyType as String] as! String == kSecAttrKeyTypeRSA as String)
+                    XCTAssert(attributes[kSecAttrKeyClass as String] as! String == kSecAttrKeyClassPublic as String)
+                    print("✅ Generated 4096 RSA key")
+                    completion()
+                }
+            }
+        }
+    }
+    
     func testGenerateECCP384Key() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in
@@ -786,9 +820,21 @@ extension YKFConnectionProtocol {
     func authenticatedPivTestSession(completion: @escaping (_ session: YKFPIVSession) -> Void) {
         self.pivTestSession { session in
             let defaultManagementKey = Data([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08])
-            session.authenticate(withManagementKey: defaultManagementKey, type: .tripleDES()) { error in
-                guard error == nil else { XCTAssertTrue(false, "🔴 Failed to authenticate PIV application"); return }
-                completion(session)
+            
+            let authBlock: (YKFPIVManagementKeyType)->(Void) = { keyType in
+                session.authenticate(withManagementKey: defaultManagementKey, type: keyType) { error in
+                    guard error == nil else { XCTAssertTrue(false, "🔴 Failed to authenticate PIV application"); return }
+                    completion(session)
+                }
+            }
+            
+            if session.features.metadata.isSupported(bySession: session) {
+                session.getManagementKeyMetadata { metadata, error in
+                    guard let metadata else { XCTFail("🔴 Failed to get management key metadata: \(error!)"); return }
+                    authBlock(metadata.keyType)
+                }
+            } else {
+                authBlock(.tripleDES())
             }
         }
     }

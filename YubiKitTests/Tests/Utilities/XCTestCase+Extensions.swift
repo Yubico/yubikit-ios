@@ -15,7 +15,7 @@
 import XCTest
 
 extension XCTestCase {
-    func runYubiKitTest(completion: @escaping (_ connection: YKFConnectionProtocol, _ completion: @escaping () -> Void) -> Void) {
+    func runYubiKitTest(timeout: TimeInterval = 30.0, completion: @escaping (_ connection: YKFConnectionProtocol, _ completion: @escaping () -> Void) -> Void) {
         let connectionExpectation = expectation(description: "Get a YubiKey Connection")
         let connection = YubiKeyConnection()
         connection.connection { connection in
@@ -35,7 +35,7 @@ extension XCTestCase {
             }
             completion(connection, testCompletion)
         }
-        waitForExpectations(timeout: 30.0) { error in
+        waitForExpectations(timeout: timeout) { error in
             // If we get an error then the expectation has timed out and we need to stop all connections
             if error != nil {
                 if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
