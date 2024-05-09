@@ -15,6 +15,8 @@
 #import <UIKit/UIKit.h>
 #import <CoreNFC/CoreNFC.h>
 
+#import <sys/utsname.h>
+
 #import "UIDeviceAdditions.h"
 #import "UIDevice+Testing.h"
 
@@ -200,20 +202,29 @@
     static dispatch_once_t onceToken;
     
     dispatch_once(&onceToken, ^{
-        YKFDeviceModel deviceModel = self.currentUIDevice.ykf_deviceModel;
-        ykfDeviceCapabilitiesDeviceIsNFCEnabled =
-            deviceModel == YKFDeviceModelIPhone7 || deviceModel == YKFDeviceModelIPhone7Plus ||
-            deviceModel == YKFDeviceModelIPhone8 || deviceModel == YKFDeviceModelIPhone8Plus ||
-            deviceModel == YKFDeviceModelIPhoneX ||
-            deviceModel == YKFDeviceModelIPhoneXS || deviceModel == YKFDeviceModelIPhoneXSMax || deviceModel == YKFDeviceModelIPhoneXR ||
-            deviceModel == YKFDeviceModelIPhone11 ||
-            deviceModel == YKFDeviceModelIPhoneSE2 ||
-            deviceModel == YKFDeviceModelIPhoneSE3 ||
-            deviceModel == YKFDeviceModelIPhone12 ||
-            deviceModel == YKFDeviceModelIPhone13 ||
-            deviceModel == YKFDeviceModelIPhone14 ||
-            deviceModel == YKFDeviceModelIPhone15 ||
-            deviceModel == YKFDeviceModelUnknown; // A newer device which is not in the list yet
+        struct utsname systemInfo;
+        uname(&systemInfo);
+        NSString *deviceName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+        if ([deviceName hasPrefix:@"iPhone"])
+        {
+            switch (self.currentUIDevice.ykf_deviceModel) {
+                case YKFDeviceModelSimulator:
+                case YKFDeviceModelIPhone4:
+                case YKFDeviceModelIPhone4S:
+                case YKFDeviceModelIPhone5:
+                case YKFDeviceModelIPhone5C:
+                case YKFDeviceModelIPhone5S:
+                case YKFDeviceModelIPhone6:
+                case YKFDeviceModelIPhone6Plus:
+                case YKFDeviceModelIPhone6S:
+                case YKFDeviceModelIPhone6SPlus:
+                case YKFDeviceModelIPhoneSE:
+                    ykfDeviceCapabilitiesDeviceIsNFCEnabled = NO;
+
+                default:
+                    ykfDeviceCapabilitiesDeviceIsNFCEnabled = YES;
+            }
+        }
     });
     
 #ifdef DEBUG
