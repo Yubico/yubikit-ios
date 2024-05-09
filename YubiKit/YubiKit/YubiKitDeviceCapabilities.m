@@ -123,21 +123,65 @@
         return [[self.fakeDeviceCapabilities class] supportsSmartCardOverUSBC];
     }
 #endif
-    
+
     // USB-C type devices on iOS 16 and up
     if (@available(iOS 16, *)) {
-        if (self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadMini6 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro3 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro4 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro5 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir4 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir5 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPad10 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro6 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPhone15) {
-            return YES;
+        switch (self.currentUIDevice.ykf_deviceModel) {
+            case YKFDeviceModelIPhone4:
+            case YKFDeviceModelIPhone4S:
+            case YKFDeviceModelIPhone5:
+            case YKFDeviceModelIPhone5C:
+            case YKFDeviceModelIPhone5S:
+            case YKFDeviceModelIPhone6:
+            case YKFDeviceModelIPhone6Plus:
+            case YKFDeviceModelIPhone6S:
+            case YKFDeviceModelIPhone6SPlus:
+            case YKFDeviceModelIPhoneSE:
+            case YKFDeviceModelIPhone7:
+            case YKFDeviceModelIPhone7Plus:
+            case YKFDeviceModelIPhone8:
+            case YKFDeviceModelIPhone8Plus:
+            case YKFDeviceModelIPhoneX:
+            case YKFDeviceModelIPhoneXS:
+            case YKFDeviceModelIPhoneXSMax:
+            case YKFDeviceModelIPhoneXR:
+            case YKFDeviceModelIPhone11:
+            case YKFDeviceModelIPhoneSE2:
+            case YKFDeviceModelIPhone12:
+            case YKFDeviceModelIPhone13:
+            case YKFDeviceModelIPhone14:
+            case YKFDeviceModelIPhoneSE3:
+            case YKFDeviceModelIPad1:
+            case YKFDeviceModelIPad2:
+            case YKFDeviceModelIPadMini:
+            case YKFDeviceModelIPad3:
+            case YKFDeviceModelIPad4:
+            case YKFDeviceModelIPadAir:
+            case YKFDeviceModelIPadMini2:
+            case YKFDeviceModelIPadAir2:
+            case YKFDeviceModelIPadMini3:
+            case YKFDeviceModelIPadMini4:
+            case YKFDeviceModelIPadPro:
+            case YKFDeviceModelIPad2017:
+            case YKFDeviceModelIPadPro2:
+            case YKFDeviceModelIPad6:
+            case YKFDeviceModelIPad9:
+            case YKFDeviceModelIPadMini5:
+            case YKFDeviceModelIPadAir3:
+            case YKFDeviceModelIPodTouch1:
+            case YKFDeviceModelIPodTouch2:
+            case YKFDeviceModelIPodTouch3:
+            case YKFDeviceModelIPodTouch4:
+            case YKFDeviceModelIPodTouch5:
+            case YKFDeviceModelIPodTouch6:
+            case YKFDeviceModelIPodTouch7:
+                return NO;
+
+            default:
+                return YES;
         }
     }
+
     return NO;
 }
 
