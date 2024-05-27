@@ -35,18 +35,11 @@
 
 @implementation YKFManagementDeviceInfo
 
-- (nullable instancetype)initWithResponseData:(nonnull NSData *)data defaultVersion:(nonnull YKFVersion *)defaultVersion {
-    YKFAssertAbortInit(data.length);
+- (nullable instancetype)initWithResponseData:(nonnull NSMutableArray<YKFTLVRecord*> *)records defaultVersion:(nonnull YKFVersion *)defaultVersion {
+    YKFAssertAbortInit(records.count > 0);
     YKFAssertAbortInit(defaultVersion)
     self = [super init];
-    if (self) {
-        const char* bytes = (const char*)[data bytes];
-        int length = bytes[0] & 0xff;
-        if (length != data.length - 1) {
-            return nil;
-        }
-        NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:[data subdataWithRange:NSMakeRange(1, data.length -  1)]];
-        
+    if (self) {       
         self.isLocked = [[records ykfTLVRecordWithTag:YKFManagementTagConfigLocked].value ykf_integerValue] == 1;
         
         self.serialNumber = [[records ykfTLVRecordWithTag:YKFManagementTagSerialNumber].value ykf_integerValue];

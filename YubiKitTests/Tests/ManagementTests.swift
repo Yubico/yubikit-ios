@@ -81,7 +81,7 @@ class ManagementTests: XCTestCase {
             connection.managementSessionAndDeviceInfo { session, deviceInfo in
                 // Only assert major and minor version
                 XCTAssert(deviceInfo.version.major == 5)
-                XCTAssert(deviceInfo.version.minor == 2 || deviceInfo.version.minor == 3 || deviceInfo.version.minor == 4)
+                XCTAssert(deviceInfo.version.minor == 2 || deviceInfo.version.minor == 3 || deviceInfo.version.minor == 4 || deviceInfo.version.minor == 7)
                 print("✅ Got version: \(deviceInfo.version)")
                 completion()
             }

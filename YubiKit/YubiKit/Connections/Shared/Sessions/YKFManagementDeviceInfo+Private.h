@@ -31,6 +31,7 @@ static const NSUInteger YKFManagementTagConfigLocked = 0x0a;
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class YKFTLVRecord;
 @interface YKFManagementDeviceInfo()
 
 @property (nonatomic, readwrite) NSUInteger usbSupportedMask;
@@ -39,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readwrite) NSUInteger usbEnabledMask;
 @property (nonatomic, readwrite) NSUInteger nfcEnabledMask;
 
-- (nullable instancetype)initWithResponseData:(NSData *)data defaultVersion:(YKFVersion *)defaultVersion NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithResponseData:(NSMutableArray<YKFTLVRecord*> *)records defaultVersion:(YKFVersion *)defaultVersion NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
