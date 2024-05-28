@@ -21,6 +21,7 @@ typedef NS_ENUM(NSUInteger, YKFManagementApplicationType) {
     YKFManagementApplicationTypeOPGP = 0x08,
     YKFManagementApplicationTypePIV = 0x10,
     YKFManagementApplicationTypeOATH = 0x20,
+    YKFManagementApplicationTypeHSMAUTH = 0x0100,
     YKFManagementApplicationTypeCTAP2 = 0x0200
 };
 

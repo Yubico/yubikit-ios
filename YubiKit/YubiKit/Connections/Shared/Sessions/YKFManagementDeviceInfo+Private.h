@@ -28,6 +28,14 @@ static const NSUInteger YKFManagementTagDeviceFlags = 0x08;
 static const NSUInteger YKFManagementTagNFCSupported = 0x0d;
 static const NSUInteger YKFManagementTagNFCEnabled = 0x0e;
 static const NSUInteger YKFManagementTagConfigLocked = 0x0a;
+static const NSUInteger YKFManagementTagPartNumber = 0x13;
+static const NSUInteger YKFManagementTagFIPSCapable = 0x14;
+static const NSUInteger YKFManagementTagFIPSApproved = 0x15;
+static const NSUInteger YKFManagementTagPINComplexity = 0x16;
+static const NSUInteger YKFManagementTagNFCRestricted = 0x17;
+static const NSUInteger YKFManagementTagResetBlocked = 0x18;
+static const NSUInteger YKFManagementTagFPSVersion = 0x20;
+static const NSUInteger YKFManagementTagSTMVersion = 0x21;
 
 NS_ASSUME_NONNULL_BEGIN
 

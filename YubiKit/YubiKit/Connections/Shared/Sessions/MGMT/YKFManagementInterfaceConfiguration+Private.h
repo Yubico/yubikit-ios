@@ -31,6 +31,8 @@
 
 - (nullable instancetype)initWithDeviceInfo:(nonnull YKFManagementDeviceInfo *)response NS_DESIGNATED_INITIALIZER;
 
++ (NSUInteger)translateFipsMask:(NSUInteger)mask;
+
 @end
 
 #endif /* YKFManagementInterfaceConfiguration_Private_h */

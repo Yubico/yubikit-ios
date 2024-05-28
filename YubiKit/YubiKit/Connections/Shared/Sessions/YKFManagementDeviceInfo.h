@@ -23,10 +23,18 @@ typedef NS_ENUM(NSUInteger, YKFFormFactor) {
     YKFFormFactorUnknown = 0x00,
     /// A keychain-sized YubiKey with a USB-A connector.
     YKFFormFactorUSBAKeychain = 0x01,
+    /// A nano-sized YubiKey with a USB-A connector.
+    YKFFormFactorUSBANano = 0x02,
     /// A keychain-sized YubiKey with a USB-C connector.
     YKFFormFactorUSBCKeychain = 0x03,
+    /// A nano-sized YubiKey with a USB-C connector.
+    YKFFormFactorUSBCNano = 0x04,
     /// A keychain-sized YubiKey with both USB-C and Lightning connectors.
     YKFFormFactorUSBCLightning = 0x05,
+    /// A keychain-sized YubiKey with fingerprint sensor and USB-A connector.
+    YKFFormFactorUSBABio = 0x06,
+    /// A keychain-sized YubiKey with fingerprint sensor and USB-C connector.
+    YKFFormFactorUSBCBio = 0x07,
 };
 
 NS_ASSUME_NONNULL_BEGIN
@@ -35,10 +43,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) YKFManagementInterfaceConfiguration* configuration;
 
+@property (nonatomic, readonly) NSUInteger serialNumber;
 @property (nonatomic, readonly) YKFVersion *version;
 @property (nonatomic, readonly) YKFFormFactor formFactor;
-@property (nonatomic, readonly) NSUInteger serialNumber;
+@property (nonatomic, readonly, nullable) NSString* partNumber;
+@property (nonatomic, readonly) NSUInteger isFIPSCapable;
+@property (nonatomic, readonly) NSUInteger isFIPSApproved;
+@property (nonatomic, readonly, nullable) YKFVersion *fpsVersion;
+@property (nonatomic, readonly, nullable) YKFVersion *stmVersion;
 @property (nonatomic, readonly) bool isConfigurationLocked;
+@property (nonatomic, readonly) bool isFips;
+@property (nonatomic, readonly) bool isSky;
+@property (nonatomic, readonly) bool pinComplexity;
+@property (nonatomic, readonly) NSUInteger isResetBlocked;
 
 @end
 

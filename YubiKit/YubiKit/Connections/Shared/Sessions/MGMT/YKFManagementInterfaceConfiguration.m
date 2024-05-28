@@ -98,4 +98,25 @@
     }
 }
 
++ (NSUInteger)translateFipsMask:(NSUInteger)fipsMask {
+    NSUInteger capabilities = 0;
+    if ((fipsMask & 0b00000001) != 0) {
+        capabilities |= YKFManagementApplicationTypeOTP;
+    }
+    if ((fipsMask & 0b00000010) != 0) {
+        capabilities |= YKFManagementApplicationTypePIV;
+    }
+    if ((fipsMask & 0b00000100) != 0) {
+        capabilities |= YKFManagementApplicationTypeOPGP;
+    }
+    if ((fipsMask & 0b00001000) != 0) {
+        capabilities |= YKFManagementApplicationTypeOATH;
+    }
+    if ((fipsMask & 0b00010000) != 0) {
+        capabilities |= YKFManagementApplicationTypeHSMAUTH;
+    }
+    return capabilities;
+}
+
+
 @end
