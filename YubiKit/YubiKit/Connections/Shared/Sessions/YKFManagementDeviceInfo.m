@@ -43,7 +43,7 @@
 
 @implementation YKFManagementDeviceInfo
 
-- (nullable instancetype)initWithResponseData:(nonnull NSMutableArray<YKFTLVRecord*> *)records defaultVersion:(nonnull YKFVersion *)defaultVersion {
+- (nullable instancetype)initWithTLVRecords:(nonnull NSMutableArray<YKFTLVRecord*> *)records defaultVersion:(nonnull YKFVersion *)defaultVersion {
     YKFAssertAbortInit(records.count > 0);
     YKFAssertAbortInit(defaultVersion)
     self = [super init];
@@ -98,28 +98,23 @@
         NSData *fpsVersionData = [records ykfTLVRecordWithTag:YKFManagementTagFPSVersion].value;
         if (fpsVersionData) {
             YKFVersion *version = [[YKFVersion alloc] initWithData:fpsVersionData];
-            if (version && version != [[YKFVersion alloc] initWithString:@"0.0.0"]) {
+            if (version && [version compare:[[YKFVersion alloc] initWithString:@"0.0.0"]] != NSOrderedSame) {
                 self.fpsVersion = version;
             }
         }
         NSData *stmVersionData = [records ykfTLVRecordWithTag:YKFManagementTagSTMVersion].value;
         if (stmVersionData) {
             YKFVersion *version = [[YKFVersion alloc] initWithData:stmVersionData];
-            if (version && version != [[YKFVersion alloc] initWithString:@"0.0.0"]) {
+            if (version && [version compare:[[YKFVersion alloc] initWithString:@"0.0.0"]] != NSOrderedSame) {
                 self.stmVersion = version;
             }
         }
-        self.partNumber = [[NSString alloc] initWithData:[records ykfTLVRecordWithTag:YKFManagementTagSTMVersion].value encoding:NSUTF8StringEncoding];
+        self.partNumber = [[NSString alloc] initWithData:[records ykfTLVRecordWithTag:YKFManagementTagPartNumber].value encoding:NSUTF8StringEncoding];
         if (self.partNumber.length == 0) {
             self.partNumber = nil;
         }
         
-        self.usbSupportedMask = [[records ykfTLVRecordWithTag:YKFManagementTagUSBSupported].value ykf_integerValue];
-        self.usbEnabledMask = [[records ykfTLVRecordWithTag:YKFManagementTagUSBEnabled].value ykf_integerValue];
-        self.nfcSupportedMask = [[records ykfTLVRecordWithTag:YKFManagementTagNFCSupported].value ykf_integerValue];
-        self.nfcEnabledMask = [[records ykfTLVRecordWithTag:YKFManagementTagNFCEnabled].value ykf_integerValue];
-        
-        self.configuration = [[YKFManagementInterfaceConfiguration alloc] initWithDeviceInfo:self];
+        self.configuration = [[YKFManagementInterfaceConfiguration alloc] initWithTLVRecords:records];
     }
     return self;
 }

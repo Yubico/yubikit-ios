@@ -42,6 +42,16 @@ Appends [tag] + 0x02 + 2 bytes to the mutable data buffer.
 - (void)ykf_appendEntryWithTag:(UInt8)tag headerBytes:(NSArray *)headerBytes data:(NSData *)data;
 
 /*
+ Appends the UInt8 value to the mutable data
+ */
+- (void)ykf_appendUInt8EntryWithTag:(UInt8)tag value:(UInt8)value;
+
+/*
+ Appends the UInt16 value to the mutable data after converting it to a big endian represetation (key representation).
+ */
+- (void)ykf_appendUInt16EntryWithTag:(UInt8)tag value:(UInt16)value;
+
+/*
  Appends the UInt32 value to the mutable data after converting it to a big endian represetation (key representation).
  */
 - (void)ykf_appendUInt32EntryWithTag:(UInt8)tag value:(UInt32)value;

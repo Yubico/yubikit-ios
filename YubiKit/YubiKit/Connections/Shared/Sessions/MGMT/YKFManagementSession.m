@@ -66,7 +66,7 @@ NSString* const YKFManagementErrorDomain = @"com.yubico.management";
             completion(nil, error);
             return;
         }
-        YKFManagementDeviceInfo *deviceInfo = [[YKFManagementDeviceInfo alloc] initWithResponseData:result defaultVersion:self.version];
+        YKFManagementDeviceInfo *deviceInfo = [[YKFManagementDeviceInfo alloc] initWithTLVRecords:result defaultVersion:self.version];
         completion(deviceInfo, error);
         return;
     } result: [NSMutableArray<YKFTLVRecord *> new] page: 0];

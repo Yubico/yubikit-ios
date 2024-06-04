@@ -15,17 +15,15 @@
 #import "YKFManagementDeviceInfo+Private.h"
 #import "YKFManagementDeviceInfo.h"
 #import "YKFAssert.h"
+#import "YKFTLVRecord.h"
+#import "NSArray+YKFTLVRecord.h"
+#import "YKFNSDataAdditions+Private.h"
 
 @interface YKFManagementInterfaceConfiguration()
 
 @property (nonatomic, readwrite) BOOL isConfigurationLocked;
-
 @property (nonatomic, readwrite) NSUInteger usbSupportedMask;
 @property (nonatomic, readwrite) NSUInteger nfcSupportedMask;
-
-@property (nonatomic, readwrite) NSUInteger usbEnabledMask;
-@property (nonatomic, readwrite) NSUInteger nfcEnabledMask;
-
 @property (nonatomic, readwrite) BOOL usbMaskChanged;
 @property (nonatomic, readwrite) BOOL nfcMaskChanged;
 
@@ -33,16 +31,29 @@
 
 @implementation YKFManagementInterfaceConfiguration
 
-- (nullable instancetype)initWithDeviceInfo:(nonnull YKFManagementDeviceInfo *)deviceInfo {
-    YKFAssertAbortInit(deviceInfo);
+- (nullable instancetype)initWithTLVRecords:(nonnull NSMutableArray<YKFTLVRecord*> *)records {
     self = [super init];
     if (self) {
-
-        self.isConfigurationLocked = deviceInfo.isConfigurationLocked;
-        self.usbSupportedMask = deviceInfo.usbSupportedMask;
-        self.nfcSupportedMask = deviceInfo.nfcSupportedMask;
-        self.usbEnabledMask = deviceInfo.usbEnabledMask;
-        self.nfcEnabledMask = deviceInfo.nfcEnabledMask;
+        self.isConfigurationLocked = [[records ykfTLVRecordWithTag:YKFManagementTagConfigLocked].value ykf_integerValue] == 1;
+        self.usbSupportedMask = [[records ykfTLVRecordWithTag:YKFManagementTagUSBSupported].value ykf_integerValue];
+        self.usbEnabledMask = [[records ykfTLVRecordWithTag:YKFManagementTagUSBEnabled].value ykf_integerValue];
+        self.nfcSupportedMask = [[records ykfTLVRecordWithTag:YKFManagementTagNFCSupported].value ykf_integerValue];
+        self.nfcEnabledMask = [[records ykfTLVRecordWithTag:YKFManagementTagNFCEnabled].value ykf_integerValue];
+        
+        NSData *autoEjectTimeoutData = [records ykfTLVRecordWithTag:YKFManagementTagAutoEjectTimeout].value;
+        if (autoEjectTimeoutData) {
+            self.autoEjectTimeout = [autoEjectTimeoutData ykf_integerValue];
+        }
+                                        
+        NSData *challengeResponseTimeoutData = [records ykfTLVRecordWithTag:YKFManagementTagChallengeResponseTimeout].value;
+        if (challengeResponseTimeoutData) {
+            self.challengeResponseTimeout = [challengeResponseTimeoutData ykf_integerValue];
+        }
+        
+        NSData *isNFCRestrictedData = [records ykfTLVRecordWithTag:YKFManagementTagNFCRestricted].value;
+        if (isNFCRestrictedData) {
+            self.isNFCRestricted = [isNFCRestrictedData ykf_integerValue] == 1;
+        }
     }
     return self;
 }

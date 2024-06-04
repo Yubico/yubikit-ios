@@ -95,11 +95,41 @@ class ManagementTests: XCTestCase {
                 session.getDeviceInfo { deviceInfo, error in
                     guard let deviceInfo = deviceInfo else { XCTFail("Failed to get DeviceInfo: \(error!)"); return }
                     print("✅ Got device info:")
-                    print("     is locked: \(deviceInfo.isConfigurationLocked)")
-                    print("     serial number: \(deviceInfo.serialNumber)")
-                    print("     form factor: \(deviceInfo.formFactor.rawValue)")
-                    print("     firmware version: \(deviceInfo.version)")
+                    print("""
+YubiKey \(deviceInfo.formFactor) \(deviceInfo.version) (#\(deviceInfo.serialNumber))
+Supported capabilities: \(String(describing: deviceInfo.configuration?.nfcSupportedMask))
+Supported capabilities: \(String(describing: deviceInfo.configuration?.usbSupportedMask))
+isConfigLocked: \(deviceInfo.isConfigurationLocked)
+isFips: \(deviceInfo.isFips)
+isSky: \(deviceInfo.isSky)
+partNumber: \(String(describing: deviceInfo.partNumber))
+isFipsCapable: \(deviceInfo.isFIPSCapable)
+isFipsApproved: \(deviceInfo.isFIPSApproved)
+pinComplexity: \(deviceInfo.pinComplexity)
+resetBlocked: \(deviceInfo.isResetBlocked)
+fpsVersion: \(String(describing: deviceInfo.fpsVersion))
+stmVersion: \(String(describing: deviceInfo.stmVersion))
+""")
                     completion()
+                }
+            }
+        }
+    }
+    
+    func testZEnableNFCRestriction() {
+        runYubiKitTest { connection, completion in
+            connection.managementSessionAndDeviceInfo { session, deviceInfo in
+                guard let config = deviceInfo.configuration else { completion(); return }
+                config.isNFCRestricted = true
+                session.write(config, reboot: false) { error in
+                    XCTAssertNil(error)
+                    session.getDeviceInfo { deviceInfo, error in
+                        XCTAssertNil(error)
+                        if let isNFCRestricted = deviceInfo?.configuration?.isNFCRestricted {
+                            XCTAssertTrue(isNFCRestricted)
+                        }
+                        completion()
+                    }
                 }
             }
         }

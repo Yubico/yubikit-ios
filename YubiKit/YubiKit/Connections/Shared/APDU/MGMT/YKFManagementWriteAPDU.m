@@ -12,6 +12,7 @@
 #import "YKFManagementDeviceInfo+Private.h"
 #import "YKFNSMutableDataAdditions.h"
 #import "YKFAssert.h"
+#import "YKFNSDataAdditions+Private.h"
 
 @implementation YKFManagementWriteAPDU
 
@@ -33,6 +34,18 @@ static UInt8 const YKFManagementConfigurationTagsReboot = 0x0c;
         // specify that device requires reboot (force disconnection of YubiKey)
         [configData ykf_appendByte:YKFManagementConfigurationTagsReboot];
         [configData ykf_appendByte:0];
+    }
+    
+    if (configuration.autoEjectTimeout != 0) {
+        [configData ykf_appendUInt16EntryWithTag:YKFManagementTagAutoEjectTimeout value:configuration.autoEjectTimeout];
+    }
+    
+    if (configuration.challengeResponseTimeout != 0) {
+        [configData ykf_appendUInt8EntryWithTag:YKFManagementTagChallengeResponseTimeout value:configuration.challengeResponseTimeout];
+    }
+    
+    if (configuration.isNFCRestricted) {
+        [configData ykf_appendShortWithTag:YKFManagementTagNFCRestricted data:0x01];
     }
     
     NSMutableData *rawRequest = [[NSMutableData alloc] init];
