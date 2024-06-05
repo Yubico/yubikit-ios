@@ -28,6 +28,7 @@ static const NSUInteger YKFManagementTagDeviceFlags = 0x08;
 static const NSUInteger YKFManagementTagNFCSupported = 0x0d;
 static const NSUInteger YKFManagementTagNFCEnabled = 0x0e;
 static const NSUInteger YKFManagementTagConfigLocked = 0x0a;
+static const NSUInteger YKFManagementTagUnlock = 0x0b;
 static const NSUInteger YKFManagementTagPartNumber = 0x13;
 static const NSUInteger YKFManagementTagFIPSCapable = 0x14;
 static const NSUInteger YKFManagementTagFIPSApproved = 0x15;

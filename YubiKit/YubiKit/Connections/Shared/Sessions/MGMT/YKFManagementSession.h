@@ -73,6 +73,51 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param reboot
 ///    The device reboots after setting configuration.
 ///
+/// @param lockCode
+///    Required if a configuration lock code is set.
+///
+/// @param newLockCode
+///    changes or removes (if 16 byte all-zero) the configuration lock code.
+///
+/// @param completion
+///    The response block which is executed after the request was processed by the key. The completion block
+///    will be executed on a background thread.
+///
+/// @note
+///   This method requires support for device config, available in YubiKey 5.0 or later.
+///   The method is thread safe and can be invoked from any thread (main or a background thread).
+- (void)writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot lockCode:(nullable NSData *)lockCode newLockCode:(nullable NSData *)newLockCode completion:(nonnull YKFManagementSessionWriteCompletionBlock)completion;
+
+/// @abstract
+///    Writes configuration to YubiKey (allos to enable and disable applications on YubiKey)
+///
+/// @param configuration
+///    The configurations that represent information on which interfaces/applications need to be enabled
+///
+/// @param reboot
+///    The device reboots after setting configuration.
+///
+/// @param lockCode
+///    Required if a configuration lock code is set.
+///
+/// @param completion
+///    The response block which is executed after the request was processed by the key. The completion block
+///    will be executed on a background thread.
+///
+/// @note
+///   This method requires support for device config, available in YubiKey 5.0 or later.
+///   The method is thread safe and can be invoked from any thread (main or a background thread).
+- (void)writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot lockCode:(nullable NSData *)lockCode completion:(nonnull YKFManagementSessionWriteCompletionBlock)completion;
+
+/// @abstract
+///    Writes configuration to YubiKey (allos to enable and disable applications on YubiKey)
+///
+/// @param configuration
+///    The configurations that represent information on which interfaces/applications need to be enabled
+///
+/// @param reboot
+///    The device reboots after setting configuration.
+///
 /// @param completion
 ///    The response block which is executed after the request was processed by the key. The completion block
 ///    will be executed on a background thread.

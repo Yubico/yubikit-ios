@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFManagementWriteAPDU : YKFAPDU
 
-- (instancetype)initWithConfiguration:(nonnull YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithConfiguration:(nonnull YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot lockCode:(nullable NSData *)lockCode newLockCode:(nullable NSData *)newLockCode NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

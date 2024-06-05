@@ -100,17 +100,24 @@ typedef void (^YKFManagementSessionReadPagedDeviceInfoBlock)
     }];
 }
 
-- (void)writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot completion:(nonnull YKFManagementSessionWriteCompletionBlock)completion {
-    YKFParameterAssertReturn(configuration);
+- (void)writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot lockCode:(nullable NSData *)lockCode newLockCode:(nullable NSData *)newLockCode completion:(nonnull YKFManagementSessionWriteCompletionBlock)completion {
     YKFParameterAssertReturn(configuration);
     if (![self.features.deviceConfig isSupportedBySession:self]) {
         completion([[NSError alloc] initWithDomain:YKFManagementErrorDomain code:YKFManagementErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Writing device configuration not supported by this YubiKey."}]);
         return;
     }
-    YKFManagementWriteAPDU *apdu = [[YKFManagementWriteAPDU alloc]initWithConfiguration:configuration reboot:reboot];
+    YKFManagementWriteAPDU *apdu = [[YKFManagementWriteAPDU alloc]initWithConfiguration:configuration reboot:reboot lockCode:lockCode newLockCode:newLockCode];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         completion(error);
     }];
+}
+
+- (void)writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot lockCode:(nullable NSData *)lockCode completion:(nonnull YKFManagementSessionWriteCompletionBlock)completion {
+    [self writeConfiguration:configuration reboot:reboot lockCode:lockCode newLockCode:nil completion:completion];
+}
+
+- (void)writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot completion:(nonnull YKFManagementSessionWriteCompletionBlock)completion {
+    [self writeConfiguration:configuration reboot:reboot lockCode:nil newLockCode:nil completion:completion];
 }
 
 // No application side state that needs clearing but this will be called when another

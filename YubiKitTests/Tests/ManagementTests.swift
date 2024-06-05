@@ -15,6 +15,9 @@
 import XCTest
 import Foundation
 
+fileprivate let lockCode =      Data(hexEncodedString: "01020304050607080102030405060708")!
+fileprivate let clearLockCode = Data(hexEncodedString: "00000000000000000000000000000000")!
+
 class ManagementTests: XCTestCase {
     func testDisableOATH() {
         runYubiKitTest { connection, completion in
@@ -116,6 +119,27 @@ stmVersion: \(String(describing: deviceInfo.stmVersion))
         }
     }
     
+    func testLockCode() throws {
+        runYubiKitTest { connection, completion in
+            connection.managementSessionAndDeviceInfo { session, deviceInfo in
+                let config = deviceInfo.configuration!
+                session.write(config, reboot: false, lockCode: nil, newLockCode: lockCode) { error in
+                    guard error == nil else { XCTFail("Failed setting new lock code"); return }
+                    print("✅ Lock code set to: \(lockCode.hexDescription)")
+                    session.write(config, reboot: false, lockCode: nil) { error in
+                        guard error != nil else { XCTFail("Successfully updated config although no lock code was supplied and it should have been enabled."); return }
+                        print("✅ Failed updating device config (as expected) without using lock code.")
+                        session.write(config, reboot: false, lockCode: lockCode) { error in
+                            guard error == nil else { print("Failed to update device config even though lock code was supplied."); return }
+                            print("✅ Succesfully updated device config using lock code.")
+                            completion()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func testZEnableNFCRestriction() {
         runYubiKitTest { connection, completion in
             connection.managementSessionAndDeviceInfo { session, deviceInfo in
@@ -143,7 +167,9 @@ extension YKFConnectionProtocol {
             guard let session = session else { XCTAssertTrue(false, "Failed to get Management Session: \(error!)"); return }
             session.getDeviceInfo { deviceInfo, error in
                 guard let deviceInfo = deviceInfo else { XCTAssertTrue(false, "Failed to read device info: \(error!)"); return }
-                completion(session, deviceInfo)
+                session.write(deviceInfo.configuration!, reboot: false, lockCode: lockCode, newLockCode: clearLockCode) { error in
+                    completion(session, deviceInfo)
+                }
             }
         }
     }
