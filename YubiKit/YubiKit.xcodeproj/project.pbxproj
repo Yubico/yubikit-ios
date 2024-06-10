@@ -226,6 +226,7 @@
 		B4C9BBCC2A05547400FFDFD6 /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = B4C9BBC92A05547400FFDFD6 /* NSData+GZIP.m */; };
 		B4CFA9BE28AA4D0B0080813A /* YKFSmartCardConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = B4CFA9BD28AA4D0B0080813A /* YKFSmartCardConnection.m */; };
 		B4CFA9C428ABB9BB0080813A /* YKFSmartCardConnectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = B4CFA9C328ABB9BB0080813A /* YKFSmartCardConnectionController.m */; };
+		B4E1C3632C12F1140011F0F6 /* YKFPIVSlotMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = B4E1C3622C12F1140011F0F6 /* YKFPIVSlotMetadata.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -641,6 +642,9 @@
 		B4CFA9BF28AA95B70080813A /* YKFSmartCardConnection+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFSmartCardConnection+Private.h"; sourceTree = "<group>"; };
 		B4CFA9C228ABB9920080813A /* YKFSmartCardConnectionController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSmartCardConnectionController.h; sourceTree = "<group>"; };
 		B4CFA9C328ABB9BB0080813A /* YKFSmartCardConnectionController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFSmartCardConnectionController.m; sourceTree = "<group>"; };
+		B4E1C3602C12EB110011F0F6 /* YKFPIVSlotMetadata.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVSlotMetadata.h; sourceTree = "<group>"; };
+		B4E1C3612C12ED710011F0F6 /* YKFPIVSlotMetadata+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFPIVSlotMetadata+Private.h"; sourceTree = "<group>"; };
+		B4E1C3622C12F1140011F0F6 /* YKFPIVSlotMetadata.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVSlotMetadata.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -685,6 +689,9 @@
 				51ACC32825DC01DA0069214B /* YKFPIVSessionFeatures.m */,
 				51ACC34125E553910069214B /* YKFPIVManagementKeyType.h */,
 				51ACC33B25E553580069214B /* YKFPIVManagementKeyType.m */,
+				B4E1C3602C12EB110011F0F6 /* YKFPIVSlotMetadata.h */,
+				B4E1C3612C12ED710011F0F6 /* YKFPIVSlotMetadata+Private.h */,
+				B4E1C3622C12F1140011F0F6 /* YKFPIVSlotMetadata.m */,
 				5110D67425F8FD1500467680 /* YKFPIVManagementKeyMetadata.h */,
 				5110D68125F8FED500467680 /* YKFPIVManagementKeyMetadata+Private.h */,
 				5110D67525F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m */,
@@ -1558,6 +1565,7 @@
 				5110D6992600D9C800467680 /* YKFPIVPadding.m in Sources */,
 				95B58B8B229C03AE00199F8E /* YKFAccessoryConnection+Debugging.m in Sources */,
 				95B0CAAD21EF53E1009C6A34 /* YKFFIDO2Error.m in Sources */,
+				B4E1C3632C12F1140011F0F6 /* YKFPIVSlotMetadata.m in Sources */,
 				95DD40A72099A8A400363FEE /* YKFAccessoryConnection.m in Sources */,
 				95DD409D2099A89600363FEE /* YKFU2FRegisterResponse.m in Sources */,
 				B4CFA9BE28AA4D0B0080813A /* YKFSmartCardConnection.m in Sources */,

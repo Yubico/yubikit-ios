@@ -25,6 +25,7 @@
     @property (nonatomic, readonly) YKFFeature * _Nonnull attestation;
     @property (nonatomic, readonly) YKFFeature * _Nonnull p384;
     @property (nonatomic, readonly) YKFFeature * _Nonnull touchCached;
+    @property (nonatomic, readonly) YKFFeature * _Nonnull moveDelete;
 @end
 
 #endif /* YKFPIVSessionFeatures_h */

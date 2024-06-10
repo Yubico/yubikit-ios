@@ -56,10 +56,11 @@ typedef NS_ENUM(NSUInteger, YKFPIVFErrorCode) {
     YKFPIVFErrorCodeInvalidPin = 5,
     YKFPIVFErrorCodePinLocked = 6,
     YKFPIVFErrorCodeInvalidResponse = 7,
-    YKFPIVFErrorCodeAuthenticationFailed = 8
+    YKFPIVFErrorCodeAuthenticationFailed = 8,
+    YKFPIVErrorCodeIllegalArgument = 9
 };
 
-@class YKFPIVSessionFeatures, YKFPIVManagementKeyType, YKFPIVManagementKeyMetadata;
+@class YKFPIVSessionFeatures, YKFPIVManagementKeyType, YKFPIVManagementKeyMetadata, YKFPIVSlotMetadata;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -139,6 +140,10 @@ typedef void (^YKFPIVSessionPinPukMetadataCompletionBlock)
 /// @param error An error object that indicates why the request failed, or nil if the request was successful.
 typedef void (^YKFPIVSessionPinAttemptsCompletionBlock)
     (int retriesRemaining, NSError* _Nullable error);
+
+
+typedef void (^YKFPIVSessionSlotMetadataCompletionBlock)
+    (YKFPIVSlotMetadata* _Nullable metaData, NSError* _Nullable error);
 
 /// @abstract Response block for [getManagementKeyMetadata:completion:] which provides the management key metadata or an error.
 /// @param metaData The management key metadata.
@@ -262,6 +267,15 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 - (void)putKey:(SecKeyRef)key inSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion
         NS_SWIFT_NAME(putKey(_:inSlot:completion:));
 
+/// @abstract Move key from one slot to another. The source slot must not be the attestation slot and the
+///           destination slot must be empty. This method requires authentication with the management key.
+/// @discussion This method requires authentication.
+/// @param sourceSlot Slot to moe the key from.
+/// @param destinationSlot Slot to move the key to.
+/// @param completion The completion handler that gets called once the YubiKey has finished processing the
+///                   request. This handler is executed on a background queue.
+- (void)moveKey:(YKFPIVSlot)sourceSlot destinationSlot:(YKFPIVSlot)destinationSlot completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion;
+
 /// @abstract Writes an X.509 certificate to a slot on the YubiKey.
 /// @discussion This method requires authentication.
 /// @param certificate Certificate to write.
@@ -373,6 +387,14 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 ///       This functionality requires support for feature serial, available on YubiKey 5 or later.
 /// @note: This method is thread safe and can be invoked from any thread (main or a background thread).
 - (void)getSerialNumberWithCompletion:(nonnull YKFPIVSessionSerialNumberCompletionBlock)completion;
+
+/// @abstract Reads metadata about the private key stored in a slot.
+/// @param slot The slot to read metadata about.
+/// @param completion The completion handler that gets called once the YubiKey has finished processing the request.
+///                   This handler is executed on a background queue.
+/// @note This functionality requires support for feature metadata, available on YubiKey 5.3 or later.
+/// @note: This method is thread safe and can be invoked from any thread (main or a background thread).
+- (void)getMetadataForSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionSlotMetadataCompletionBlock)completion;
 
 /// @abstract Reads metadata about the card management key.
 /// @param completion The completion handler that gets called once the YubiKey has finished processing the request.
