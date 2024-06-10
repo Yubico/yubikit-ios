@@ -73,7 +73,7 @@ class PIVTests: XCTestCase {
                         return
                     }
                     session.verifyPin("123456") { retries, error in
-                          session.decryptWithKey(in: .keyManagement, algorithm: SecKeyAlgorithm.rsaEncryptionPKCS1, encrypted: encryptedData as Data) { data, error in
+                        session.decryptWithKey(in: .keyManagement, algorithm: SecKeyAlgorithm.rsaEncryptionPKCS1, encrypted: encryptedData as Data) { data, error in
                             guard let data = data else { XCTFail("🔴 Failed to decrypt key: \(error!)"); completion(); return }
                             let decrypted = String(data:data, encoding: .utf8)
                             XCTAssert(decrypted == "Hello World!", "🔴 Got: '\(String(describing: decrypted))', exptected 'Hello World!'.")
@@ -98,7 +98,7 @@ class PIVTests: XCTestCase {
                         return
                     }
                     session.verifyPin("123456") { retries, error in
-                          session.decryptWithKey(in: .keyManagement, algorithm: SecKeyAlgorithm.rsaEncryptionOAEPSHA224, encrypted: encryptedData as Data) { data, error in
+                        session.decryptWithKey(in: .keyManagement, algorithm: SecKeyAlgorithm.rsaEncryptionOAEPSHA224, encrypted: encryptedData as Data) { data, error in
                             guard let data = data else { XCTFail("🔴 Failed to decrypt key: \(error!)"); completion(); return }
                             let decrypted = String(data:data, encoding: .utf8)
                             XCTAssert(decrypted == "Hello World!", "🔴 Got: '\(String(describing: decrypted))', exptected 'Hello World!'.")
@@ -384,7 +384,7 @@ class PIVTests: XCTestCase {
             }
         }
     }
-
+    
     let certificate = SecCertificateCreateWithData(nil, Data(base64Encoded: "MIIBKzCB0qADAgECAhQTuU25u6oazORvKfTleabdQaDUGzAKBggqhkjOPQQDAjAWMRQwEgYDVQQDDAthbW9zLmJ1cnRvbjAeFw0yMTAzMTUxMzU5MjVaFw0yODA1MTcwMDAwMDBaMBYxFDASBgNVBAMMC2Ftb3MuYnVydG9uMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEofwN6S+atSZmzeLK7aSI+mJJwxh0oUBiCOngHLeToYeanrTGvCZQ2AK/R9esnqSxMyBUDp91UO4F6U4c6RTooTAKBggqhkjOPQQDAgNIADBFAiAnj/KUSpW7l5wnenQEbwWudK/7q3WtyrqdB0H1xc258wIhALDLImzu3S+0TT2/ggM95LLWE4Llfa2RQM71bnW6zqqn")! as CFData)!
     
     func testPutAndReadCertificate() throws {
@@ -474,7 +474,6 @@ class PIVTests: XCTestCase {
                     print("✅ authenticated")
                     completion()
                 }
-
             }
         }
     }
@@ -518,6 +517,38 @@ class PIVTests: XCTestCase {
         }
     }
     
+    func testVerifyPINRetryCount() throws {
+        runYubiKitTest { connection, completion in
+            connection.pivTestSession { session in
+                session.verifyPin("333333") { retries, error in
+                    guard let error = error else { XCTFail("Error was not nil"); return }
+                    XCTAssert((error as NSError).code == YKFPIVErrorCode.invalidPin.rawValue)
+                    XCTAssert(retries == 2)
+                    print("✅ PIN retry count \(retries)")
+                    session.verifyPin("111111") { retries, error in
+                        guard let error = error else { XCTFail("Error was not nil"); return }
+                        XCTAssert((error as NSError).code == YKFPIVErrorCode.invalidPin.rawValue)
+                        XCTAssert(retries == 1)
+                        print("✅ PIN retry count \(retries)")
+                        session.verifyPin("444444") { retries, error in
+                            guard let error = error else { XCTFail("Error was not nil"); return }
+                            XCTAssert((error as NSError).code == YKFPIVErrorCode.pinLocked.rawValue)
+                            XCTAssert(retries == 0)
+                            print("✅ PIN retry count \(retries)")
+                            session.verifyPin("111111") { retries, error in
+                                guard let error = error else { XCTFail("Error was not nil"); return }
+                                XCTAssert((error as NSError).code == YKFPIVErrorCode.pinLocked.rawValue)
+                                XCTAssert(retries == 0)
+                                print("✅ PIN retry count \(retries)")
+                                completion()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     func testAuthenticateWithWrongManagementKey() throws {
         runYubiKitTest { connection, completion in
             connection.pivTestSession { session in
@@ -601,7 +632,7 @@ class PIVTests: XCTestCase {
             connection.pivTestSession { session in
                 XCTAssertNotNil(session.version)
                 XCTAssert(session.version.major == 5)
-                XCTAssert(session.version.minor == 2 || session.version.minor == 3 || session.version.minor == 4)
+                XCTAssert(session.version.minor == 2 || session.version.minor == 3 || session.version.minor == 4 || session.version.minor == 7)
                 print("✅ Got version: \(session.version.major).\(session.version.minor).\(session.version.micro)")
                 completion()
             }

@@ -48,15 +48,15 @@ typedef NS_ENUM(NSUInteger, YKFPIVSlot) {
 extern NSString* _Nonnull const YKFPIVFErrorDomain;
 
 /// PIV error codes.
-typedef NS_ENUM(NSUInteger, YKFPIVFErrorCode) {
-    YKFPIVFErrorCodeInvalidCipherTextLength = 1,
-    YKFPIVFErrorCodeUnsupportedOperation = 2,
-    YKFPIVFErrorCodeDataParseError = 3,
-    YKFPIVFErrorCodeUnknownKeyType = 4,
-    YKFPIVFErrorCodeInvalidPin = 5,
-    YKFPIVFErrorCodePinLocked = 6,
-    YKFPIVFErrorCodeInvalidResponse = 7,
-    YKFPIVFErrorCodeAuthenticationFailed = 8,
+typedef NS_ENUM(NSUInteger, YKFPIVErrorCode) {
+    YKFPIVErrorCodeInvalidCipherTextLength = 1,
+    YKFPIVErrorCodeUnsupportedOperation = 2,
+    YKFPIVErrorCodeDataParseError = 3,
+    YKFPIVErrorCodeUnknownKeyType = 4,
+    YKFPIVErrorCodeInvalidPin = 5,
+    YKFPIVErrorCodePinLocked = 6,
+    YKFPIVErrorCodeInvalidResponse = 7,
+    YKFPIVErrorCodeAuthenticationFailed = 8,
     YKFPIVErrorCodeIllegalArgument = 9
 };
 

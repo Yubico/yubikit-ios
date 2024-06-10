@@ -14,14 +14,6 @@
 
 #import "YKFSessionError.h"
 
-typedef NS_ENUM(NSUInteger, YKFPIVErrorCode) {
-    
-    /*! Unexpected reply from the YubiKey.
-     */
-    YKFPIVErrorCodeBadResponse = 0x01,
-    YKFPIVErrorCodeBadKeyLength = 0x02
-};
-
 
 NS_ASSUME_NONNULL_BEGIN
 /*!
