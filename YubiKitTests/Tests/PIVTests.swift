@@ -432,6 +432,31 @@ class PIVTests: XCTestCase {
         }
     }
     
+    func testDeleteKey() throws {
+        runYubiKitTest { connection, completion in
+            connection.authenticatedPivTestSession { session in
+                session.putCertificate(self.certificate, inSlot: .authentication) { error in
+                    XCTAssertNil(error)
+                    session.generateKey(in: .authentication, type: .RSA1024) { secKey, error in
+                        XCTAssertNil(error)
+                        XCTAssertNotNil(secKey)
+                        session.getMetadataFor(.authentication) { metadata, error in
+                            XCTAssertNil(error)
+                            XCTAssertNotNil(metadata?.publicKey)
+                            session.deleteKey(in: .authentication) { error in
+                                XCTAssertNil(error)
+                                session.getMetadataFor(.authentication) { metadata, error in
+                                    XCTAssertNotNil(error)
+                                    completion()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func testPutCompressedAndReadCertificate() throws {
         runYubiKitTest { connection, completion in
             connection.authenticatedPivTestSession { session in

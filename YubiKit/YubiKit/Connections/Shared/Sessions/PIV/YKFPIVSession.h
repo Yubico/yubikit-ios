@@ -276,6 +276,11 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 ///                   request. This handler is executed on a background queue.
 - (void)moveKey:(YKFPIVSlot)sourceSlot destinationSlot:(YKFPIVSlot)destinationSlot completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion;
 
+/// @abstract Delete key from slot. This method requires authentication with the management key.
+///
+/// @param slot Slot to delete the key from.
+- (void)deleteKeyInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion;
+
 /// @abstract Writes an X.509 certificate to a slot on the YubiKey.
 /// @discussion This method requires authentication.
 /// @param certificate Certificate to write.

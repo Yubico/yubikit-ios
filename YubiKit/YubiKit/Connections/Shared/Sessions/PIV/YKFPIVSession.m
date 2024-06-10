@@ -440,6 +440,17 @@ int maxPinAttempts = 3;
     }];
 }
 
+- (void)deleteKeyInSlot:(YKFPIVSlot)slot completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion {
+    if (![self.features.moveDelete isSupportedBySession:self]) {
+        completion([[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Delete keys not supported by this YubiKey."}]);
+        return;
+    }
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsMoveKey p1:0xff p2:slot data:[NSData data] type:YKFAPDUTypeExtended];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        completion(error);
+    }];
+}
+
 
 - (void)putCertificate:(SecCertificateRef)certificate inSlot:(YKFPIVSlot)slot completion:(YKFPIVSessionGenericCompletionBlock)completion {
     [self putCertificate:certificate inSlot:slot compress:NO completion:completion];
