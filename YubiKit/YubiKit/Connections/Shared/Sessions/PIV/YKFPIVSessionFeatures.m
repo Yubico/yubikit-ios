@@ -40,7 +40,7 @@
         self.attestation = [[YKFFeature alloc] initWithName:@"Attestation" versionString:@"4.3.0"];
         self.p384 = [[YKFFeature alloc] initWithName:@"Curve P384" versionString:@"4.0.0"];
         self.touchCached = [[YKFFeature alloc] initWithName:@"Cached touch policy" versionString:@"4.3.0"];
-        self.moveDelete = [[YKFFeature alloc] initWithName:@"Move and delete keyse" versionString:@"5.7.0"];
+        self.moveDelete = [[YKFFeature alloc] initWithName:@"Move and delete keys" versionString:@"5.7.0"];
     }
     return self;
 }
