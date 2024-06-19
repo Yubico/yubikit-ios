@@ -270,7 +270,7 @@ typedef void (^YKFPIVSessionManagementKeyMetadataCompletionBlock)
 /// @abstract Move key from one slot to another. The source slot must not be the attestation slot and the
 ///           destination slot must be empty. This method requires authentication with the management key.
 /// @discussion This method requires authentication.
-/// @param sourceSlot Slot to moe the key from.
+/// @param sourceSlot Slot to move the key from.
 /// @param destinationSlot Slot to move the key to.
 /// @param completion The completion handler that gets called once the YubiKey has finished processing the
 ///                   request. This handler is executed on a background queue.
