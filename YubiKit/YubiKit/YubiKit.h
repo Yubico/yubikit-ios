@@ -56,6 +56,7 @@
 #import "YKFManagementDeviceInfo.h"
 #import "YKFManagementInterfaceConfiguration.h"
 #import "YKFPIVKeyType.h"
+#import "YKFPIVSlotMetadata.h"
 #import "YKFChallengeResponseSession.h"
 #import "YKFManagementSession.h"
 

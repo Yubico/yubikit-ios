@@ -25,6 +25,7 @@
     @property (nonatomic, readwrite) YKFFeature * _Nonnull p384;
     @property (nonatomic, readwrite) YKFFeature * _Nonnull touchCached;
     @property (nonatomic, readwrite) YKFFeature * _Nonnull rsaGeneration;
+    @property (nonatomic, readwrite) YKFFeature * _Nonnull moveDelete;
 @end
 
 @implementation YKFPIVSessionFeatures
@@ -39,6 +40,7 @@
         self.attestation = [[YKFFeature alloc] initWithName:@"Attestation" versionString:@"4.3.0"];
         self.p384 = [[YKFFeature alloc] initWithName:@"Curve P384" versionString:@"4.0.0"];
         self.touchCached = [[YKFFeature alloc] initWithName:@"Cached touch policy" versionString:@"4.3.0"];
+        self.moveDelete = [[YKFFeature alloc] initWithName:@"Move and delete keys" versionString:@"5.7.0"];
     }
     return self;
 }

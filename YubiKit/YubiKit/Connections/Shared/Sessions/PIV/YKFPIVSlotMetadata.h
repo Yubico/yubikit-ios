@@ -1,4 +1,4 @@
-// Copyright 2018-2021 Yubico AB
+// Copyright 2018-2024 Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "YKFSessionError.h"
+#ifndef YKFPIVSlotMetadata_h
+#define YKFPIVSlotMetadata_h
 
+#import "YKFPIVSession.h"
 
-NS_ASSUME_NONNULL_BEGIN
-/*!
- @class
-    YKFPIVError
- @abstract
-    Error type returned by the YKFPIVSession.
- */
-@interface YKFPIVError: YKFSessionError
+@interface YKFPIVSlotMetadata : NSObject
 
-+ (instancetype)errorUnpackingTLVExpected:(NSUInteger)expected got:(NSUInteger)got;
+@property (nonatomic, readonly) YKFPIVKeyType keyType;
+@property (nonatomic, readonly) YKFPIVPinPolicy pinPolicy;
+@property (nonatomic, readonly) YKFPIVTouchPolicy touchPolicy;
+@property (nonatomic, readonly) SecKeyRef publicKey;
+@property (nonatomic, readonly) bool generated;
 
 @end
 
-NS_ASSUME_NONNULL_END
+#endif /* YKFPIVSlotMetadata_h */
