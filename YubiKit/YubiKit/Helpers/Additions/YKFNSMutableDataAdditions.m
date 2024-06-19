@@ -56,6 +56,23 @@
     [self ykf_appendEntryWithTag:tag data:buffer];
 }
 
+- (void)ykf_appendUInt8EntryWithTag:(UInt8)tag value:(UInt8)value {
+    YKFParameterAssertReturn(tag > 0);
+    [self ykf_appendByte:tag];
+    [self ykf_appendByte:sizeof(UInt8)];
+    [self appendBytes:&value length:sizeof(UInt8)];
+}
+
+- (void)ykf_appendUInt16EntryWithTag:(UInt8)tag value:(UInt16)value {
+    YKFParameterAssertReturn(tag > 0);
+    
+    UInt16 bigEndianValue = CFSwapInt16HostToBig(value);
+    
+    [self ykf_appendByte:tag];
+    [self ykf_appendByte:sizeof(UInt16)];
+    [self appendBytes:&bigEndianValue length:sizeof(UInt16)];
+}
+
 - (void)ykf_appendUInt32EntryWithTag:(UInt8)tag value:(UInt32)value {
     YKFParameterAssertReturn(tag > 0);
     

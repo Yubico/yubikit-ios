@@ -21,6 +21,7 @@ typedef NS_ENUM(NSUInteger, YKFManagementApplicationType) {
     YKFManagementApplicationTypeOPGP = 0x08,
     YKFManagementApplicationTypePIV = 0x10,
     YKFManagementApplicationTypeOATH = 0x20,
+    YKFManagementApplicationTypeHSMAUTH = 0x0100,
     YKFManagementApplicationTypeCTAP2 = 0x0200
 };
 
@@ -32,6 +33,14 @@ typedef NS_ENUM(NSUInteger, YKFManagementTransportType) {
 @interface YKFManagementInterfaceConfiguration : NSObject
 
 @property (nonatomic, readonly) BOOL isConfigurationLocked;
+@property (nonatomic, readwrite) NSTimeInterval autoEjectTimeout;
+@property (nonatomic, readwrite) NSTimeInterval challengeResponseTimeout;
+@property (nonatomic, readwrite) BOOL isNFCRestricted;
+
+@property (nonatomic, readonly) NSUInteger usbSupportedMask;
+@property (nonatomic, readonly) NSUInteger nfcSupportedMask;
+@property (nonatomic, readwrite) NSUInteger usbEnabledMask;
+@property (nonatomic, readwrite) NSUInteger nfcEnabledMask;
 
 - (BOOL)isEnabled:(YKFManagementApplicationType)application overTransport:(YKFManagementTransportType)transport;
 - (BOOL)isSupported:(YKFManagementApplicationType)application overTransport:(YKFManagementTransportType)transport;

@@ -21,6 +21,8 @@
 #import "YKFSmartCardInterface.h"
 #import "YKFSelectApplicationAPDU.h"
 #import "YKFFeature.h"
+#import "NSArray+YKFTLVRecord.h"
+#import "YKFTLVRecord.h"
 
 NSString* const YKFManagementErrorDomain = @"com.yubico.management";
 
@@ -59,24 +61,63 @@ NSString* const YKFManagementErrorDomain = @"com.yubico.management";
         completion(nil, [[NSError alloc] initWithDomain:YKFManagementErrorDomain code:YKFManagementErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Device info not supported by this YubiKey."}]);
         return;
     }
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0x1D p1:0x00 p2:0x00 data:[NSData data] type:YKFAPDUTypeShort];
-    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
-        YKFManagementDeviceInfo *deviceInfo = [[YKFManagementDeviceInfo alloc] initWithResponseData:data defaultVersion:self.version];
+    [self readPagedDeviceInfoWithCompletion:^(NSMutableArray<YKFTLVRecord *> *result, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+            return;
+        }
+        YKFManagementDeviceInfo *deviceInfo = [[YKFManagementDeviceInfo alloc] initWithTLVRecords:result defaultVersion:self.version];
         completion(deviceInfo, error);
+        return;
+    } result: [NSMutableArray<YKFTLVRecord *> new] page: 0];
+}
+
+typedef void (^YKFManagementSessionReadPagedDeviceInfoBlock)
+    (NSMutableArray<YKFTLVRecord *>* result, NSError* _Nullable error);
+
+- (void)readPagedDeviceInfoWithCompletion:(YKFManagementSessionReadPagedDeviceInfoBlock)completion result:(NSMutableArray<YKFTLVRecord *>* _Nonnull)result page:(UInt8)page {
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:0x1D p1:page p2:0x00 data:[NSData data] type:YKFAPDUTypeShort];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+            return;
+        }
+        const char* bytes = (const char*)[data bytes];
+        int length = bytes[0] & 0xff;
+        if (length != data.length - 1) {
+            completion(result, nil);
+            return;
+        }
+        NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:[data subdataWithRange:NSMakeRange(1, data.length -  1)]];
+        [result addObjectsFromArray:records];
+        if ([records ykfTLVRecordWithTag:0x10] != nil) {
+            [self readPagedDeviceInfoWithCompletion:completion result:result page:page + 1];
+            return;
+        } else {
+            completion(result, nil);
+            return;
+        }
     }];
 }
 
-- (void)writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot completion:(nonnull YKFManagementSessionWriteCompletionBlock)completion {
-    YKFParameterAssertReturn(configuration);
+- (void)writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot lockCode:(nullable NSData *)lockCode newLockCode:(nullable NSData *)newLockCode completion:(nonnull YKFManagementSessionWriteCompletionBlock)completion {
     YKFParameterAssertReturn(configuration);
     if (![self.features.deviceConfig isSupportedBySession:self]) {
         completion([[NSError alloc] initWithDomain:YKFManagementErrorDomain code:YKFManagementErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Writing device configuration not supported by this YubiKey."}]);
         return;
     }
-    YKFManagementWriteAPDU *apdu = [[YKFManagementWriteAPDU alloc]initWithConfiguration:configuration reboot:reboot];
+    YKFManagementWriteAPDU *apdu = [[YKFManagementWriteAPDU alloc]initWithConfiguration:configuration reboot:reboot lockCode:lockCode newLockCode:newLockCode];
     [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         completion(error);
     }];
+}
+
+- (void)writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot lockCode:(nullable NSData *)lockCode completion:(nonnull YKFManagementSessionWriteCompletionBlock)completion {
+    [self writeConfiguration:configuration reboot:reboot lockCode:lockCode newLockCode:nil completion:completion];
+}
+
+- (void)writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot completion:(nonnull YKFManagementSessionWriteCompletionBlock)completion {
+    [self writeConfiguration:configuration reboot:reboot lockCode:nil newLockCode:nil completion:completion];
 }
 
 // No application side state that needs clearing but this will be called when another

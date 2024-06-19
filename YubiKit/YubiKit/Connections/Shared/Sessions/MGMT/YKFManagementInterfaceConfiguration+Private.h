@@ -16,20 +16,16 @@
 
 #import "YKFManagementInterfaceConfiguration.h"
 
-@class YKFManagementDeviceInfo;
+@class YKFManagementDeviceInfo, YKFTLVRecord;
 
 @interface YKFManagementInterfaceConfiguration()
-
-@property (nonatomic, readonly) NSUInteger usbSupportedMask;
-@property (nonatomic, readonly) NSUInteger nfcSupportedMask;
-
-@property (nonatomic, readonly) NSUInteger usbEnabledMask;
-@property (nonatomic, readonly) NSUInteger nfcEnabledMask;
 
 @property (nonatomic, readonly) BOOL usbMaskChanged;
 @property (nonatomic, readonly) BOOL nfcMaskChanged;
 
-- (nullable instancetype)initWithDeviceInfo:(nonnull YKFManagementDeviceInfo *)response NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithTLVRecords:(nonnull NSMutableArray<YKFTLVRecord*> *)records NS_DESIGNATED_INITIALIZER;
+
++ (NSUInteger)translateFipsMask:(NSUInteger)mask;
 
 @end
 
