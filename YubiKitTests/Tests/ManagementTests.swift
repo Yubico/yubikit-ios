@@ -158,6 +158,53 @@ stmVersion: \(String(describing: deviceInfo.stmVersion))
             }
         }
     }
+    
+    func testBioDeviceReset() throws {
+        runYubiKitTest { connection, completion in
+            connection.managementSession { session, error in
+                guard let session else { XCTFail("Failed to get Management Session: \(error!)"); return }
+                session.getDeviceInfo { info, error in
+                    guard let info else { XCTFail("Failed to get device info: \(error!)"); return }
+                    guard info.formFactor == .usbaBio || info.formFactor == .usbcBio else {
+                        print("⚠️ Skip testBioDeviceReset()")
+                        completion()
+                        return
+                    }
+                    session.deviceReset { error in
+                        XCTAssertNil(error)
+                        connection.pivSession { session, error in
+                            guard let session else { XCTFail("Failed to get PIV Session: \(error!)"); return }
+                            session.getPinMetadata { isDefault, _, _, error in
+                                XCTAssertNil(error)
+                                XCTAssertTrue(isDefault)
+                                session.setPin("654321", oldPin: "123456") { error in
+                                    XCTAssertNil(error)
+                                    session.getPinMetadata { isDefault, _, _, error in
+                                        XCTAssertNil(error)
+                                        XCTAssertFalse(isDefault)
+                                        connection.managementSession { session, error in
+                                            guard let session else { XCTFail("Failed to get Management Session: \(error!)"); return }
+                                            session.deviceReset { error in
+                                                XCTAssertNil(error)
+                                                connection.pivSession { session, error in
+                                                    guard let session else { XCTFail("Failed to get PIV Session: \(error!)"); return }
+                                                    session.getPinMetadata { isDefault, _, _, error in
+                                                        XCTAssertNil(error)
+                                                        XCTAssertTrue(isDefault)
+                                                        completion()
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 extension YKFConnectionProtocol {

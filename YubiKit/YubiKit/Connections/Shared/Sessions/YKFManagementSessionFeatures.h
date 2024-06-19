@@ -14,6 +14,7 @@
 @interface YKFManagementSessionFeatures : NSObject
 @property (nonatomic, readonly) YKFFeature * _Nonnull deviceInfo;
 @property (nonatomic, readonly) YKFFeature * _Nonnull deviceConfig;
+@property (nonatomic, readonly) YKFFeature * _Nonnull deviceReset;
 @end
 
 #endif /* YKFManagementSessionFeatures_h */
