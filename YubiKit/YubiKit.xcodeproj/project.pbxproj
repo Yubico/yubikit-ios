@@ -205,6 +205,8 @@
 		A54DCC0323F2147500E95259 /* YKNSStringAdditionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A54DCC0223F2147500E95259 /* YKNSStringAdditionTests.m */; };
 		B41B6F9A27A96B760062C377 /* YKFTLVRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B41B6F9927A96B760062C377 /* YKFTLVRecord.m */; };
 		B41B6F9C27A97DB40062C377 /* YKFTLVRecordTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B41B6F9B27A97DB40062C377 /* YKFTLVRecordTests.m */; };
+		B428498C2C22DA730000F8CF /* YKFPIVBioMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = B428498B2C22DA730000F8CF /* YKFPIVBioMetadata.m */; };
+		B428498F2C2305EA0000F8CF /* YKFInvalidPinError.m in Sources */ = {isa = PBXBuildFile; fileRef = B428498E2C2305EA0000F8CF /* YKFInvalidPinError.m */; };
 		B4451EBE2757B493002690BB /* YKFConnectionProtocol.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5176559925405FE400819857 /* YKFConnectionProtocol.h */; };
 		B4451EBF2757B4A9002690BB /* YKFPIVError.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51ACC34925E7EC910069214B /* YKFPIVError.h */; };
 		B4451EC02757B4BF002690BB /* YKFPIVSession.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 51ACC2FB25D5860C0069214B /* YKFPIVSession.h */; };
@@ -633,6 +635,11 @@
 		B41B6F9827A96B5B0062C377 /* YKFTLVRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFTLVRecord.h; sourceTree = "<group>"; };
 		B41B6F9927A96B760062C377 /* YKFTLVRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFTLVRecord.m; sourceTree = "<group>"; };
 		B41B6F9B27A97DB40062C377 /* YKFTLVRecordTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFTLVRecordTests.m; sourceTree = "<group>"; };
+		B428498A2C22DA730000F8CF /* YKFPIVBioMetadata.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFPIVBioMetadata.h; sourceTree = "<group>"; };
+		B428498B2C22DA730000F8CF /* YKFPIVBioMetadata.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFPIVBioMetadata.m; sourceTree = "<group>"; };
+		B428498D2C22DC1B0000F8CF /* YKFPIVBioMetadata+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YKFPIVBioMetadata+Private.h"; sourceTree = "<group>"; };
+		B428498E2C2305EA0000F8CF /* YKFInvalidPinError.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFInvalidPinError.m; sourceTree = "<group>"; };
+		B42849902C23061B0000F8CF /* YKFInvalidPinError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFInvalidPinError.h; sourceTree = "<group>"; };
 		B4712B6C28DC8412009B270D /* YKFOATHSetAccessKeyAPDU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YKFOATHSetAccessKeyAPDU.h; sourceTree = "<group>"; };
 		B4712B6D28DC8413009B270D /* YKFOATHSetAccessKeyAPDU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YKFOATHSetAccessKeyAPDU.m; sourceTree = "<group>"; };
 		B4C9BBC92A05547400FFDFD6 /* NSData+GZIP.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+GZIP.m"; sourceTree = "<group>"; };
@@ -699,6 +706,9 @@
 				5110D6982600D9C800467680 /* YKFPIVPadding.m */,
 				5110D6AF2603566200467680 /* YKFPIVKeyType.h */,
 				5110D6B02603568800467680 /* YKFPIVKeyType.m */,
+				B428498A2C22DA730000F8CF /* YKFPIVBioMetadata.h */,
+				B428498D2C22DC1B0000F8CF /* YKFPIVBioMetadata+Private.h */,
+				B428498B2C22DA730000F8CF /* YKFPIVBioMetadata.m */,
 			);
 			path = PIV;
 			sourceTree = "<group>";
@@ -1302,6 +1312,8 @@
 				8152341123BAE9D2004D4788 /* YKFChallengeResponseError.m */,
 				51ACC34925E7EC910069214B /* YKFPIVError.h */,
 				51ACC34A25E7ECA80069214B /* YKFPIVError.m */,
+				B42849902C23061B0000F8CF /* YKFInvalidPinError.h */,
+				B428498E2C2305EA0000F8CF /* YKFInvalidPinError.m */,
 			);
 			path = Errors;
 			sourceTree = "<group>";
@@ -1483,6 +1495,7 @@
 				8152340B23B573E4004D4788 /* YKFChalRespRequest.m in Sources */,
 				5121B2212563DE8200300145 /* YKFSmartCardInterface.m in Sources */,
 				95DD40872099A86A00363FEE /* YKFU2FSignAPDU.m in Sources */,
+				B428498C2C22DA730000F8CF /* YKFPIVBioMetadata.m in Sources */,
 				954E2C542211AA5600720D2B /* YKFFIDO2ClientPinAPDU.m in Sources */,
 				51ACC32925DC01DA0069214B /* YKFPIVSessionFeatures.m in Sources */,
 				5110D67625F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m in Sources */,
@@ -1504,6 +1517,7 @@
 				9581395421591DE1008558F3 /* YKFSelectOATHApplicationAPDU.m in Sources */,
 				95BA204521F7483100EED927 /* YKFFIDO2GetAssertionResponse.m in Sources */,
 				51ACC33625E50C860069214B /* NSArray+YKFTLVRecord.m in Sources */,
+				B428498F2C2305EA0000F8CF /* YKFInvalidPinError.m in Sources */,
 				815233FE23B56A6F004D4788 /* YKFChalRespSendRequest.m in Sources */,
 				95081DEE2214255B006CD08C /* YKFRequest.m in Sources */,
 				956991F422C224BC00C5EB02 /* YKFWebAuthnClientData.m in Sources */,

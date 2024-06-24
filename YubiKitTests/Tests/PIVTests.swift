@@ -836,6 +836,81 @@ class PIVTests: XCTestCase {
             }
         }
     }
+    
+    // This will test auth on a YubiKey Bio. To run the test at least one fingerprint needs to be registered.
+    func testBioAuthentication() throws {
+        runYubiKitTest { connection, completion in
+            connection.managementSession { session, error in
+                guard let session else { XCTFail("Failed to get Management Session: \(error!)"); return }
+                session.getDeviceInfo { info, error in
+                    guard let info else { XCTFail("Failed to get device info: \(error!)"); return }
+                    guard info.formFactor == .usbaBio || info.formFactor == .usbcBio else {
+                        print("⚠️ Skip testBioAuthentication()");
+                        completion();
+                        return;
+                    }
+                    connection.pivSession { session, error in
+                        guard let session else { XCTFail("Failed to get PIV Session: \(error!)"); return }
+                        session.getBioMetadata { metadata, error in
+                            guard let metadata else { XCTFail("Failed to get Bio metadata: \(error!)"); return }
+                            guard metadata.isConfigured else {
+                                let message = "No fingerprints registered for this yubikey or there's an error in getBioMetadata()."
+                                print("⚠️ \(message)")
+                                XCTFail(message)
+                                return
+                            }
+                            XCTAssertTrue(metadata.attemptsRemaining > 0)
+                            session.verifyUv(requestTemporaryPin: false, checkOnly: false) { pin, error in
+                                XCTAssertNil(error)
+                                XCTAssertNil(pin)
+                                session.verifyUv(requestTemporaryPin: true, checkOnly: false) { pin, error in
+                                    guard let pin else { XCTFail("Failed to get temporary pin: \(error!)"); return  }
+                                    XCTAssertNil(error)
+                                    session.getBioMetadata { metadata , error in
+                                        guard let metadata else { XCTFail("Failed to get Bio metadata: \(error!)"); return }
+                                        XCTAssertTrue(metadata.temporaryPin)
+                                        session.verifyTemporaryPin(pin) { error in
+                                            XCTAssertNil(error)
+                                            completion()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func testBioPinPolicyErrorOnNonBioKey() throws {
+        runYubiKitTest { connection, completion in
+            connection.managementSession { session, error in
+                guard let session else { XCTFail("Failed to get Management Session: \(error!)"); return }
+                session.getDeviceInfo { info, error in
+                    guard let info else { XCTFail("Failed to get device info: \(error!)"); return }
+                    guard info.formFactor != .usbaBio && info.formFactor != .usbcBio else {
+                        print("⚠️ Skip testBioPinPolicyErrorOnNonBioKey() since this is a bio key.")
+                        completion();
+                        return;
+                    }
+                    connection.authenticatedPivTestSession { session in
+                        session.generateKey(in: .signature, type: .ECCP256, pinPolicy: .matchOnce, touchPolicy: .default) { key, error in
+                            guard let error = error as? NSError else { XCTFail("Failed to return error."); completion(); return; }
+                            XCTAssertEqual(error.domain, YKFPIVErrorDomain)
+                            XCTAssertEqual(error.code, Int(YKFPIVErrorCode.unsupportedOperation.rawValue))
+                            session.generateKey(in: .signature, type: .ECCP256, pinPolicy: .matchAlways, touchPolicy: .default) { key, error in
+                                guard let error = error as? NSError else { XCTFail("Failed to return error."); completion(); return; }
+                                XCTAssertEqual(error.domain, YKFPIVErrorDomain)
+                                XCTAssertEqual(error.code, Int(YKFPIVErrorCode.unsupportedOperation.rawValue))
+                                completion()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 extension YKFPIVSession {
