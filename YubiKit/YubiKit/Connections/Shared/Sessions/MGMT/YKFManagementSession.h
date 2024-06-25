@@ -48,7 +48,7 @@ typedef void (^YKFManagementSessionGetDeviceInfoBlock)
 typedef void (^YKFManagementSessionWriteCompletionBlock) (NSError* _Nullable error);
 
 /// @abstract
-///    Response block for [deviceReset:completion:] which will do a device reset on a YubiKey Biuo
+///    Response block for [deviceReset:completion:] which will do a device reset on a YubiKey Bio
 ///
 /// @param error
 ///    In case of a failed request this parameter contains the error. If the request was successful this
