@@ -1,5 +1,19 @@
 # YubiKit Changelog
 
+## 4.6.0
+
+In this version support for the YubiKey Bio - Multi-protocol Edition and partial support for the new 5.7 firmware has been added.
+
+- Device Reset for Bio multi-protocol YubiKeys.
+- Get bio metadata in YKFPIVSession.
+- Bio YubiKey fingerprint authentication for YKFPIVSession.
+- Support for moving and deleting keys in YKFPIVSession.
+- Read NFC restricted status in YKFManagementSession.
+- PIN complexity added to YKFManagementSession.
+- FPS and STM version is now parsed in YKFManagementSession.
+- Support for RSA3072 and RSA4096 keys added to YKFPIVSession.
+- Fixes issue where stopAccessoryConnection() would fail if no YubiKey was inserted when called.
+
 ## 4.5.0
 
 - Add support for sending and returning raw commands to the `YKFConnectionProtocol`.
