@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef YKFPIVKeyType_h
-#define YKFPIVKeyType_h
+#import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSUInteger, YKFPIVKeyType) {
-    YKFPIVKeyTypeRSA1024 = 0x06,
-    YKFPIVKeyTypeRSA2048 = 0x07,
-    YKFPIVKeyTypeRSA3072 = 0x05,
-    YKFPIVKeyTypeRSA4096 = 0x16,
-    YKFPIVKeyTypeECCP256 = 0x11,
-    YKFPIVKeyTypeECCP384 = 0x14,
-    YKFPIVKeyTypeUnknown = 0x00
-};
+NS_ASSUME_NONNULL_BEGIN
 
-YKFPIVKeyType YKFPIVKeyTypeFromKey(SecKeyRef key);
-int YKFPIVSizeFromKeyType(YKFPIVKeyType keyType);
+@interface YKFPIVBioMetadata : NSObject
 
-#endif /* YKFPIVKeyType_h */
+@property (nonatomic, readonly) bool isConfigured;
+@property (nonatomic, readonly) int attemptsRemaining;
+@property (nonatomic, readonly) bool temporaryPin;
+
+@end
+
+NS_ASSUME_NONNULL_END

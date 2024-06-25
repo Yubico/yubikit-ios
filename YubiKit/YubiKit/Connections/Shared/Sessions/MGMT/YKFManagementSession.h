@@ -47,6 +47,14 @@ typedef void (^YKFManagementSessionGetDeviceInfoBlock)
 ///    parameter is nil.
 typedef void (^YKFManagementSessionWriteCompletionBlock) (NSError* _Nullable error);
 
+/// @abstract
+///    Response block for [deviceReset:completion:] which will do a device reset on a YubiKey Bio
+///
+/// @param error
+///    In case of a failed request this parameter contains the error. If the request was successful this
+///    parameter is nil.
+typedef void (^YKFManagementSessionDeviceResetCompletionBlock) (NSError* _Nullable error);
+
 NS_ASSUME_NONNULL_BEGIN
 
 /// @abstract Defines the interface for YKFManagementSessionProtocol.
@@ -126,6 +134,19 @@ NS_ASSUME_NONNULL_BEGIN
 ///   This method requires support for device config, available in YubiKey 5.0 or later.
 ///   The method is thread safe and can be invoked from any thread (main or a background thread).
 - (void)writeConfiguration:(YKFManagementInterfaceConfiguration*)configuration reboot:(BOOL)reboot completion:(nonnull YKFManagementSessionWriteCompletionBlock)completion;
+
+/// @abstract
+///    Perform a device-wide reset in Bio Multi-protocol Edition devices
+///
+/// @param completion
+///    The response block which is executed after the request was processed by the key. The completion block
+///    will be executed on a background thread.
+///
+/// @note:
+///    This method requires support for device reset, available in YubiKey 5.6 or later.
+///    The method is thread safe and can be invoked from any thread (main or a background thread).
+- (void)deviceReset:(YKFManagementSessionDeviceResetCompletionBlock)completion;
+
 
 - (instancetype)init NS_UNAVAILABLE;
 

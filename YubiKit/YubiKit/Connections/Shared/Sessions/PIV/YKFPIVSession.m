@@ -23,13 +23,17 @@
 #import "YKFFeature.h"
 #import "YKFPIVSessionFeatures.h"
 #import "YKFSessionError.h"
+#import "YKFSessionError+Private.h"
 #import "YKFNSDataAdditions+Private.h"
 #import "NSArray+YKFTLVRecord.h"
 #import "YKFPIVManagementKeyType.h"
 #import "YKFAPDU+Private.h"
 #import "YKFPIVError.h"
+#import "YKFAPDUError.h"
+#import "YKFInvalidPinError.h"
 #import "YKFSessionError+Private.h"
 #import "YKFPIVSlotMetadata+Private.h"
+#import "YKFPIVBioMetadata+Private.h"
 #import "YKFPIVManagementKeyMetadata+Private.h"
 #import "YKFPIVPadding+Private.h"
 #import "TKTLVRecordAdditions+Private.h"
@@ -80,6 +84,11 @@ static const NSUInteger YKFPIVTagCertificateInfo = 0x71;
 static const NSUInteger YKFPIVTagLRC = 0xfe;
 static const NSUInteger YKFPIVTagPinPolicy = 0xaa;
 static const NSUInteger YKFPIVTagTouchPolicy = 0xab;
+
+static const NSUInteger YKFPIVTagMetadataBioConfigured = 0x07;
+static const NSUInteger YKFPIVTagMetadataTemporaryPIN = 0x08;
+
+static const NSUInteger YKFPIVSlotOCCAuth = 0x96;
 
 // P2
 static const NSUInteger YKFPIVP2Pin = 0x80;
@@ -296,21 +305,22 @@ int maxPinAttempts = 3;
 }
 
 - (void)generateKeyInSlot:(YKFPIVSlot)slot type:(YKFPIVKeyType)type pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy completion:(nonnull YKFPIVSessionReadKeyCompletionBlock)completion {
-    NSError *error = [self checkKeySupport:type pinPolicy:pinPolicy touchPolicy:touchPolicy generateKey:YES];
-    if (error) {
-        completion(nil, error);
-        return;
-    }
-    NSMutableData *data = [NSMutableData dataWithBytes:&type length:1];
-    YKFTLVRecord *tlv = [[YKFTLVRecord alloc] initWithTag:YKFPIVTagGenAlgorithm value:data];
-    YKFTLVRecord *tlvsContainer = [[YKFTLVRecord alloc] initWithTag:0xac value:tlv.data];
-    NSData *tlvsData = tlvsContainer.data;
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGenerateAsymetric p1:0 p2:slot data:tlvsData type:YKFAPDUTypeExtended];
-    [self.smartCardInterface executeCommand:apdu timeout:120.0 completion:^(NSData * _Nullable data, NSError * _Nullable error) {
-        NSData *keyData = [[YKFTLVRecord sequenceOfRecordsFromData:data] ykfTLVRecordWithTag:(UInt64)0x7F49].value;
-        NSError *keyError;
-        SecKeyRef publicKey = [self secKeyFromYubiKeyData:keyData keyType:type error:&keyError];
-        completion(publicKey, keyError);
+    [self checkKeySupport:type pinPolicy:pinPolicy touchPolicy:touchPolicy generateKey:YES completion:^(NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+            return;
+        }
+        NSMutableData *data = [NSMutableData dataWithBytes:&type length:1];
+        YKFTLVRecord *tlv = [[YKFTLVRecord alloc] initWithTag:YKFPIVTagGenAlgorithm value:data];
+        YKFTLVRecord *tlvsContainer = [[YKFTLVRecord alloc] initWithTag:0xac value:tlv.data];
+        NSData *tlvsData = tlvsContainer.data;
+        YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGenerateAsymetric p1:0 p2:slot data:tlvsData type:YKFAPDUTypeExtended];
+        [self.smartCardInterface executeCommand:apdu timeout:120.0 completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+            NSData *keyData = [[YKFTLVRecord sequenceOfRecordsFromData:data] ykfTLVRecordWithTag:(UInt64)0x7F49].value;
+            NSError *keyError;
+            SecKeyRef publicKey = [self secKeyFromYubiKeyData:keyData keyType:type error:&keyError];
+            completion(publicKey, keyError);
+        }];
     }];
 }
 
@@ -318,7 +328,7 @@ int maxPinAttempts = 3;
     [self generateKeyInSlot:slot type:type pinPolicy:YKFPIVPinPolicyDefault touchPolicy:YKFPIVTouchPolicyDefault completion:completion];
 }
 
-- (NSError * _Nullable)checkKeySupport:(YKFPIVKeyType)keyType pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy generateKey:(bool)generateKey {
+- (void)checkKeySupport:(YKFPIVKeyType)keyType pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy generateKey:(bool)generateKey completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion {
     
     NSString *errorMessage = nil;
     if (keyType == YKFPIVKeyTypeECCP384) {
@@ -352,72 +362,86 @@ int maxPinAttempts = 3;
     }
     
     if (errorMessage) {
-        return [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"%@ not supported by this YubiKey.", errorMessage]}];
+        NSError *error = [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"%@ not supported by this YubiKey.", errorMessage]}];
+        completion(error);
+        return;
     }
     
-    return nil;
+    if (pinPolicy == YKFPIVPinPolicyMatchAlways || pinPolicy == YKFPIVPinPolicyMatchOnce) {
+        [self getBioMetadataWithCompletion:^(YKFPIVBioMetadata * _Nullable metaData, NSError * _Nullable error) {
+            if (error) {
+                completion(error);
+            } else {
+                completion(nil);
+            }
+        }];
+    } else {
+        completion(nil);
+    }
 }
 
 - (void)putKey:(SecKeyRef)key inSlot:(YKFPIVSlot)slot pinPolicy:(YKFPIVPinPolicy)pinPolicy touchPolicy:(YKFPIVTouchPolicy)touchPolicy completion:(nonnull YKFPIVSessionPutKeyCompletionBlock)completion {
     YKFPIVKeyType keyType = YKFPIVKeyTypeFromKey(key);
-    NSError *error = [self checkKeySupport:keyType pinPolicy:pinPolicy touchPolicy:touchPolicy generateKey:NO];
-    if (error) {
-        completion(keyType, error);
-    }
-
-    CFErrorRef cfError = nil;
-    NSData *data = (__bridge NSData*)SecKeyCopyExternalRepresentation(key, &cfError);
-    if (cfError) {
-        NSError *error = (__bridge NSError *) cfError;
-        completion(YKFPIVKeyTypeUnknown, error);
-        return;
-    }
-    NSMutableData *mutableData = [NSMutableData data];
-    switch (keyType) {
-        case YKFPIVKeyTypeRSA1024:
-        case YKFPIVKeyTypeRSA2048:
-        case YKFPIVKeyTypeRSA3072:
-        case YKFPIVKeyTypeRSA4096:
-        {
-            NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:[YKFTLVRecord recordFromData:data].value];
-            NSData *primeOne = records[4].value;
-            NSData *primeTwo = records[5].value;
-            NSData *exponentOne = records[6].value;
-            NSData *exponentTwo = records[7].value;
-            NSData *coefficient = records[8].value;
-            
-            int length = YKFPIVSizeFromKeyType(keyType) / 2;
-            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x01 value:[primeOne ykf_toLength:length]].data];
-            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x02 value:[primeTwo ykf_toLength:length]].data];
-            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x03 value:[exponentOne ykf_toLength:length]].data];
-            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x04 value:[exponentTwo ykf_toLength:length]].data];
-            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x05 value:[coefficient ykf_toLength:length]].data];
-            break;
-        }
-        case YKFPIVKeyTypeECCP256:
-        case YKFPIVKeyTypeECCP384:
-        {
-            int keyLength = YKFPIVSizeFromKeyType(keyType);
-            NSData *privateKey = [data subdataWithRange:NSMakeRange(1 + 2 * keyLength, keyLength)];
-            YKFTLVRecord *record = [[YKFTLVRecord alloc] initWithTag:0x06 value:privateKey];
-            [mutableData appendData:record.data];
-            break;
-        }
-        default:
-            completion(YKFPIVKeyTypeUnknown, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeUnknownKeyType userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}]);
+    [self checkKeySupport:keyType pinPolicy:pinPolicy touchPolicy:touchPolicy generateKey:NO completion:^(NSError * _Nullable error) {
+        if (error) {
+            completion(keyType, error);
             return;
-    }
-    
-    if (pinPolicy != YKFPIVPinPolicyDefault) {
-        [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagPinPolicy value:[NSData dataWithBytes:&pinPolicy length:1]].value];
-    }
-    if (touchPolicy != YKFPIVTouchPolicyDefault) {
-        [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagTouchPolicy value:[NSData dataWithBytes:&touchPolicy length:1]].value];
-    }
-    
-    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsImportKey p1:keyType p2:slot data:mutableData type:YKFAPDUTypeExtended];
-    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
-        completion(keyType, error);
+        }
+        
+        CFErrorRef cfError = nil;
+        NSData *data = (__bridge NSData*)SecKeyCopyExternalRepresentation(key, &cfError);
+        if (cfError) {
+            NSError *error = (__bridge NSError *) cfError;
+            completion(YKFPIVKeyTypeUnknown, error);
+            return;
+        }
+        NSMutableData *mutableData = [NSMutableData data];
+        switch (keyType) {
+            case YKFPIVKeyTypeRSA1024:
+            case YKFPIVKeyTypeRSA2048:
+            case YKFPIVKeyTypeRSA3072:
+            case YKFPIVKeyTypeRSA4096:
+            {
+                NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:[YKFTLVRecord recordFromData:data].value];
+                NSData *primeOne = records[4].value;
+                NSData *primeTwo = records[5].value;
+                NSData *exponentOne = records[6].value;
+                NSData *exponentTwo = records[7].value;
+                NSData *coefficient = records[8].value;
+                
+                int length = YKFPIVSizeFromKeyType(keyType) / 2;
+                [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x01 value:[primeOne ykf_toLength:length]].data];
+                [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x02 value:[primeTwo ykf_toLength:length]].data];
+                [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x03 value:[exponentOne ykf_toLength:length]].data];
+                [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x04 value:[exponentTwo ykf_toLength:length]].data];
+                [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:0x05 value:[coefficient ykf_toLength:length]].data];
+                break;
+            }
+            case YKFPIVKeyTypeECCP256:
+            case YKFPIVKeyTypeECCP384:
+            {
+                int keyLength = YKFPIVSizeFromKeyType(keyType);
+                NSData *privateKey = [data subdataWithRange:NSMakeRange(1 + 2 * keyLength, keyLength)];
+                YKFTLVRecord *record = [[YKFTLVRecord alloc] initWithTag:0x06 value:privateKey];
+                [mutableData appendData:record.data];
+                break;
+            }
+            default:
+                completion(YKFPIVKeyTypeUnknown, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeUnknownKeyType userInfo:@{NSLocalizedDescriptionKey: @"Unknown key type."}]);
+                return;
+        }
+        
+        if (pinPolicy != YKFPIVPinPolicyDefault) {
+            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagPinPolicy value:[NSData dataWithBytes:&pinPolicy length:1]].value];
+        }
+        if (touchPolicy != YKFPIVTouchPolicyDefault) {
+            [mutableData appendData:[[YKFTLVRecord alloc] initWithTag:YKFPIVTagTouchPolicy value:[NSData dataWithBytes:&touchPolicy length:1]].value];
+        }
+        
+        YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsImportKey p1:keyType p2:slot data:mutableData type:YKFAPDUTypeExtended];
+        [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+            completion(keyType, error);
+        }];
     }];
 }
 
@@ -853,6 +877,88 @@ int maxPinAttempts = 3;
             completion(nil);
         } else {
             [self blockPuk:(counter + 1) completion:completion];
+        }
+    }];
+}
+
+- (void)getBioMetadataWithCompletion:(nonnull YKFPIVSessionBioMetadataCompletionBlock)completion {
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins: YKFPIVInsGetMetadata p1:0x00 p2:YKFPIVSlotOCCAuth data:[NSData data] type:YKFAPDUTypeShort];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            if (error.domain == YKFSessionErrorDomain && (error.code == YKFAPDUErrorCodeReferencedDataNotFound || error.code == YKFAPDUErrorCodeInsNotSupported)) {
+                completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Get bio metadata not supported by this YubiKey."}]);
+            } else {
+                completion(nil, error);
+            }
+            return;
+        }
+        NSArray<YKFTLVRecord*> *records = [YKFTLVRecord sequenceOfRecordsFromData:data];
+        bool isConfigured = [records ykfTLVRecordWithTag:YKFPIVTagMetadataBioConfigured].value.ykf_integerValue;
+        bool temporaryPin = [records ykfTLVRecordWithTag:YKFPIVTagMetadataTemporaryPIN].value.ykf_integerValue;
+        int retries = (int)[records ykfTLVRecordWithTag:YKFPIVTagMetadataRetries].value.ykf_integerValue;
+        YKFPIVBioMetadata *metadata = [[YKFPIVBioMetadata alloc] initWithIsConfigured:isConfigured attemptsRemaining:retries temporaryPin:temporaryPin];
+        completion(metadata, nil);
+    }];
+}
+
+- (void)verifyUvRequestTemporaryPin:(bool)requestTemporaryPin checkOnly:(bool)checkOnly completion:(nonnull YKFPIVSessionBioVerifyUvCompletionBlock)completion {
+    if (requestTemporaryPin && checkOnly) {
+        completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeIllegalArgument userInfo:@{NSLocalizedDescriptionKey: @"It's not possible to request a temporary pin and do a check only."}]);
+    }
+    
+    NSData *temporaryPinData = nil;
+    if (!checkOnly) {
+        if (requestTemporaryPin) {
+            temporaryPinData = [[[YKFTLVRecord alloc] initWithTag:0x02 value:[NSData data]] data];
+        } else {
+            temporaryPinData = [[[YKFTLVRecord alloc] initWithTag:0x03 value:[NSData data]] data];
+        }
+    }
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins: YKFPIVInsVerify p1:0x00 p2:YKFPIVSlotOCCAuth data:temporaryPinData type:YKFAPDUTypeExtended];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            if (error.domain == YKFSessionErrorDomain && error.code == YKFAPDUErrorCodeReferencedDataNotFound) {
+                completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Verify uv not supported by this YubiKey."}]);
+                return;
+            }
+            int retries = [self getRetriesFromStatusCode:(int)error.code];
+            if (retries >= 0) {
+                completion(nil, [YKFInvalidPinError invalidPinErrorWithRetries:retries]);
+                return;
+            } else {
+                completion(nil, error);
+                return;
+            }
+        }
+        if (requestTemporaryPin) {
+            completion(data, nil);
+        } else {
+            completion(nil, nil);
+        }
+    }];
+}
+
+- (void)verifyTemporaryPin:(NSData *)pinData completion:(nonnull YKFPIVSessionGenericCompletionBlock)completion {
+    if (pinData.length != 16) {
+        completion([[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeIllegalArgument userInfo:@{NSLocalizedDescriptionKey: @"Pin data length should be 16 bytes."}]);
+        return;
+    }
+    NSData *data = [[[YKFTLVRecord alloc] initWithTag:0x01 value:pinData] data];
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsVerify p1:0 p2:YKFPIVSlotOCCAuth data:data type:YKFAPDUTypeShort];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error == nil) {
+            completion(nil);
+            return;
+        } else {
+            if (error.domain == YKFSessionErrorDomain && error.code == YKFAPDUErrorCodeReferencedDataNotFound) {
+                completion([[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Verify uv not supported by this YubiKey."}]);
+                return;
+            }
+            if (error.code == 0x63c0) {
+                completion([YKFInvalidPinError invalidPinErrorWithRetries:0]);
+            } else {
+                completion(error);
+            }
         }
     }];
 }

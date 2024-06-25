@@ -12,21 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef YKFPIVSession_Private_h
-#define YKFPIVSession_Private_h
+#import "YKFPIVBioMetadata.h"
 
-#import <Foundation/Foundation.h>
-#import "YKFSessionProtocol+Private.h"
-#import "YKFPIVSession.h"
+@interface YKFPIVBioMetadata()
 
-@protocol YKFConnectionControllerProtocol;
-
-@interface YKFPIVSession()<YKFSessionProtocol>
-
-typedef void (^YKFPIVSessionCompletion)(YKFPIVSession *_Nullable, NSError* _Nullable);
-+ (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
-                             completion:(YKFPIVSessionCompletion _Nonnull)completion;
+@property (nonatomic, readwrite) bool isConfigured;
+@property (nonatomic, readwrite) int attemptsRemaining;
+@property (nonatomic, readwrite) bool temporaryPin;
 
 @end
 
-#endif
+@implementation YKFPIVBioMetadata
+
+- (instancetype)initWithIsConfigured:(bool)isConfigured attemptsRemaining:(int)attemptsRemaining temporaryPin:(bool)temporaryPin
+{
+    self = [super init];
+    if (self) {
+        self.isConfigured = isConfigured;
+        self.attemptsRemaining = attemptsRemaining;
+        self.temporaryPin = temporaryPin;
+    }
+    return self;
+}
+
+@end

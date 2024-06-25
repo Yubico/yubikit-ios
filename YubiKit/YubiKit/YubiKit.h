@@ -57,8 +57,11 @@
 #import "YKFManagementInterfaceConfiguration.h"
 #import "YKFPIVKeyType.h"
 #import "YKFPIVSlotMetadata.h"
+#import "YKFPIVBioMetadata.h"
 #import "YKFChallengeResponseSession.h"
 #import "YKFManagementSession.h"
+
+#import "YKFInvalidPinError.h"
 
 #import "YKFSlot.h"
 

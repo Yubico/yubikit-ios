@@ -120,6 +120,17 @@ typedef void (^YKFManagementSessionReadPagedDeviceInfoBlock)
     [self writeConfiguration:configuration reboot:reboot lockCode:nil newLockCode:nil completion:completion];
 }
 
+- (void)deviceReset:(YKFManagementSessionDeviceResetCompletionBlock)completion {
+    if (![self.features.deviceReset isSupportedBySession:self]) {
+        completion([[NSError alloc] initWithDomain:YKFManagementErrorDomain code:YKFManagementErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Device reset not supported by this YubiKey."}]);
+        return;
+    }
+    YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0 ins:0x1f p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeExtended];
+    [self.smartCardInterface executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        completion(error);
+    }];
+}
+
 // No application side state that needs clearing but this will be called when another
 // session is replacing the YKFManagementSession.
 - (void)clearSessionState {

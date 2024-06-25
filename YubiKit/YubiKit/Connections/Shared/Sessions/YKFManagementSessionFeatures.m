@@ -19,6 +19,7 @@
 @interface YKFManagementSessionFeatures()
 @property (nonatomic, readwrite) YKFFeature * _Nonnull deviceInfo;
 @property (nonatomic, readwrite) YKFFeature * _Nonnull deviceConfig;
+@property (nonatomic, readwrite) YKFFeature * _Nonnull deviceReset;
 @end
 
 @implementation YKFManagementSessionFeatures
@@ -28,6 +29,7 @@
     if (self) {
         self.deviceInfo = [[YKFFeature alloc] initWithName:@"Device info" versionString:@"4.1.0"];
         self.deviceConfig = [[YKFFeature alloc] initWithName:@"Device config" versionString:@"5.0.0"];
+        self.deviceReset = [[YKFFeature alloc] initWithName:@"Device reset" versionString:@"5.6.0"];
     }
     return self;
 }

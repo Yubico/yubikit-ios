@@ -12,20 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef YKFPIVKeyType_h
-#define YKFPIVKeyType_h
+#import <Foundation/Foundation.h>
+#import "YKFInvalidPinError.h"
 
-typedef NS_ENUM(NSUInteger, YKFPIVKeyType) {
-    YKFPIVKeyTypeRSA1024 = 0x06,
-    YKFPIVKeyTypeRSA2048 = 0x07,
-    YKFPIVKeyTypeRSA3072 = 0x05,
-    YKFPIVKeyTypeRSA4096 = 0x16,
-    YKFPIVKeyTypeECCP256 = 0x11,
-    YKFPIVKeyTypeECCP384 = 0x14,
-    YKFPIVKeyTypeUnknown = 0x00
-};
+NSString* const YKFInvalidPinErrorDomain = @"com.yubico.invalid-pin";
+NSInteger const YKFInvalidPinErrorCode = 1;
 
-YKFPIVKeyType YKFPIVKeyTypeFromKey(SecKeyRef key);
-int YKFPIVSizeFromKeyType(YKFPIVKeyType keyType);
+@interface YKFInvalidPinError()
 
-#endif /* YKFPIVKeyType_h */
+@property (nonatomic, readwrite) int retries;
+
+@end
+
+@implementation YKFInvalidPinError
+
++ (instancetype)invalidPinErrorWithRetries:(int)retries {
+    YKFInvalidPinError *error = [[YKFInvalidPinError alloc] initWithDomain:YKFInvalidPinErrorDomain code:YKFInvalidPinErrorCode userInfo:nil];
+    error.retries = retries;
+    return error;
+}
+
+@end

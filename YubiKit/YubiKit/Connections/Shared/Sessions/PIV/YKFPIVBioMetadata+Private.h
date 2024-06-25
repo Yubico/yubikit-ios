@@ -11,21 +11,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#ifndef YKFPIVBioMetadata_Private_h
+#define YKFPIVBioMetadata_Private_h
 
-#ifndef YKFPIVKeyType_h
-#define YKFPIVKeyType_h
+#import "YKFPIVBioMetadata.h"
 
-typedef NS_ENUM(NSUInteger, YKFPIVKeyType) {
-    YKFPIVKeyTypeRSA1024 = 0x06,
-    YKFPIVKeyTypeRSA2048 = 0x07,
-    YKFPIVKeyTypeRSA3072 = 0x05,
-    YKFPIVKeyTypeRSA4096 = 0x16,
-    YKFPIVKeyTypeECCP256 = 0x11,
-    YKFPIVKeyTypeECCP384 = 0x14,
-    YKFPIVKeyTypeUnknown = 0x00
-};
+@interface YKFPIVBioMetadata()
 
-YKFPIVKeyType YKFPIVKeyTypeFromKey(SecKeyRef key);
-int YKFPIVSizeFromKeyType(YKFPIVKeyType keyType);
+- (instancetype)initWithIsConfigured:(bool)isConfigured attemptsRemaining:(int)attemptsRemaining temporaryPin:(bool)temporaryPin NS_DESIGNATED_INITIALIZER;
 
-#endif /* YKFPIVKeyType_h */
+@end
+
+#endif /* YKFPIVBioMetadata_Private_h */

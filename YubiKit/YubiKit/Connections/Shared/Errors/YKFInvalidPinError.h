@@ -12,20 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef YKFPIVKeyType_h
-#define YKFPIVKeyType_h
+#ifndef YKFInvalidPinError_h
+#define YKFInvalidPinError_h
 
-typedef NS_ENUM(NSUInteger, YKFPIVKeyType) {
-    YKFPIVKeyTypeRSA1024 = 0x06,
-    YKFPIVKeyTypeRSA2048 = 0x07,
-    YKFPIVKeyTypeRSA3072 = 0x05,
-    YKFPIVKeyTypeRSA4096 = 0x16,
-    YKFPIVKeyTypeECCP256 = 0x11,
-    YKFPIVKeyTypeECCP384 = 0x14,
-    YKFPIVKeyTypeUnknown = 0x00
-};
+extern NSString* const YKFInvalidPinErrorDomain;
+extern NSInteger const YKFInvalidPinErrorCode;
 
-YKFPIVKeyType YKFPIVKeyTypeFromKey(SecKeyRef key);
-int YKFPIVSizeFromKeyType(YKFPIVKeyType keyType);
+@interface YKFInvalidPinError: NSError
 
-#endif /* YKFPIVKeyType_h */
+@property (nonatomic, readonly) int retries;
+
++ (instancetype)invalidPinErrorWithRetries:(int)retries;
+
+@end
+#endif /* YKFInvalidPinError_h */
