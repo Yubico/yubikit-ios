@@ -954,13 +954,10 @@ int maxPinAttempts = 3;
                 completion([[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeUnsupportedOperation userInfo:@{NSLocalizedDescriptionKey: @"Verify uv not supported by this YubiKey."}]);
                 return;
             }
-            int retries = [self getRetriesFromStatusCode:(int)error.code];
-            if (retries >= 0) {
-                completion([YKFInvalidPinError invalidPinErrorWithRetries:retries]);
-                return;
+            if (error.code == 0x63c0) {
+                completion([YKFInvalidPinError invalidPinErrorWithRetries:0]);
             } else {
                 completion(error);
-                return;
             }
         }
     }];
