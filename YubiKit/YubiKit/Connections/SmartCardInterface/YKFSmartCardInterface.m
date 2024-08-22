@@ -58,22 +58,23 @@ static NSTimeInterval const YKFSmartCardInterfaceDefaultTimeout = 10.0;
 }
 
 - (void)selectApplication:(YKFSelectApplicationAPDU *)apdu completion:(YKFSmartCardInterfaceResponseBlock)completion {
-    [self.connectionController execute:apdu completion:^(NSData *response, NSError *error, NSTimeInterval executionTime) {
+    [self executeCommand:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
-            completion(nil, error);
-            return;
-        }
-        UInt16 statusCode = [self statusCodeFromKeyResponse:response];
-        NSData *data = [self dataFromKeyResponse:response];
-        if (statusCode == YKFAPDUErrorCodeNoError) {
-            completion(data, nil);
-        } else if (statusCode == YKFAPDUErrorCodeMissingFile || statusCode == YKFAPDUErrorCodeInsNotSupported) {
-            NSError *error = [YKFSessionError errorWithCode:YKFSessionErrorMissingApplicationCode];
-            completion(nil, error);
+            if ([error isKindOfClass:[YKFSessionError class]]) {
+                UInt16 statusCode = error.code;
+                if (statusCode == YKFAPDUErrorCodeMissingFile || statusCode == YKFAPDUErrorCodeInsNotSupported) {
+                    NSError *error = [YKFSessionError errorWithCode:YKFSessionErrorMissingApplicationCode];
+                    completion(nil, error);
+                } else {
+                    NSAssert(TRUE, @"The key returned an unexpected SW when selecting application");
+                    NSError *error = [YKFSessionError errorWithCode:YKFSessionErrorUnexpectedStatusCode];
+                    completion(nil, error);
+                }
+            } else {
+                completion(nil, error);
+            }
         } else {
-            NSAssert(TRUE, @"The key returned an unexpected SW when selecting application");
-            NSError *error = [YKFSessionError errorWithCode:YKFSessionErrorUnexpectedStatusCode];
-            completion(nil, error);
+            completion(data, nil);
         }
     }];
 }
@@ -101,7 +102,7 @@ static NSTimeInterval const YKFSmartCardInterfaceDefaultTimeout = 10.0;
                     ins = 0xA5;
                     break;
             }
-            YKFAPDU *sendRemainingApdu = [[YKFAPDU alloc] initWithData:[NSData dataWithBytes:(unsigned char[]){0x00, ins, 0x00, 0x00} length:4]];
+            YKFAPDU *sendRemainingApdu = [[YKFAPDU alloc] initWithData:[NSData dataWithBytes:(unsigned char[]){0x00, ins, 0x00, 0x00, 0x00} length:5]];
             // Queue a new request recursively
             [self executeCommand:sendRemainingApdu sendRemainingIns:sendRemainingIns timeout:timeout data:data completion:completion];
             return;
