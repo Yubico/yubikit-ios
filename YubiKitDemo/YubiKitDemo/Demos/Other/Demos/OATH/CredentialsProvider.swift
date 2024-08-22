@@ -21,7 +21,12 @@ class CredentialsProvider: NSObject, ObservableObject, YKFManagerDelegate {
     override init() {
         super.init()
         YubiKitManager.shared.delegate = self
-        YubiKitManager.shared.startAccessoryConnection()
+        if YubiKitDeviceCapabilities.supportsMFIAccessoryKey {
+            YubiKitManager.shared.startAccessoryConnection()
+        }
+        if YubiKitDeviceCapabilities.supportsSmartCardOverUSBC {
+            YubiKitManager.shared.startSmartCardConnection()
+        }
     }
     
     var nfcConnection: YKFNFCConnection?
@@ -47,6 +52,19 @@ class CredentialsProvider: NSObject, ObservableObject, YKFManagerDelegate {
     
     func didDisconnectAccessory(_ connection: YKFAccessoryConnection, error: Error?) {
         accessoryConnection = nil
+        session = nil
+        credentials.removeAll()
+    }
+    
+    var smartCardConnection: YKFSmartCardConnection?
+    
+    func didConnectSmartCard(_ connection: YKFSmartCardConnection) {
+        smartCardConnection = connection
+        refresh()
+    }
+    
+    func didDisconnectSmartCard(_ connection: YKFSmartCardConnection, error: (any Error)?) {
+        smartCardConnection = nil
         session = nil
         credentials.removeAll()
     }
