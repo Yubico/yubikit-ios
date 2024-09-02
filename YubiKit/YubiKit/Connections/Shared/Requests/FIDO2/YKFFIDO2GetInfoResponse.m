@@ -29,7 +29,9 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2GetInfoResponseKey) {
     YKFFIDO2GetInfoResponseKeyAAGUID         = 0x03,
     YKFFIDO2GetInfoResponseKeyOptions        = 0x04,
     YKFFIDO2GetInfoResponseKeyMaxMsgSize     = 0x05,
-    YKFFIDO2GetInfoResponseKeyPinProtocols   = 0x06
+    YKFFIDO2GetInfoResponseKeyPinProtocols   = 0x06,
+    YKFFIDO2GetInfoResponseKeyMinPinLength   = 0x0d
+
 };
 
 @interface YKFFIDO2GetInfoResponse()
@@ -39,6 +41,7 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2GetInfoResponseKey) {
 @property (nonatomic, readwrite) NSData *aaguid;
 @property (nonatomic, readwrite) NSDictionary *options;
 @property (nonatomic, assign, readwrite) NSUInteger maxMsgSize;
+@property (nonatomic, readwrite) NSUInteger minPinLength;
 @property (nonatomic, readwrite) NSArray *pinProtocols;
 
 @end
@@ -93,6 +96,14 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2GetInfoResponseKey) {
     NSNumber *maxMsgSize = response[@(YKFFIDO2GetInfoResponseKeyMaxMsgSize)];
     if (maxMsgSize != nil) {
         self.maxMsgSize = maxMsgSize.integerValue;
+    }
+    
+    // minPinLength
+    NSNumber *minPinLength = response[@(YKFFIDO2GetInfoResponseKeyMinPinLength)];
+    if (minPinLength != nil) {
+        self.minPinLength = minPinLength.integerValue;
+    } else {
+        self.minPinLength = 4;
     }
     
     // pin protocols

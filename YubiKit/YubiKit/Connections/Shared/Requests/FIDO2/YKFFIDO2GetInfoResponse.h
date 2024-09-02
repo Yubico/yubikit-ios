@@ -144,6 +144,12 @@ extern NSString* const YKFFIDO2GetInfoResponseOptionUserVerification;
  */
 @property (nonatomic, readonly, nullable) NSArray *pinProtocols;
 
+/*!
+ @abstract
+    The current minimum PIN length, in Unicode code points, the authenticator enforces for ClientPIN.
+ */
+@property (nonatomic, readonly) NSUInteger minPinLength;
+
 /*
  Not available: the response will be created by the library.
  */
