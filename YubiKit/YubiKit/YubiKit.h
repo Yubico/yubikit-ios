@@ -40,6 +40,7 @@
 #import "YKFU2FError.h"
 #import "YKFOATHError.h"
 #import "YKFAPDUError.h"
+#import "YKFChallengeResponseError.h"
 
 #import "YKFSmartCardInterface.h"
 
