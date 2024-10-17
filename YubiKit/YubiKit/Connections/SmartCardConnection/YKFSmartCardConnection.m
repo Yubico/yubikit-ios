@@ -70,8 +70,8 @@ NSString* const YKFSmartCardConnectionErrorDomain = @"com.yubico.smart-card-conn
                 }
             }];
         } else if (self.connectionController != nil) {
-            [self.delegate didDisconnectSmartCard:self error:nil];
             self.connectionController = nil;
+            [self.delegate didDisconnectSmartCard:self error:nil];
             [self.currentSession clearSessionState];
             self.currentSession = nil;
         }
