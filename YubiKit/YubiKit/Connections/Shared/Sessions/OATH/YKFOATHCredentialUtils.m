@@ -33,7 +33,7 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
     if (type == YKFOATHCredentialTypeTOTP && period != YKFOATHCredentialDefaultPeriod) {
         [accountId appendFormat:@"%ld/", (unsigned long)period];
     }
-    if (issuer != nil) {
+    if (issuer != nil && issuer.length > 0) {
         [accountId appendFormat:@"%@:", issuer];
     }
     [accountId appendString:name];
