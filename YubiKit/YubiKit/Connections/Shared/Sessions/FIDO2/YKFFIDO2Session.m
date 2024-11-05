@@ -36,6 +36,7 @@
 #import "YKFFIDO2ResetAPDU.h"
 
 #import "YKFFIDO2GetInfoResponse+Private.h"
+#import "YKFFIDO2MakeCredentialResponse.h"
 #import "YKFFIDO2MakeCredentialResponse+Private.h"
 #import "YKFFIDO2GetAssertionResponse+Private.h"
 
@@ -335,15 +336,52 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         NSData *hmac = [clientDataHash ykf_fido2HMACWithKey:self.pinToken];
         pinAuth = [hmac subdataWithRange:NSMakeRange(0, 16)];
         if (!pinAuth) {
-            completion(nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER]);
+            completion(nil, nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER]);
         }
     }
     
-    YKFAPDU *apdu = [[YKFFIDO2MakeCredentialAPDU alloc] initWithClientDataHash:clientDataHash rp:rp user:user pubKeyCredParams:pubKeyCredParams excludeList:excludeList pinAuth:pinAuth pinProtocol:pinProtocol options:options extensions:extensions];
+    
+    // Extensions, client authentictor input
+    NSMutableDictionary *authenticatorInputs = [NSMutableDictionary new];
+    // Sign
+    if (extensions && extensions[@"sign"] && extensions[@"sign"][@"generateKey"]) {
+        NSDictionary *generateKeyDict = (NSDictionary *) extensions[@"sign"][@"generateKey"];
+        NSMutableDictionary *signExtensionDict = [NSMutableDictionary new];
+        // Flags hard coded for now. More information here:
+        // https://github.com/Yubico/python-fido2/blob/8722a8925509d3320f8cb6d8a22c76e2af08fb20/fido2/ctap2/extensions.py#L493
+        int flags = 0b101;
+        
+        NSMutableArray *algorithms = [NSMutableArray array];
+        [(NSArray *)generateKeyDict[@"algorithms"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            NSInteger intValue = [(NSNumber *)obj integerValue];
+            [algorithms addObject:YKFCBORInteger(intValue)];
+        }];
+        signExtensionDict[YKFCBORInteger(3)] = YKFCBORArray(algorithms);
+        signExtensionDict[YKFCBORInteger(4)] = YKFCBORInteger(flags);
+        
+        if (generateKeyDict[@"phData"]) {
+            NSString * phData = generateKeyDict[@"phData"];
+            NSData *phDataBase64Encoded = [[NSData alloc] initWithBase64EncodedString:phData options:0];
+            signExtensionDict[YKFCBORInteger(0)] = YKFCBORByteString(phDataBase64Encoded);
+        }
+        authenticatorInputs[YKFCBORTextString(@"sign")] = YKFCBORMap(signExtensionDict);
+    }
+    
+    // Extensions large blob
+    if (extensions && extensions[@"largeBlobKey"] && [extensions[@"largeBlobKey"][@"support"] isEqual: @"required"]) {
+        authenticatorInputs[YKFCBORTextString(@"largeBlobKey")] = YKFCBORBool(true);
+    }
+
+    // Extensions hmac-secret
+    if (extensions && extensions[@"prf"]) {
+        authenticatorInputs[YKFCBORTextString(@"hmac-secret")] = YKFCBORBool(true);
+    }
+    
+    YKFAPDU *apdu = [[YKFFIDO2MakeCredentialAPDU alloc] initWithClientDataHash:clientDataHash rp:rp user:user pubKeyCredParams:pubKeyCredParams excludeList:excludeList pinAuth:pinAuth pinProtocol:pinProtocol options:options extensions:authenticatorInputs];
     
     if (!apdu) {
         YKFSessionError *error = [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER];
-        completion(nil, error);
+        completion(nil, nil, error);
         return;
     }
     
@@ -351,17 +389,35 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     [self executeFIDO2Command:apdu retryCount:0 completion:^(NSData *data, NSError *error) {
         ykf_safe_strong_self();
         if (error) {
-            completion(nil, error);
+            completion(nil, nil, error);
             return;
         }
         
         NSData *cborData = [strongSelf cborFromKeyResponseData:data];
         YKFFIDO2MakeCredentialResponse *makeCredentialResponse = [[YKFFIDO2MakeCredentialResponse alloc] initWithCBORData:cborData];
         
+        // Extensions, authenticator output
+        NSMutableDictionary *extensionsClientOutput = [NSMutableDictionary new];
+        if (authenticatorInputs[YKFCBORTextString(@"hmac-secret")]) {
+            YKFCBORBool *cborBool = makeCredentialResponse.authenticatorData.extensions.value[YKFCBORTextString(@"hmac-secret")];
+            if (cborBool && cborBool.value) {
+                extensionsClientOutput[@"prf"] = @{@"enabled" : @YES};
+            } else {
+                extensionsClientOutput[@"prf"] = @{@"enabled" : @NO};
+            }
+//            
+//            NSError *error;
+//            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:extensionsClientOutput
+//                                                               options:NSJSONWritingPrettyPrinted
+//                                                                 error:&error];
+//            NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//            NSLog(@"%@", jsonString);
+        }
+        
         if (makeCredentialResponse) {
-            completion(makeCredentialResponse, nil);
+            completion(makeCredentialResponse, extensionsClientOutput, nil);
         } else {
-            completion(nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeINVALID_CBOR]);
+            completion(nil, nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeINVALID_CBOR]);
         }
     }];
 }

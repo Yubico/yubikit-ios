@@ -103,48 +103,12 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2MakeCredentialAPDUKey) {
         }
         requestDictionary[YKFCBORInteger(YKFFIDO2MakeCredentialAPDUKeyOptions)] = YKFCBORMap(mutableOptions);
     }
-    
+
     // Extensions
-    NSMutableDictionary *extensionsDict = [NSMutableDictionary new];
-    // Sign
-    if (extensions && extensions[@"sign"] && extensions[@"sign"][@"generateKey"]) {
-        NSDictionary *generateKeyDict = (NSDictionary *) extensions[@"sign"][@"generateKey"];
-        NSMutableDictionary *signExtensionDict = [NSMutableDictionary new];
-        // Flags hard coded for now. More information here:
-        // https://github.com/Yubico/python-fido2/blob/8722a8925509d3320f8cb6d8a22c76e2af08fb20/fido2/ctap2/extensions.py#L493
-        int flags = 0b101;
-        
-        NSMutableArray *algorithms = [NSMutableArray array];
-        [(NSArray *)generateKeyDict[@"algorithms"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            NSInteger intValue = [(NSNumber *)obj integerValue];
-            [algorithms addObject:YKFCBORInteger(intValue)];
-        }];
-        signExtensionDict[YKFCBORInteger(3)] = YKFCBORArray(algorithms);
-        signExtensionDict[YKFCBORInteger(4)] = YKFCBORInteger(flags);
-        
-        if (generateKeyDict[@"phData"]) {
-            NSString * phData = generateKeyDict[@"phData"];
-            NSData *phDataBase64Encoded = [[NSData alloc] initWithBase64EncodedString:phData options:0];
-            signExtensionDict[YKFCBORInteger(0)] = YKFCBORByteString(phDataBase64Encoded);
-        }
-        extensionsDict[YKFCBORTextString(@"sign")] = YKFCBORMap(signExtensionDict);
-    }
-    
-    // Extensions large blob
-    if (extensions && extensions[@"largeBlobKey"] && [extensions[@"largeBlobKey"][@"support"] isEqual: @"required"]) {
-        extensionsDict[YKFCBORTextString(@"largeBlobKey")] = YKFCBORBool(true);
+    if (extensions.count > 0) {
+        requestDictionary[YKFCBORInteger(YKFFIDO2MakeCredentialAPDUKeyExtensions)] = YKFCBORMap(extensions);
     }
 
-    // Extensions hmac-secret
-    if (extensions && extensions[@"hmac-secret"]) {
-        extensionsDict[YKFCBORTextString(@"hmac-secret")] = YKFCBORBool(true);
-    }
-    
-    if (extensionsDict.count > 0) {
-        requestDictionary[YKFCBORInteger(YKFFIDO2MakeCredentialAPDUKeyExtensions)] = YKFCBORMap(extensionsDict);
-    }
-
-    
     // Pin Auth
     if (pinAuth) {
         requestDictionary[YKFCBORInteger(YKFFIDO2MakeCredentialAPDUKeyPinAuth)] = YKFCBORByteString(pinAuth);

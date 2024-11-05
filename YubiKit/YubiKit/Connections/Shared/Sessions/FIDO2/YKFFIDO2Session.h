@@ -101,7 +101,7 @@ typedef void (^YKFFIDO2SessionGetInfoCompletionBlock)
     parameter is nil.
  */
 typedef void (^YKFFIDO2SessionMakeCredentialCompletionBlock)
-    (YKFFIDO2MakeCredentialResponse* _Nullable response, NSError* _Nullable error);
+    (YKFFIDO2MakeCredentialResponse* _Nullable response, NSDictionary* _Nullable clientExtensionsOutput, NSError* _Nullable error);
 
 /*!
  @abstract

@@ -129,7 +129,7 @@ class FIDO2Tests: XCTestCase {
             if connection as? YKFNFCConnection != nil {
                 connection.fido2TestSession { session in
                     session.setPin("123456") { _ in
-                        session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response, error in
+                        session.addCredential(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response, _, error in
                             if let error = error {
                                 XCTAssertTrue((error as NSError).code == 54, "🔴 Unexpected error: \(error)")
                             } else {
@@ -246,12 +246,12 @@ class FIDO2Tests: XCTestCase {
         }
     }
     
-    func testCreateHmacSecretExtensionCredential() {
+    func testCreatePRFSecretExtensionCredential() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
                 session.verifyPin("123456") { error in
                     if let error { XCTFail("verifyPin failed with: \(error)"); return }
-                    let extensions = ["hmac-secret" : true]
+                    let extensions = ["prf" : true]
                     session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true], extensions: extensions) { response in
                         print(response.authenticatorData)
                         print("✅ Created new FIDO2 credential: \(response)")
@@ -308,7 +308,12 @@ class FIDO2Tests: XCTestCase {
 
 extension YKFFIDO2Session {
     func addCredentialAndAssert(algorithm: Int, options: [String: Any]? = nil, extensions: [String: Any]? = nil, completion: @escaping (_ response: YKFFIDO2MakeCredentialResponse) -> Void) {
-        addCredential(algorithm: algorithm, options: options, extensions: extensions) { response, error in
+        addCredential(algorithm: algorithm, options: options, extensions: extensions) { response, clientExtensionResults, error in
+            if let clientExtensionResults {
+                let jsonData = try! JSONSerialization.data(withJSONObject: clientExtensionResults)
+                let jsonString = String(data: jsonData, encoding: .utf8)
+                print(jsonString as Any)
+            }
             guard let response = response else { XCTAssertTrue(false, "🔴 Failed making FIDO2 credential: \(error!)"); return }
             completion(response)
         }
