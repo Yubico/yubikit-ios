@@ -389,6 +389,16 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2SessionKeyState) {
                                  options:(NSDictionary  * _Nullable)options
                               completion:(YKFFIDO2SessionMakeCredentialCompletionBlock)completion;
 
+
+- (void)makeCredentialWithClientDataHash:(NSData *)clientDataHash
+                                      rp:(YKFFIDO2PublicKeyCredentialRpEntity *)rp
+                                    user:(YKFFIDO2PublicKeyCredentialUserEntity *)user
+                        pubKeyCredParams:(NSArray *)pubKeyCredParams
+                              excludeList:(NSArray * _Nullable)excludeList
+                                 options:(NSDictionary  * _Nullable)options
+                              extensions:(NSDictionary * _Nullable)extensions
+                              completion:(YKFFIDO2SessionMakeCredentialCompletionBlock)completion;
+
 /*!
  @method getAssertionWithClientDataHash:rpId:allowList:options:completion:
  

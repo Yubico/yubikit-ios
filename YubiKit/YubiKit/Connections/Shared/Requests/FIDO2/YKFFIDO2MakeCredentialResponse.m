@@ -41,6 +41,7 @@ static NSString* const YKFFIDO2MakeCredentialResponsePackedAttStmtFmt = @"packed
 @property (nonatomic, readwrite) NSData *aaguid;
 @property (nonatomic, readwrite) NSData *credentialId;
 @property (nonatomic, readwrite) NSData *coseEncodedCredentialPublicKey;
+@property (nonatomic, readwrite) YKFCBORMap *extensions;
 
 - (instancetype)initWithData:(NSData *)data NS_DESIGNATED_INITIALIZER;
 
@@ -56,7 +57,6 @@ static NSString* const YKFFIDO2MakeCredentialResponsePackedAttStmtFmt = @"packed
 
 @property (nonatomic, readwrite) NSData *ctapAttestationObject;
 @property (nonatomic, readwrite) NSData *webauthnAttestationObject;
-
 @end
 
 @implementation YKFFIDO2MakeCredentialResponse
@@ -159,28 +159,40 @@ static NSString* const YKFFIDO2MakeCredentialResponsePackedAttStmtFmt = @"packed
         UInt32 bigEndianSignCount = *((UInt32 *)(&dataBytes[33]));
         self.signCount = CFSwapInt32BigToHost(bigEndianSignCount);
         
+        // If
         if (self.flags & YKFFIDO2AuthenticatorDataFlagAttested) {
-            NSUInteger attestedCredentialDataOffset = 37;
-            
-            NSData *attestedCredentialData = [data subdataWithRange:NSMakeRange(attestedCredentialDataOffset, data.length - attestedCredentialDataOffset)];
-            YKFAssertAbortInit(attestedCredentialData.length >= 18); // AAGUID(16) + CredentialIdLength(2)
-            
-            self.aaguid = [attestedCredentialData subdataWithRange:NSMakeRange(0, 16)];
-            
-            UInt8 *attestedCredentialDataBytes = (UInt8 *)attestedCredentialData.bytes;
-            UInt16 bigEndianCredentialIdLength = *((UInt16 *)(&attestedCredentialDataBytes[16]));
+            UInt16 attestAndExtensionsStartIndex = 37;
+            NSData *attestAndExtensionsData = [data subdataWithRange:NSMakeRange(attestAndExtensionsStartIndex, data.length - attestAndExtensionsStartIndex)];
+            self.aaguid = [attestAndExtensionsData subdataWithRange:NSMakeRange(0, 16)];
+            UInt16 bigEndianCredentialIdLength = *((UInt16 *)(&(attestAndExtensionsData.bytes)[16]));
             UInt16 credentialIdLength = CFSwapInt16BigToHost(bigEndianCredentialIdLength);
+            self.credentialId = [attestAndExtensionsData subdataWithRange:NSMakeRange(16 + 2, credentialIdLength)];
+            UInt16 coseKeyStartIndex = 16 + 2 + credentialIdLength;
+            NSData *coseKeyAndExtensionData = [attestAndExtensionsData subdataWithRange:NSMakeRange(coseKeyStartIndex, attestAndExtensionsData.length - coseKeyStartIndex)];
             
-            if (credentialIdLength > 0) {
-                NSUInteger coseKeyOffset = 18 + credentialIdLength;
-                
-                YKFAssertAbortInit(attestedCredentialData.length > coseKeyOffset);
-                self.credentialId = [attestedCredentialData subdataWithRange:NSMakeRange(18, credentialIdLength)];
-                
-                NSRange coseKeyRange = NSMakeRange(coseKeyOffset, attestedCredentialData.length - coseKeyOffset);
-                self.coseEncodedCredentialPublicKey = [attestedCredentialData subdataWithRange: coseKeyRange];
-                YKFAssertAbortInit(self.coseEncodedCredentialPublicKey.length > 0);
+            YKFCBORMap *coseKeyCborMap = nil;
+            YKFCBORMap *extensionCborMap = nil;
+            NSInputStream *decoderInputStream = [[NSInputStream alloc] initWithData:coseKeyAndExtensionData];
+            [decoderInputStream open];
+            coseKeyCborMap = [YKFCBORDecoder decodeObjectFrom:decoderInputStream];
+            YKFAssertAbortInit(coseKeyCborMap);
+            self.coseEncodedCredentialPublicKey = [YKFCBOREncoder encodeMap:coseKeyCborMap];
+            if (self.flags & YKFFIDO2AuthenticatorDataFlagExtensionData) {
+                extensionCborMap = [YKFCBORDecoder decodeObjectFrom:decoderInputStream];
+                YKFAssertAbortInit(extensionCborMap);
+                self.extensions = extensionCborMap;
             }
+            [decoderInputStream close];
+        } else if (self.flags & YKFFIDO2AuthenticatorDataFlagExtensionData) {
+            UInt16 attestAndExtensionsStartIndex = 37;
+            NSData *attestAndExtensionsData = [data subdataWithRange:NSMakeRange(attestAndExtensionsStartIndex, data.length - attestAndExtensionsStartIndex)];
+            YKFCBORMap *extensionCborMap = nil;
+            NSInputStream *decoderInputStream = [[NSInputStream alloc] initWithData:attestAndExtensionsData];
+            [decoderInputStream open];
+            extensionCborMap = [YKFCBORDecoder decodeObjectFrom:decoderInputStream];
+            YKFAssertAbortInit(extensionCborMap);
+            self.extensions = extensionCborMap;
+            [decoderInputStream close];
         }
     }
     return self;

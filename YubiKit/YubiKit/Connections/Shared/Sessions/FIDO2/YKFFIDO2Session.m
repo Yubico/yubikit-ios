@@ -309,6 +309,17 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
                               excludeList:(NSArray * _Nullable)excludeList
                                  options:(NSDictionary  * _Nullable)options
                               completion:(YKFFIDO2SessionMakeCredentialCompletionBlock)completion {
+    [self makeCredentialWithClientDataHash:clientDataHash rp:rp user:user pubKeyCredParams:pubKeyCredParams excludeList:excludeList options:options extensions:nil completion:completion];
+}
+
+- (void)makeCredentialWithClientDataHash:(NSData *)clientDataHash
+                                      rp:(YKFFIDO2PublicKeyCredentialRpEntity *)rp
+                                    user:(YKFFIDO2PublicKeyCredentialUserEntity *)user
+                        pubKeyCredParams:(NSArray *)pubKeyCredParams
+                              excludeList:(NSArray * _Nullable)excludeList
+                                 options:(NSDictionary  * _Nullable)options
+                              extensions:(NSDictionary * _Nullable)extensions
+                              completion:(YKFFIDO2SessionMakeCredentialCompletionBlock)completion {
     YKFParameterAssertReturn(clientDataHash);
     YKFParameterAssertReturn(rp);
     YKFParameterAssertReturn(user);
@@ -328,7 +339,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         }
     }
     
-    YKFAPDU *apdu = [[YKFFIDO2MakeCredentialAPDU alloc] initWithClientDataHash:clientDataHash rp:rp user:user pubKeyCredParams:pubKeyCredParams excludeList:excludeList pinAuth:pinAuth pinProtocol:pinProtocol options:options];
+    YKFAPDU *apdu = [[YKFFIDO2MakeCredentialAPDU alloc] initWithClientDataHash:clientDataHash rp:rp user:user pubKeyCredParams:pubKeyCredParams excludeList:excludeList pinAuth:pinAuth pinProtocol:pinProtocol options:options extensions:extensions];
     
     if (!apdu) {
         YKFSessionError *error = [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER];

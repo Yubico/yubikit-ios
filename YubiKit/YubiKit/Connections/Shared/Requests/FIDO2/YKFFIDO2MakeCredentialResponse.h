@@ -14,7 +14,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class YKFFIDO2AuthenticatorData;
+@class YKFFIDO2AuthenticatorData, YKFCBORMap;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,11 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface YKFFIDO2MakeCredentialResponse: NSObject
 
 /*!
- The authenticator data object.
- */
-@property (nonatomic, readonly) NSData *authData;
-
-/*!
  The attestation statement format identifier.
  */
 @property (nonatomic, readonly) NSString *fmt;
@@ -49,7 +44,13 @@ NS_ASSUME_NONNULL_BEGIN
  The attestation statement, whose format is identified by the "fmt" object member. The client should treat it
  as an opaque object.
  */
-@property (nonatomic, readonly) NSData *attStmt;
+@property (nonatomic, readonly, nullable) NSData *attStmt;
+
+/*!
+ The authenticator data object.
+ */
+@property (nonatomic, readonly) NSData *authData;
+
 
 /*!
  @abstract
@@ -151,6 +152,10 @@ NS_ASSUME_NONNULL_BEGIN
  The credential public key, encoded in COSE key format (RFC 8152).
  */
 @property (nonatomic, readonly, nullable) NSData *coseEncodedCredentialPublicKey;
+
+
+
+@property (nonatomic, readonly, nullable) YKFCBORMap *extensions;
 
 /*
  Not available: instances should be created only by the library.

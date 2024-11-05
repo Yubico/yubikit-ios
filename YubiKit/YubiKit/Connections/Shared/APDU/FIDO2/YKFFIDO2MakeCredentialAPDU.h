@@ -28,7 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
                                     excludeList:(NSArray * _Nullable)excludeList
                                         pinAuth:(NSData * _Nullable)pinAuth
                                     pinProtocol:(NSUInteger)pinProtocol
-                                        options:(NSDictionary * _Nullable)options NS_DESIGNATED_INITIALIZER;
+                                        options:(NSDictionary * _Nullable)options
+                                     extensions:(NSDictionary * _Nullable)extensions NS_DESIGNATED_INITIALIZER;
 
 //- (nullable instancetype)initWithRequest:(YKFFIDO2MakeCredentialRequest *)request NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
