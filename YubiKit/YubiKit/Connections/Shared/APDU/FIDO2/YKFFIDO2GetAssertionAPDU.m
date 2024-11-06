@@ -37,6 +37,16 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2GetAssertionAPDUKey) {
                                         pinAuth:(NSData * _Nullable)pinAuth
                                     pinProtocol:(NSUInteger)pinProtocol
                                         options:(NSDictionary * _Nullable)options {
+    return [self initWithClientDataHash:clientDataHash rpId:rpId allowList:allowList pinAuth:pinAuth pinProtocol:pinProtocol extensions:nil options:options];
+}
+
+- (nullable instancetype)initWithClientDataHash:(NSData *)clientDataHash
+                                           rpId:(NSString *)rpId
+                                      allowList:(NSArray * _Nullable)allowList
+                                        pinAuth:(NSData * _Nullable)pinAuth
+                                    pinProtocol:(NSUInteger)pinProtocol
+                                     extensions:(NSDictionary * _Nullable)extensions
+                                        options:(NSDictionary * _Nullable)options {
     YKFAssertAbortInit(clientDataHash);
     YKFAssertAbortInit(rpId);
     
@@ -68,6 +78,11 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2GetAssertionAPDUKey) {
         requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyOptions)] = YKFCBORMap(mutableOptions);
     }
 
+    // Extensions
+    if (extensions.count > 0) {
+        requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyExtensions)] = YKFCBORMap(extensions);
+    }
+    
     // Pin Auth
     if (pinAuth) {
         requestDictionary[YKFCBORInteger(YKFFIDO2GetAssertionAPDUKeyPinAuth)] = YKFCBORByteString(pinAuth);

@@ -427,6 +427,15 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
                              allowList:(NSArray * _Nullable)allowList
                                options:(NSDictionary * _Nullable)options
                             completion:(YKFFIDO2SessionGetAssertionCompletionBlock)completion {
+    [self getAssertionWithClientDataHash:clientDataHash rpId:rpId allowList:allowList options:options extensions:nil completion:completion];
+}
+
+- (void)getAssertionWithClientDataHash:(NSData *)clientDataHash
+                                  rpId:(NSString *)rpId
+                             allowList:(NSArray * _Nullable)allowList
+                               options:(NSDictionary * _Nullable)options
+                            extensions:(NSDictionary * _Nullable)extensions
+                            completion:(YKFFIDO2SessionGetAssertionCompletionBlock)completion {
     YKFParameterAssertReturn(clientDataHash);
     YKFParameterAssertReturn(rpId);
     YKFParameterAssertReturn(completion);
@@ -442,6 +451,58 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         if (!pinAuth) {
             completion(nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER]);
         }
+    }
+    
+    // Extensions, client authenticator input
+    if (extensions && extensions[@"prf"] && extensions[@"prf"][@"eval"]) {
+        NSString *base64EncodedFirst = extensions[@"prf"][@"eval"][@"first"];
+        NSString *base64EncodedSecond = extensions[@"prf"][@"eval"][@"second"];
+ 
+        NSData *first = [[[NSData alloc] initWithBase64EncodedString:base64EncodedFirst options:0] ykf_prfSaltData];
+        NSData *second = [[[NSData alloc] initWithBase64EncodedString:base64EncodedSecond options:0] ykf_prfSaltData];
+        
+        if (first.length != 32 || (second && second.length != 32)) {
+            [NSException raise:@"Invalid input" format:@"Salt is not 32 bytes long."];
+        }
+        [self executeGetSharedSecretWithCompletion:^(NSData * _Nullable sharedSecret, YKFCBORMap * _Nullable cosePlatformPublicKey, NSError * _Nullable error) {
+            NSMutableData *salts = [NSMutableData new];
+            [salts appendData:first];
+            if (second) {
+                [salts appendData:second];
+            }
+ 
+            NSData *saltEnc = [salts ykf_aes256EncryptedDataWithKey:sharedSecret];
+            NSData *saltAuth = [saltEnc ykf_fido2HMACWithKey:sharedSecret];
+            NSMutableDictionary *hmacSecretInput = [NSMutableDictionary new];
+            hmacSecretInput[YKFCBORInteger(1)] = cosePlatformPublicKey;
+            hmacSecretInput[YKFCBORInteger(2)] = YKFCBORByteString(saltEnc);
+                                hmacSecretInput[YKFCBORInteger(3)] = YKFCBORByteString([saltAuth subdataWithRange:NSMakeRange(0, 16)]);
+            hmacSecretInput[YKFCBORInteger(4)] = YKFCBORInteger(1); // pin uv auth protocol version
+            NSMutableDictionary *authenticatorInputs = [NSMutableDictionary new];
+            authenticatorInputs[YKFCBORTextString(@"hmac-secret")] = YKFCBORMap(hmacSecretInput);
+            
+            YKFFIDO2GetAssertionAPDU *apdu = [[YKFFIDO2GetAssertionAPDU alloc] initWithClientDataHash:clientDataHash
+                                                                                                 rpId:rpId
+                                                                                            allowList:allowList
+                                                                                              pinAuth:pinAuth
+                                                                                          pinProtocol:pinProtocol
+                                                                                           extensions:authenticatorInputs
+                                                                                              options:options];
+            ykf_weak_self();
+            [self executeFIDO2Command:apdu retryCount:0 completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+                ykf_safe_strong_self();
+                NSLog(@"%@", data.ykf_hexadecimalString);
+                NSData *cborData = [strongSelf cborFromKeyResponseData:data];
+                YKFFIDO2GetAssertionResponse *getAssertionResponse = [[YKFFIDO2GetAssertionResponse alloc] initWithCBORData:cborData];
+                
+                if (getAssertionResponse) {
+                    completion(getAssertionResponse, nil);
+                } else {
+                    completion(nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeINVALID_CBOR]);
+                }
+            }];
+        }];
+        return;
     }
     
     YKFFIDO2GetAssertionAPDU *apdu = [[YKFFIDO2GetAssertionAPDU alloc] initWithClientDataHash:clientDataHash
@@ -675,5 +736,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         [strongSelf executeFIDO2Command:apdu retryCount:retryCount completion:completion];
     });
 }
+
+
 
 @end

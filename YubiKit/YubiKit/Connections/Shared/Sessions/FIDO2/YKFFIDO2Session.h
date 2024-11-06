@@ -453,6 +453,13 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2SessionKeyState) {
                                options:(NSDictionary * _Nullable)options
                             completion:(YKFFIDO2SessionGetAssertionCompletionBlock)completion;
 
+- (void)getAssertionWithClientDataHash:(NSData *)clientDataHash
+                                  rpId:(NSString *)rpId
+                             allowList:(NSArray * _Nullable)allowList
+                               options:(NSDictionary * _Nullable)options
+                            extensions:(NSDictionary * _Nullable)extensions
+                            completion:(YKFFIDO2SessionGetAssertionCompletionBlock)completion;
+
 /*!
  @method getNextAssertionWithCompletion:completion:
  

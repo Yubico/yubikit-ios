@@ -41,6 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)ykf_fido2PaddedPinData;
 
+- (NSData *)ykf_prfSaltData;
+
 @end
 
 @interface NSData (NSDATA_PIVAdditions)

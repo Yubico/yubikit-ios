@@ -176,6 +176,15 @@
     return [mutableData copy];
 }
 
+- (NSData *)ykf_prfSaltData {
+    NSMutableData *mutableData = [NSMutableData new];
+    [mutableData appendData:[@"WebAuthn PRF" dataUsingEncoding: NSUTF8StringEncoding]];
+    UInt8 padding = 0x00;
+    [mutableData appendBytes:&padding length:1];
+    [mutableData appendData:self];
+    return [mutableData ykf_SHA256];
+}
+
 @end
 
 #pragma mark - PIV

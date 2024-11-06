@@ -26,7 +26,16 @@ NS_ASSUME_NONNULL_BEGIN
                                       allowList:(NSArray * _Nullable)allowList
                                         pinAuth:(NSData * _Nullable)pinAuth
                                     pinProtocol:(NSUInteger)pinProtocol
+                                        options:(NSDictionary * _Nullable)options;
+
+- (nullable instancetype)initWithClientDataHash:(NSData *)clientDataHash
+                                           rpId:(NSString *)rpId
+                                      allowList:(NSArray * _Nullable)allowList
+                                        pinAuth:(NSData * _Nullable)pinAuth
+                                    pinProtocol:(NSUInteger)pinProtocol
+                                     extensions:(NSDictionary * _Nullable)extensions
                                         options:(NSDictionary * _Nullable)options NS_DESIGNATED_INITIALIZER;
+
 //- (nullable instancetype)initWithRequest:(YKFFIDO2GetAssertionRequest *)request NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -251,11 +251,13 @@ class FIDO2Tests: XCTestCase {
             connection.fido2TestSession { session in
                 session.verifyPin("123456") { error in
                     if let error { XCTFail("verifyPin failed with: \(error)"); return }
-                    let extensions = ["prf" : true]
-                    session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true], extensions: extensions) { response in
+                    let createExtensions = ["prf" : []]
+                    session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: true], extensions: createExtensions) { response in
                         print(response.authenticatorData)
                         print("✅ Created new FIDO2 credential: \(response)")
-                        session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true]) { response in
+                        
+                        let assertExtensions = ["prf" : ["eval" : ["first" : "abba", "second" : "bebe"]]]
+                        session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true], extensions: assertExtensions) { response in
                             print("✅ Asserted FIDO2 credential: \(response)")
                             completion()
                         }
@@ -335,14 +337,14 @@ extension YKFFIDO2Session {
         makeCredential(withClientDataHash: data, rp: rp, user: user, pubKeyCredParams: pubKeyCredParams, excludeList: nil, options: options, extensions: extensions, completion: completion)
     }
     
-    func getAssertionAndAssert(response: YKFFIDO2MakeCredentialResponse, options: [String: Any]? = nil,  completion: @escaping (_ response: YKFFIDO2GetAssertionResponse) -> Void) {
-        getAssertion(response: response, options: options) { response, error in
+    func getAssertionAndAssert(response: YKFFIDO2MakeCredentialResponse, options: [String: Any]? = nil, extensions: [String: Any]? = nil,  completion: @escaping (_ response: YKFFIDO2GetAssertionResponse) -> Void) {
+        getAssertion(response: response, options: options, extensions: extensions) { response, error in
             guard let response = response else { XCTAssertTrue(false, "🔴 Failed asserting FIDO2 credential: \(error!)"); return }
             completion(response)
         }
     }
     
-    func getAssertion(response: YKFFIDO2MakeCredentialResponse, options: [String: Any]? = nil,  completion: @escaping YKFFIDO2SessionGetAssertionCompletionBlock) {
+    func getAssertion(response: YKFFIDO2MakeCredentialResponse, options: [String: Any]? = nil, extensions: [String: Any]? = nil, completion: @escaping YKFFIDO2SessionGetAssertionCompletionBlock) {
         let data = Data(repeating: 0, count: 32)
         let credentialDescriptor = YKFFIDO2PublicKeyCredentialDescriptor()
         credentialDescriptor.credentialId = response.authenticatorData!.credentialId!
@@ -350,7 +352,7 @@ extension YKFFIDO2Session {
         credType.name = "public-key"
         credentialDescriptor.credentialType = credType
         let allowList = [credentialDescriptor]
-        getAssertionWithClientDataHash(data, rpId: "yubikit-test.com", allowList: allowList, options: options, completion: completion)
+        getAssertionWithClientDataHash(data, rpId: "yubikit-test.com", allowList: allowList, options: options, extensions: extensions, completion: completion)
     }
 }
 
