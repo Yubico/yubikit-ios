@@ -84,6 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly) NSData *rawResponse;
 
+@property (nonatomic, readonly, nullable) NSDictionary *extensionsOutput;
+
 /*
  Not available: the response will be created by the library.
  */

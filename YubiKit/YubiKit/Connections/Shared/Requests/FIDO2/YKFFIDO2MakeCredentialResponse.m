@@ -43,8 +43,6 @@ static NSString* const YKFFIDO2MakeCredentialResponsePackedAttStmtFmt = @"packed
 @property (nonatomic, readwrite) NSData *coseEncodedCredentialPublicKey;
 @property (nonatomic, readwrite) YKFCBORMap *extensions;
 
-- (instancetype)initWithData:(NSData *)data NS_DESIGNATED_INITIALIZER;
-
 @end
 
 @interface YKFFIDO2MakeCredentialResponse()

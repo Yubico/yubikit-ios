@@ -157,6 +157,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) YKFCBORMap *extensions;
 
+
+- (instancetype)initWithData:(NSData *)data NS_DESIGNATED_INITIALIZER;
+
+
 /*
  Not available: instances should be created only by the library.
  */

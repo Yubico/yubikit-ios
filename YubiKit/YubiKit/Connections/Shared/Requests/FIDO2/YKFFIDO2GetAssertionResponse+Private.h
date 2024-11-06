@@ -19,7 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFFIDO2GetAssertionResponse()
 
-- (nullable instancetype)initWithCBORData:(NSData *)cborData NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCBORData:(NSData *)cborData sharedSecret:(NSData * _Nullable)sharedSecret NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCBORData:(NSData *)cborData;
 
 @end
 

@@ -13,6 +13,9 @@
 // limitations under the License.
 
 #import "YKFFIDO2GetAssertionResponse.h"
+#import "YKFFIDO2MakeCredentialResponse.h"
+#import "YKFNSDataAdditions+Private.h"
+#import "YKFNSDataAdditions.h"
 #import "YKFFIDO2GetAssertionResponse+Private.h"
 #import "YKFCBORDecoder.h"
 #import "YKFFIDO2Type.h"
@@ -33,6 +36,7 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2GetAssertionResponseKey) {
 @property (nonatomic, readwrite) NSData *signature;
 @property (nonatomic, readwrite) YKFFIDO2PublicKeyCredentialUserEntity *user;
 @property (nonatomic, readwrite) NSInteger numberOfCredentials;
+@property (nonatomic, readwrite) NSDictionary *extensionsOutput;
 
 @property (nonatomic, readwrite) NSData *rawResponse;
 
@@ -40,7 +44,12 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2GetAssertionResponseKey) {
 
 @implementation YKFFIDO2GetAssertionResponse
 
+
 - (instancetype)initWithCBORData:(NSData *)cborData {
+    return [self initWithCBORData:cborData sharedSecret:nil];
+}
+
+- (instancetype)initWithCBORData:(NSData *)cborData sharedSecret:(NSData * _Nullable)sharedSecret {
     self = [super init];
     if (self) {
         YKFAssertAbortInit(cborData);
@@ -55,7 +64,7 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2GetAssertionResponseKey) {
         
         YKFAssertAbortInit(responseMap);
         
-        BOOL success = [self parseResponseMap: responseMap];
+        BOOL success = [self parseResponseMap: responseMap sharedSecret:sharedSecret];
         YKFAssertAbortInit(success);
     }
     return self;
@@ -63,7 +72,11 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2GetAssertionResponseKey) {
 
 #pragma mark - Private
 
-- (BOOL)parseResponseMap:(YKFCBORMap *)map {
+//- (BOOL)parseResponseMap:(YKFCBORMap *)map {
+//    return [self parseResponseMap:map sharedSecret:nil];
+//}
+
+- (BOOL)parseResponseMap:(YKFCBORMap *)map sharedSecret:(NSData *)sharedSecret {
     id convertedObject = [YKFCBORDecoder convertCBORObjectToFoundationType:map];
     if (!convertedObject || ![convertedObject isKindOfClass:NSDictionary.class]) {
         return NO;
@@ -96,6 +109,27 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2GetAssertionResponseKey) {
     NSData *authData = response[@(YKFFIDO2GetAssertionResponseKeyAuthData)];    
     YKFAssertReturnValue(authData, @"authenticatorGetAssertion authData is required.", NO);
     self.authData = authData;
+    
+    // Extensions output
+    YKFFIDO2AuthenticatorData *authenticatorData = [[YKFFIDO2AuthenticatorData alloc] initWithData: authData];
+    YKFCBORByteString *cborSecrect = authenticatorData.extensions.value[YKFCBORTextString(@"hmac-secret")];
+    NSData *secret = cborSecrect.value;
+    NSData *decryptedOutputs = [secret ykf_aes256DecryptedDataWithKey: sharedSecret];
+    NSData *output1 = [decryptedOutputs subdataWithRange: NSMakeRange(0, 32)];
+    NSData *output2;
+    if (decryptedOutputs.length == 64) {
+        output2 = [decryptedOutputs subdataWithRange:NSMakeRange(32, 32)];
+    }
+    NSMutableDictionary *outputDict = [NSMutableDictionary new];
+    outputDict[@"first"] = [output1 ykf_websafeBase64EncodedString];
+    if (output2) {
+        outputDict[@"seconde"] = [output2 ykf_websafeBase64EncodedString];
+    }
+    NSMutableDictionary *resultsDict = [NSMutableDictionary new];
+    resultsDict[@"results"] = outputDict;
+    NSMutableDictionary *prfDict = [NSMutableDictionary new];
+    prfDict[@"prf"] = resultsDict;
+    self.extensionsOutput = prfDict;
     
     // Signature
     NSData *signature = response[@(YKFFIDO2GetAssertionResponseKeySignature)];

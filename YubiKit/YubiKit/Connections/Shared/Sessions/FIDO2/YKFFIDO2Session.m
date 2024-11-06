@@ -493,7 +493,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
                 ykf_safe_strong_self();
                 NSLog(@"%@", data.ykf_hexadecimalString);
                 NSData *cborData = [strongSelf cborFromKeyResponseData:data];
-                YKFFIDO2GetAssertionResponse *getAssertionResponse = [[YKFFIDO2GetAssertionResponse alloc] initWithCBORData:cborData];
+                YKFFIDO2GetAssertionResponse *getAssertionResponse = [[YKFFIDO2GetAssertionResponse alloc] initWithCBORData:cborData sharedSecret:sharedSecret];
                 
                 if (getAssertionResponse) {
                     completion(getAssertionResponse, nil);
