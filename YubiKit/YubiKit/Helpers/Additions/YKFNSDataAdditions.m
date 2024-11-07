@@ -296,11 +296,9 @@
     NSMutableString *base64EncodedString = [[NSMutableString alloc] initWithString:websafeBase64EncodedData];
     [base64EncodedString replaceOccurrencesOfString:@"-" withString:@"+" options:0 range:NSMakeRange(0, [base64EncodedString length])];
     [base64EncodedString replaceOccurrencesOfString:@"_" withString:@"/" options:0 range:NSMakeRange(0, [base64EncodedString length])];
-    if ((dataLen % 3) == 1){
-        [base64EncodedString appendString:@"=="];
-    }
-    else if ((dataLen % 3) == 2) {
-        [base64EncodedString appendString:@"="];
+    if (dataLen % 4 != 0) {
+        NSString *padding = [@"" stringByPaddingToLength: 4 - (dataLen % 4) withString:@"=" startingAtIndex:0];
+        [base64EncodedString appendString:padding];
     }
     return [self initWithBase64EncodedString:base64EncodedString options:0];
 }
