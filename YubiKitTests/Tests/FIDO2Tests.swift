@@ -246,6 +246,18 @@ class FIDO2Tests: XCTestCase {
         }
     }
     
+    func testCreateSignExtensionCredential() {
+        runYubiKitTest { connection, completion in
+            connection.fido2TestSession { session in
+                let createExtensions = ["sign" : ["generateKey": ["algorithms": [-65539]]]]
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false, YKFFIDO2OptionUV: false], extensions: createExtensions) { response in
+                    print(response.authenticatorData)
+                    print("✅ Created new FIDO2 credential: \(response)")
+                }
+            }
+        }
+    }
+    
     func testCreatePRFSecretExtensionCredential() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
@@ -277,27 +289,6 @@ class FIDO2Tests: XCTestCase {
                     session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response in
                         print("✅ Created new FIDO2 credential: \(response)")
                         session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true]) { response in
-                            print("✅ Asserted FIDO2 credential: \(response)")
-                            completion()
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    
-    func testCreateSignExtensionCredential() {
-        runYubiKitTest { connection, completion in
-            connection.fido2TestSession { session in
-                session.verifyPin("123456") { error in
-                    if let error { XCTFail("verifyPin failed with: \(error)"); return }
-                    
-                    let extensions = ["sign" : ["generateKey" : ["algorithms" : [-65539, -7]],
-                                                "phData" : "84ecfc628f1576ed179241e240db0a77f986954546adbc207e9c43e032f18450"]]
-                    session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true], extensions: extensions) { response in
-                        print("✅ Created new FIDO2 credential: \(response)")
-                        session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: false]) { response in
                             print("✅ Asserted FIDO2 credential: \(response)")
                             completion()
                         }

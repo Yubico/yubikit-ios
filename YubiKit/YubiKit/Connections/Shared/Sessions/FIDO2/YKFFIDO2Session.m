@@ -44,6 +44,9 @@
 #import "YKFFIDO2MakeCredentialResponse.h"
 #import "YKFFIDO2GetAssertionResponse.h"
 
+#import "YKFCBORDecoder.h"
+#import "YKFCBOREncoder.h"
+
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFSessionError+Private.h"
 
@@ -349,7 +352,13 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         NSMutableDictionary *signExtensionDict = [NSMutableDictionary new];
         // Flags hard coded for now. More information here:
         // https://github.com/Yubico/python-fido2/blob/8722a8925509d3320f8cb6d8a22c76e2af08fb20/fido2/ctap2/extensions.py#L493
-        int flags = 0b101;
+        
+        int flags;
+        if (options[@"userVerification"] && [options[@"userVerification"] isEqual:@"required"]) {
+            flags = 0b101;
+        } else {
+            flags = 0b001;
+        }
         
         NSMutableArray *algorithms = [NSMutableArray array];
         [(NSArray *)generateKeyDict[@"algorithms"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -405,13 +414,50 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
             } else {
                 extensionsClientOutput[@"prf"] = @{@"enabled" : @NO};
             }
-//            
-//            NSError *error;
-//            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:extensionsClientOutput
-//                                                               options:NSJSONWritingPrettyPrinted
-//                                                                 error:&error];
-//            NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-//            NSLog(@"%@", jsonString);
+        }
+        if (authenticatorInputs[YKFCBORTextString(@"sign")]) {
+            YKFCBORMap *cborMap = makeCredentialResponse.authenticatorData.extensions.value[YKFCBORTextString(@"sign")];
+            YKFCBORByteString *signAttestationObject = cborMap.value[YKFCBORInteger(7)];
+            NSData *signAttestationData = signAttestationObject.value;
+            if (!signAttestationData) {
+                [NSException raise:@"Invalid input" format:@"Invalid data."];
+            }
+            YKFCBORMap *signAttestation = nil;
+            NSInputStream *decoderInputStream = [[NSInputStream alloc] initWithData:signAttestationData];
+            [decoderInputStream open];
+            signAttestation = [YKFCBORDecoder decodeObjectFrom:decoderInputStream];
+            [decoderInputStream close];
+            if (!signAttestation) {
+                [NSException raise:@"Invalid input" format:@"Invalid data"];
+            }
+            NSData *authenticatorDataBytes = ((YKFCBORByteString *)signAttestation.value[YKFCBORInteger(2)]).value;
+            YKFFIDO2AuthenticatorData *authenticatorData = [[YKFFIDO2AuthenticatorData alloc] initWithData:authenticatorDataBytes];
+            
+            
+            YKFCBORMap *coseKeyCborMap = nil;
+            decoderInputStream = [[NSInputStream alloc] initWithData:authenticatorData.coseEncodedCredentialPublicKey];
+            [decoderInputStream open];
+            coseKeyCborMap = [YKFCBORDecoder decodeObjectFrom:decoderInputStream];
+            [decoderInputStream close];
+            
+            NSMutableDictionary *keyHandleDict = [NSMutableDictionary new];
+            for (int i = 1; i < 4; i++) {
+                if (coseKeyCborMap.value[YKFCBORInteger(i)]) {
+                    keyHandleDict[YKFCBORInteger(i)] = i == 1 ? YKFCBORInteger(-2) : coseKeyCborMap.value[YKFCBORInteger(i)];
+                }
+            }
+            
+            NSData *keyHandleData = [YKFCBOREncoder encodeMap:YKFCBORMap(keyHandleDict)];
+            NSMutableDictionary *generatedKeyDict = [NSMutableDictionary new];
+            generatedKeyDict[@"publicKey"] = [authenticatorData.coseEncodedCredentialPublicKey ykf_websafeBase64EncodedString];
+            generatedKeyDict[@"keyHandle"] = [keyHandleData ykf_websafeBase64EncodedString];
+
+            NSMutableDictionary *signDict = [NSMutableDictionary new];
+            signDict[@"generatedKey"] = generatedKeyDict;
+            if (cborMap.value[YKFCBORInteger(6)]) {
+                signDict[@"signature"] = ((YKFCBORByteString *)cborMap.value[YKFCBORInteger(6)]).value;
+            }
+            extensionsClientOutput[@"sign"] = signDict;
         }
         
         if (makeCredentialResponse) {
