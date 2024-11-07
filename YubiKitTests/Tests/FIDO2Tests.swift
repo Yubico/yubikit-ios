@@ -69,7 +69,7 @@ class FIDO2Tests: XCTestCase {
                 connection.fido2TestSession { session in
                     session.setPin("123456") { _ in
                         session.verifyPin("123456") { error in
-                            session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
+                            session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response, _ in
                                 print("✅ Created new FIDO2 credential: \(response)")
                                 session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true]) { response in
                                     // https://www.w3.org/TR/webauthn/#authenticator-data
@@ -98,7 +98,7 @@ class FIDO2Tests: XCTestCase {
                 connection.fido2TestSession { session in
                     session.setPin("123456") { _ in
                         session.verifyPin("123456") { error in
-                            session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
+                            session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response, _ in
                                 session.clearUserVerification()
                                 session.getAssertion(response: response, options: [YKFFIDO2OptionUP: true]) { response, error in
                                     if let response = response {
@@ -171,7 +171,7 @@ class FIDO2Tests: XCTestCase {
     func testCreateECCNonRKCredential() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
-                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response, _ in
                     print("✅ New FIDO2 credential: \(response)")
                     completion()
                 }
@@ -182,7 +182,7 @@ class FIDO2Tests: XCTestCase {
     func testCreateEdSANonRKCredential() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
-                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: false]) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: false]) { response, _ in
                     print("✅ Created new FIDO2 credential: \(response)")
                     completion()
                 }
@@ -193,7 +193,7 @@ class FIDO2Tests: XCTestCase {
     func testCreateECCNonRKCredentialAndAssert() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
-                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response, _ in
                     print("✅ Created new FIDO2 credential: \(response)")
                     session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true]) { response in
                         print("✅ Asserted FIDO2 credential: \(response)")
@@ -207,7 +207,7 @@ class FIDO2Tests: XCTestCase {
     func testCreateEdDSANonRKCredentialAndAssert() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
-                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: false]) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: false]) { response, _ in
                     print("✅ Created new FIDO2 credential: \(response)")
                     session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true]) { response in
                         print("✅ Asserted FIDO2 credential: \(response)")
@@ -221,7 +221,7 @@ class FIDO2Tests: XCTestCase {
     func testCreateEdDSARKCredentialAndAssert() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
-                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response, _ in
                     print("✅ Created new FIDO2 credential: \(response)")
                     session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true]) { response in
                         print("✅ Asserted FIDO2 credential: \(response)")
@@ -235,7 +235,7 @@ class FIDO2Tests: XCTestCase {
     func testCreateEdDSARKCredentialAndAssertWithoutUP() {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
-                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response, _ in
                     print("✅ Created new FIDO2 credential: \(response)")
                     session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: false]) { response in
                         print("✅ Asserted FIDO2 credential: \(response)")
@@ -250,9 +250,19 @@ class FIDO2Tests: XCTestCase {
         runYubiKitTest { connection, completion in
             connection.fido2TestSession { session in
                 let createExtensions = ["sign" : ["generateKey": ["algorithms": [-65539]]]]
-                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false, YKFFIDO2OptionUV: false], extensions: createExtensions) { response in
+                session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false, YKFFIDO2OptionUV: false], extensions: createExtensions) { response, extensionResponse in
                     print(response.authenticatorData)
-                    print("✅ Created new FIDO2 credential: \(response)")
+                    print("✅ Created new FIDO2 credential: \(response), \(extensionResponse)")
+                    
+                    let credentialId = (response.authenticatorData!.credentialId! as NSData).ykf_websafeBase64EncodedString()
+                    let sign = (extensionResponse!["sign"] as! [String: Any])
+                    let generatedKey = sign["generatedKey"] as! [String: Any]
+                    let keyHandle = generatedKey["keyHandle"] as! String
+                    let assertExtensions = ["sign" : ["sign" : ["phData" : "Mp80eo3FdxJ2hLtD7HHQO5hhzjyDD57Kdvuqi_weTGE", "keyHandleByCredential" : [credentialId: keyHandle]]]]
+                    session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true, YKFFIDO2OptionUV: false], extensions: assertExtensions) { response in
+                        print("✅ Asserted FIDO2 credential: \(response)")
+                        completion()
+                    }
                 }
             }
         }
@@ -264,7 +274,7 @@ class FIDO2Tests: XCTestCase {
                 session.verifyPin("123456") { error in
                     if let error { XCTFail("verifyPin failed with: \(error)"); return }
                     let createExtensions = ["prf" : []]
-                    session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: true], extensions: createExtensions) { response in
+                    session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: true], extensions: createExtensions) { response, _ in
                         print(response.authenticatorData)
                         print("✅ Created new FIDO2 credential: \(response)")
                         
@@ -286,7 +296,7 @@ class FIDO2Tests: XCTestCase {
                     if let error { XCTFail("verifyPin failed with: \(error)"); return }
                     //                    let extensions = ["largeBlobKey" : ["support": "required"]]
                     //                    session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true], extensions: extensions) { response in
-                    session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response in
+                    session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmEdDSA, options: [YKFFIDO2OptionRK: true]) { response, _ in
                         print("✅ Created new FIDO2 credential: \(response)")
                         session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true]) { response in
                             print("✅ Asserted FIDO2 credential: \(response)")
@@ -300,7 +310,7 @@ class FIDO2Tests: XCTestCase {
 }
 
 extension YKFFIDO2Session {
-    func addCredentialAndAssert(algorithm: Int, options: [String: Any]? = nil, extensions: [String: Any]? = nil, completion: @escaping (_ response: YKFFIDO2MakeCredentialResponse) -> Void) {
+    func addCredentialAndAssert(algorithm: Int, options: [String: Any]? = nil, extensions: [String: Any]? = nil, completion: @escaping (_ response: YKFFIDO2MakeCredentialResponse, _ clientExtensionResults: [AnyHashable: Any]?) -> Void) {
         addCredential(algorithm: algorithm, options: options, extensions: extensions) { response, clientExtensionResults, error in
             if let clientExtensionResults {
                 let jsonData = try! JSONSerialization.data(withJSONObject: clientExtensionResults)
@@ -308,7 +318,7 @@ extension YKFFIDO2Session {
                 print(jsonString as Any)
             }
             guard let response = response else { XCTAssertTrue(false, "🔴 Failed making FIDO2 credential: \(error!)"); return }
-            completion(response)
+            completion(response, clientExtensionResults)
         }
     }
     

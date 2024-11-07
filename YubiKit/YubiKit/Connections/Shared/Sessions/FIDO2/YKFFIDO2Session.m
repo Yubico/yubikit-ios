@@ -500,33 +500,55 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     }
     
     // Extensions, client authenticator input
-    if (extensions && extensions[@"prf"] && extensions[@"prf"][@"eval"]) {
-        NSString *base64EncodedFirst = extensions[@"prf"][@"eval"][@"first"];
-        NSString *base64EncodedSecond = extensions[@"prf"][@"eval"][@"second"];
- 
-        NSData *first = [[[NSData alloc] initWithBase64EncodedString:base64EncodedFirst options:0] ykf_prfSaltData];
-        NSData *second = [[[NSData alloc] initWithBase64EncodedString:base64EncodedSecond options:0] ykf_prfSaltData];
-        
-        if (first.length != 32 || (second && second.length != 32)) {
-            [NSException raise:@"Invalid input" format:@"Salt is not 32 bytes long."];
-        }
+    if (extensions) {
         [self executeGetSharedSecretWithCompletion:^(NSData * _Nullable sharedSecret, YKFCBORMap * _Nullable cosePlatformPublicKey, NSError * _Nullable error) {
-            NSMutableData *salts = [NSMutableData new];
-            [salts appendData:first];
-            if (second) {
-                [salts appendData:second];
-            }
- 
-            NSData *saltEnc = [salts ykf_aes256EncryptedDataWithKey:sharedSecret];
-            NSData *saltAuth = [saltEnc ykf_fido2HMACWithKey:sharedSecret];
-            NSMutableDictionary *hmacSecretInput = [NSMutableDictionary new];
-            hmacSecretInput[YKFCBORInteger(1)] = cosePlatformPublicKey;
-            hmacSecretInput[YKFCBORInteger(2)] = YKFCBORByteString(saltEnc);
-                                hmacSecretInput[YKFCBORInteger(3)] = YKFCBORByteString([saltAuth subdataWithRange:NSMakeRange(0, 16)]);
-            hmacSecretInput[YKFCBORInteger(4)] = YKFCBORInteger(1); // pin uv auth protocol version
             NSMutableDictionary *authenticatorInputs = [NSMutableDictionary new];
-            authenticatorInputs[YKFCBORTextString(@"hmac-secret")] = YKFCBORMap(hmacSecretInput);
-            
+            if (extensions[@"prf"] && extensions[@"prf"][@"eval"]) {
+                NSString *base64EncodedFirst = extensions[@"prf"][@"eval"][@"first"];
+                NSString *base64EncodedSecond = extensions[@"prf"][@"eval"][@"second"];
+                
+                NSData *first = [[[NSData alloc] initWithBase64EncodedString:base64EncodedFirst options:0] ykf_prfSaltData];
+                NSData *second = [[[NSData alloc] initWithBase64EncodedString:base64EncodedSecond options:0] ykf_prfSaltData];
+                
+                if (first.length != 32 || (second && second.length != 32)) {
+                    [NSException raise:@"Invalid input" format:@"Salt is not 32 bytes long."];
+                }
+                NSMutableData *salts = [NSMutableData new];
+                [salts appendData:first];
+                if (second) {
+                    [salts appendData:second];
+                }
+                
+                NSData *saltEnc = [salts ykf_aes256EncryptedDataWithKey:sharedSecret];
+                NSData *saltAuth = [saltEnc ykf_fido2HMACWithKey:sharedSecret];
+                NSMutableDictionary *hmacSecretInput = [NSMutableDictionary new];
+                hmacSecretInput[YKFCBORInteger(1)] = cosePlatformPublicKey;
+                hmacSecretInput[YKFCBORInteger(2)] = YKFCBORByteString(saltEnc);
+                hmacSecretInput[YKFCBORInteger(3)] = YKFCBORByteString([saltAuth subdataWithRange:NSMakeRange(0, 16)]);
+                hmacSecretInput[YKFCBORInteger(4)] = YKFCBORInteger(1); // pin uv auth protocol version
+                authenticatorInputs[YKFCBORTextString(@"hmac-secret")] = YKFCBORMap(hmacSecretInput);
+            }
+            if (extensions[@"sign"] && extensions[@"sign"][@"sign"]) {
+                NSString *phDataString =  extensions[@"sign"][@"sign"][@"phData"];
+                NSData *phData = [[NSData alloc] ykf_initWithWebsafeBase64EncodedString:phDataString dataLength:phDataString.length];
+                NSDictionary *keyHandleDict = extensions[@"sign"][@"sign"][@"keyHandleByCredential"];
+                NSMutableDictionary *decodedKeyHandleDict = [NSMutableDictionary new];
+                for (id key in keyHandleDict) {
+                    decodedKeyHandleDict[key] = [[NSData alloc] ykf_initWithWebsafeBase64EncodedString:keyHandleDict[key] dataLength:((NSString *)keyHandleDict[key]).length];
+                }
+                if (allowList.count == 0) {
+                    [NSException raise:@"Invalid input" format:@"Allow list can not be empty."];
+                }
+                NSString *credentialId = [((YKFFIDO2PublicKeyCredentialDescriptor *) allowList.firstObject).credentialId ykf_websafeBase64EncodedString];
+                
+                NSData *keyHandle = decodedKeyHandleDict[credentialId];
+
+                NSMutableDictionary *output = [NSMutableDictionary new];
+                output[YKFCBORInteger(0)] = YKFCBORByteString(phData);
+                output[YKFCBORInteger(5)] = YKFCBORArray(@[YKFCBORByteString(keyHandle)]);
+                authenticatorInputs[YKFCBORTextString(@"sign")] = YKFCBORMap(output);
+            }
+
             YKFFIDO2GetAssertionAPDU *apdu = [[YKFFIDO2GetAssertionAPDU alloc] initWithClientDataHash:clientDataHash
                                                                                                  rpId:rpId
                                                                                             allowList:allowList
