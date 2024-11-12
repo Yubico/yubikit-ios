@@ -24,6 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*!
  @abstract
+    Decodes a CBOR type from NSData.
+ @returns
+    The object or nil if the object could not be parsed.
+ */
++ (nullable id)decodeObjectFromData:(NSData *)data;
+
+/*!
+ @abstract
     Decodes a CBOR type from an input stream.
  @returns
     The object or nil if the object could not be parsed.

@@ -25,6 +25,14 @@
 
 @implementation YKFCBORDecoder
 
++ (nullable id)decodeObjectFromData:(NSData *)data {
+    NSInputStream *decoderInputStream = [[NSInputStream alloc] initWithData:data];
+    [decoderInputStream open];
+    id result = [YKFCBORDecoder decodeObjectFrom:decoderInputStream];
+    [decoderInputStream close];
+    return result;
+}
+
 + (nullable id)decodeObjectFrom:(NSInputStream *)inputStream {
     YKFAssertReturnValue(inputStream, @"CBOR - Decoding input stream is nil.", nil);
     YKFAssertReturnValue(inputStream.streamStatus == NSStreamStatusOpen, @"CBOR - Decoding input stream not opened.", nil);
