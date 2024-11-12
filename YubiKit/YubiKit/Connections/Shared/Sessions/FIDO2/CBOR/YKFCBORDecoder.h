@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
  @returns
     The object or nil if the object could not be parsed.
  */
-+ (nullable id)decodeObjectFromData:(NSData *)data;
++ (nullable id)decodeDataObjectFrom:(NSData *)data;
 
 /*!
  @abstract

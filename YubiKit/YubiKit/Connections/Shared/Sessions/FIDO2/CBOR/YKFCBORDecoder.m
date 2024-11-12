@@ -25,7 +25,7 @@
 
 @implementation YKFCBORDecoder
 
-+ (nullable id)decodeObjectFromData:(NSData *)data {
++ (nullable id)decodeDataObjectFrom:(NSData *)data {
     NSInputStream *decoderInputStream = [[NSInputStream alloc] initWithData:data];
     [decoderInputStream open];
     id result = [YKFCBORDecoder decodeObjectFrom:decoderInputStream];
