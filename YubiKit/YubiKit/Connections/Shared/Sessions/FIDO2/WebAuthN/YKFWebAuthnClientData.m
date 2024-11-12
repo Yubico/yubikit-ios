@@ -44,7 +44,7 @@
                                      @"challenge": websafeChallenge,
                                      @"origin": self.origin};
     NSError *error = nil;
-    NSData *result = [NSJSONSerialization dataWithJSONObject:jsonDictionary options:0 error:&error];
+    NSData *result = [NSJSONSerialization dataWithJSONObject:jsonDictionary options:NSJSONWritingWithoutEscapingSlashes error:&error];
     YKFAssertReturnValue(!error && result, @"Could not serialize the clientDataJson.", nil);
     
     return result;
