@@ -525,10 +525,19 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     if (extensions) {
         [self executeGetSharedSecretWithCompletion:^(NSData * _Nullable sharedSecret, YKFCBORMap * _Nullable cosePlatformPublicKey, NSError * _Nullable error) {
             NSMutableDictionary *authenticatorInputs = [NSMutableDictionary new];
-            if (extensions[@"prf"] && extensions[@"prf"][@"eval"]) {
-                NSString *base64EncodedFirst = extensions[@"prf"][@"eval"][@"first"];
-                NSString *base64EncodedSecond = extensions[@"prf"][@"eval"][@"second"];
+            if (extensions[@"prf"]) {
+                NSDictionary* prf = (NSDictionary*)extensions[@"prf"];
+                NSDictionary* secrets = (NSDictionary*)prf[@"eval"];
                 
+                NSDictionary* evalByCred = (NSDictionary*)prf[@"evalByCredential"];
+                if (evalByCred) {
+                    YKFFIDO2PublicKeyCredentialDescriptor *credentialDescriptor = allowList[0];
+                    NSString *selectedCredentialId = [credentialDescriptor.credentialId ykf_websafeBase64EncodedString];
+                    secrets = evalByCred[selectedCredentialId] ? evalByCred[selectedCredentialId] : secrets;
+                }
+                
+                NSString *base64EncodedFirst = secrets[@"first"];
+                NSString *base64EncodedSecond = secrets[@"second"];
                 NSData *first = [[[NSData alloc] ykf_initWithWebsafeBase64EncodedString:base64EncodedFirst dataLength:base64EncodedFirst.length] ykf_prfSaltData];
                 NSData *second = [[[NSData alloc] ykf_initWithWebsafeBase64EncodedString:base64EncodedSecond dataLength:base64EncodedFirst.length] ykf_prfSaltData];
                 
