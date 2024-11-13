@@ -507,8 +507,8 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
                 NSString *base64EncodedFirst = extensions[@"prf"][@"eval"][@"first"];
                 NSString *base64EncodedSecond = extensions[@"prf"][@"eval"][@"second"];
                 
-                NSData *first = [[[NSData alloc] initWithBase64EncodedString:base64EncodedFirst options:0] ykf_prfSaltData];
-                NSData *second = [[[NSData alloc] initWithBase64EncodedString:base64EncodedSecond options:0] ykf_prfSaltData];
+                NSData *first = [[[NSData alloc] ykf_initWithWebsafeBase64EncodedString:base64EncodedFirst dataLength:base64EncodedFirst.length] ykf_prfSaltData];
+                NSData *second = [[[NSData alloc] ykf_initWithWebsafeBase64EncodedString:base64EncodedSecond dataLength:base64EncodedFirst.length] ykf_prfSaltData];
                 
                 if (first.length != 32 || (second && second.length != 32)) {
                     [NSException raise:@"Invalid input" format:@"Salt is not 32 bytes long."];
@@ -559,6 +559,11 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
             ykf_weak_self();
             [self executeFIDO2Command:apdu retryCount:0 completion:^(NSData * _Nullable data, NSError * _Nullable error) {
                 ykf_safe_strong_self();
+                if (error) {
+                    completion(nil, error);
+                    return;
+                }
+                
                 NSLog(@"%@", data.ykf_hexadecimalString);
                 NSData *cborData = [strongSelf cborFromKeyResponseData:data];
                 YKFFIDO2GetAssertionResponse *getAssertionResponse = [[YKFFIDO2GetAssertionResponse alloc] initWithCBORData:cborData sharedSecret:sharedSecret];
