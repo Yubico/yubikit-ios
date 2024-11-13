@@ -88,11 +88,11 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
 @synthesize delegate;
 
 + (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
-                               completion:(YKFFIDO2SessionCompletion _Nonnull)completion {
+                             completion:(YKFFIDO2SessionCompletion _Nonnull)completion {
     
     YKFFIDO2Session *session = [YKFFIDO2Session new];
     session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
-
+    
     YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameFIDO2];
     [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
@@ -147,7 +147,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
 - (void)verifyPin:(NSString *)pin completion:(YKFFIDO2SessionGenericCompletionBlock)completion {
     YKFParameterAssertReturn(pin);
     YKFParameterAssertReturn(completion);
-
+    
     [self clearUserVerification];
     
     ykf_weak_self();
@@ -156,7 +156,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         if (error) {
             completion(error);
             return;
-        }        
+        }
         YKFParameterAssertReturn(sharedSecret)
         YKFParameterAssertReturn(cosePlatformPublicKey)
         
@@ -202,7 +202,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     YKFParameterAssertReturn(oldPin);
     YKFParameterAssertReturn(newPin);
     YKFParameterAssertReturn(completion);
-
+    
     if (oldPin.length < 4 || newPin.length < 4 ||
         oldPin.length > 255 || newPin.length > 255) {
         completion([YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodePIN_POLICY_VIOLATION]);
@@ -223,14 +223,14 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         YKFFIDO2ClientPinRequest *changePinRequest = [[YKFFIDO2ClientPinRequest alloc] init];
         NSData *oldPinData = [oldPin dataUsingEncoding:NSUTF8StringEncoding];
         NSData *newPinData = [[newPin dataUsingEncoding:NSUTF8StringEncoding] ykf_fido2PaddedPinData];
-
+        
         changePinRequest.pinProtocol = 1;
         changePinRequest.subCommand = YKFFIDO2ClientPinRequestSubCommandChangePIN;
         changePinRequest.keyAgreement = cosePlatformPublicKey;
-
+        
         NSData *oldPinHash = [[oldPinData ykf_SHA256] subdataWithRange:NSMakeRange(0, 16)];
         changePinRequest.pinHashEnc = [oldPinHash ykf_aes256EncryptedDataWithKey:sharedSecret];
-
+        
         changePinRequest.pinEnc = [newPinData ykf_aes256EncryptedDataWithKey:sharedSecret];
         
         NSMutableData *pinAuthData = [NSMutableData dataWithData:changePinRequest.pinEnc];
@@ -310,7 +310,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
                                       rp:(YKFFIDO2PublicKeyCredentialRpEntity *)rp
                                     user:(YKFFIDO2PublicKeyCredentialUserEntity *)user
                         pubKeyCredParams:(NSArray *)pubKeyCredParams
-                              excludeList:(NSArray * _Nullable)excludeList
+                             excludeList:(NSArray * _Nullable)excludeList
                                  options:(NSDictionary  * _Nullable)options
                               completion:(YKFFIDO2SessionMakeCredentialCompletionBlock)completion {
     [self makeCredentialWithClientDataHash:clientDataHash rp:rp user:user pubKeyCredParams:pubKeyCredParams excludeList:excludeList options:options extensions:nil completion:completion];
@@ -320,7 +320,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
                                       rp:(YKFFIDO2PublicKeyCredentialRpEntity *)rp
                                     user:(YKFFIDO2PublicKeyCredentialUserEntity *)user
                         pubKeyCredParams:(NSArray *)pubKeyCredParams
-                              excludeList:(NSArray * _Nullable)excludeList
+                             excludeList:(NSArray * _Nullable)excludeList
                                  options:(NSDictionary  * _Nullable)options
                               extensions:(NSDictionary * _Nullable)extensions
                               completion:(YKFFIDO2SessionMakeCredentialCompletionBlock)completion {
@@ -329,7 +329,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     YKFParameterAssertReturn(user);
     YKFParameterAssertReturn(pubKeyCredParams);
     YKFParameterAssertReturn(completion);
-
+    
     // Attach the PIN authentication if the pinToken is present.
     NSData *pinAuth;
     NSUInteger pinProtocol = 0;
@@ -386,85 +386,92 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         authenticatorInputs[YKFCBORTextString(@"hmac-secret")] = YKFCBORBool(true);
     }
     
-    YKFAPDU *apdu = [[YKFFIDO2MakeCredentialAPDU alloc] initWithClientDataHash:clientDataHash rp:rp user:user pubKeyCredParams:pubKeyCredParams excludeList:excludeList pinAuth:pinAuth pinProtocol:pinProtocol options:options extensions:authenticatorInputs];
-    
-    if (!apdu) {
-        YKFSessionError *error = [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER];
-        completion(nil, nil, error);
-        return;
-    }
-    
-    ykf_weak_self();
-    [self executeFIDO2Command:apdu retryCount:0 completion:^(NSData *data, NSError *error) {
-        ykf_safe_strong_self();
+    [self filterCredentialList:excludeList rpId:rp.rpId completion:^(YKFFIDO2PublicKeyCredentialDescriptor * _Nullable credentialDescriptor, NSError * _Nullable error) {
         if (error) {
             completion(nil, nil, error);
             return;
         }
         
-        NSData *cborData = [strongSelf cborFromKeyResponseData:data];
-        YKFFIDO2MakeCredentialResponse *makeCredentialResponse = [[YKFFIDO2MakeCredentialResponse alloc] initWithCBORData:cborData];
+        YKFAPDU *apdu = [[YKFFIDO2MakeCredentialAPDU alloc] initWithClientDataHash:clientDataHash rp:rp user:user pubKeyCredParams:pubKeyCredParams excludeList:(credentialDescriptor ? @[credentialDescriptor] : nil) pinAuth:pinAuth pinProtocol:pinProtocol options:options extensions:authenticatorInputs];
         
-        // Extensions, authenticator output
-        NSMutableDictionary *extensionsClientOutput = [NSMutableDictionary new];
-        if (authenticatorInputs[YKFCBORTextString(@"hmac-secret")]) {
-            YKFCBORBool *cborBool = makeCredentialResponse.authenticatorData.extensions.value[YKFCBORTextString(@"hmac-secret")];
-            if (cborBool && cborBool.value) {
-                extensionsClientOutput[@"prf"] = @{@"enabled" : @YES};
-            } else {
-                extensionsClientOutput[@"prf"] = @{@"enabled" : @NO};
-            }
+        if (!apdu) {
+            YKFSessionError *error = [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER];
+            completion(nil, nil, error);
+            return;
         }
-        if (authenticatorInputs[YKFCBORTextString(@"sign")]) {
-            YKFCBORMap *cborMap = makeCredentialResponse.authenticatorData.extensions.value[YKFCBORTextString(@"sign")];
-            YKFCBORByteString *signAttestationObject = cborMap.value[YKFCBORInteger(7)];
-            NSData *signAttestationData = signAttestationObject.value;
-            if (!signAttestationData) {
-                [NSException raise:@"Invalid input" format:@"Invalid data."];
+        
+        ykf_weak_self();
+        [self executeFIDO2Command:apdu retryCount:0 completion:^(NSData *data, NSError *error) {
+            ykf_safe_strong_self();
+            if (error) {
+                completion(nil, nil, error);
+                return;
             }
-            YKFCBORMap *signAttestation = nil;
-            NSInputStream *decoderInputStream = [[NSInputStream alloc] initWithData:signAttestationData];
-            [decoderInputStream open];
-            signAttestation = [YKFCBORDecoder decodeObjectFrom:decoderInputStream];
-            [decoderInputStream close];
-            if (!signAttestation) {
-                [NSException raise:@"Invalid input" format:@"Invalid data"];
-            }
-            NSData *authenticatorDataBytes = ((YKFCBORByteString *)signAttestation.value[YKFCBORInteger(2)]).value;
-            YKFFIDO2AuthenticatorData *authenticatorData = [[YKFFIDO2AuthenticatorData alloc] initWithData:authenticatorDataBytes];
             
+            NSData *cborData = [strongSelf cborFromKeyResponseData:data];
+            YKFFIDO2MakeCredentialResponse *makeCredentialResponse = [[YKFFIDO2MakeCredentialResponse alloc] initWithCBORData:cborData];
             
-            YKFCBORMap *coseKeyCborMap = nil;
-            decoderInputStream = [[NSInputStream alloc] initWithData:authenticatorData.coseEncodedCredentialPublicKey];
-            [decoderInputStream open];
-            coseKeyCborMap = [YKFCBORDecoder decodeObjectFrom:decoderInputStream];
-            [decoderInputStream close];
-            
-            NSMutableDictionary *keyHandleDict = [NSMutableDictionary new];
-            for (int i = 1; i < 4; i++) {
-                if (coseKeyCborMap.value[YKFCBORInteger(i)]) {
-                    keyHandleDict[YKFCBORInteger(i)] = i == 1 ? YKFCBORInteger(-2) : coseKeyCborMap.value[YKFCBORInteger(i)];
+            // Extensions, authenticator output
+            NSMutableDictionary *extensionsClientOutput = [NSMutableDictionary new];
+            if (authenticatorInputs[YKFCBORTextString(@"hmac-secret")]) {
+                YKFCBORBool *cborBool = makeCredentialResponse.authenticatorData.extensions.value[YKFCBORTextString(@"hmac-secret")];
+                if (cborBool && cborBool.value) {
+                    extensionsClientOutput[@"prf"] = @{@"enabled" : @YES};
+                } else {
+                    extensionsClientOutput[@"prf"] = @{@"enabled" : @NO};
                 }
             }
-            
-            NSData *keyHandleData = [YKFCBOREncoder encodeMap:YKFCBORMap(keyHandleDict)];
-            NSMutableDictionary *generatedKeyDict = [NSMutableDictionary new];
-            generatedKeyDict[@"publicKey"] = [authenticatorData.coseEncodedCredentialPublicKey ykf_websafeBase64EncodedString];
-            generatedKeyDict[@"keyHandle"] = [keyHandleData ykf_websafeBase64EncodedString];
-
-            NSMutableDictionary *signDict = [NSMutableDictionary new];
-            signDict[@"generatedKey"] = generatedKeyDict;
-            if (cborMap.value[YKFCBORInteger(6)]) {
-                signDict[@"signature"] = ((YKFCBORByteString *)cborMap.value[YKFCBORInteger(6)]).value;
+            if (authenticatorInputs[YKFCBORTextString(@"sign")]) {
+                YKFCBORMap *cborMap = makeCredentialResponse.authenticatorData.extensions.value[YKFCBORTextString(@"sign")];
+                YKFCBORByteString *signAttestationObject = cborMap.value[YKFCBORInteger(7)];
+                NSData *signAttestationData = signAttestationObject.value;
+                if (!signAttestationData) {
+                    [NSException raise:@"Invalid input" format:@"Invalid data."];
+                }
+                YKFCBORMap *signAttestation = nil;
+                NSInputStream *decoderInputStream = [[NSInputStream alloc] initWithData:signAttestationData];
+                [decoderInputStream open];
+                signAttestation = [YKFCBORDecoder decodeObjectFrom:decoderInputStream];
+                [decoderInputStream close];
+                if (!signAttestation) {
+                    [NSException raise:@"Invalid input" format:@"Invalid data"];
+                }
+                NSData *authenticatorDataBytes = ((YKFCBORByteString *)signAttestation.value[YKFCBORInteger(2)]).value;
+                YKFFIDO2AuthenticatorData *authenticatorData = [[YKFFIDO2AuthenticatorData alloc] initWithData:authenticatorDataBytes];
+                
+                
+                YKFCBORMap *coseKeyCborMap = nil;
+                decoderInputStream = [[NSInputStream alloc] initWithData:authenticatorData.coseEncodedCredentialPublicKey];
+                [decoderInputStream open];
+                coseKeyCborMap = [YKFCBORDecoder decodeObjectFrom:decoderInputStream];
+                [decoderInputStream close];
+                
+                NSMutableDictionary *keyHandleDict = [NSMutableDictionary new];
+                for (int i = 1; i < 4; i++) {
+                    if (coseKeyCborMap.value[YKFCBORInteger(i)]) {
+                        keyHandleDict[YKFCBORInteger(i)] = i == 1 ? YKFCBORInteger(-2) : coseKeyCborMap.value[YKFCBORInteger(i)];
+                    }
+                }
+                
+                NSData *keyHandleData = [YKFCBOREncoder encodeMap:YKFCBORMap(keyHandleDict)];
+                NSMutableDictionary *generatedKeyDict = [NSMutableDictionary new];
+                generatedKeyDict[@"publicKey"] = [authenticatorData.coseEncodedCredentialPublicKey ykf_websafeBase64EncodedString];
+                generatedKeyDict[@"keyHandle"] = [keyHandleData ykf_websafeBase64EncodedString];
+                
+                NSMutableDictionary *signDict = [NSMutableDictionary new];
+                signDict[@"generatedKey"] = generatedKeyDict;
+                if (cborMap.value[YKFCBORInteger(6)]) {
+                    signDict[@"signature"] = ((YKFCBORByteString *)cborMap.value[YKFCBORInteger(6)]).value;
+                }
+                extensionsClientOutput[@"sign"] = signDict;
             }
-            extensionsClientOutput[@"sign"] = signDict;
-        }
-        
-        if (makeCredentialResponse) {
-            completion(makeCredentialResponse, extensionsClientOutput, nil);
-        } else {
-            completion(nil, nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeINVALID_CBOR]);
-        }
+            
+            if (makeCredentialResponse) {
+                completion(makeCredentialResponse, extensionsClientOutput, nil);
+            } else {
+                completion(nil, nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeINVALID_CBOR]);
+            }
+        }];
     }];
 }
 
@@ -473,7 +480,10 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
                              allowList:(NSArray * _Nullable)allowList
                                options:(NSDictionary * _Nullable)options
                             completion:(YKFFIDO2SessionGetAssertionCompletionBlock)completion {
-    [self getAssertionWithClientDataHash:clientDataHash rpId:rpId allowList:allowList options:options extensions:nil completion:completion];
+    [self filterCredentialList:allowList rpId:rpId completion:^(YKFFIDO2PublicKeyCredentialDescriptor * _Nullable credentialDescriptor, NSError * _Nullable error) {
+        NSArray * allowList = credentialDescriptor ? @[credentialDescriptor] : nil;
+        [self getAssertionWithClientNoFilterDataHash:clientDataHash rpId:rpId allowList:allowList options:options extensions:nil completion:completion];
+    }];
 }
 
 - (void)getAssertionWithClientDataHash:(NSData *)clientDataHash
@@ -482,6 +492,18 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
                                options:(NSDictionary * _Nullable)options
                             extensions:(NSDictionary * _Nullable)extensions
                             completion:(YKFFIDO2SessionGetAssertionCompletionBlock)completion {
+    [self filterCredentialList:allowList rpId:rpId completion:^(YKFFIDO2PublicKeyCredentialDescriptor * _Nullable credentialDescriptor, NSError * _Nullable error) {
+        NSArray * allowList = credentialDescriptor ? @[credentialDescriptor] : nil;
+        [self getAssertionWithClientNoFilterDataHash:clientDataHash rpId:rpId allowList:allowList options:options extensions:extensions completion:completion];
+    }];
+}
+
+- (void)getAssertionWithClientNoFilterDataHash:(NSData *)clientDataHash
+                                          rpId:(NSString *)rpId
+                                     allowList:(NSArray * _Nullable)allowList
+                                       options:(NSDictionary * _Nullable)options
+                                    extensions:(NSDictionary * _Nullable)extensions
+                                    completion:(YKFFIDO2SessionGetAssertionCompletionBlock)completion {
     YKFParameterAssertReturn(clientDataHash);
     YKFParameterAssertReturn(rpId);
     YKFParameterAssertReturn(completion);
@@ -542,13 +564,13 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
                 NSString *credentialId = [((YKFFIDO2PublicKeyCredentialDescriptor *) allowList.firstObject).credentialId ykf_websafeBase64EncodedString];
                 
                 NSData *keyHandle = decodedKeyHandleDict[credentialId];
-
+                
                 NSMutableDictionary *output = [NSMutableDictionary new];
                 output[YKFCBORInteger(0)] = YKFCBORByteString(phData);
                 output[YKFCBORInteger(5)] = YKFCBORArray(@[YKFCBORByteString(keyHandle)]);
                 authenticatorInputs[YKFCBORTextString(@"sign")] = YKFCBORMap(output);
             }
-
+            
             YKFFIDO2GetAssertionAPDU *apdu = [[YKFFIDO2GetAssertionAPDU alloc] initWithClientDataHash:clientDataHash
                                                                                                  rpId:rpId
                                                                                             allowList:allowList
@@ -653,7 +675,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
 - (void)executeClientPinRequest:(YKFFIDO2ClientPinRequest *)request completion:(YKFFIDO2SessionClientPinCompletionBlock)completion {
     YKFParameterAssertReturn(request);
     YKFParameterAssertReturn(completion);
-
+    
     YKFFIDO2ClientPinAPDU *apdu = [[YKFFIDO2ClientPinAPDU alloc] initWithRequest:request];
     if (!apdu) {
         YKFSessionError *error = [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER];
@@ -772,6 +794,47 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
 }
 
 #pragma mark - Helpers
+
+typedef void (^YKFFIDO2CredentialFilterCompletionBlock)
+(YKFFIDO2PublicKeyCredentialDescriptor* _Nullable credentialDescriptor,  NSError* _Nullable error);
+
+- (void)filterCredentialList:(NSArray<YKFFIDO2PublicKeyCredentialDescriptor *> *)creds rpId:(NSString * _Nullable)rpId completion:(YKFFIDO2CredentialFilterCompletionBlock)completion {
+
+    if (creds == nil || creds.count == 0) {
+        completion(nil, nil);
+        return;
+    }
+    int maxCreds = 4;
+    NSMutableArray * chunks = [NSMutableArray new];
+    for (int i = 0; i < creds.count; i += maxCreds) {
+        NSUInteger last = MIN(i + maxCreds, creds.count - i);
+        [chunks addObjectsFromArray:@[[creds subarrayWithRange:NSMakeRange(i, last)]]];
+    }
+    [self filterCredentialListRecursion:chunks rpId:rpId completion:completion];
+}
+
+- (void)filterCredentialListRecursion:(NSArray<NSArray<YKFFIDO2PublicKeyCredentialDescriptor *> *> *)creds rpId:(NSString * _Nullable)rpId completion:(YKFFIDO2CredentialFilterCompletionBlock)completion {
+    NSMutableData * dataHash = [NSMutableData new];
+    dataHash.length = 32;
+    
+    [self getAssertionWithClientNoFilterDataHash:dataHash rpId:rpId allowList:creds[0] options:@{YKFFIDO2OptionUP: @false} extensions: nil completion:^(YKFFIDO2GetAssertionResponse * _Nullable response, NSError * _Nullable error) {
+        if (error && error.code != YKFFIDO2ErrorCodeNO_CREDENTIALS) {
+            completion(nil, error);
+            return;
+        }
+        if (response.credential) {
+            completion(response.credential, nil);
+            return;
+        } else if (creds.count == 0) {
+            completion(nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeNO_CREDENTIALS]);
+            return;
+        } else {
+            NSArray *decimatedCreds = [creds subarrayWithRange:NSMakeRange(0, 1)];
+            [self filterCredentialListRecursion:decimatedCreds rpId:rpId completion:completion];
+            return;
+        }
+    }];
+}
 
 - (UInt8)fido2ErrorCodeFromResponseData:(NSData *)data {
     YKFAssertReturnValue(data.length >= 1, @"Cannot extract FIDO2 error code from the key response.", YKFFIDO2ErrorCodeOTHER);
