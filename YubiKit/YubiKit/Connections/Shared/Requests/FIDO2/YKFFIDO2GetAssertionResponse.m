@@ -111,25 +111,37 @@ typedef NS_ENUM(NSUInteger, YKFFIDO2GetAssertionResponseKey) {
     self.authData = authData;
     
     // Extensions output
+    NSMutableDictionary *extensionsOutputDict = [NSMutableDictionary new];
+
     YKFFIDO2AuthenticatorData *authenticatorData = [[YKFFIDO2AuthenticatorData alloc] initWithData: authData];
-    YKFCBORByteString *cborSecrect = authenticatorData.extensions.value[YKFCBORTextString(@"hmac-secret")];
-    NSData *secret = cborSecrect.value;
-    NSData *decryptedOutputs = [secret ykf_aes256DecryptedDataWithKey: sharedSecret];
-    NSData *output1 = [decryptedOutputs subdataWithRange: NSMakeRange(0, 32)];
-    NSData *output2;
-    if (decryptedOutputs.length == 64) {
-        output2 = [decryptedOutputs subdataWithRange:NSMakeRange(32, 32)];
+    YKFCBORByteString *hmacSecrectCborData = authenticatorData.extensions.value[YKFCBORTextString(@"hmac-secret")];
+    if (hmacSecrectCborData) {
+        NSData *secret = hmacSecrectCborData.value;
+        NSData *decryptedOutputs = [secret ykf_aes256DecryptedDataWithKey: sharedSecret];
+        NSData *output1 = [decryptedOutputs subdataWithRange: NSMakeRange(0, 32)];
+        NSData *output2;
+        if (decryptedOutputs.length == 64) {
+            output2 = [decryptedOutputs subdataWithRange:NSMakeRange(32, 32)];
+        }
+        NSMutableDictionary *prfOutputDict = [NSMutableDictionary new];
+        prfOutputDict[@"first"] = [output1 ykf_websafeBase64EncodedString];
+        if (output2) {
+            prfOutputDict[@"second"] = [output2 ykf_websafeBase64EncodedString];
+        }
+        NSMutableDictionary *prfDict = [NSMutableDictionary new];
+        prfDict[@"results"] = prfOutputDict;
+        extensionsOutputDict[@"prf"] = prfDict;
     }
-    NSMutableDictionary *outputDict = [NSMutableDictionary new];
-    outputDict[@"first"] = [output1 ykf_websafeBase64EncodedString];
-    if (output2) {
-        outputDict[@"seconde"] = [output2 ykf_websafeBase64EncodedString];
+    YKFCBORMap *signCborMap = authenticatorData.extensions.value[YKFCBORTextString(@"sign")];
+    if (signCborMap) {
+        NSMutableDictionary *signOutputDict = [NSMutableDictionary new];
+        NSDictionary * signDict = (NSDictionary *)[YKFCBORDecoder convertCBORObjectToFoundationType:signCborMap];
+        NSData *signature = (NSData *)signDict[@(6)];
+        signOutputDict[@"signature"] = [signature ykf_websafeBase64EncodedString];
+        extensionsOutputDict[@"sign"] = signOutputDict;
     }
-    NSMutableDictionary *resultsDict = [NSMutableDictionary new];
-    resultsDict[@"results"] = outputDict;
-    NSMutableDictionary *prfDict = [NSMutableDictionary new];
-    prfDict[@"prf"] = resultsDict;
-    self.extensionsOutput = prfDict;
+    
+    self.extensionsOutput = extensionsOutputDict;
     
     // Signature
     NSData *signature = response[@(YKFFIDO2GetAssertionResponseKeySignature)];
