@@ -131,7 +131,9 @@ static NSTimeInterval const YKFSmartCardConnectionDefaultTimeout = 10.0;
         }];
         
         // Lock the async call to enforce the sequential execution using the library dispatch queue.
-        dispatch_semaphore_wait(executionSemaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeout * NSEC_PER_SEC)));
+        if(dispatch_semaphore_wait(executionSemaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeout * NSEC_PER_SEC))) != 0) {
+            executionError = [YKFSessionError errorWithCode:YKFSessionErrorReadTimeoutCode];
+        }
         
         // Do not notify if the operation was canceled.
         if (operation.isCancelled) {
