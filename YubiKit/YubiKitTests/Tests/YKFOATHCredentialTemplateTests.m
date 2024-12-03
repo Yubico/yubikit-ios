@@ -371,6 +371,14 @@ static NSString* const YKFOATHCredentialValidatorTestsVeryLargeSecret = @"HXDMVJ
     XCTAssertNil(error);
 }
 
+- (void)test_WhenNoPathIsSet_ErrorIsReturned {
+    NSError *error = nil;
+    NSString *url = @"otpauth://totp?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&issuer=ACME&algorithm=SHA1&digits=6&period=30";
+    YKFOATHCredentialTemplate *credential = [[YKFOATHCredentialTemplate alloc] initWithURL:[NSURL URLWithString:url] skipValidation:YKFOATHCredentialTemplateValidationLabel error:&error];
+    XCTAssertNotNil(error);
+    XCTAssertNil(credential);
+}
+
 #pragma mark - Large Key Tests
 
 - (void)test_WhenValidatorReceivesInvalidCredentialKey_ErrorIsReturnedBack {

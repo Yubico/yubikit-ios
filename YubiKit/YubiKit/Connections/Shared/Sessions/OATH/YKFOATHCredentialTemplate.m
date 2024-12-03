@@ -115,6 +115,12 @@ static const int YKFOATHCredentialValidatorMaxNameSize = 64;
         *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeLabel];
         return nil;
     }
+    
+    if (urlComponents.path.length < 1) {
+        *error = [YKFOATHCredentialTemplateError ykfErrorWithCode:YKFOATHCredentialTemplateErrorCodeLabel];
+        return nil;
+    }
+    
     NSString *name = [urlComponents.path substringFromIndex:1];
     NSString *issuer = [urlComponents queryParameterValueForName:YKFOATHCredentialURLParameterIssuer];
     if ([name containsString:@":"]) {
