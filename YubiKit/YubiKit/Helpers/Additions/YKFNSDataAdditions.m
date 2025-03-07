@@ -256,6 +256,17 @@
 
 @end
 
+#pragma mark - AESCMAC
+
+@implementation NSData(NSDATA_AESCMAC)
+
+- (NSData *)ykf_aesCMACWithKey:(NSData *)key {
+    NSLog(@"ykf_aesCMACWithKey");
+    return [NSData new];
+}
+
+@end
+
 #pragma mark - Marshalling
 
 @implementation NSData(NSData_Marshalling)

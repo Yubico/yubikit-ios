@@ -55,6 +55,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface NSData (NSDATA_AESCMAC)
+
+- (NSData *)ykf_aesCMACWithKey:(NSData *)key;
+
+@end
+
 @interface NSData(NSDATA_SizeCheckAdditions)
 
 - (BOOL)ykf_containsIndex:(NSUInteger) index;
