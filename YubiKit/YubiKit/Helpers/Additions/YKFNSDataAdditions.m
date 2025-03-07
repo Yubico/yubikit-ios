@@ -261,8 +261,150 @@
 @implementation NSData(NSDATA_AESCMAC)
 
 - (NSData *)ykf_aesCMACWithKey:(NSData *)key {
-    NSLog(@"ykf_aesCMACWithKey");
-    return [NSData new];
+    NSData *constZero = [NSData dataWithBytes:(UInt8[]){0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00} length:16];
+    NSData *constRb = [NSData dataWithBytes:(UInt8[]){0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x87} length:16];
+    NSInteger blockSize = 16;
+    CCAlgorithm algorithm = kCCAlgorithmAES128;
+    NSData *iv = constZero.copy;
+    
+    NSData *l = [constZero ykf_cryptOperation:kCCEncrypt algorithm:algorithm mode:kCCModeCBC key:key iv:iv];
+    NSData *subKey1 = [l ykf_shiftedLeftByOne];
+    if (((const uint8_t *)l.bytes)[0] & 0x80) {
+        subKey1 = [constRb ykf_xorWithKey:subKey1];
+    }
+    NSData *subKey2 = [subKey1 ykf_shiftedLeftByOne];
+    if (((const uint8_t *)subKey1.bytes)[0] & 0x80) {
+        subKey2 = [constRb ykf_xorWithKey:subKey2];
+    }
+    
+    BOOL lastBlockIsComplete = (self.length % blockSize == 0) && (self.length > 0);
+    
+    NSData *paddedData;
+    NSData *lastIv;
+    if (lastBlockIsComplete) {
+        lastIv = subKey1;
+        paddedData = self;
+    } else {
+        lastIv = subKey2;
+        paddedData = [self ykf_bitPadded];
+    }
+    NSData *messageSkippingLastBlock = [paddedData subdataWithRange:NSMakeRange(0, paddedData.length - blockSize)];
+    NSData *lastBlock = [paddedData subdataWithRange:NSMakeRange(messageSkippingLastBlock.length, paddedData.length - messageSkippingLastBlock.length)];
+    if (messageSkippingLastBlock.length != 0) {
+        // CBC encrypt the message (minus the last block) with a zero IV, and keep only the last block:
+        NSData *encryptedData = [messageSkippingLastBlock ykf_cryptOperation:kCCEncrypt algorithm:algorithm mode:kCCModeCBC key:key iv:iv];
+        NSData *encryptedBlock = [encryptedData subdataWithRange:NSMakeRange(messageSkippingLastBlock.length - blockSize, blockSize)];
+        lastIv = [lastIv ykf_xorWithKey:encryptedBlock];
+    }
+    
+    return [lastBlock ykf_cryptOperation:kCCEncrypt algorithm:algorithm mode:kCCModeCBC key:key iv:lastIv];
+}
+
+- (NSData *)ykf_cryptOperation:(CCOperation)operation algorithm:(CCAlgorithm)algorithm mode:(CCMode)mode key:(NSData *)key iv:(NSData *)iv {
+    if (!key.length) { return nil; }
+    
+    int blockSize;
+    switch (algorithm) {
+        case kCCAlgorithm3DES:
+            blockSize = kCCBlockSize3DES;
+            break;
+        case kCCAlgorithmAES:
+            blockSize = kCCBlockSizeAES128;
+            break;
+        default:
+            return nil;
+            break;
+    }
+    
+    size_t outLength = 0;
+    NSMutableData *buffer = [NSMutableData dataWithLength:self.length + blockSize];
+    
+    CCCryptorRef cryptorRef = NULL;
+    CCCryptorCreateWithMode(operation,
+                            mode,
+                            algorithm,
+                            ccNoPadding,
+                            iv.bytes,
+                            key.bytes,
+                            key.length,
+                            nil,
+                            0,
+                            0,
+                            0,
+                            &cryptorRef
+                            );
+    
+    CCCryptorUpdate(cryptorRef,
+                    self.bytes,
+                    self.length,
+                    buffer.mutableBytes,
+                    buffer.length,
+                    &outLength);
+    
+    CCCryptorStatus cryptorStatus = CCCryptorCreate(operation, algorithm, kCCOptionECBMode, key.bytes, key.length, NULL, &cryptorRef);
+    CCCryptorRelease(cryptorRef);
+    
+    if(cryptorStatus == kCCSuccess) {
+        buffer.length = outLength;
+        return buffer;
+    }
+    return nil;
+}
+
+- (NSData*)ykf_shiftedLeftByOne {
+    NSUInteger length = self.length;
+    if (length == 0) {
+        return [NSData data];
+    }
+    
+    NSMutableData *shiftedData = [NSMutableData dataWithLength:length];
+    uint8_t *shiftedBytes = (uint8_t *)shiftedData.mutableBytes;
+    const uint8_t *originalBytes = (const uint8_t *)self.bytes;
+    
+    NSUInteger lastIndex = length - 1;
+    for (NSUInteger i = 0; i < lastIndex; i++) {
+        shiftedBytes[i] = originalBytes[i] << 1;
+        if ((originalBytes[i + 1] & 0x80) != 0) {
+            shiftedBytes[i] += 0x01;
+        }
+    }
+    shiftedBytes[lastIndex] = originalBytes[lastIndex] << 1;
+    
+    return [NSData dataWithData:shiftedData];
+}
+
+- (NSData*)ykf_xorWithKey:(NSData *)key {
+    if (self.length != key.length) { abort(); }
+    
+    NSMutableData *result = [NSMutableData dataWithLength:self.length];
+    
+    const uint8_t *selfBytes = (const uint8_t *)self.bytes;
+    const uint8_t *keyBytes = (const uint8_t *)key.bytes;
+    uint8_t *resultBytes = (uint8_t *)result.mutableBytes;
+    
+    for (NSUInteger i = 0; i < self.length; i++) {
+        resultBytes[i] = selfBytes[i] ^ keyBytes[i];
+    }
+    
+    return [NSData dataWithData:result];
+}
+
+- (NSData *)ykf_bitPadded {
+    NSUInteger msgLength = self.length;
+    NSUInteger blockSize = 16;
+    
+    NSMutableData *paddedData = [self mutableCopy];
+    uint8_t paddingByte = 0x80;
+    [paddedData appendBytes:&paddingByte length:1];
+    NSUInteger paddingLength;
+    if (msgLength % blockSize < blockSize) {
+        paddingLength = blockSize - 1 - (msgLength % blockSize);
+    } else {
+        paddingLength = (blockSize * 2) - 1 - (msgLength % blockSize);
+    }
+    [paddedData increaseLengthBy:paddingLength];
+
+    return [NSData dataWithData:paddedData];
 }
 
 @end

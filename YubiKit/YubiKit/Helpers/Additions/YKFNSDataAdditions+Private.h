@@ -58,7 +58,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NSData (NSDATA_AESCMAC)
 
 - (NSData *)ykf_aesCMACWithKey:(NSData *)key;
+- (NSData *)ykf_cryptOperation:(CCOperation)operation algorithm:(CCAlgorithm)algorithm mode:(CCMode)mode key:(NSData *)key iv:(NSData *)iv;
 
+- (NSData*)ykf_shiftedLeftByOne;
+- (NSData*)ykf_xorWithKey:(NSData *)key;
+- (NSData*)ykf_bitPadded;
 @end
 
 @interface NSData(NSDATA_SizeCheckAdditions)
