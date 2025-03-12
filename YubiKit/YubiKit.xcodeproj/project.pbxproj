@@ -203,6 +203,13 @@
 		A5016E5C24297FEF005A0C21 /* YKFNSDataAdditionsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A5016E5B24297FEF005A0C21 /* YKFNSDataAdditionsTests.m */; };
 		A51F7B1D23EFC6DB0046F6A3 /* YKFNSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 95EA81E62178805D0020595D /* YKFNSStringAdditions.m */; };
 		A54DCC0323F2147500E95259 /* YKNSStringAdditionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A54DCC0223F2147500E95259 /* YKNSStringAdditionTests.m */; };
+		B4182F692D7F12C900044C30 /* YKFSCP03KeyParams.m in Sources */ = {isa = PBXBuildFile; fileRef = B4182F682D7F12C900044C30 /* YKFSCP03KeyParams.m */; };
+		B4182F722D7F2D3200044C30 /* YKFSCPKeyRef.m in Sources */ = {isa = PBXBuildFile; fileRef = B4182F712D7F2D3200044C30 /* YKFSCPKeyRef.m */; };
+		B4182F762D7F35C800044C30 /* YKFSCPStaticKeys.m in Sources */ = {isa = PBXBuildFile; fileRef = B4182F752D7F35C800044C30 /* YKFSCPStaticKeys.m */; };
+		B4182F792D7F380700044C30 /* YKFSCPSessionKeys.m in Sources */ = {isa = PBXBuildFile; fileRef = B4182F782D7F380700044C30 /* YKFSCPSessionKeys.m */; };
+		B4182F7C2D7F39E800044C30 /* YKFSCPState.m in Sources */ = {isa = PBXBuildFile; fileRef = B4182F7B2D7F39E800044C30 /* YKFSCPState.m */; };
+		B4182F7F2D80307000044C30 /* YKFSCP11KeyParams.m in Sources */ = {isa = PBXBuildFile; fileRef = B4182F7E2D80307000044C30 /* YKFSCP11KeyParams.m */; };
+		B4182F822D80458100044C30 /* YKFSCPProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = B4182F812D80458100044C30 /* YKFSCPProcessor.m */; };
 		B41B6F9A27A96B760062C377 /* YKFTLVRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B41B6F9927A96B760062C377 /* YKFTLVRecord.m */; };
 		B41B6F9C27A97DB40062C377 /* YKFTLVRecordTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B41B6F9B27A97DB40062C377 /* YKFTLVRecordTests.m */; };
 		B428498C2C22DA730000F8CF /* YKFPIVBioMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = B428498B2C22DA730000F8CF /* YKFPIVBioMetadata.m */; };
@@ -633,6 +640,21 @@
 		95F75BAD2175D6D600C13DC5 /* YKFOATHUnlockAPDU.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFOATHUnlockAPDU.m; sourceTree = "<group>"; };
 		A5016E5B24297FEF005A0C21 /* YKFNSDataAdditionsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFNSDataAdditionsTests.m; sourceTree = "<group>"; };
 		A54DCC0223F2147500E95259 /* YKNSStringAdditionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKNSStringAdditionTests.m; sourceTree = "<group>"; };
+		B4182F682D7F12C900044C30 /* YKFSCP03KeyParams.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFSCP03KeyParams.m; sourceTree = "<group>"; };
+		B4182F6B2D7F139E00044C30 /* YKFSCP03KeyParams.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSCP03KeyParams.h; sourceTree = "<group>"; };
+		B4182F702D7F2CF400044C30 /* YKFSCPKeyRef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSCPKeyRef.h; sourceTree = "<group>"; };
+		B4182F712D7F2D3200044C30 /* YKFSCPKeyRef.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFSCPKeyRef.m; sourceTree = "<group>"; };
+		B4182F732D7F344100044C30 /* YKFSCPKeyParamsProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSCPKeyParamsProtocol.h; sourceTree = "<group>"; };
+		B4182F742D7F35C800044C30 /* YKFSCPStaticKeys.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSCPStaticKeys.h; sourceTree = "<group>"; };
+		B4182F752D7F35C800044C30 /* YKFSCPStaticKeys.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFSCPStaticKeys.m; sourceTree = "<group>"; };
+		B4182F772D7F380700044C30 /* YKFSCPSessionKeys.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSCPSessionKeys.h; sourceTree = "<group>"; };
+		B4182F782D7F380700044C30 /* YKFSCPSessionKeys.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFSCPSessionKeys.m; sourceTree = "<group>"; };
+		B4182F7A2D7F39E800044C30 /* YKFSCPState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSCPState.h; sourceTree = "<group>"; };
+		B4182F7B2D7F39E800044C30 /* YKFSCPState.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFSCPState.m; sourceTree = "<group>"; };
+		B4182F7D2D80307000044C30 /* YKFSCP11KeyParams.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSCP11KeyParams.h; sourceTree = "<group>"; };
+		B4182F7E2D80307000044C30 /* YKFSCP11KeyParams.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFSCP11KeyParams.m; sourceTree = "<group>"; };
+		B4182F802D80458100044C30 /* YKFSCPProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFSCPProcessor.h; sourceTree = "<group>"; };
+		B4182F812D80458100044C30 /* YKFSCPProcessor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFSCPProcessor.m; sourceTree = "<group>"; };
 		B41B6F9827A96B5B0062C377 /* YKFTLVRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YKFTLVRecord.h; sourceTree = "<group>"; };
 		B41B6F9927A96B760062C377 /* YKFTLVRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFTLVRecord.m; sourceTree = "<group>"; };
 		B41B6F9B27A97DB40062C377 /* YKFTLVRecordTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YKFTLVRecordTests.m; sourceTree = "<group>"; };
@@ -819,6 +841,7 @@
 		953A507F213EECED00929ABB /* Connections */ = {
 			isa = PBXGroup;
 			children = (
+				B4182F672D7F127F00044C30 /* SCP */,
 				5176559925405FE400819857 /* YKFConnectionProtocol.h */,
 				95DD407D2099A84700363FEE /* AccessoryConnection */,
 				95C2963E206264FB0091318B /* NFCConnection */,
@@ -1345,6 +1368,28 @@
 			path = Sessions;
 			sourceTree = "<group>";
 		};
+		B4182F672D7F127F00044C30 /* SCP */ = {
+			isa = PBXGroup;
+			children = (
+				B4182F732D7F344100044C30 /* YKFSCPKeyParamsProtocol.h */,
+				B4182F6B2D7F139E00044C30 /* YKFSCP03KeyParams.h */,
+				B4182F682D7F12C900044C30 /* YKFSCP03KeyParams.m */,
+				B4182F7D2D80307000044C30 /* YKFSCP11KeyParams.h */,
+				B4182F7E2D80307000044C30 /* YKFSCP11KeyParams.m */,
+				B4182F702D7F2CF400044C30 /* YKFSCPKeyRef.h */,
+				B4182F712D7F2D3200044C30 /* YKFSCPKeyRef.m */,
+				B4182F772D7F380700044C30 /* YKFSCPSessionKeys.h */,
+				B4182F782D7F380700044C30 /* YKFSCPSessionKeys.m */,
+				B4182F7A2D7F39E800044C30 /* YKFSCPState.h */,
+				B4182F7B2D7F39E800044C30 /* YKFSCPState.m */,
+				B4182F742D7F35C800044C30 /* YKFSCPStaticKeys.h */,
+				B4182F752D7F35C800044C30 /* YKFSCPStaticKeys.m */,
+				B4182F802D80458100044C30 /* YKFSCPProcessor.h */,
+				B4182F812D80458100044C30 /* YKFSCPProcessor.m */,
+			);
+			path = SCP;
+			sourceTree = "<group>";
+		};
 		B4CFA9BB28AA412A0080813A /* SmartCardConnection */ = {
 			isa = PBXGroup;
 			children = (
@@ -1505,6 +1550,7 @@
 				5110D67625F8FD2F00467680 /* YKFPIVManagementKeyMetadata.m in Sources */,
 				95D61A072170B26F001E7AC8 /* YKFOATHSelectApplicationResponse.m in Sources */,
 				51E1B97B25765454003C1CA4 /* YKFOATHCredentialTemplate.m in Sources */,
+				B4182F692D7F12C900044C30 /* YKFSCP03KeyParams.m in Sources */,
 				95E1B259219EE2D300E349E3 /* YKFKVOObservation.m in Sources */,
 				9551882C2265E8DE001A4191 /* YKFOATHError.m in Sources */,
 				95C296572062A46B0091318B /* YubiKitConfiguration.m in Sources */,
@@ -1530,8 +1576,10 @@
 				956DBB9421EE2B29004D6EE3 /* YKFFIDO2ResetAPDU.m in Sources */,
 				954E2C512211A34900720D2B /* YKFFIDO2ClientPinRequest.m in Sources */,
 				51ACC34B25E7ECA80069214B /* YKFPIVError.m in Sources */,
+				B4182F722D7F2D3200044C30 /* YKFSCPKeyRef.m in Sources */,
 				95C29632206256120091318B /* YKFLogger.m in Sources */,
 				955BCC0A215A463E00C2EA2B /* YKFOATHCredential.m in Sources */,
+				B4182F7F2D80307000044C30 /* YKFSCP11KeyParams.m in Sources */,
 				95C296442062656C0091318B /* YKFOTPURIParser.m in Sources */,
 				8152341223BAE9D2004D4788 /* YKFChallengeResponseError.m in Sources */,
 				95D9D3E021D5111500473888 /* YKFCBORDecoder.m in Sources */,
@@ -1553,10 +1601,12 @@
 				956DBB8421EDEA1D004D6EE3 /* YKFFIDO2Session.m in Sources */,
 				81311F3A23AAFA4A00765522 /* YKFChallengeResponseSession.m in Sources */,
 				958793E7216CE35F001A0406 /* YKFOATHListAPDU.m in Sources */,
+				B4182F792D7F380700044C30 /* YKFSCPSessionKeys.m in Sources */,
 				95D5E2DC2187159700AA1C11 /* YKFNSMutableDataAdditions.m in Sources */,
 				955BCBF5215A33CA00C2EA2B /* YKFOATHPutAPDU.m in Sources */,
 				95EA81E72178805D0020595D /* YKFNSStringAdditions.m in Sources */,
 				B4712B6E28DC8413009B270D /* YKFOATHSetAccessKeyAPDU.m in Sources */,
+				B4182F822D80458100044C30 /* YKFSCPProcessor.m in Sources */,
 				5121B22D2565238500300145 /* YKFSelectApplicationAPDU.m in Sources */,
 				9581395921592870008558F3 /* YKFOATHSession.m in Sources */,
 				95C29623206247920091318B /* YKFOTPToken.m in Sources */,
@@ -1577,6 +1627,7 @@
 				95B0CAB021F098C6009C6A34 /* YKFFIDO2GetInfoResponse.m in Sources */,
 				95C2963A20625A180091318B /* YKFView.m in Sources */,
 				958793EE216E0DB2001A0406 /* YKFOATHListResponse.m in Sources */,
+				B4182F7C2D7F39E800044C30 /* YKFSCPState.m in Sources */,
 				95DD408E2099A88500363FEE /* YKFSessionError.m in Sources */,
 				81FD3B982404889C004C4FE9 /* YKFVersion.m in Sources */,
 				51ACC33C25E553580069214B /* YKFPIVManagementKeyType.m in Sources */,
@@ -1610,6 +1661,7 @@
 				95DF11922317C60600CF0C39 /* YKFNFCConnectionController.m in Sources */,
 				953A6FC221F733D8003B2477 /* YKFFIDO2GetAssertionAPDU.m in Sources */,
 				95DD408A2099A86A00363FEE /* YKFU2FRegisterAPDU.m in Sources */,
+				B4182F762D7F35C800044C30 /* YKFSCPStaticKeys.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

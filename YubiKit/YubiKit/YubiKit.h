@@ -44,6 +44,12 @@
 
 #import "YKFSmartCardInterface.h"
 
+#import "YKFSCPKeyParamsProtocol.h"
+#import "YKFSCP03KeyParams.h"
+#import "YKFSCP11KeyParams.h"
+#import "YKFSCPKeyRef.h"
+#import "YKFSCPStaticKeys.h"
+
 #import "YKFFeature.h"
 #import "YKFVersion.h"
 

@@ -137,6 +137,16 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
     }];
 }
 
+- (void)oathSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFOATHSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFOATHSession sessionWithConnectionController:self.connectionController
+                                       scpKeyParams:scpKeyParams
+                                         completion:^(YKFOATHSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
 - (void)u2fSession:(YKFU2FSessionCompletionBlock _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFU2FSession sessionWithConnectionController:self.connectionController

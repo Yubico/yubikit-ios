@@ -91,6 +91,16 @@
     }
 }
 
+- (void)oathSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFOATHSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFOATHSession sessionWithConnectionController:self.connectionController
+                                       scpKeyParams:scpKeyParams
+                                         completion:^(YKFOATHSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
 - (void)u2fSession:(YKFU2FSessionCompletionBlock _Nonnull)callback {
     if (@available(iOS 13.0, *)) {
         [self.currentSession clearSessionState];

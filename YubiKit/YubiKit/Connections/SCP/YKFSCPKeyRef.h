@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef YKFAPDUPrivate_h
-#define YKFAPDUPrivate_h
+#ifndef YKFSCPKeyRef_h
+#define YKFSCPKeyRef_h
 
-#import "YKFAPDU.h"
+#import <Foundation/Foundation.h>
 
-@interface YKFAPDU()
+NS_ASSUME_NONNULL_BEGIN
 
-/*!
- The APDU raw data which cotains the YubiKey iAP2 Protocol framing.
- */
-@property (nonatomic, readonly) NSData *ylpApduData;
+@interface YKFSCPKeyRef : NSObject
 
-/*!
-The APDU raw data.
-*/
-@property (nonatomic, readonly) NSData *apduData;
+@property (nonatomic, assign, readonly) uint8_t kid;
+@property (nonatomic, assign, readonly) uint8_t kvn;
+@property (nonatomic, strong, readonly) NSData *data;
+
+- (instancetype)initWithKid:(uint8_t)kid kvn:(uint8_t)kvn;
 
 @end
 
-#endif
+NS_ASSUME_NONNULL_END
+
+#endif /* YKFSCPKeyRef_h */

@@ -324,7 +324,7 @@
                             mode,
                             algorithm,
                             ccNoPadding,
-                            iv.bytes,
+                            iv ? iv.bytes: nil,
                             key.bytes,
                             key.length,
                             nil,
@@ -405,6 +405,21 @@
     [paddedData increaseLengthBy:paddingLength];
 
     return [NSData dataWithData:paddedData];
+}
+
+
+- (BOOL)ykf_constantTimeCompareWithData:(NSData *)data {
+    if (self.length != data.length) return NO;
+    
+    uint8_t result = 0;
+    const uint8_t *d1 = self.bytes;
+    const uint8_t *d2 = data.bytes;
+    
+    for (NSUInteger i = 0; i < self.length; i++) {
+        result |= d1[i] ^ d2[i];
+    }
+    
+    return result == 0;
 }
 
 @end

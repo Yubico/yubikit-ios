@@ -16,6 +16,7 @@
 #define YKFConnectionProtocol_h
 
 @class YKFOATHSession, YKFU2FSession, YKFFIDO2Session, YKFPIVSession, YKFChallengeResponseSession, YKFManagementSession, YKFSmartCardInterface, YKFAPDU;
+@protocol YKFSCPKeyParamsProtocol;
 
 @protocol YKFConnectionProtocol<NSObject>
 
@@ -25,6 +26,7 @@ typedef void (^YKFOATHSessionCompletionBlock)(YKFOATHSession *_Nullable, NSError
 /// @param completion The completion handler that gets called once the application is selected on
 ///                   the YubiKey. This handler is executed on a background thread.
 - (void)oathSession:(YKFOATHSessionCompletionBlock _Nonnull)completion;
+- (void)oathSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFOATHSessionCompletionBlock _Nonnull)completion;
 
 typedef void (^YKFU2FSessionCompletionBlock)(YKFU2FSession *_Nullable, NSError* _Nullable);
 

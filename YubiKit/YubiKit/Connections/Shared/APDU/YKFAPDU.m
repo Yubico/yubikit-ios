@@ -19,6 +19,13 @@
 
 @interface YKFAPDU()
 
+@property (nonatomic, readwrite) UInt8 cla;
+@property (nonatomic, readwrite) UInt8 ins;
+@property (nonatomic, readwrite) UInt8 p1;
+@property (nonatomic, readwrite) UInt8 p2;
+@property (nonatomic, readwrite) NSData *data;
+@property (nonatomic, readwrite) YKFAPDUType type;
+
 @property (nonatomic, readwrite) NSData *ylpApduData;
 @property (nonatomic, readwrite) NSData *apduData;
 
@@ -51,6 +58,14 @@
 }
 
 - (void)setupApduWithCla:(UInt8)cla ins:(UInt8)ins p1:(UInt8)p1 p2:(UInt8)p2 data:(NSData*)data {
+    
+    self.cla = cla;
+    self.ins = ins;
+    self.p1 = p1;
+    self.p2 = p2;
+    self.data = data;
+    self.type = YKFAPDUTypeShort;
+    
     NSMutableData *command = [[NSMutableData alloc] init];
     
     [command ykf_appendByte:cla];   // APDU CLA
@@ -74,6 +89,14 @@
 }
 
 - (void)setupExtendedApduWithCla:(UInt8)cla ins:(UInt8)ins p1:(UInt8)p1 p2:(UInt8)p2 data:(NSData *)data {
+    
+    self.cla = cla;
+    self.ins = ins;
+    self.p1 = p1;
+    self.p2 = p2;
+    self.data = data;
+    self.type = YKFAPDUTypeExtended;
+    
     NSMutableData *command = [[NSMutableData alloc] init];
     
     [command ykf_appendByte:cla];   // APDU CLA

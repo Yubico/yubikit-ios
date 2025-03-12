@@ -12,11 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+#ifndef YKFOATHSessionPrivate_h
+#define YKFOATHSessionPrivate_h
+
 #import <Foundation/Foundation.h>
 #import "YKFSessionProtocol+Private.h"
 #import "YKFOATHSession.h"
 
-@protocol YKFConnectionControllerProtocol;
+@protocol YKFConnectionControllerProtocol, YKFSCPKeyParamsProtocol;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,8 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^YKFOATHSessionCompletion)(YKFOATHSession *_Nullable, NSError* _Nullable);
 + (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
-                               completion:(YKFOATHSessionCompletion _Nonnull)completion;
+                             completion:(YKFOATHSessionCompletion _Nonnull)completion;
 
++ (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
+                           scpKeyParams:(nonnull id<YKFSCPKeyParamsProtocol>)scpKeyParams
+                             completion:(YKFOATHSessionCompletion _Nonnull)completion;
 /*
  Call this to force an applet selection on the next OATH operation.
  */
@@ -34,3 +41,5 @@ typedef void (^YKFOATHSessionCompletion)(YKFOATHSession *_Nullable, NSError* _Nu
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

@@ -153,6 +153,16 @@ NSString* const YKFSmartCardConnectionErrorDomain = @"com.yubico.smart-card-conn
     }];
 }
 
+- (void)oathSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFOATHSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFOATHSession sessionWithConnectionController:self.connectionController
+                                       scpKeyParams:scpKeyParams
+                                         completion:^(YKFOATHSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
 - (void)pivSession:(YKFPIVSessionCompletionBlock _Nonnull)completion {
     [self.currentSession clearSessionState];
     [YKFPIVSession sessionWithConnectionController:self.connectionController

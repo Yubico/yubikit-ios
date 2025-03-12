@@ -18,7 +18,7 @@
 #ifndef YKFSmartCardInterface_h
 #define YKFSmartCardInterface_h
 
-@class YKFAPDU, YKFSelectApplicationAPDU;
+@class YKFAPDU, YKFSelectApplicationAPDU, YKFSCPProcessor;
 @protocol YKFConnectionControllerProtocol;
 
 typedef void (^YKFSmartCardInterfaceResponseBlock)
@@ -39,6 +39,8 @@ typedef NS_ENUM(NSUInteger, YKFSmartCardInterfaceSendRemainingIns) {
 
 NS_ASSUME_NONNULL_BEGIN
 
+@property (nonatomic, readwrite, nullable) YKFSCPProcessor *scpProcessor;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithConnectionController:(id<YKFConnectionControllerProtocol>)connectionController NS_DESIGNATED_INITIALIZER;
@@ -52,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns completion:(YKFSmartCardInterfaceResponseBlock)completion;
 
 - (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns timeout:(NSTimeInterval)timeout completion:(YKFSmartCardInterfaceResponseBlock)completion;
+
+- (void)executeRecursiveCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns timeout:(NSTimeInterval)timeout data:(NSMutableData *)data completion:(YKFSmartCardInterfaceResponseBlock)completion;
 
 - (void)dispatchAfterCurrentCommands:(YKFSmartCardInterfaceCommandBlock)block;
 

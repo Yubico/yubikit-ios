@@ -34,7 +34,7 @@
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFOATHSendRemainingAPDU.h"
 #import "YKFSelectApplicationAPDU.h"
-
+#import "YKFSCPProcessor.h"
 
 static NSTimeInterval const YKFSmartCardInterfaceDefaultTimeout = 10.0;
 
@@ -79,7 +79,7 @@ static NSTimeInterval const YKFSmartCardInterfaceDefaultTimeout = 10.0;
     }];
 }
 
-- (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns  timeout:(NSTimeInterval)timeout data:(NSMutableData *)data completion:(YKFSmartCardInterfaceResponseBlock)completion {
+- (void)executeRecursiveCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns timeout:(NSTimeInterval)timeout data:(NSMutableData *)data completion:(YKFSmartCardInterfaceResponseBlock)completion {
     [self.connectionController execute:apdu
                          timeout:timeout
                             completion:^(NSData *response, NSError *error, NSTimeInterval executionTime) {
@@ -104,7 +104,7 @@ static NSTimeInterval const YKFSmartCardInterfaceDefaultTimeout = 10.0;
             }
             YKFAPDU *sendRemainingApdu = [[YKFAPDU alloc] initWithData:[NSData dataWithBytes:(unsigned char[]){0x00, ins, 0x00, 0x00, 0x00} length:5]];
             // Queue a new request recursively
-            [self executeCommand:sendRemainingApdu sendRemainingIns:sendRemainingIns timeout:timeout data:data completion:completion];
+            [self executeRecursiveCommand:sendRemainingApdu sendRemainingIns:sendRemainingIns timeout:timeout data:data completion:completion];
             return;
         } else if (statusCode == 0x9000) {
             completion(data, nil);
@@ -131,8 +131,13 @@ static NSTimeInterval const YKFSmartCardInterfaceDefaultTimeout = 10.0;
 - (void)executeCommand:(YKFAPDU *)apdu sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns timeout:(NSTimeInterval)timeout completion:(YKFSmartCardInterfaceResponseBlock)completion {
     YKFParameterAssertReturn(apdu);
     YKFParameterAssertReturn(completion);
-    NSMutableData *data = [NSMutableData new];
-    [self executeCommand:apdu sendRemainingIns:sendRemainingIns timeout:timeout data:data completion:completion];
+    
+    if (_scpProcessor) {
+        [_scpProcessor executeCommand:apdu sendRemainingIns:sendRemainingIns encrypt:YES usingSmartCardInterface:self completion:completion];
+    } else {
+        NSMutableData *data = [NSMutableData new];
+        [self executeRecursiveCommand:apdu sendRemainingIns:sendRemainingIns timeout:timeout data:data completion:completion];
+    }
 }
 
 - (void)dispatchAfterCurrentCommands:(YKFSmartCardInterfaceCommandBlock)block {
