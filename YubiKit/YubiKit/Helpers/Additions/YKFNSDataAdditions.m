@@ -237,6 +237,22 @@
     return [NSData dataWithBytesNoCopy:buff length:sizeInBytes freeWhenDone:YES];
 }
 
+- (NSData *)ykf_hkdfExtract:(NSData *)salt {
+    return [self ykf_fido2HMACWithKey:salt];
+}
+
+-(NSData *)ykf_hkdfExpand:(NSData *)info {
+    NSMutableData *data = [info mutableCopy];
+    UInt8 zero = 0x01;
+    [data appendBytes:&zero length:1];
+    return [data ykf_fido2HMACWithKey:self];
+}
+
+- (NSData *)ykf_deriveHKDFWithSalt:(NSData *)salt info:(NSData *)info {
+    NSData *prk = [self ykf_hkdfExtract:salt];
+    return [prk ykf_hkdfExpand:info];
+}
+
 - (NSData *)ykf_toLength:(int)length {
     if (self.length == length) {
         return self;

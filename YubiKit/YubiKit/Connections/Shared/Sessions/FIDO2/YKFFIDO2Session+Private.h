@@ -18,6 +18,12 @@
 
 @protocol YKFConnectionControllerProtocol;
 
+typedef NS_ENUM(NSUInteger, YKFFIDOPinProtocol) {
+    YKFFIDOPinProtocolV1 = 1,
+    YKFFIDOPinProtocolV2 = 2,
+};
+
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YKFFIDO2Session()<YKFSessionProtocol>

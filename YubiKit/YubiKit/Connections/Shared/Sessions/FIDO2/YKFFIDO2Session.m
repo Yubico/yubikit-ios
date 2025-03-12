@@ -55,6 +55,14 @@ NSString* const YKFFIDO2OptionRK = @"rk";
 NSString* const YKFFIDO2OptionUV = @"uv";
 NSString* const YKFFIDO2OptionUP = @"up";
 
+@interface NSData(NSData_PinProtocols)
+
+- (NSData *)ykf_authenticateDataWithKey:(NSData *)data pinProtocol:(YKFFIDOPinProtocol)pinProtocol;
+- (NSData *)ykf_encryptDataWithKey:(NSData *)data pinProtocol:(YKFFIDOPinProtocol)pinProtocol;
+- (NSData *)ykf_decryptDataWithKey:(NSData *)data pinProtocol:(YKFFIDOPinProtocol)pinProtocol;
+
+@end
+
 #pragma mark - Private Response Blocks
 
 typedef void (^YKFFIDO2SessionResultCompletionBlock)
@@ -77,6 +85,8 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
 // Keeps the state of the application selection to avoid reselecting the application.
 @property BOOL applicationSelected;
 
+@property (nonatomic, readwrite) YKFFIDOPinProtocol pinProtocol;
+
 @end
 
 @implementation YKFFIDO2Session
@@ -95,6 +105,8 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
             completion(nil, error);
         } else {
             [session updateKeyState:YKFFIDO2SessionKeyStateIdle];
+            // Pin protocol hard coded for now
+            session.pinProtocol = YKFFIDOPinProtocolV2;
             completion(session, nil);
         }
     }];
@@ -158,13 +170,13 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         
         // Get the authenticator pinToken
         YKFFIDO2ClientPinRequest *clientPinGetPinTokenRequest = [[YKFFIDO2ClientPinRequest alloc] init];
-        clientPinGetPinTokenRequest.pinProtocol = 1;
+        clientPinGetPinTokenRequest.pinProtocol = self.pinProtocol;
         clientPinGetPinTokenRequest.subCommand = YKFFIDO2ClientPinRequestSubCommandGetPINToken;
         clientPinGetPinTokenRequest.keyAgreement = cosePlatformPublicKey;
         
         NSData *pinData = [pin dataUsingEncoding:NSUTF8StringEncoding];
         NSData *pinHash = [[pinData ykf_SHA256] subdataWithRange:NSMakeRange(0, 16)];
-        clientPinGetPinTokenRequest.pinHashEnc = [pinHash ykf_aes256EncryptedDataWithKey:sharedSecret];
+        clientPinGetPinTokenRequest.pinHashEnc = [pinHash ykf_encryptDataWithKey:sharedSecret pinProtocol:self.pinProtocol];
         
         [strongSelf executeClientPinRequest:clientPinGetPinTokenRequest completion:^(YKFFIDO2ClientPinResponse *response, NSError *error) {
             if (error) {
@@ -178,7 +190,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
             }
             
             // Cache the pinToken
-            strongSelf.pinToken = [response.pinToken ykf_aes256DecryptedDataWithKey:sharedSecret];
+            strongSelf.pinToken = [encryptedPinToken ykf_decryptDataWithKey:sharedSecret pinProtocol:self.pinProtocol];
             
             if (!strongSelf.pinToken) {
                 completion([YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeINVALID_CBOR]);
@@ -268,13 +280,12 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         
         // Set the new PIN
         YKFFIDO2ClientPinRequest *setPinRequest = [[YKFFIDO2ClientPinRequest alloc] init];
-        setPinRequest.pinProtocol = 1;
+        setPinRequest.pinProtocol = self.pinProtocol;
         setPinRequest.subCommand = YKFFIDO2ClientPinRequestSubCommandSetPIN;
         setPinRequest.keyAgreement = cosePlatformPublicKey;
         
-        
-        setPinRequest.pinEnc = [pinData ykf_aes256EncryptedDataWithKey:sharedSecret];
-        setPinRequest.pinAuth = [[setPinRequest.pinEnc ykf_fido2HMACWithKey:sharedSecret] subdataWithRange:NSMakeRange(0, 16)];
+        setPinRequest.pinEnc = [pinData ykf_encryptDataWithKey:sharedSecret pinProtocol:self.pinProtocol];
+        setPinRequest.pinAuth = [setPinRequest.pinEnc ykf_authenticateDataWithKey:sharedSecret pinProtocol:self.pinProtocol];
         
         [strongSelf executeClientPinRequest:setPinRequest completion:^(YKFFIDO2ClientPinResponse *response, NSError *error) {
             if (error) {
@@ -320,9 +331,8 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     NSUInteger pinProtocol = 0;
     if (self.pinToken) {
         YKFParameterAssertReturn(clientDataHash);
-        pinProtocol = 1;
-        NSData *hmac = [clientDataHash ykf_fido2HMACWithKey:self.pinToken];
-        pinAuth = [hmac subdataWithRange:NSMakeRange(0, 16)];
+        pinProtocol = self.pinProtocol;
+        pinAuth = [clientDataHash ykf_authenticateDataWithKey:self.pinToken pinProtocol:self.pinProtocol];
         if (!pinAuth) {
             completion(nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER]);
         }
@@ -369,9 +379,8 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     NSUInteger pinProtocol = 0;
     if (self.pinToken) {
         YKFParameterAssertReturn(clientDataHash);
-        pinProtocol = 1;
-        NSData *hmac = [clientDataHash ykf_fido2HMACWithKey:self.pinToken];
-        pinAuth = [hmac subdataWithRange:NSMakeRange(0, 16)];
+        pinProtocol = self.pinProtocol;
+        pinAuth = [clientDataHash ykf_authenticateDataWithKey:self.pinToken pinProtocol:self.pinProtocol];
         if (!pinAuth) {
             completion(nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER]);
         }
@@ -506,7 +515,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     
     // Get the authenticator public key.
     YKFFIDO2ClientPinRequest *clientPinKeyAgreementRequest = [[YKFFIDO2ClientPinRequest alloc] init];
-    clientPinKeyAgreementRequest.pinProtocol = 1;
+    clientPinKeyAgreementRequest.pinProtocol = self.pinProtocol;
     clientPinKeyAgreementRequest.subCommand = YKFFIDO2ClientPinRequestSubCommandGetKeyAgreement;
     clientPinKeyAgreementRequest.keyAgreement = cosePlatformPublicKey;
     
@@ -532,7 +541,20 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
             completion(nil, nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER]);
             return;
         }
-        sharedSecret = [sharedSecret ykf_SHA256];
+        
+        switch (_pinProtocol) {
+            case YKFFIDOPinProtocolV1:
+                sharedSecret = [sharedSecret ykf_SHA256];
+                break;
+            case YKFFIDOPinProtocolV2: {
+                NSData *hmacKey = [sharedSecret ykf_deriveHKDFWithSalt:[NSMutableData dataWithLength:32] info:[@"CTAP2 HMAC key" dataUsingEncoding:NSUTF8StringEncoding]];
+                NSData *aesKey = [sharedSecret ykf_deriveHKDFWithSalt:[NSMutableData dataWithLength:32] info:[@"CTAP2 AES key" dataUsingEncoding:NSUTF8StringEncoding]];
+                NSMutableData *result = [hmacKey mutableCopy];
+                [result appendData:aesKey];
+                sharedSecret = result;
+                break;
+            }
+        }
         
         // Success
         completion(sharedSecret, cosePlatformPublicKey, nil);
@@ -607,6 +629,53 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         YKFAPDU* apdu = [[YKFFIDO2TouchPoolingAPDU alloc] init];
         [strongSelf executeFIDO2Command:apdu retryCount:retryCount completion:completion];
     });
+}
+
+@end
+
+
+#pragma mark - INT conversion
+
+@implementation NSData (NSData_PinProtocols)
+
+- (NSData *)ykf_authenticateDataWithKey:(NSData *)key pinProtocol:(YKFFIDOPinProtocol)pinProtocol {
+    switch (pinProtocol) {
+        case YKFFIDOPinProtocolV1:
+            return [[self ykf_fido2HMACWithKey:key] subdataWithRange:NSMakeRange(0, 16)];
+        case YKFFIDOPinProtocolV2:
+            return [self ykf_fido2HMACWithKey:[key subdataWithRange:NSMakeRange(0, 32)]];
+    }
+    return [NSData new];
+}
+
+- (NSData *)ykf_encryptDataWithKey:(NSData *)key pinProtocol:(YKFFIDOPinProtocol)pinProtocol {
+    switch (pinProtocol) {
+        case YKFFIDOPinProtocolV1:
+            return [self ykf_aes256Operation:kCCEncrypt withKey:key];
+        case YKFFIDOPinProtocolV2: {
+            NSData *aesKey = [key subdataWithRange:NSMakeRange(32, key.length-32)];
+            NSData *iv = [NSData ykf_randomDataOfSize:16];
+            NSData *cipher = [self ykf_cryptOperation:kCCEncrypt algorithm:kCCAlgorithmAES mode:kCCModeCBC key:aesKey iv:iv];
+            NSMutableData *result = [iv mutableCopy];
+            [result appendData:cipher];
+            return result;
+        }
+    }
+    return [NSData new];
+}
+
+- (NSData *)ykf_decryptDataWithKey:(NSData *)key pinProtocol:(YKFFIDOPinProtocol)pinProtocol {
+    switch (pinProtocol) {
+        case YKFFIDOPinProtocolV1:
+            return [self ykf_aes256Operation:kCCDecrypt withKey:key];
+        case YKFFIDOPinProtocolV2: {
+            NSData *aesKey = [key subdataWithRange:NSMakeRange(32, key.length-32)];
+            NSData *iv = [self subdataWithRange:NSMakeRange(0, 16)];
+            NSData *cipher = [self subdataWithRange:NSMakeRange(16, self.length-16)];
+            return [cipher ykf_cryptOperation:kCCDecrypt algorithm:kCCAlgorithmAES mode:kCCModeCBC key:aesKey iv:iv];
+        }
+    }
+    return [NSData new];
 }
 
 @end
