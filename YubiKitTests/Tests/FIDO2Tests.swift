@@ -67,8 +67,10 @@ class FIDO2Tests: XCTestCase {
         runYubiKitTest { connection, completion in
             if connection as? YKFNFCConnection != nil {
                 connection.fido2TestSession { session in
-                    session.setPin("123456") { _ in
+                    session.setPin("123456") { error in
+                        guard error == nil else { XCTAssertTrue(false, "🔴 Failed to set pin: \(error!)"); return }
                         session.verifyPin("123456") { error in
+                            guard error == nil else { XCTAssertTrue(false, "🔴 Failed to verify pin: \(error!)"); return }
                             session.addCredentialAndAssert(algorithm: YKFFIDO2PublicKeyAlgorithmES256, options: [YKFFIDO2OptionRK: false]) { response in
                                 print("✅ Created new FIDO2 credential: \(response)")
                                 session.getAssertionAndAssert(response: response, options: [YKFFIDO2OptionUP: true]) { response in
