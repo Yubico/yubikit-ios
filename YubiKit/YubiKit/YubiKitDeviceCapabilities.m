@@ -15,6 +15,8 @@
 #import <UIKit/UIKit.h>
 #import <CoreNFC/CoreNFC.h>
 
+#import <sys/utsname.h>
+
 #import "UIDeviceAdditions.h"
 #import "UIDevice+Testing.h"
 
@@ -123,21 +125,65 @@
         return [[self.fakeDeviceCapabilities class] supportsSmartCardOverUSBC];
     }
 #endif
-    
+
     // USB-C type devices on iOS 16 and up
     if (@available(iOS 16, *)) {
-        if (self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadMini6 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro3 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro4 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro5 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir4 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadAir5 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPad10 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPadPro6 ||
-            self.currentUIDevice.ykf_deviceModel == YKFDeviceModelIPhone15) {
-            return YES;
+        switch (self.currentUIDevice.ykf_deviceModel) {
+            case YKFDeviceModelIPhone4:
+            case YKFDeviceModelIPhone4S:
+            case YKFDeviceModelIPhone5:
+            case YKFDeviceModelIPhone5C:
+            case YKFDeviceModelIPhone5S:
+            case YKFDeviceModelIPhone6:
+            case YKFDeviceModelIPhone6Plus:
+            case YKFDeviceModelIPhone6S:
+            case YKFDeviceModelIPhone6SPlus:
+            case YKFDeviceModelIPhoneSE:
+            case YKFDeviceModelIPhone7:
+            case YKFDeviceModelIPhone7Plus:
+            case YKFDeviceModelIPhone8:
+            case YKFDeviceModelIPhone8Plus:
+            case YKFDeviceModelIPhoneX:
+            case YKFDeviceModelIPhoneXS:
+            case YKFDeviceModelIPhoneXSMax:
+            case YKFDeviceModelIPhoneXR:
+            case YKFDeviceModelIPhone11:
+            case YKFDeviceModelIPhoneSE2:
+            case YKFDeviceModelIPhone12:
+            case YKFDeviceModelIPhone13:
+            case YKFDeviceModelIPhone14:
+            case YKFDeviceModelIPhoneSE3:
+            case YKFDeviceModelIPad1:
+            case YKFDeviceModelIPad2:
+            case YKFDeviceModelIPadMini:
+            case YKFDeviceModelIPad3:
+            case YKFDeviceModelIPad4:
+            case YKFDeviceModelIPadAir:
+            case YKFDeviceModelIPadMini2:
+            case YKFDeviceModelIPadAir2:
+            case YKFDeviceModelIPadMini3:
+            case YKFDeviceModelIPadMini4:
+            case YKFDeviceModelIPadPro:
+            case YKFDeviceModelIPad2017:
+            case YKFDeviceModelIPadPro2:
+            case YKFDeviceModelIPad6:
+            case YKFDeviceModelIPad9:
+            case YKFDeviceModelIPadMini5:
+            case YKFDeviceModelIPadAir3:
+            case YKFDeviceModelIPodTouch1:
+            case YKFDeviceModelIPodTouch2:
+            case YKFDeviceModelIPodTouch3:
+            case YKFDeviceModelIPodTouch4:
+            case YKFDeviceModelIPodTouch5:
+            case YKFDeviceModelIPodTouch6:
+            case YKFDeviceModelIPodTouch7:
+                return NO;
+
+            default:
+                return YES;
         }
     }
+
     return NO;
 }
 
@@ -156,20 +202,29 @@
     static dispatch_once_t onceToken;
     
     dispatch_once(&onceToken, ^{
-        YKFDeviceModel deviceModel = self.currentUIDevice.ykf_deviceModel;
-        ykfDeviceCapabilitiesDeviceIsNFCEnabled =
-            deviceModel == YKFDeviceModelIPhone7 || deviceModel == YKFDeviceModelIPhone7Plus ||
-            deviceModel == YKFDeviceModelIPhone8 || deviceModel == YKFDeviceModelIPhone8Plus ||
-            deviceModel == YKFDeviceModelIPhoneX ||
-            deviceModel == YKFDeviceModelIPhoneXS || deviceModel == YKFDeviceModelIPhoneXSMax || deviceModel == YKFDeviceModelIPhoneXR ||
-            deviceModel == YKFDeviceModelIPhone11 ||
-            deviceModel == YKFDeviceModelIPhoneSE2 ||
-            deviceModel == YKFDeviceModelIPhoneSE3 ||
-            deviceModel == YKFDeviceModelIPhone12 ||
-            deviceModel == YKFDeviceModelIPhone13 ||
-            deviceModel == YKFDeviceModelIPhone14 ||
-            deviceModel == YKFDeviceModelIPhone15 ||
-            deviceModel == YKFDeviceModelUnknown; // A newer device which is not in the list yet
+        struct utsname systemInfo;
+        uname(&systemInfo);
+        NSString *deviceName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+        if ([deviceName hasPrefix:@"iPhone"])
+        {
+            switch (self.currentUIDevice.ykf_deviceModel) {
+                case YKFDeviceModelSimulator:
+                case YKFDeviceModelIPhone4:
+                case YKFDeviceModelIPhone4S:
+                case YKFDeviceModelIPhone5:
+                case YKFDeviceModelIPhone5C:
+                case YKFDeviceModelIPhone5S:
+                case YKFDeviceModelIPhone6:
+                case YKFDeviceModelIPhone6Plus:
+                case YKFDeviceModelIPhone6S:
+                case YKFDeviceModelIPhone6SPlus:
+                case YKFDeviceModelIPhoneSE:
+                    ykfDeviceCapabilitiesDeviceIsNFCEnabled = NO;
+
+                default:
+                    ykfDeviceCapabilitiesDeviceIsNFCEnabled = YES;
+            }
+        }
     });
     
 #ifdef DEBUG
