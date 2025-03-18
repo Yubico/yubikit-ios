@@ -101,7 +101,9 @@
     uint16_t swBigEndian = CFSwapInt16HostToBig(sw);
     [message appendBytes:&swBigEndian length:sizeof(swBigEndian)];
 
-    NSData *rmac = [[self.macChain ykf_aesCMACWithKey:self.sessionKeys.srmac] subdataWithRange:NSMakeRange(0, 8)];
+    NSMutableData *macChainAndMessage = [self.macChain mutableCopy];
+    [macChainAndMessage appendData:message];
+    NSData *rmac = [[macChainAndMessage ykf_aesCMACWithKey:self.sessionKeys.srmac] subdataWithRange:NSMakeRange(0, 8)];
     if (!rmac) return nil;
     
     NSData *expectedMac = [data subdataWithRange:NSMakeRange(data.length - 8, 8)];

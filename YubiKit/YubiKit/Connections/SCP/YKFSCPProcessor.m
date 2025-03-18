@@ -133,9 +133,9 @@ usingSmartCardInterface:(YKFSmartCardInterface *)smartCardInterface
     }
     
     UInt8 cla = apdu.cla | 0x04;
-    NSMutableData *apduData = [apdu.data mutableCopy];
-    [apduData increaseLengthBy:8];
-    NSMutableData *macInput = [[[YKFAPDU alloc] initWithCla:cla ins:apdu.ins p1:apdu.p1 p2:apdu.p2 data:apduData type:apdu.type].apduData mutableCopy];
+    NSMutableData *macData = [data mutableCopy];
+    [macData increaseLengthBy:8];
+    NSMutableData *macInput = [[[YKFAPDU alloc] initWithCla:cla ins:apdu.ins p1:apdu.p1 p2:apdu.p2 data:macData type:apdu.type].apduData mutableCopy];
     [macInput setLength:(macInput.length - 8)];
     NSError *error = nil;
     NSData *mac = [self.state macWithData:macInput error:&error];
