@@ -119,7 +119,7 @@
 
 - (NSString *)debugDescription {
     return [NSString stringWithFormat:@"SCPState(sessionKeys: %@, macChain: %@, encCounter: %u)",
-            self.sessionKeys,
+            [self.sessionKeys debugDescription],
             [self.macChain ykf_hexadecimalString],
             self.encCounter];
 }

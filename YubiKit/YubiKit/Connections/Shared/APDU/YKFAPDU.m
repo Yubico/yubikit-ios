@@ -140,4 +140,9 @@
     return self;
 }
 
+- (NSString *)debugDescription {
+    return [NSString stringWithFormat:@"<YKFAPDU cla:0x%02X, ins:0x%02X, p1:0x%02X, p2:0x%02X, data: %@, type:%@>",
+            self.cla, self.ins, self.p1, self.p2, [self.data ykf_hexadecimalString], (self.type == YKFAPDUTypeShort ? @"short" : @"extended")];
+}
+
 @end
