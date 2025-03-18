@@ -334,14 +334,13 @@
                             &cryptorRef
                             );
     
-    CCCryptorUpdate(cryptorRef,
+    CCCryptorStatus cryptorStatus = CCCryptorUpdate(cryptorRef,
                     self.bytes,
                     self.length,
                     buffer.mutableBytes,
                     buffer.length,
                     &outLength);
     
-    CCCryptorStatus cryptorStatus = CCCryptorCreate(operation, algorithm, kCCOptionECBMode, key.bytes, key.length, NULL, &cryptorRef);
     CCCryptorRelease(cryptorRef);
     
     if(cryptorStatus == kCCSuccess) {
