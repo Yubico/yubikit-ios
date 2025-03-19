@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#import "YKFNSDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFSCPKeyParamsProtocol.h"
 #import "YKFSCP03KeyParams.h"
@@ -23,10 +24,18 @@
 #import "YKFAPDU+Private.h"
 #import "YKFAPDU.h"
 #import "YKFSCPProcessor.h"
+#import "YKFTLVRecord.h"
 
 @interface YKFSCPProcessor ()
 @property (nonatomic, strong) YKFSCPState *state;
 @end
+
+typedef NS_ENUM(uint8_t, YKFSCPKid) {
+    YKFSCPKidScp03  = 0x01,
+    YKFSCPKidScp11a = 0x11,
+    YKFSCPKidScp11b = 0x13,
+    YKFSCPKidScp11c = 0x15,
+};
 
 @implementation YKFSCPProcessor
 
@@ -42,6 +51,7 @@
                  sendRemainingIns:(YKFSmartCardInterfaceSendRemainingIns)sendRemainingIns
           usingSmartCardInterface:(YKFSmartCardInterface *)smartCardInterface
                        completion:(YKFSCPProcessorCompletionBlock _Nonnull)completion {
+    
     if ([scpKeyParams isKindOfClass:[YKFSCP03KeyParams class]]) {
         YKFSCP03KeyParams *scp03KeyParams = (YKFSCP03KeyParams *)scpKeyParams;
         NSData *hostChallenge = [NSData ykf_randomDataOfSize:8];
@@ -100,11 +110,122 @@
         
     }
     
-    YKFSCP11KeyParams *scp11KeyParams = (YKFSCP11KeyParams *)scpKeyParams;
     if ([scpKeyParams isKindOfClass:[YKFSCP11KeyParams class]]) {
+        YKFSCP11KeyParams *scp11Params = (YKFSCP11KeyParams *)scpKeyParams;
         
+        uint8_t kidValue = scpKeyParams.keyRef.kid;
+        YKFSCPKid kid = (YKFSCPKid)kidValue;
         
+        uint8_t params;
         
+        if (kid == YKFSCPKidScp11a) {
+            params = 0b01;
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"SCP11a not implemented" userInfo:nil];
+        } else if (kid == YKFSCPKidScp11b) {
+            params = 0b00;
+        } else if (kid == YKFSCPKidScp11c) {
+            params = 0b11;
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"SCP11c not implemented" userInfo:nil];
+        } else {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Unknown SCP11 version" userInfo:nil];
+        }
+        
+        NSData *keyUsage = [NSData dataWithBytes:(uint8_t[]){0x3c} length:1];
+        NSData *keyType = [NSData dataWithBytes:(uint8_t[]){0x88} length:1];
+        NSData *keyLen = [NSData dataWithBytes:(uint8_t[]){16} length:1];
+        
+        SecKeyRef pkSdEcka = scp11Params.pkSdEcka;
+        
+        NSDictionary *attributes = @{(__bridge id)kSecAttrKeyType: (__bridge id)kSecAttrKeyTypeEC,
+                                     (__bridge id)kSecAttrKeySizeInBits: @256};
+        
+        CFErrorRef error = NULL;
+        SecKeyRef eskOceEcka = SecKeyCreateRandomKey((__bridge CFDictionaryRef)attributes, &error);
+        if (!eskOceEcka) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[(__bridge NSError *)error localizedDescription] userInfo:nil];
+        }
+        
+        SecKeyRef epkOceEcka = SecKeyCopyPublicKey(eskOceEcka);
+        if (!epkOceEcka) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[(__bridge NSError *)error localizedDescription] userInfo:nil];
+        }
+        
+        CFDataRef externalRepresentation = SecKeyCopyExternalRepresentation(epkOceEcka, &error);
+        if (!externalRepresentation) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[(__bridge NSError *)error localizedDescription] userInfo:nil];
+        }
+        NSData *epkOceEckaData = [(__bridge NSData *)externalRepresentation subdataWithRange:NSMakeRange(0, 1 + 2 * 32)];
+        
+        // GPC v2.3 Amendment F (SCP11) v1.4 §7.6.2.3
+        NSMutableData *data = [[[YKFTLVRecord alloc] initWithTag:0xa6 records: @[
+            [[YKFTLVRecord alloc] initWithTag:0x90 value:[NSData dataWithBytes:(uint8_t[]){0x11, params} length:2]],
+            [[YKFTLVRecord alloc] initWithTag:0x95 value:keyUsage],
+            [[YKFTLVRecord alloc] initWithTag:0x80 value:keyType],
+            [[YKFTLVRecord alloc] initWithTag:0x81 value:keyLen],
+        ]].data mutableCopy];
+        [data appendData:[[YKFTLVRecord alloc] initWithTag:0x5f49 value:epkOceEckaData].data];
+        
+        SecKeyRef skOceEcka = scp11Params.skOceEcka ?: eskOceEcka;
+        uint8_t ins = kid  == YKFSCPKidScp11b ? 0x88 : 0x82;
+        
+        YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:ins p1:scpKeyParams.keyRef.kvn p2:scpKeyParams.keyRef.kid data:data type:YKFAPDUTypeExtended];
+        [smartCardInterface executeCommand:apdu sendRemainingIns:sendRemainingIns completion:^(NSData * _Nullable result, NSError * _Nullable error) {
+            if (!result) {
+                completion(nil, error);
+                return;
+            }
+            NSArray<YKFTLVRecord *> *tlvs = [YKFTLVRecord sequenceOfRecordsFromData:result];
+            if (tlvs.count != 2 || [tlvs[0] tag] != 0x5f49 || [tlvs[1] tag] != 0x86) {
+                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Invalid response TLVs" userInfo:nil];
+            }
+            
+            NSData *epkSdEckaEncodedPoint = tlvs[0].value;
+            NSData *receipt = tlvs[1].value;
+            NSMutableData *keyAgreementData = [data mutableCopy];
+            [keyAgreementData appendData:tlvs[0].data];
+            NSMutableData *sharedInfo = [keyUsage mutableCopy];
+            [sharedInfo appendData:keyType];
+            [sharedInfo appendData:keyLen];
+            
+            NSDictionary *pkAttributes = @{(__bridge id)kSecAttrKeyType: (__bridge id)kSecAttrKeyTypeEC,
+                                           (__bridge id)kSecAttrKeyClass: (__bridge id)kSecAttrKeyClassPublic};
+            CFErrorRef cfEerror = NULL;
+
+            SecKeyRef epkSdEcka = SecKeyCreateWithData((__bridge CFDataRef)epkSdEckaEncodedPoint, (__bridge CFDictionaryRef)pkAttributes, &cfEerror);
+            if (!epkSdEcka) {
+                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[(__bridge NSError *)cfEerror localizedDescription] userInfo:nil];
+            }
+            
+            NSData *keyAgreement1 = (__bridge_transfer NSData *)SecKeyCopyKeyExchangeResult(eskOceEcka, kSecKeyAlgorithmECDHKeyExchangeStandard, epkSdEcka, (__bridge CFDictionaryRef)@{}, nil);
+            NSData *keyAgreement2 = (__bridge_transfer NSData *)SecKeyCopyKeyExchangeResult(skOceEcka, kSecKeyAlgorithmECDHKeyExchangeStandard, pkSdEcka, (__bridge CFDictionaryRef)@{}, nil);
+            
+            NSMutableData *keyMaterial = [keyAgreement1 mutableCopy];
+            [keyMaterial appendData:keyAgreement2];
+            
+            NSMutableArray *keys = [NSMutableArray array];
+            for (uint32_t counter = 1; counter <= 4; counter++) {
+                NSMutableData *dataToHash = [keyMaterial mutableCopy];
+                uint32_t bigEndianCounter = CFSwapInt32HostToBig(counter);
+                NSData *counterData = [NSData dataWithBytes:&bigEndianCounter length:sizeof(bigEndianCounter)];
+                [dataToHash appendData:counterData];
+                [dataToHash appendData:sharedInfo];
+                NSData *digest = [dataToHash ykf_SHA256];
+                [keys addObject:[digest subdataWithRange:NSMakeRange(0, 16)]];
+                [keys addObject:[digest subdataWithRange:NSMakeRange(16, digest.length - 16)]];
+            }
+            
+            NSData *genReceipt = [keyAgreementData ykf_aesCMACWithKey:keys[0]];
+            if (![genReceipt ykf_constantTimeCompareWithData:receipt]) {
+                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"MAC verification failed" userInfo:nil];
+            }
+            YKFSCPSessionKeys *sessionKeys = [[YKFSCPSessionKeys alloc] initWithSenc:keys[1] smac:keys[2] srmac:keys[3] dek:keys[4]];
+            YKFSCPState *state = [[YKFSCPState alloc] initWithSessionKeys:sessionKeys macChain:receipt];
+            
+            YKFSCPProcessor *processor = [[YKFSCPProcessor alloc] initWithState:state];
+            completion(processor, nil);
+            
+            NSLog(@"✅ done configuring SCP11");
+        }];
     }
     
     
