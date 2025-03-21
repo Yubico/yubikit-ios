@@ -1,0 +1,1 @@
+../Connections/SCP/YKFSCPSecurityDomainSession+Private.h
