@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Yubico AB
+// Copyright Yubico AB
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,25 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+#ifndef YKFSCPSecurityDomainSessionPrivate_h
+#define YKFSCPSecurityDomainSessionPrivate_h
+
 #import <Foundation/Foundation.h>
 #import "YKFSessionProtocol+Private.h"
-#import "YKFChallengeResponseSession.h"
+#import "YKFSCPSecurityDomainSession.h"
 
 @protocol YKFConnectionControllerProtocol, YKFSCPKeyParamsProtocol;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YKFChallengeResponseSession()<YKFSessionProtocol>
+@interface YKFSecurityDomainSession()<YKFSessionProtocol>
 
-typedef void (^YKFChallengeResponseSessionCompletion)(YKFChallengeResponseSession *_Nullable, NSError* _Nullable);
+typedef void (^YKFSecurityDomainSessionCompletion)(YKFSecurityDomainSession *_Nullable, NSError* _Nullable);
 + (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
-                               completion:(YKFChallengeResponseSessionCompletion _Nonnull)completion;
+                             completion:(YKFSecurityDomainSessionCompletion _Nonnull)completion;
 
 + (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
                            scpKeyParams:(nonnull id<YKFSCPKeyParamsProtocol>)scpKeyParams
-                             completion:(YKFChallengeResponseSessionCompletion _Nonnull)completion;
+                             completion:(YKFSecurityDomainSessionCompletion _Nonnull)completion;
 
 @end
 
 NS_ASSUME_NONNULL_END
 
+#endif

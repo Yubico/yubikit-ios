@@ -39,6 +39,8 @@
 #import "TKTLVRecordAdditions+Private.h"
 #import "YKFTLVRecord.h"
 #import "NSData+GZIP.h"
+#import "YKFSCPProcessor.h"
+#import "YKFSCPKeyParamsProtocol.h"
 
 NSString* const YKFPIVErrorDomain = @"com.yubico.piv";
 
@@ -152,6 +154,46 @@ int maxPinAttempts = 3;
                     UInt8 *versionBytes = (UInt8 *)data.bytes;
                     session.version = [[YKFVersion alloc] initWithBytes:versionBytes[0] minor:versionBytes[1] micro:versionBytes[2]];
                     completion(session, nil);
+                }
+            }];
+        }
+    }];
+}
+
++ (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
+                           scpKeyParams:(id<YKFSCPKeyParamsProtocol>)scpKeyParams
+                             completion:(YKFPIVSessionCompletion _Nonnull)completion {
+    YKFPIVSession *session = [YKFPIVSession new];
+    session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
+    
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNamePIV];
+    [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+        } else {
+            YKFAPDU *versionAPDU = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetVersion p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
+            [session.smartCardInterface executeCommand:versionAPDU completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+                if (error) {
+                    completion(nil, error);
+                } else {
+                    if ([data length] < 3) {
+                        completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeInvalidResponse userInfo:@{NSLocalizedDescriptionKey: @"Invalid response when retrieving PIV version."}]);
+                        return;
+                    }
+                    UInt8 *versionBytes = (UInt8 *)data.bytes;
+                    session.version = [[YKFVersion alloc] initWithBytes:versionBytes[0] minor:versionBytes[1] micro:versionBytes[2]];
+                    if (scpKeyParams) {
+                        [YKFSCPProcessor processorWithSCPKeyParams:scpKeyParams sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsNormal usingSmartCardInterface:session.smartCardInterface completion:^(YKFSCPProcessor * _Nullable processor, NSError * _Nullable error) {
+                            if (error) {
+                                completion(nil, error);
+                            } else {
+                                session.smartCardInterface.scpProcessor = processor;
+                                completion(session, nil);
+                            }
+                        }];
+                    } else {
+                        completion(session, nil);
+                    }
                 }
             }];
         }

@@ -19,12 +19,16 @@
 #import "YKFSessionProtocol+Private.h"
 #import "YKFPIVSession.h"
 
-@protocol YKFConnectionControllerProtocol;
+@protocol YKFConnectionControllerProtocol, YKFSCPKeyParamsProtocol;
 
 @interface YKFPIVSession()<YKFSessionProtocol>
 
 typedef void (^YKFPIVSessionCompletion)(YKFPIVSession *_Nullable, NSError* _Nullable);
 + (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
+                             completion:(YKFPIVSessionCompletion _Nonnull)completion;
+
++ (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
+                           scpKeyParams:(nonnull id<YKFSCPKeyParamsProtocol>)scpKeyParams
                              completion:(YKFPIVSessionCompletion _Nonnull)completion;
 
 @end

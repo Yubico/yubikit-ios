@@ -23,6 +23,7 @@
 #import "YKFPIVSession+Private.h"
 #import "YKFU2FSession+Private.h"
 #import "YKFSmartCardInterface.h"
+#import "YKFSCPSecurityDomainSession+Private.h"
 #import "YKFChallengeResponseSession+Private.h"
 
 NSString* const YKFSmartCardConnectionErrorDomain = @"com.yubico.smart-card-connection";
@@ -128,6 +129,13 @@ NSString* const YKFSmartCardConnectionErrorDomain = @"com.yubico.smart-card-conn
                                            userInfo:@{NSLocalizedDescriptionKey: @"Challenge response session not supported by YKFSmartCardConnection."}]);
 }
 
+- (void)challengeResponseSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFChallengeResponseSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    completion(nil, [[NSError alloc] initWithDomain:YKFSmartCardConnectionErrorDomain
+                                               code:YKFSmartCardConnectionErrorCodeNotSupported
+                                           userInfo:@{NSLocalizedDescriptionKey: @"Challenge response session not supported by YKFSmartCardConnection."}]);
+}
+
 - (void)fido2Session:(YKFFIDO2SessionCompletionBlock _Nonnull)completion {
     [self.currentSession clearSessionState];
     completion(nil, [[NSError alloc] initWithDomain:YKFSmartCardConnectionErrorDomain
@@ -135,9 +143,26 @@ NSString* const YKFSmartCardConnectionErrorDomain = @"com.yubico.smart-card-conn
                                            userInfo:@{NSLocalizedDescriptionKey: @"FIDO2 session not supported by YKFSmartCardConnection."}]);
 }
 
+- (void)fido2Session:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFFIDO2SessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    completion(nil, [[NSError alloc] initWithDomain:YKFSmartCardConnectionErrorDomain
+                                               code:YKFSmartCardConnectionErrorCodeNotSupported
+                                           userInfo:@{NSLocalizedDescriptionKey: @"Challenge response session not supported by YKFSmartCardConnection."}]);
+}
+
 - (void)managementSession:(YKFManagementSessionCompletion _Nonnull)completion {
     [self.currentSession clearSessionState];
     [YKFManagementSession sessionWithConnectionController:self.connectionController
+                                               completion:^(YKFManagementSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
+- (void)managementSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFManagementSessionCompletion _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFManagementSession sessionWithConnectionController:self.connectionController
+                                             scpKeyParams:scpKeyParams
                                                completion:^(YKFManagementSession *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         completion(session, error);
@@ -153,9 +178,29 @@ NSString* const YKFSmartCardConnectionErrorDomain = @"com.yubico.smart-card-conn
     }];
 }
 
+- (void)oathSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFOATHSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFOATHSession sessionWithConnectionController:self.connectionController
+                                       scpKeyParams:scpKeyParams
+                                         completion:^(YKFOATHSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
 - (void)pivSession:(YKFPIVSessionCompletionBlock _Nonnull)completion {
     [self.currentSession clearSessionState];
     [YKFPIVSession sessionWithConnectionController:self.connectionController
+                                        completion:^(YKFPIVSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
+- (void)pivSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFPIVSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFPIVSession sessionWithConnectionController:self.connectionController
+                                      scpKeyParams:scpKeyParams
                                         completion:^(YKFPIVSession *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         completion(session, error);
@@ -167,6 +212,31 @@ NSString* const YKFSmartCardConnectionErrorDomain = @"com.yubico.smart-card-conn
     completion(nil, [[NSError alloc] initWithDomain:YKFSmartCardConnectionErrorDomain
                                                code:YKFSmartCardConnectionErrorCodeNotSupported
                                            userInfo:@{NSLocalizedDescriptionKey: @"U2F session not supported by YKFSmartCardConnection."}]);
+}
+- (void)u2fSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFU2FSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    completion(nil, [[NSError alloc] initWithDomain:YKFSmartCardConnectionErrorDomain
+                                               code:YKFSmartCardConnectionErrorCodeNotSupported
+                                           userInfo:@{NSLocalizedDescriptionKey: @"Challenge response session not supported by YKFSmartCardConnection."}]);
+}
+
+- (void)securityDomainSession:(YKFSecurityDomainSessionCompletion _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFSecurityDomainSession sessionWithConnectionController:self.connectionController
+                                        completion:^(YKFSecurityDomainSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
+- (void)securityDomainSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFSecurityDomainSessionCompletion _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFSecurityDomainSession sessionWithConnectionController:self.connectionController
+                                                 scpKeyParams:scpKeyParams
+                                                   completion:^(YKFSecurityDomainSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
 }
 
 - (void)executeRawCommand:(NSData *)data completion:(YKFRawComandCompletion)completion {

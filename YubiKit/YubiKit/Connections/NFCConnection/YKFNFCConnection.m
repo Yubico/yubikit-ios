@@ -34,6 +34,7 @@
 #import "YKFChallengeResponseSession+Private.h"
 #import "YKFManagementSession.h"
 #import "YKFManagementSession+Private.h"
+#import "YKFSCPSecurityDomainSession+Private.h"
 #import "YKFNFCTagDescription+Private.h"
 
 #import "YKFSessionError.h"
@@ -91,6 +92,16 @@
     }
 }
 
+- (void)oathSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFOATHSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFOATHSession sessionWithConnectionController:self.connectionController
+                                       scpKeyParams:scpKeyParams
+                                         completion:^(YKFOATHSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
 - (void)u2fSession:(YKFU2FSessionCompletionBlock _Nonnull)callback {
     if (@available(iOS 13.0, *)) {
         [self.currentSession clearSessionState];
@@ -102,12 +113,32 @@
     }
 }
 
+- (void)u2fSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFU2FSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFU2FSession sessionWithConnectionController:self.connectionController
+                                      scpKeyParams:scpKeyParams
+                                        completion:^(YKFU2FSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
 - (void)fido2Session:(YKFFIDO2SessionCompletionBlock _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFFIDO2Session sessionWithConnectionController:self.connectionController
                                             completion:^(YKFFIDO2Session *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
+    }];
+}
+
+- (void)fido2Session:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFFIDO2SessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFFIDO2Session sessionWithConnectionController:self.connectionController
+                                        scpKeyParams:scpKeyParams
+                                          completion:^(YKFFIDO2Session *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
     }];
 }
 
@@ -120,6 +151,35 @@
     }];
 }
 
+- (void)pivSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFPIVSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFPIVSession sessionWithConnectionController:self.connectionController
+                                      scpKeyParams:scpKeyParams
+                                        completion:^(YKFPIVSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
+- (void)securityDomainSession:(YKFSecurityDomainSessionCompletion _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFSecurityDomainSession sessionWithConnectionController:self.connectionController
+                                        completion:^(YKFSecurityDomainSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
+- (void)securityDomainSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFSecurityDomainSessionCompletion _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFSecurityDomainSession sessionWithConnectionController:self.connectionController
+                                                 scpKeyParams:scpKeyParams
+                                                   completion:^(YKFSecurityDomainSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
 - (void)challengeResponseSession:(YKFChallengeResponseSessionCompletionBlock _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFChallengeResponseSession sessionWithConnectionController:self.connectionController
@@ -129,12 +189,32 @@
     }];
 }
 
+- (void)challengeResponseSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFChallengeResponseSessionCompletionBlock _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFChallengeResponseSession sessionWithConnectionController:self.connectionController
+                                                    scpKeyParams:scpKeyParams
+                                                      completion:^(YKFChallengeResponseSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
+}
+
 - (void)managementSession:(YKFManagementSessionCompletion _Nonnull)callback {
     [self.currentSession clearSessionState];
     [YKFManagementSession sessionWithConnectionController:self.connectionController
                                                   completion:^(YKFManagementSession *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
+    }];
+}
+
+- (void)managementSession:(id<YKFSCPKeyParamsProtocol> _Nonnull)scpKeyParams completion:(YKFManagementSessionCompletion _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFManagementSession sessionWithConnectionController:self.connectionController
+                                             scpKeyParams:scpKeyParams
+                                               completion:^(YKFManagementSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
     }];
 }
 

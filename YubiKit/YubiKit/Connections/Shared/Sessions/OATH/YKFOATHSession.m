@@ -55,6 +55,9 @@
 #import "YKFSmartCardInterface.h"
 #import "YKFSelectApplicationAPDU.h"
 
+#import "YKFSCPProcessor.h"
+#import "YKFSCPKeyParamsProtocol.h"
+
 #import "YKFAPDUCommandInstruction.h"
 #import "YKFAPDU.h"
 
@@ -97,6 +100,34 @@ typedef void (^YKFOATHServiceResultCompletionBlock)(NSData* _Nullable  result, N
         } else {
             session.cachedSelectApplicationResponse = [[YKFOATHSelectApplicationResponse alloc] initWithResponseData:data];
             completion(session, nil);
+        }
+    }];
+}
+
++ (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
+                           scpKeyParams:(id<YKFSCPKeyParamsProtocol>)scpKeyParams
+                             completion:(YKFOATHSessionCompletion _Nonnull)completion {
+    YKFOATHSession *session = [YKFOATHSession new];
+    session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
+    
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameOATH];
+    [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+        } else {
+            session.cachedSelectApplicationResponse = [[YKFOATHSelectApplicationResponse alloc] initWithResponseData:data];
+            if (scpKeyParams) {
+                [YKFSCPProcessor processorWithSCPKeyParams:scpKeyParams sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsOATH usingSmartCardInterface:session.smartCardInterface completion:^(YKFSCPProcessor * _Nullable processor, NSError * _Nullable error) {
+                    if (error) {
+                        completion(nil, error);
+                    } else {
+                        session.smartCardInterface.scpProcessor = processor;
+                        completion(session, nil);
+                    }
+                }];
+            } else {
+                completion(session, nil);
+            }
         }
     }];
 }

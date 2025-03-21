@@ -23,6 +23,8 @@
 #import "YKFFeature.h"
 #import "NSArray+YKFTLVRecord.h"
 #import "YKFTLVRecord.h"
+#import "YKFSCPProcessor.h"
+#import "YKFSCPKeyParamsProtocol.h"
 
 NSString* const YKFManagementErrorDomain = @"com.yubico.management";
 
@@ -51,6 +53,33 @@ NSString* const YKFManagementErrorDomain = @"com.yubico.management";
         } else {
             session.version = [session versionFromResponse:data];
             completion(session, nil);
+        }
+    }];
+}
+
++ (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
+                           scpKeyParams:(id<YKFSCPKeyParamsProtocol>)scpKeyParams
+                             completion:(YKFManagementSessionCompletion _Nonnull)completion {
+    YKFManagementSession *session = [YKFManagementSession new];
+    session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
+    
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameManagement];
+    [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+        } else {
+            if (scpKeyParams) {
+                [YKFSCPProcessor processorWithSCPKeyParams:scpKeyParams sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsNormal usingSmartCardInterface:session.smartCardInterface completion:^(YKFSCPProcessor * _Nullable processor, NSError * _Nullable error) {
+                    if (error) {
+                        completion(nil, error);
+                    } else {
+                        session.smartCardInterface.scpProcessor = processor;
+                        completion(session, nil);
+                    }
+                }];
+            } else {
+                completion(session, nil);
+            }
         }
     }];
 }

@@ -147,6 +147,7 @@ To add support for NFC YubiKeys in your application, follow these steps:
     <string>A0000005272101</string>   // OATH AID
     <string>A000000308</string>       // PIV AID
     <string>A000000527200101</string> // YubiKey application/OTP AID (for HMAC SHA1 challenge-response)
+    <string>A000000151000000</string> // YubiKey Security Domain
 </array>
 </plist>
 ```

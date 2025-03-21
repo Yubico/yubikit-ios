@@ -71,7 +71,11 @@ typedef NS_ENUM(NSUInteger, YKFSessionErrorCode) {
     
     /*! Invalid session state. This can be caused by another session connecting to the Yubkey or stale stored state.
      */
-    YKFSessionErrorInvalidSessionStateStatusCode = 0x000008
+    YKFSessionErrorInvalidSessionStateStatusCode = 0x000008,
+    
+    /*! Unexpected result. This is caused when the YubiKey returns unexpected data.
+     */
+    YKFSessionErrorUnexpectedResult = 0x000009
 };
 
 /*!

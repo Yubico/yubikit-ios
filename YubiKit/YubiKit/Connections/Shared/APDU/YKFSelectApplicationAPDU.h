@@ -32,7 +32,9 @@ typedef NS_ENUM(NSUInteger, YKFSelectApplicationAPDUName) {
 
     YKFSelectApplicationAPDUNamePIV,
     
-    YKFSelectApplicationAPDUNameU2F
+    YKFSelectApplicationAPDUNameU2F,
+    
+    YKFSelectApplicationAPDUNameSecurityDomain
 };
 
 @interface YKFSelectApplicationAPDU : YKFAPDU

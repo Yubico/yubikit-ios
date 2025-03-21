@@ -50,6 +50,13 @@ typedef NS_ENUM(NSUInteger, YKFAPDUType) {
  */
 @interface YKFAPDU: NSObject
 
+@property (nonatomic, readonly) UInt8 cla;
+@property (nonatomic, readonly) UInt8 ins;
+@property (nonatomic, readonly) UInt8 p1;
+@property (nonatomic, readonly) UInt8 p2;
+@property (nonatomic, readonly) NSData * _Nonnull data;
+@property (nonatomic, readonly) YKFAPDUType type;
+
 /*!
  @method initWithCla:ins:p1:p2:data:type:
  
