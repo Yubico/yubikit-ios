@@ -237,6 +237,7 @@
     return [NSData dataWithBytesNoCopy:buff length:sizeInBytes freeWhenDone:YES];
 }
 
+// Note that this is not a complete implementation of hkdf. This only outputs 32 bytes.
 - (NSData *)ykf_hkdfExtract:(NSData *)salt {
     return [self ykf_fido2HMACWithKey:salt];
 }
