@@ -23,6 +23,7 @@
 #import "YKFPIVSession+Private.h"
 #import "YKFU2FSession+Private.h"
 #import "YKFSmartCardInterface.h"
+#import "YKFSCPSecurityDomainSession+Private.h"
 #import "YKFChallengeResponseSession+Private.h"
 
 NSString* const YKFSmartCardConnectionErrorDomain = @"com.yubico.smart-card-connection";
@@ -177,6 +178,15 @@ NSString* const YKFSmartCardConnectionErrorDomain = @"com.yubico.smart-card-conn
     completion(nil, [[NSError alloc] initWithDomain:YKFSmartCardConnectionErrorDomain
                                                code:YKFSmartCardConnectionErrorCodeNotSupported
                                            userInfo:@{NSLocalizedDescriptionKey: @"U2F session not supported by YKFSmartCardConnection."}]);
+}
+
+- (void)securityDomainSession:(YKFSecurityDomainSessionCompletion _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFSecurityDomainSession sessionWithConnectionController:self.connectionController
+                                        completion:^(YKFSecurityDomainSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
+    }];
 }
 
 - (void)executeRawCommand:(NSData *)data completion:(YKFRawComandCompletion)completion {

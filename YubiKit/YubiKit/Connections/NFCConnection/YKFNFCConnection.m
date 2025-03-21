@@ -34,6 +34,7 @@
 #import "YKFChallengeResponseSession+Private.h"
 #import "YKFManagementSession.h"
 #import "YKFManagementSession+Private.h"
+#import "YKFSCPSecurityDomainSession+Private.h"
 #import "YKFNFCTagDescription+Private.h"
 
 #import "YKFSessionError.h"
@@ -127,6 +128,15 @@
                                         completion:^(YKFPIVSession *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
+    }];
+}
+
+- (void)securityDomainSession:(YKFSecurityDomainSessionCompletion _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFSecurityDomainSession sessionWithConnectionController:self.connectionController
+                                        completion:^(YKFSecurityDomainSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
     }];
 }
 

@@ -15,7 +15,7 @@
 #ifndef YKFConnectionProtocol_h
 #define YKFConnectionProtocol_h
 
-@class YKFOATHSession, YKFU2FSession, YKFFIDO2Session, YKFPIVSession, YKFChallengeResponseSession, YKFManagementSession, YKFSmartCardInterface, YKFAPDU;
+@class YKFOATHSession, YKFU2FSession, YKFFIDO2Session, YKFPIVSession, YKFChallengeResponseSession, YKFManagementSession, YKFSecurityDomainSession, YKFSmartCardInterface, YKFAPDU;
 @protocol YKFSCPKeyParamsProtocol;
 
 @protocol YKFConnectionProtocol<NSObject>
@@ -62,6 +62,10 @@ typedef void (^YKFManagementSessionCompletion)(YKFManagementSession *_Nullable, 
 /// @param completion The completion handler that gets called once the application is selected on
 ///                   the YubiKey. This handler is executed on a background thread.
 - (void)managementSession:(YKFManagementSessionCompletion _Nonnull)completion;
+
+typedef void (^YKFSecurityDomainSessionCompletion)(YKFSecurityDomainSession *_Nullable, NSError* _Nullable);
+
+- (void)securityDomainSession:(YKFSecurityDomainSessionCompletion _Nonnull)completion;
 
 /// @abstract The smart card interface to the YubiKey.
 /// @discussion Use this for communicating with the YubiKey by sending APDUs to the it. Only use this

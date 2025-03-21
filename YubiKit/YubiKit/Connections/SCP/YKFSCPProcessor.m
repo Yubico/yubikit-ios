@@ -135,6 +135,7 @@ typedef NS_ENUM(uint8_t, YKFSCPKid) {
         NSData *keyLen = [NSData dataWithBytes:(uint8_t[]){16} length:1];
         
         SecKeyRef pkSdEcka = scp11Params.pkSdEcka;
+        CFRetain(pkSdEcka);
         
         NSDictionary *attributes = @{(__bridge id)kSecAttrKeyType: (__bridge id)kSecAttrKeyTypeEC,
                                      (__bridge id)kSecAttrKeySizeInBits: @256};
@@ -168,7 +169,7 @@ typedef NS_ENUM(uint8_t, YKFSCPKid) {
         SecKeyRef skOceEcka = scp11Params.skOceEcka ?: eskOceEcka;
         uint8_t ins = kid  == YKFSCPKidScp11b ? 0x88 : 0x82;
         
-        YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x00 ins:ins p1:scpKeyParams.keyRef.kvn p2:scpKeyParams.keyRef.kid data:data type:YKFAPDUTypeExtended];
+        YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x80 ins:ins p1:scpKeyParams.keyRef.kvn p2:scpKeyParams.keyRef.kid data:data type:YKFAPDUTypeExtended];
         [smartCardInterface executeCommand:apdu sendRemainingIns:sendRemainingIns completion:^(NSData * _Nullable result, NSError * _Nullable error) {
             if (!result) {
                 completion(nil, error);
@@ -189,15 +190,16 @@ typedef NS_ENUM(uint8_t, YKFSCPKid) {
             
             NSDictionary *pkAttributes = @{(__bridge id)kSecAttrKeyType: (__bridge id)kSecAttrKeyTypeEC,
                                            (__bridge id)kSecAttrKeyClass: (__bridge id)kSecAttrKeyClassPublic};
-            CFErrorRef cfEerror = NULL;
+            CFErrorRef cfError = NULL;
 
-            SecKeyRef epkSdEcka = SecKeyCreateWithData((__bridge CFDataRef)epkSdEckaEncodedPoint, (__bridge CFDictionaryRef)pkAttributes, &cfEerror);
+            SecKeyRef epkSdEcka = SecKeyCreateWithData((__bridge CFDataRef)epkSdEckaEncodedPoint, (__bridge CFDictionaryRef)pkAttributes, &cfError);
             if (!epkSdEcka) {
-                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[(__bridge NSError *)cfEerror localizedDescription] userInfo:nil];
+                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[(__bridge NSError *)cfError localizedDescription] userInfo:nil];
             }
             
             NSData *keyAgreement1 = (__bridge_transfer NSData *)SecKeyCopyKeyExchangeResult(eskOceEcka, kSecKeyAlgorithmECDHKeyExchangeStandard, epkSdEcka, (__bridge CFDictionaryRef)@{}, nil);
             NSData *keyAgreement2 = (__bridge_transfer NSData *)SecKeyCopyKeyExchangeResult(skOceEcka, kSecKeyAlgorithmECDHKeyExchangeStandard, pkSdEcka, (__bridge CFDictionaryRef)@{}, nil);
+            CFRelease(pkSdEcka);
             
             NSMutableData *keyMaterial = [keyAgreement1 mutableCopy];
             [keyMaterial appendData:keyAgreement2];

@@ -39,6 +39,8 @@
 #import "YKFAccessoryDescription+Private.h"
 #import "YKFManagementSession+Private.h"
 #import "YKFManagementSession.h"
+#import "YKFSCPSecurityDomainSession.h"
+#import "YKFSCPSecurityDomainSession+Private.h"
 
 #import "EAAccessory+Testing.h"
 #import "EASession+Testing.h"
@@ -189,6 +191,15 @@ static NSTimeInterval const YubiAccessorySessionStreamOpenDelay = 0.2; // second
                                                   completion:^(YKFManagementSession *_Nullable session, NSError * _Nullable error) {
         self.currentSession = session;
         callback(session, error);
+    }];
+}
+
+- (void)securityDomainSession:(YKFSecurityDomainSessionCompletion _Nonnull)completion {
+    [self.currentSession clearSessionState];
+    [YKFSecurityDomainSession sessionWithConnectionController:self.connectionController
+                                        completion:^(YKFSecurityDomainSession *_Nullable session, NSError * _Nullable error) {
+        self.currentSession = session;
+        completion(session, error);
     }];
 }
 
