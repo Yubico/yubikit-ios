@@ -25,6 +25,7 @@ static NSString* const YKFSessionErrorMissingApplicationDescription = @"The requ
 static NSString* const YKFSessionErrorConnectionLostDescription = @"Connection lost.";
 static NSString* const YKFSessionErrorNoConnectionDescription = @"Connection is not found.";
 static NSString* const YKFSessionErrorInvalidSessionStateDescription = @"Invalid session state.";
+static NSString* const YKFSessionErrorUnexpectedResultDescription = @"Unexpted data returned by YubiKey.";
 
 #pragma mark - YKFSessionError
 
@@ -56,6 +57,7 @@ static NSDictionary *errorMap = nil;
       @(YKFSessionErrorConnectionLost):                      YKFSessionErrorConnectionLostDescription,
       @(YKFSessionErrorNoConnection):                        YKFSessionErrorNoConnectionDescription,
       @(YKFSessionErrorInvalidSessionStateStatusCode):       YKFSessionErrorInvalidSessionStateDescription,
+      @(YKFSessionErrorUnexpectedResult):          YKFSessionErrorUnexpectedResultDescription,
       };
 }
 

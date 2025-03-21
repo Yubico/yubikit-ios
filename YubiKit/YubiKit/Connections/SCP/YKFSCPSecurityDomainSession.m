@@ -23,6 +23,8 @@
 #import "YKFNSDataAdditions+Private.h"
 #import "YKFSCPProcessor.h"
 #import "YKFSCPKeyParamsProtocol.h"
+#import "YKFSessionError.h"
+#import "YKFSessionError+Private.h"
 
 @implementation YKFSecurityDomainSession
 
@@ -97,7 +99,8 @@
             }
         }
         if (records.count != certs.count) {
-            NSLog(@"ERROR");
+            completion(nil, [YKFSessionError errorWithCode:YKFSessionErrorUnexpectedResult]);
+            return;
         }
         completion(certs, nil);
     }];

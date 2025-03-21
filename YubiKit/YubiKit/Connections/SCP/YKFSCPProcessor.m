@@ -25,6 +25,8 @@
 #import "YKFAPDU.h"
 #import "YKFSCPProcessor.h"
 #import "YKFTLVRecord.h"
+#import "YKFSessionError.h"
+#import "YKFSessionError+Private.h"
 
 @interface YKFSCPProcessor ()
 @property (nonatomic, strong) YKFSCPState *state;
@@ -55,7 +57,6 @@ typedef NS_ENUM(uint8_t, YKFSCPKid) {
     if ([scpKeyParams isKindOfClass:[YKFSCP03KeyParams class]]) {
         YKFSCP03KeyParams *scp03KeyParams = (YKFSCP03KeyParams *)scpKeyParams;
         NSData *hostChallenge = [NSData ykf_randomDataOfSize:8];
-        NSLog(@"Send challenge: %@", [hostChallenge ykf_hexadecimalString]);
         
         uint8_t insInitializeUpdate = 0x50;
         YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x80 ins:insInitializeUpdate p1:scp03KeyParams.keyRef.kvn p2:0x00 data:hostChallenge type:YKFAPDUTypeShort];
@@ -68,7 +69,7 @@ typedef NS_ENUM(uint8_t, YKFSCPKid) {
             
             if (result.length < 29) { // Ensure sufficient length
                 if (completion) {
-                    completion(nil, [NSError errorWithDomain:@"SCPErrorDomain" code:-2 userInfo:@{NSLocalizedDescriptionKey: @"Unexpected result"}]);
+                    completion(nil, [YKFSessionError errorWithCode:YKFSessionErrorUnexpectedResult]);
                 }
                 return;
             }
@@ -87,7 +88,7 @@ typedef NS_ENUM(uint8_t, YKFSCPKid) {
             
             if (![genCardCryptogram ykf_constantTimeCompareWithData:cardCryptogram]) {
                 if (completion) {
-                    completion(nil, [NSError errorWithDomain:@"SCPErrorDomain" code:-3 userInfo:@{NSLocalizedDescriptionKey: @"Invalid card cryptogram"}]);
+                    completion(nil, [YKFSessionError errorWithCode:YKFSessionErrorUnexpectedResult]);
                 }
                 return;
             }
@@ -177,7 +178,8 @@ typedef NS_ENUM(uint8_t, YKFSCPKid) {
             }
             NSArray<YKFTLVRecord *> *tlvs = [YKFTLVRecord sequenceOfRecordsFromData:result];
             if (tlvs.count != 2 || [tlvs[0] tag] != 0x5f49 || [tlvs[1] tag] != 0x86) {
-                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Invalid response TLVs" userInfo:nil];
+                completion(nil, [YKFSessionError errorWithCode:YKFSessionErrorUnexpectedResult]);
+                return;
             }
             
             NSData *epkSdEckaEncodedPoint = tlvs[0].value;
@@ -225,12 +227,8 @@ typedef NS_ENUM(uint8_t, YKFSCPKid) {
             
             YKFSCPProcessor *processor = [[YKFSCPProcessor alloc] initWithState:state];
             completion(processor, nil);
-            
-            NSLog(@"✅ done configuring SCP11");
         }];
     }
-    
-    
 }
 
 
@@ -240,8 +238,6 @@ typedef NS_ENUM(uint8_t, YKFSCPKid) {
                encrypt:(BOOL)encrypt
 usingSmartCardInterface:(YKFSmartCardInterface *)smartCardInterface
             completion:(YKFSmartCardInterfaceResponseBlock)completion {
-    
-    NSLog(@"👾 process %@, %@", apdu, self.state);
     
     NSData *data;
     if (encrypt) {
@@ -271,7 +267,6 @@ usingSmartCardInterface:(YKFSmartCardInterface *)smartCardInterface
     YKFAPDU *processedAPDU = [[YKFAPDU alloc] initWithCla:cla ins:apdu.ins p1:apdu.p1 p2:apdu.p2 data:dataAndMac type:apdu.type];
     
     NSMutableData *resultData = [NSMutableData new];
-    
     [smartCardInterface executeRecursiveCommand:processedAPDU sendRemainingIns:sendRemainingIns timeout:20 data:resultData completion:^(NSData * _Nullable result, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);

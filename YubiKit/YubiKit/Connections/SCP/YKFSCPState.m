@@ -28,9 +28,7 @@
     return self;
 }
 
-- (NSData *)encrypt:(NSData *)data error:(NSError **)error {
-    NSLog(@"👾 encrypt %@ using %@", [data ykf_hexadecimalString], self);
-    
+- (NSData *)encrypt:(NSData *)data error:(NSError **)error {    
     NSData *paddedData = [data ykf_bitPadded];
     NSMutableData *ivData = [NSMutableData dataWithLength:12];
     uint32_t encCounterBE = CFSwapInt32HostToBig(self.encCounter);
@@ -44,8 +42,6 @@
 }
 
 - (NSData *)decrypt:(NSData *)data error:(NSError **)error {
-    NSLog(@"decrypt: %@", [data ykf_hexadecimalString]);
-    
     NSMutableData *ivData = [NSMutableData data];
     uint8_t paddingByte = 0x80;
     [ivData appendBytes:&paddingByte length:1];
@@ -60,7 +56,6 @@
 
     if (!decrypted) return nil;
 
-    NSLog(@"decrypted: %@", [decrypted ykf_hexadecimalString]);
     return [self unpadData:decrypted];
 }
 
