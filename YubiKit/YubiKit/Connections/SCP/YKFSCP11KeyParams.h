@@ -26,15 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly) YKFSCPKeyRef *keyRef;
 @property (nonatomic, assign, readonly) SecKeyRef pkSdEcka;
-@property (nonatomic, strong, nullable, readonly) YKFSCPKeyRef *oceKeyRef;
-@property (nonatomic, assign, nullable, readonly) SecKeyRef skOceEcka;
-@property (nonatomic, strong, readonly) NSArray *certificates;
 
 - (instancetype)initWithKeyRef:(YKFSCPKeyRef *)keyRef
-                     pkSdEcka:(SecKeyRef)pkSdEcka
-                   oceKeyRef:(nullable YKFSCPKeyRef *)oceKeyRef
-                   skOceEcka:(nullable SecKeyRef)skOceEcka
-                 certificates:(NSArray *)certificates NS_DESIGNATED_INITIALIZER;
+                     pkSdEcka:(SecKeyRef)pkSdEcka NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

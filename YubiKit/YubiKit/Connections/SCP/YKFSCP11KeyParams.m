@@ -21,10 +21,7 @@
 @implementation YKFSCP11KeyParams
 
 - (instancetype)initWithKeyRef:(YKFSCPKeyRef *)keyRef
-                     pkSdEcka:(SecKeyRef)pkSdEcka
-                   oceKeyRef:(nullable YKFSCPKeyRef *)oceKeyRef
-                   skOceEcka:(nullable SecKeyRef)skOceEcka
-                 certificates:(NSArray *)certificates {
+                     pkSdEcka:(SecKeyRef)pkSdEcka {
     if ((0xff & keyRef.kid) != 0x13) {
         @throw [NSException exceptionWithName:@"InvalidKIDException"
                                        reason:@"Invalid KID for SCP03"
@@ -34,9 +31,6 @@
     if (self) {
         _keyRef = keyRef;
         _pkSdEcka = (SecKeyRef)CFRetain(pkSdEcka);
-        _oceKeyRef = oceKeyRef;
-        _skOceEcka = skOceEcka ? (SecKeyRef)CFRetain(skOceEcka) : nil;
-        _certificates = [certificates copy];
     }
     return self;
 }
@@ -44,9 +38,6 @@
 - (void)dealloc {
     if (_pkSdEcka) {
         CFRelease(_pkSdEcka);
-    }
-    if (_skOceEcka) {
-        CFRelease(_skOceEcka);
     }
 }
 

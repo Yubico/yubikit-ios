@@ -167,7 +167,7 @@ typedef NS_ENUM(uint8_t, YKFSCPKid) {
         ]].data mutableCopy];
         [data appendData:[[YKFTLVRecord alloc] initWithTag:0x5f49 value:epkOceEckaData].data];
         
-        SecKeyRef skOceEcka = scp11Params.skOceEcka ?: eskOceEcka;
+        SecKeyRef skOceEcka = eskOceEcka;
         uint8_t ins = kid  == YKFSCPKidScp11b ? 0x88 : 0x82;
         
         YKFAPDU *apdu = [[YKFAPDU alloc] initWithCla:0x80 ins:ins p1:scpKeyParams.keyRef.kvn p2:scpKeyParams.keyRef.kid data:data type:YKFAPDUTypeExtended];

@@ -47,7 +47,7 @@ class SCPTests: XCTestCase {
                     guard let last = certificates?.last else { XCTFail("Failed to get a certificate bundle: \(error!)"); completion(); return }
                     let certificate = last as! SecCertificate
                     let publicKey = SecCertificateCopyKey(certificate)!
-                    let scp11KeyParams = YKFSCP11KeyParams(keyRef: scpKeyRef, pkSdEcka: publicKey, oceKeyRef: nil, skOceEcka: nil, certificates: [])
+                    let scp11KeyParams = YKFSCP11KeyParams(keyRef: scpKeyRef, pkSdEcka: publicKey)
                     connection.oathSession(scp11KeyParams) { session, error in
                         guard let session else { XCTFail("Failed to get a OATH session: \(error!)"); completion(); return }
                         print("✅ SCP11b setup successful")
