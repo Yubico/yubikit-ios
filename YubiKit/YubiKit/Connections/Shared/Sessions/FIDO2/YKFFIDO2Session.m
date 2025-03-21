@@ -49,6 +49,9 @@
 #import "YKFSmartCardInterface.h"
 #import "YKFSelectApplicationAPDU.h"
 
+#import "YKFSCPProcessor.h"
+#import "YKFSCPKeyParamsProtocol.h"
+
 static const int YKFFIDO2RequestMaxRetries = 30; // times
 static const NSTimeInterval YKFFIDO2RequestRetryTimeInterval = 0.5; // seconds
 NSString* const YKFFIDO2OptionRK = @"rk";
@@ -96,6 +99,34 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         } else {
             [session updateKeyState:YKFFIDO2SessionKeyStateIdle];
             completion(session, nil);
+        }
+    }];
+}
+
++ (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
+                           scpKeyParams:(id<YKFSCPKeyParamsProtocol>)scpKeyParams
+                             completion:(YKFFIDO2SessionCompletion _Nonnull)completion {
+    YKFFIDO2Session *session = [YKFFIDO2Session new];
+    session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
+    
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameFIDO2];
+    [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+        } else {
+            if (scpKeyParams) {
+                [YKFSCPProcessor processorWithSCPKeyParams:scpKeyParams sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsNormal usingSmartCardInterface:session.smartCardInterface completion:^(YKFSCPProcessor * _Nullable processor, NSError * _Nullable error) {
+                    if (error) {
+                        completion(nil, error);
+                    } else {
+                        session.smartCardInterface.scpProcessor = processor;
+                        completion(session, nil);
+                    }
+                }];
+            } else {
+                completion(session, nil);
+            }
+            [session updateKeyState:YKFFIDO2SessionKeyStateIdle];
         }
     }];
 }

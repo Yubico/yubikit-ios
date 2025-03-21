@@ -21,6 +21,9 @@
 #import "YKFSCPKeyRef.h"
 #import "YKFNSDataAdditions.h"
 #import "YKFNSDataAdditions+Private.h"
+#import "YKFSCPProcessor.h"
+#import "YKFSCPKeyParamsProtocol.h"
+
 @implementation YKFSecurityDomainSession
 
 + (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
@@ -34,6 +37,33 @@
             completion(nil, error);
         } else {
             completion(session, nil);
+        }
+    }];
+}
+
++ (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
+                           scpKeyParams:(id<YKFSCPKeyParamsProtocol>)scpKeyParams
+                             completion:(YKFSecurityDomainSessionCompletion _Nonnull)completion {
+    YKFSecurityDomainSession *session = [YKFSecurityDomainSession new];
+    session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
+    
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameSecurityDomain];
+    [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+        } else {
+            if (scpKeyParams) {
+                [YKFSCPProcessor processorWithSCPKeyParams:scpKeyParams sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsNormal usingSmartCardInterface:session.smartCardInterface completion:^(YKFSCPProcessor * _Nullable processor, NSError * _Nullable error) {
+                    if (error) {
+                        completion(nil, error);
+                    } else {
+                        session.smartCardInterface.scpProcessor = processor;
+                        completion(session, nil);
+                    }
+                }];
+            } else {
+                completion(session, nil);
+            }
         }
     }];
 }

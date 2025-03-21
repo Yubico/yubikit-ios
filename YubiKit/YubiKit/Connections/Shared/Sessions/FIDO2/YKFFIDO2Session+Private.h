@@ -16,7 +16,7 @@
 #import "YKFSessionProtocol+Private.h"
 #import "YKFFIDO2Session.h"
 
-@protocol YKFConnectionControllerProtocol;
+@protocol YKFConnectionControllerProtocol, YKFSCPKeyParamsProtocol;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,6 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^YKFFIDO2SessionCompletion)(YKFFIDO2Session *_Nullable, NSError* _Nullable);
 + (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
                                completion:(YKFFIDO2SessionCompletion _Nonnull)completion;
+
++ (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
+                           scpKeyParams:(nonnull id<YKFSCPKeyParamsProtocol>)scpKeyParams
+                             completion:(YKFFIDO2SessionCompletion _Nonnull)completion;
 
 @end
 

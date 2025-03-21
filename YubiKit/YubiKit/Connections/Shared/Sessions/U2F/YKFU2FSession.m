@@ -35,6 +35,9 @@
 #import "YKFSmartCardInterface.h"
 #import "YKFSelectApplicationAPDU.h"
 
+#import "YKFSCPProcessor.h"
+#import "YKFSCPKeyParamsProtocol.h"
+
 typedef void (^YKFU2FServiceResultCompletionBlock)(NSData* _Nullable  result, NSError* _Nullable error);
 
 NSString* const YKFU2FServiceProtocolKeyStatePropertyKey = @"keyState";
@@ -61,6 +64,33 @@ static const NSTimeInterval YKFU2FRetryTimeInterval = 0.5; // seconds
             completion(nil, error);
         } else {
             completion(session, nil);
+        }
+    }];
+}
+
++ (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
+                           scpKeyParams:(id<YKFSCPKeyParamsProtocol>)scpKeyParams
+                             completion:(YKFU2FSessionCompletion _Nonnull)completion {
+    YKFU2FSession *session = [YKFU2FSession new];
+    session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
+    
+    YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNameU2F];
+    [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            completion(nil, error);
+        } else {
+            if (scpKeyParams) {
+                [YKFSCPProcessor processorWithSCPKeyParams:scpKeyParams sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsNormal usingSmartCardInterface:session.smartCardInterface completion:^(YKFSCPProcessor * _Nullable processor, NSError * _Nullable error) {
+                    if (error) {
+                        completion(nil, error);
+                    } else {
+                        session.smartCardInterface.scpProcessor = processor;
+                        completion(session, nil);
+                    }
+                }];
+            } else {
+                completion(session, nil);
+            }
         }
     }];
 }

@@ -16,6 +16,7 @@
 #import "YKFAccessoryConnectionController.h"
 #import "YKFNSMutableDataAdditions.h"
 #import "YKFAssert.h"
+#import "YKFNSDataAdditions+Private.h"
 
 @interface YKFAPDU()
 

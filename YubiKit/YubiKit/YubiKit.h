@@ -67,6 +67,7 @@
 #import "YKFPIVBioMetadata.h"
 #import "YKFChallengeResponseSession.h"
 #import "YKFManagementSession.h"
+#import "YKFSCPSecurityDomainSession.h"
 
 #import "YKFInvalidPinError.h"
 

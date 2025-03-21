@@ -30,11 +30,9 @@ typedef void (^YKFSecurityDomainSessionCompletion)(YKFSecurityDomainSession *_Nu
 + (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
                              completion:(YKFSecurityDomainSessionCompletion _Nonnull)completion;
 
-//+ (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
-//                           scpKeyParams:(nonnull id<YKFSCPKeyParamsProtocol>)scpKeyParams
-//                             completion:(YKFOATHSessionCompletion _Nonnull)completion;
-//
-
++ (void)sessionWithConnectionController:(nonnull id<YKFConnectionControllerProtocol>)connectionController
+                           scpKeyParams:(nonnull id<YKFSCPKeyParamsProtocol>)scpKeyParams
+                             completion:(YKFSecurityDomainSessionCompletion _Nonnull)completion;
 
 @end
 
