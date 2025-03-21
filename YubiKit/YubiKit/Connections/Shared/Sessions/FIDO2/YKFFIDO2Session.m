@@ -104,10 +104,18 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         if (error) {
             completion(nil, error);
         } else {
-            [session updateKeyState:YKFFIDO2SessionKeyStateIdle];
-            // Pin protocol hard coded for now
-            session.pinProtocol = YKFFIDOPinProtocolV2;
-            completion(session, nil);
+            [session getInfoWithCompletion:^(YKFFIDO2GetInfoResponse * _Nullable response, NSError * _Nullable error) {
+                if ([response.pinProtocols containsObject: @2]) {
+                    session.pinProtocol = YKFFIDOPinProtocolV2;
+                } else if ([response.pinProtocols containsObject: @1]) {
+                    session.pinProtocol = YKFFIDOPinProtocolV1;
+                } else {
+                    completion(nil, [YKFFIDO2Error errorWithCode:YKFFIDO2ErrorCodeOTHER]);
+                    return;
+                }
+                completion(session, nil);
+                [session updateKeyState:YKFFIDO2SessionKeyStateIdle];
+            }];
         }
     }];
 }
