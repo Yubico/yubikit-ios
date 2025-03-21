@@ -1,5 +1,15 @@
 # YubiKit Changelog
 
+
+## 4.7.0
+
+- Support for SCP03 and SCP11b secure channel protocols
+- Added support for FIDO2 PIN protocol version 2
+- getInfo() in FIDO2 sessions now returns minimum PIN length and supported PIN protocols
+- Fixed an OATH credential bug where a : could be erroneously appended to the credential name
+- Fixed an issue where NFCConnection could return both a nil session and a nil error
+- Fixed a crash in the OATH URL parser when handling an empty path
+
 ## 4.6.0
 
 In this version support for the YubiKey Bio - Multi-protocol Edition and partial support for the new 5.7 firmware has been added.
