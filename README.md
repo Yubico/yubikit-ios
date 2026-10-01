@@ -1,6 +1,7 @@
 # Yubico Mobile iOS SDK (YubiKit)
 
-> For new projects, use the [Yubico Swift SDK](https://github.com/Yubico/yubikit-swift). This repository contains the older Objective-C SDK.
+> [!TIP]
+> For new projects, use the [Yubico Swift SDK](https://github.com/Yubico/yubikit-swift).
 
 **YubiKit** is an iOS library provided by Yubico to interact with YubiKeys on iOS devices. 
 
